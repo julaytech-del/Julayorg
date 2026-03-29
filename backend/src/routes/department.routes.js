@@ -1,0 +1,13 @@
+import { Router } from 'express';
+import { getDepartments, createDepartment, updateDepartment, deleteDepartment } from '../controllers/department.controller.js';
+import { protect } from '../middleware/auth.middleware.js';
+
+const router = Router();
+router.use(protect);
+
+router.get('/', getDepartments);
+router.post('/', createDepartment);
+router.put('/:id', updateDepartment);
+router.delete('/:id', deleteDepartment);
+
+export default router;
