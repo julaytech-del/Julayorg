@@ -2,6 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Breadcrumbs, Link, Card, Chip, Avatar, ToggleButton, ToggleButtonGroup } from '@mui/material';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { format, addDays, differenceInDays, startOfWeek, addWeeks, startOfMonth, addMonths } from 'date-fns';
 import { fetchTasks } from '../../store/slices/taskSlice.js';
 import { fetchProject } from '../../store/slices/projectSlice.js';
@@ -16,6 +17,7 @@ const DAY_WIDTH_MONTH = 16;
 export default function GanttView() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { tasks, loading } = useSelector(s => s.tasks);
   const { currentProject } = useSelector(s => s.projects);
   const [zoom, setZoom] = useState('week');
@@ -70,16 +72,16 @@ export default function GanttView() {
   return (
     <Box>
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Link component={RouterLink} to="/projects" color="inherit" underline="hover">Projects</Link>
+        <Link component={RouterLink} to="/projects" color="inherit" underline="hover">{t('nav.projects')}</Link>
         <Link component={RouterLink} to={`/projects/${id}`} color="inherit" underline="hover">{currentProject?.name}</Link>
-        <Typography color="text.primary">Timeline</Typography>
+        <Typography color="text.primary">{t('timeline.title')}</Typography>
       </Breadcrumbs>
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-        <Typography variant="h6" fontWeight={700}>Gantt Timeline</Typography>
+        <Typography variant="h6" fontWeight={700}>{t('timeline.title')}</Typography>
         <ToggleButtonGroup value={zoom} exclusive onChange={(_, v) => v && setZoom(v)} size="small">
-          <ToggleButton value="week">Week</ToggleButton>
-          <ToggleButton value="month">Month</ToggleButton>
+          <ToggleButton value="week">{t('timeline.week')}</ToggleButton>
+          <ToggleButton value="month">{t('timeline.month')}</ToggleButton>
         </ToggleButtonGroup>
       </Box>
 
@@ -88,7 +90,7 @@ export default function GanttView() {
         <Box sx={{ display: 'flex', borderBottom: '2px solid', borderColor: 'divider', backgroundColor: 'grey.50' }}>
           {/* Task list header */}
           <Box sx={{ width: LEFT_PANEL, flexShrink: 0, p: 1.5, borderRight: '1px solid', borderColor: 'divider' }}>
-            <Typography variant="caption" fontWeight={700} color="text.secondary" textTransform="uppercase">Task</Typography>
+            <Typography variant="caption" fontWeight={700} color="text.secondary" textTransform="uppercase">{t('common.name')}</Typography>
           </Box>
           {/* Timeline header */}
           <Box ref={scrollRef} sx={{ flex: 1, overflowX: 'auto' }}>
@@ -126,7 +128,7 @@ export default function GanttView() {
               {/* Today line */}
               {todayOffset >= 0 && todayOffset <= timelineWidth && (
                 <Box sx={{ position: 'absolute', left: todayOffset, top: 0, bottom: 0, width: 2, backgroundColor: '#EF4444', zIndex: 10, pointerEvents: 'none' }}>
-                  <Chip label="Today" size="small" sx={{ position: 'absolute', top: 4, left: 4, height: 18, fontSize: '0.6rem', backgroundColor: '#EF4444', color: 'white' }} />
+                  <Chip label={t('timeline.today')} size="small" sx={{ position: 'absolute', top: 4, left: 4, height: 18, fontSize: '0.6rem', backgroundColor: '#EF4444', color: 'white' }} />
                 </Box>
               )}
 

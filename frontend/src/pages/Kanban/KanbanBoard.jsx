@@ -3,6 +3,7 @@ import { Box, Typography, Breadcrumbs, Link, Card, CardContent, Chip, Avatar, Av
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useParams, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { Add, ChatBubbleOutline, CheckBoxOutlineBlank } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { fetchTasks, updateTaskStatus, reorderTasks } from '../../store/slices/taskSlice.js';
@@ -12,12 +13,12 @@ import { tasksAPI } from '../../services/api.js';
 import PriorityChip from '../../components/common/PriorityChip.jsx';
 import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 
-const COLUMNS = [
-  { id: 'planned', label: 'Planned', color: '#94A3B8', bg: '#F8FAFC' },
-  { id: 'in_progress', label: 'In Progress', color: '#3B82F6', bg: '#EFF6FF' },
-  { id: 'blocked', label: 'Blocked', color: '#EF4444', bg: '#FEF2F2' },
-  { id: 'review', label: 'Review', color: '#F59E0B', bg: '#FFFBEB' },
-  { id: 'done', label: 'Done', color: '#10B981', bg: '#ECFDF5' }
+const COLUMN_DEFS = [
+  { id: 'planned', color: '#94A3B8', bg: '#F8FAFC' },
+  { id: 'in_progress', color: '#3B82F6', bg: '#EFF6FF' },
+  { id: 'blocked', color: '#EF4444', bg: '#FEF2F2' },
+  { id: 'review', color: '#F59E0B', bg: '#FFFBEB' },
+  { id: 'done', color: '#10B981', bg: '#ECFDF5' }
 ];
 
 const TYPE_ICONS = { design: '🎨', feature: '⚡', testing: '🧪', planning: '📋', meeting: '👥', deployment: '🚀', content: '✍️', research: '🔍', review: '👀', bug: '🐛', other: '📌' };
@@ -86,12 +87,14 @@ function TaskCard({ task, index, onClick }) {
 export default function KanbanBoard() {
   const { id } = useParams();
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const { tasks } = useSelector(s => s.tasks);
   const { currentProject } = useSelector(s => s.projects);
   const [selectedTask, setSelectedTask] = useState(null);
   const [addingTo, setAddingTo] = useState(null);
   const [newTitle, setNewTitle] = useState('');
   const user = useSelector(s => s.auth.user);
+  const COLUMNS = COLUMN_DEFS.map(c => ({ ...c, label: t(`kanban.columns.${c.id}`) }));
 
   useEffect(() => {
     dispatch(fetchTasks({ projectId: id }));
@@ -126,9 +129,9 @@ export default function KanbanBoard() {
   return (
     <Box>
       <Breadcrumbs sx={{ mb: 2 }}>
-        <Link component={RouterLink} to="/projects" color="inherit" underline="hover">Projects</Link>
+        <Link component={RouterLink} to="/projects" color="inherit" underline="hover">{t('nav.projects')}</Link>
         <Link component={RouterLink} to={`/projects/${id}`} color="inherit" underline="hover">{currentProject?.name}</Link>
-        <Typography color="text.primary">Kanban</Typography>
+        <Typography color="text.primary">{t('kanban.title')}</Typography>
       </Breadcrumbs>
 
       <DragDropContext onDragEnd={onDragEnd}>
@@ -158,16 +161,16 @@ export default function KanbanBoard() {
 
                       {addingTo === col.id ? (
                         <Box sx={{ mt: 1 }}>
-                          <TextField size="small" fullWidth placeholder="Task title..." value={newTitle} onChange={e => setNewTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddTask(col.id)} autoFocus sx={{ mb: 1 }} />
+                          <TextField size="small" fullWidth placeholder={t('common.name') + '...'} value={newTitle} onChange={e => setNewTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddTask(col.id)} autoFocus sx={{ mb: 1 }} />
                           <Box sx={{ display: 'flex', gap: 1 }}>
-                            <Button size="small" variant="contained" onClick={() => handleAddTask(col.id)}>Add</Button>
-                            <Button size="small" onClick={() => setAddingTo(null)}>Cancel</Button>
+                            <Button size="small" variant="contained" onClick={() => handleAddTask(col.id)}>{t('common.create')}</Button>
+                            <Button size="small" onClick={() => setAddingTo(null)}>{t('common.cancel')}</Button>
                           </Box>
                         </Box>
                       ) : (
                         <Button size="small" startIcon={<Add />} fullWidth onClick={() => setAddingTo(col.id)}
                           sx={{ mt: 1, color: 'text.secondary', justifyContent: 'flex-start', '&:hover': { backgroundColor: 'grey.100' } }}>
-                          Add task
+                          {t('common.create')}
                         </Button>
                       )}
                     </Box>

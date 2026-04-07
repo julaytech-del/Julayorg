@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const api = axios.create({ baseURL: '/api', timeout: 10000 });
+const BASE_URL = import.meta.env.VITE_API_URL || '/api';
+const api = axios.create({ baseURL: BASE_URL, timeout: 120000 });
 
 api.interceptors.request.use(config => {
-  const token = localStorage.getItem('work_os_token');
+  const token = localStorage.getItem('julay_token');
   if (token) config.headers.Authorization = `Bearer ${token}`;
   return config;
 });
@@ -12,10 +13,10 @@ api.interceptors.response.use(
   res => res.data,
   err => {
     if (!err.response) {
-      return Promise.reject({ success: false, message: 'Cannot connect to server. Make sure the backend is running on port 5000.' });
+      return Promise.reject({ success: false, message: err.code === 'ECONNABORTED' ? 'الطلب استغرق وقتاً طويلاً، يرجى المحاولة مرة أخرى.' : 'تعذّر الاتصال بالخادم، يرجى التأكد من تشغيل الـ backend.' });
     }
     if (err.response.status === 401) {
-      localStorage.removeItem('work_os_token');
+      localStorage.removeItem('julay_token');
       if (window.location.pathname !== '/login') window.location.href = '/login';
     }
     return Promise.reject(err.response.data || { success: false, message: err.message });

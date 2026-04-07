@@ -1,0 +1,408 @@
+{
+  "nav": {
+    "dashboard": "لوحة التحكم",
+    "projects": "المشاريع",
+    "team": "الفريق",
+    "departments": "الأقسام",
+    "aiStudio": "استوديو الذكاء",
+    "sections": {
+      "workspace": "مساحة العمل",
+      "intelligence": "الذكاء الاصطناعي"
+    },
+    "signOut": "تسجيل الخروج",
+    "orgIndustry": "مساحة العمل"
+  },
+  "header": {
+    "search": "ابحث عن مشاريع، مهام، أشخاص...",
+    "aiGenerate": "توليد AI",
+    "notifications": "الإشعارات",
+    "profile": "ملفي الشخصي",
+    "settings": "الإعدادات",
+    "signOut": "تسجيل الخروج",
+    "pages": {
+      "/": { "title": "لوحة التحكم", "subtitle": "نظرة عامة على مساحة عملك" },
+      "/projects": { "title": "المشاريع", "subtitle": "إدارة وتتبع جميع المشاريع" },
+      "/team": { "title": "الفريق", "subtitle": "الأعضاء والأداء" },
+      "/departments": { "title": "الأقسام", "subtitle": "الهيكل التنظيمي" },
+      "/ai": { "title": "استوديو الذكاء", "subtitle": "أتمتة المشاريع بالذكاء الاصطناعي" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "أهلاً بعودتك",
+      "subtitle": "سجّل دخولك إلى مساحة عملك",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "emailPlaceholder": "you@company.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "تسجيل الدخول",
+      "submitting": "جارٍ تسجيل الدخول...",
+      "noAccount": "ليس لديك حساب؟",
+      "createWorkspace": "إنشاء مساحة عمل",
+      "demoTitle": "حساب تجريبي — انقر للتعبئة",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "أو جرّب الحساب التجريبي",
+      "features": {
+        "f1": "توليد خطط مشاريع كاملة في ثوانٍ",
+        "f2": "الذكاء الاصطناعي يعيّن المهام حسب مهارات الفريق",
+        "f3": "تقارير standup يومية وتحليل الأداء"
+      },
+      "tagline": "محرك عملك المدعوم بالذكاء الاصطناعي",
+      "taglineDesc": "صف أي مشروع بلغة بسيطة. الذكاء الاصطناعي يولّد خطة كاملة — أهداف، مهام، تعيينات فريق، وجداول زمنية — فوراً."
+    },
+    "register": {
+      "title": "إنشاء مساحة عملك",
+      "name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "password": "كلمة المرور",
+      "orgName": "اسم المنظمة",
+      "industry": "القطاع",
+      "submit": "إنشاء مساحة العمل",
+      "hasAccount": "لديك حساب بالفعل؟",
+      "signIn": "تسجيل الدخول"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "صباح الخير",
+      "afternoon": "مساء الخير",
+      "evening": "مساء النور"
+    },
+    "loading": "جارٍ تحميل مساحة عملك...",
+    "activeTasks": "{{count}} مهمة قيد التنفيذ",
+    "overdueCount": "{{count}} متأخرة",
+    "activeProjects": "{{count}} مشاريع نشطة",
+    "stats": {
+      "totalProjects": "إجمالي المشاريع",
+      "activeTasks": "المهام النشطة",
+      "teamMembers": "أعضاء الفريق",
+      "completionRate": "نسبة الإنجاز",
+      "active": "{{count}} نشطة",
+      "activeCompleted": "{{active}} نشطة · {{completed}} مكتملة",
+      "overdueTotal": "{{overdue}} متأخرة · {{total}} إجمالي",
+      "activeToday": "{{count}} نشطون اليوم",
+      "tasksCompleted": "{{count}} مهمة مكتملة",
+      "running": "{{count}} جارية",
+      "overdueBadge": "{{count}} متأخرة",
+      "onTrack": "في الموعد",
+      "needsAttention": "يحتاج اهتماماً"
+    },
+    "charts": {
+      "taskDistribution": "توزيع المهام",
+      "byStatus": "حسب الحالة الحالية",
+      "projectStatus": "حالة المشاريع",
+      "portfolioBreakdown": "تفصيل المحفظة"
+    },
+    "activity": {
+      "title": "النشاط الأخير",
+      "subtitle": "إجراءات الفريق عبر المشاريع",
+      "empty": "لا يوجد نشاط بعد"
+    },
+    "deadlines": {
+      "title": "المواعيد القادمة",
+      "subtitle": "الأيام السبعة القادمة",
+      "dueSoon": "{{count}} تستحق قريباً",
+      "today": "اليوم",
+      "tomorrow": "غداً",
+      "days": "{{count}} أيام",
+      "allClear": "كل شيء على ما يرام!",
+      "allClearSub": "لا مواعيد نهائية في الأيام السبعة القادمة"
+    },
+    "recentProjects": {
+      "title": "المشاريع الأخيرة",
+      "subtitle": "آخر تحديث",
+      "viewAll": "عرض الكل",
+      "empty": "لا توجد مشاريع بعد"
+    },
+    "aiStudio": "استوديو الذكاء",
+    "projects": "المشاريع"
+  },
+  "projects": {
+    "title": "المشاريع",
+    "subtitle": "{{total}} مشروع · {{active}} نشطة",
+    "newProject": "مشروع جديد",
+    "aiGenerate": "توليد بالذكاء",
+    "search": "ابحث في المشاريع...",
+    "filters": {
+      "all": "جميع المشاريع",
+      "planning": "تخطيط",
+      "active": "نشط",
+      "on_hold": "معلّق",
+      "completed": "مكتمل"
+    },
+    "card": {
+      "noDescription": "لا يوجد وصف",
+      "progress": "التقدم",
+      "due": "الموعد {{date}}",
+      "ai": "ذكاء"
+    },
+    "menu": {
+      "open": "فتح المشروع",
+      "edit": "تعديل التفاصيل",
+      "delete": "حذف"
+    },
+    "empty": {
+      "noMatch": "لا توجد مشاريع مطابقة",
+      "noMatchSub": "حاول تعديل البحث أو الفلتر",
+      "clearFilters": "مسح الفلاتر",
+      "start": "ابدأ مشروعك الأول",
+      "startSub": "أنشئ مشروعاً يدوياً أو دع الذكاء الاصطناعي يولّد خطة كاملة من وصف بسيط.",
+      "manual": "إعداد يدوي"
+    },
+    "create": {
+      "title": "مشروع جديد",
+      "subtitle": "أنشئ يدوياً أو دع الذكاء الاصطناعي يولّد خطة كاملة فوراً",
+      "manual": "إعداد يدوي",
+      "ai": "توليد بالذكاء",
+      "name": "اسم المشروع *",
+      "namePlaceholder": "مثال: منصة شركة لوميكس",
+      "description": "الوصف",
+      "descPlaceholder": "وصف مختصر للمشروع...",
+      "startDate": "تاريخ البداية",
+      "endDate": "تاريخ الانتهاء",
+      "priority": "الأولوية",
+      "color": "لون المشروع",
+      "cancel": "إلغاء",
+      "submit": "إنشاء المشروع",
+      "priorities": {
+        "low": "منخفضة",
+        "medium": "متوسطة",
+        "high": "عالية",
+        "critical": "حرجة"
+      }
+    },
+    "aiCreate": {
+      "examples": "أمثلة سريعة",
+      "placeholder": "صف مشروعك بالتفصيل... مثال: 'بناء منصة DevOps لشركة Lumex لإدارة البنية التحتية السحابية وخطوط CI/CD ولوحات المراقبة وأدوات تعاون الفريق.'",
+      "startDate": "تاريخ البداية (اختياري)",
+      "generating": "جارٍ توليد الخطة...",
+      "generate": "توليد خطة المشروع الكاملة",
+      "loadingMsg": "الذكاء الاصطناعي يبني خطة مشروع كاملة — أهداف، مهام، جدول زمني، وتعيينات الفريق...",
+      "successTitle": "تم إنشاء المشروع بنجاح!",
+      "moreTasks": "+{{count}} مهام إضافية",
+      "close": "إغلاق",
+      "viewProject": "عرض المشروع",
+      "steps": {
+        "s1": "جارٍ تحليل وصف المشروع...",
+        "s2": "جارٍ اكتشاف الصناعة والتقنيات...",
+        "s3": "جارٍ إنشاء هيكل المشروع...",
+        "s4": "جارٍ توليد الأهداف والمعالم...",
+        "s5": "جارٍ تقسيم المهام...",
+        "s6": "جارٍ تعيين أعضاء الفريق...",
+        "s7": "جارٍ حساب الجدول الزمني..."
+      },
+      "stats": {
+        "industry": "القطاع: {{value}}",
+        "goals": "{{count}} أهداف",
+        "tasks": "{{count}} مهام",
+        "assigned": "{{count}} مُعيَّن"
+      }
+    },
+    "delete": {
+      "title": "حذف المشروع",
+      "message": "هل تريد حذف \"{{name}}\"؟ سيتم حذف جميع المهام والأهداف نهائياً."
+    },
+    "snackbar": {
+      "created": "تم إنشاء المشروع بنجاح!",
+      "deleted": "تم حذف المشروع",
+      "aiSuccess": "تم توليد خطة المشروع بنجاح!",
+      "aiFailed": "فشل توليد الخطة بالذكاء الاصطناعي"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "عقل المشروع الذكي",
+      "subtitle": "صف أي مشروع وسيبني الذكاء الاصطناعي خطة عمل كاملة"
+    },
+    "generate": {
+      "title": "توليد خطة مشروع كاملة",
+      "subtitle": "صف مشروعك بلغة طبيعية. سيكتشف الذكاء الاصطناعي الصناعة وينشئ الأقسام ويولّد المهام ويعيّن الفريق ويبني الجدول الزمني.",
+      "placeholder": "صف مشروعك بالتفصيل...",
+      "startDate": "تاريخ بداية المشروع",
+      "generate": "توليد خطة المشروع الكاملة",
+      "generating": "جارٍ التوليد...",
+      "examples": {
+        "e1": "بناء موقع شركة مع مدونة ونظام إدارة محتوى",
+        "e2": "إطلاق تطبيق تجارة إلكترونية للجوال لـ iOS و Android",
+        "e3": "تطوير نظام إدارة مرضى لمستشفى",
+        "e4": "إنشاء حملة تسويقية لإطلاق منتج"
+      }
+    },
+    "result": {
+      "success": "تم توليد الخطة",
+      "open": "فتح المشروع",
+      "teamAssignments": "تعيينات الفريق ({{count}})"
+    },
+    "tools": {
+      "title": "أدوات الذكاء السريعة",
+      "standup": {
+        "title": "تقرير Standup اليومي",
+        "select": "اختر مشروعاً",
+        "generate": "توليد التقرير",
+        "generating": "جارٍ التوليد..."
+      },
+      "performance": {
+        "title": "تحليل الأداء",
+        "analyze": "تحليل",
+        "score": "النقاط",
+        "onTrack": "في الموعد",
+        "atRisk": "في خطر"
+      },
+      "replan": {
+        "title": "إعادة التخطيط التلقائي",
+        "reason": "سبب إعادة التخطيط",
+        "reasonPlaceholder": "مثال: عدم توفر موارد، تغيير في النطاق",
+        "replan": "إعادة تخطيط المشروع",
+        "newEnd": "نهاية جديدة: {{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "الفريق",
+    "search": "ابحث عن أعضاء...",
+    "stats": {
+      "total": "إجمالي الأعضاء",
+      "active": "نشطون الآن",
+      "avgPerformance": "متوسط الأداء",
+      "departments": "الأقسام"
+    },
+    "card": {
+      "performance": "الأداء",
+      "skills": "المهارات",
+      "viewProfile": "عرض الملف",
+      "status": {
+        "active": "نشط",
+        "away": "بعيد",
+        "offline": "غير متصل"
+      }
+    }
+  },
+  "departments": {
+    "title": "الأقسام",
+    "new": "قسم جديد",
+    "edit": "تعديل",
+    "delete": "حذف",
+    "members": "{{count}} عضو",
+    "head": "المدير: {{name}}",
+    "noHead": "لم يُعيَّن مدير",
+    "form": {
+      "name": "اسم القسم",
+      "description": "الوصف",
+      "color": "اللون",
+      "cancel": "إلغاء",
+      "save": "حفظ",
+      "create": "إنشاء القسم"
+    }
+  },
+  "kanban": {
+    "title": "لوحة كانبان",
+    "columns": {
+      "planned": "مخطط",
+      "in_progress": "قيد التنفيذ",
+      "blocked": "محظور",
+      "review": "مراجعة",
+      "done": "مكتمل"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}} مهام فرعية",
+      "comments": "{{count}} تعليقات"
+    }
+  },
+  "timeline": {
+    "title": "الجدول الزمني",
+    "today": "اليوم",
+    "week": "أسبوع",
+    "month": "شهر",
+    "noTasks": "لا توجد مهام بتواريخ استحقاق"
+  },
+  "task": {
+    "status": {
+      "planned": "مخطط",
+      "in_progress": "قيد التنفيذ",
+      "blocked": "محظور",
+      "review": "مراجعة",
+      "done": "مكتمل"
+    },
+    "priority": {
+      "critical": "حرج",
+      "high": "عالية",
+      "medium": "متوسطة",
+      "low": "منخفضة"
+    },
+    "type": {
+      "feature": "ميزة",
+      "design": "تصميم",
+      "research": "بحث",
+      "planning": "تخطيط",
+      "meeting": "اجتماع",
+      "review": "مراجعة",
+      "deployment": "نشر",
+      "content": "محتوى",
+      "testing": "اختبار",
+      "bug": "خطأ",
+      "other": "أخرى"
+    },
+    "detail": {
+      "title": "تفاصيل المهمة",
+      "status": "الحالة",
+      "priority": "الأولوية",
+      "type": "النوع",
+      "assignees": "المُعيَّنون",
+      "dueDate": "تاريخ الاستحقاق",
+      "estimatedHours": "الساعات المقدرة",
+      "subtasks": "المهام الفرعية",
+      "comments": "التعليقات",
+      "addComment": "أضف تعليقاً...",
+      "post": "نشر",
+      "noSubtasks": "لا توجد مهام فرعية",
+      "noComments": "لا توجد تعليقات بعد"
+    }
+  },
+  "common": {
+    "loading": "جارٍ التحميل...",
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "create": "إنشاء",
+    "close": "إغلاق",
+    "open": "فتح",
+    "back": "رجوع",
+    "next": "التالي",
+    "confirm": "تأكيد",
+    "search": "بحث",
+    "filter": "فلتر",
+    "noData": "لا توجد بيانات",
+    "progress": "التقدم",
+    "actions": "إجراءات",
+    "name": "الاسم",
+    "description": "الوصف",
+    "date": "التاريخ",
+    "or": "أو"
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "نظرة عامة",
+      "goals": "الأهداف والمهام",
+      "team": "الفريق"
+    },
+    "overallProgress": "التقدم الكلي",
+    "goalsProgress": "تقدم الأهداف",
+    "totalTasks": "إجمالي المهام",
+    "completed": "مكتمل",
+    "inProgress": "قيد التنفيذ",
+    "blocked": "محظور",
+    "addGoal": "إضافة هدف",
+    "addTask": "إضافة مهمة",
+    "standup": "تقرير Standup اليومي بالذكاء الاصطناعي",
+    "performance": "تحليل الأداء",
+    "overallScore": "النقاط الكلية",
+    "riskLevel": "مستوى المخاطر"
+  },
+  "errors": {
+    "connectionError": "تعذّر الاتصال بالخادم. يرجى التأكد من تشغيل الـ backend.",
+    "timeout": "استغرق الطلب وقتاً طويلاً. يرجى المحاولة مرة أخرى.",
+    "loginFailed": "فشل تسجيل الدخول. يرجى التحقق من بياناتك.",
+    "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
+  }
+}

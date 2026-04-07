@@ -1,4 +1,4 @@
-# WorkOS — AI-Powered Universal Work Operating System
+# Julay — AI-Powered Universal Work Operating System
 
 A complete AI-powered project management platform that generates full project plans from text descriptions.
 
@@ -51,7 +51,7 @@ When delays occur, AI reschedules remaining tasks and adjusts timeline.
 ## Architecture
 
 ```
-work-os/
+julay/
 ├── backend/               # Node.js + Express + MongoDB
 │   ├── src/
 │   │   ├── models/        # Mongoose schemas

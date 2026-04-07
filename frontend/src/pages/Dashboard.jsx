@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Grid, Card, CardContent, Typography, LinearProgress, Avatar, Chip, Skeleton, AvatarGroup, Divider, Button } from '@mui/material';
 import { TrendingUp, Assignment, Group, CheckCircle, ArrowUpward, ArrowForward, Warning, AutoAwesome, FolderOpen } from '@mui/icons-material';
+import { useTranslation } from 'react-i18next';
 import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, AreaChart, Area } from 'recharts';
 import { format, formatDistanceToNow } from 'date-fns';
 import { dashboardAPI } from '../services/api.js';
@@ -70,6 +71,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 export default function Dashboard() {
   const user = useSelector(s => s.auth.user);
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
 
@@ -80,7 +82,7 @@ export default function Dashboard() {
   }, []);
 
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 17 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? t('dashboard.greeting.morning') : hour < 17 ? t('dashboard.greeting.afternoon') : t('dashboard.greeting.evening');
 
   const taskBarData = stats
     ? Object.entries(stats.tasks.byStatus || {}).map(([k, v]) => ({ name: k.replace('_', ' '), value: v, fill: STATUS_COLORS[k] || '#94A3B8' }))
@@ -106,10 +108,10 @@ export default function Dashboard() {
               {greeting}, {user?.name?.split(' ')[0]} 👋
             </Typography>
             <Typography variant="body2" sx={{ opacity: 0.75, fontSize: '0.875rem' }}>
-              {loading ? 'Loading your workspace...' : (
+              {loading ? t('dashboard.loading') : (
                 stats
-                  ? `${stats.tasks.inProgress} tasks in progress · ${stats.tasks.overdue > 0 ? `${stats.tasks.overdue} overdue · ` : ''}${stats.projects.active} active projects`
-                  : 'Welcome back to your workspace'
+                  ? `${t('dashboard.activeTasks', { count: stats.tasks.inProgress })} · ${stats.tasks.overdue > 0 ? `${t('dashboard.overdueCount', { count: stats.tasks.overdue })} · ` : ''}${t('dashboard.activeProjects', { count: stats.projects.active })}`
+                  : t('dashboard.loading')
               )}
             </Typography>
           </Box>
@@ -121,7 +123,7 @@ export default function Dashboard() {
               size="small"
               sx={{ backgroundColor: 'rgba(255,255,255,0.15)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.2)', '&:hover': { backgroundColor: 'rgba(255,255,255,0.22)' }, fontWeight: 700, fontSize: '0.78rem' }}
             >
-              AI Studio
+              {t('dashboard.aiStudio')}
             </Button>
             <Button
               variant="contained"
@@ -130,7 +132,7 @@ export default function Dashboard() {
               size="small"
               sx={{ backgroundColor: 'rgba(255,255,255,0.12)', backdropFilter: 'blur(10px)', border: '1px solid rgba(255,255,255,0.15)', '&:hover': { backgroundColor: 'rgba(255,255,255,0.2)' }, fontWeight: 700, fontSize: '0.78rem' }}
             >
-              Projects
+              {t('dashboard.projects')}
             </Button>
           </Box>
         </Box>
@@ -140,37 +142,37 @@ export default function Dashboard() {
       <Grid container spacing={2.5} sx={{ mb: 3 }}>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Total Projects"
+            title={t('dashboard.stats.totalProjects')}
             value={stats?.projects.total}
-            subtitle={`${stats?.projects.active || 0} active · ${stats?.projects.completed || 0} completed`}
+            subtitle={t('dashboard.stats.activeCompleted', { active: stats?.projects.active || 0, completed: stats?.projects.completed || 0 })}
             icon={<TrendingUp />} color="#4F46E5" loading={loading}
-            badge={stats?.projects.active ? `${stats.projects.active} Running` : null}
+            badge={stats?.projects.active ? t('dashboard.stats.running', { count: stats.projects.active }) : null}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Active Tasks"
+            title={t('dashboard.stats.activeTasks')}
             value={stats?.tasks.inProgress}
-            subtitle={`${stats?.tasks.overdue || 0} overdue · ${stats?.tasks.total || 0} total`}
+            subtitle={t('dashboard.stats.overdueTotal', { overdue: stats?.tasks.overdue || 0, total: stats?.tasks.total || 0 })}
             icon={<Assignment />} color="#0EA5E9" loading={loading}
-            badge={stats?.tasks.overdue > 0 ? `${stats.tasks.overdue} Overdue` : null}
+            badge={stats?.tasks.overdue > 0 ? t('dashboard.stats.overdueBadge', { count: stats.tasks.overdue }) : null}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Team Members"
+            title={t('dashboard.stats.teamMembers')}
             value={stats?.team.total}
-            subtitle={`${stats?.team.active || 0} active today`}
+            subtitle={t('dashboard.stats.activeToday', { count: stats?.team.active || 0 })}
             icon={<Group />} color="#10B981" loading={loading}
           />
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
-            title="Completion Rate"
+            title={t('dashboard.stats.completionRate')}
             value={stats ? `${stats.completionRate}%` : null}
-            subtitle={`${stats?.tasks.completed || 0} tasks completed`}
+            subtitle={t('dashboard.stats.tasksCompleted', { count: stats?.tasks.completed || 0 })}
             icon={<CheckCircle />} color="#F59E0B" loading={loading}
-            badge={stats?.completionRate >= 70 ? 'On Track' : stats?.completionRate > 0 ? 'Needs Attention' : null}
+            badge={stats?.completionRate >= 70 ? t('dashboard.stats.onTrack') : stats?.completionRate > 0 ? t('dashboard.stats.needsAttention') : null}
           />
         </Grid>
       </Grid>
@@ -183,8 +185,8 @@ export default function Dashboard() {
             <CardContent sx={{ p: 2.5 }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
                 <Box>
-                  <Typography variant="subtitle1" fontWeight={700}>Task Distribution</Typography>
-                  <Typography variant="caption" color="text.secondary">By current status</Typography>
+                  <Typography variant="subtitle1" fontWeight={700}>{t('dashboard.charts.taskDistribution')}</Typography>
+                  <Typography variant="caption" color="text.secondary">{t('dashboard.charts.byStatus')}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', gap: 0.75 }}>
                   {Object.entries(STATUS_COLORS).map(([k, v]) => (
@@ -213,8 +215,8 @@ export default function Dashboard() {
           <Card sx={{ height: '100%' }}>
             <CardContent sx={{ p: 2.5 }}>
               <Box sx={{ mb: 2.5 }}>
-                <Typography variant="subtitle1" fontWeight={700}>Project Status</Typography>
-                <Typography variant="caption" color="text.secondary">Portfolio breakdown</Typography>
+                <Typography variant="subtitle1" fontWeight={700}>{t('dashboard.charts.projectStatus')}</Typography>
+                <Typography variant="caption" color="text.secondary">{t('dashboard.charts.portfolioBreakdown')}</Typography>
               </Box>
               {loading ? <Skeleton variant="circular" width={180} height={180} sx={{ mx: 'auto' }} /> : (
                 <>
@@ -250,8 +252,8 @@ export default function Dashboard() {
           <Card sx={{ height: 400, display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ px: 2.5, pt: 2.5, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
-                <Typography variant="subtitle1" fontWeight={700}>Recent Activity</Typography>
-                <Typography variant="caption" color="text.secondary">Team actions across projects</Typography>
+                <Typography variant="subtitle1" fontWeight={700}>{t('dashboard.activity.title')}</Typography>
+                <Typography variant="caption" color="text.secondary">{t('dashboard.activity.subtitle')}</Typography>
               </Box>
             </Box>
             <Divider />
@@ -281,7 +283,7 @@ export default function Dashboard() {
               }
               {!loading && !stats?.recentActivity?.length && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', py: 6 }}>
-                  <Typography color="text.secondary" variant="body2">No activity yet</Typography>
+                  <Typography color="text.secondary" variant="body2">{t('dashboard.activity.empty')}</Typography>
                 </Box>
               )}
             </Box>
@@ -292,11 +294,11 @@ export default function Dashboard() {
           <Card sx={{ height: 400, display: 'flex', flexDirection: 'column' }}>
             <Box sx={{ px: 2.5, pt: 2.5, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box>
-                <Typography variant="subtitle1" fontWeight={700}>Upcoming Deadlines</Typography>
-                <Typography variant="caption" color="text.secondary">Next 7 days</Typography>
+                <Typography variant="subtitle1" fontWeight={700}>{t('dashboard.deadlines.title')}</Typography>
+                <Typography variant="caption" color="text.secondary">{t('dashboard.deadlines.subtitle')}</Typography>
               </Box>
               {stats?.upcomingDeadlines?.length > 0 && (
-                <Chip icon={<Warning sx={{ fontSize: '13px !important' }} />} label={`${stats.upcomingDeadlines.length} due soon`} size="small" sx={{ backgroundColor: '#FFF7ED', color: '#D97706', fontWeight: 700, fontSize: '0.72rem', height: 22, '& .MuiChip-icon': { color: '#D97706' } }} />
+                <Chip icon={<Warning sx={{ fontSize: '13px !important' }} />} label={t('dashboard.deadlines.dueSoon', { count: stats.upcomingDeadlines.length })} size="small" sx={{ backgroundColor: '#FFF7ED', color: '#D97706', fontWeight: 700, fontSize: '0.72rem', height: 22, '& .MuiChip-icon': { color: '#D97706' } }} />
               )}
             </Box>
             <Divider />
@@ -319,7 +321,7 @@ export default function Dashboard() {
                       </Box>
                       <Box sx={{ textAlign: 'right', flexShrink: 0 }}>
                         <Typography variant="caption" fontWeight={800} sx={{ color: isUrgent ? '#EF4444' : '#F59E0B', fontSize: '0.78rem', display: 'block' }}>
-                          {daysLeft <= 0 ? 'Today' : daysLeft === 1 ? 'Tomorrow' : `${daysLeft}d`}
+                          {daysLeft <= 0 ? t('dashboard.deadlines.today') : daysLeft === 1 ? t('dashboard.deadlines.tomorrow') : t('dashboard.deadlines.days', { count: daysLeft })}
                         </Typography>
                         <Typography variant="caption" sx={{ color: '#94A3B8', fontSize: '0.68rem' }}>
                           {format(new Date(task.dueDate), 'MMM d')}
@@ -332,8 +334,8 @@ export default function Dashboard() {
               {!loading && !stats?.upcomingDeadlines?.length && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', py: 6 }}>
                   <CheckCircle sx={{ fontSize: 40, color: '#10B981', mb: 1.5, opacity: 0.7 }} />
-                  <Typography variant="body2" color="text.secondary" fontWeight={600}>All clear!</Typography>
-                  <Typography variant="caption" color="text.secondary">No deadlines in the next 7 days</Typography>
+                  <Typography variant="body2" color="text.secondary" fontWeight={600}>{t('dashboard.deadlines.allClear')}</Typography>
+                  <Typography variant="caption" color="text.secondary">{t('dashboard.deadlines.allClearSub')}</Typography>
                 </Box>
               )}
             </Box>
@@ -345,11 +347,11 @@ export default function Dashboard() {
       <Card>
         <Box sx={{ px: 2.5, pt: 2.5, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
           <Box>
-            <Typography variant="subtitle1" fontWeight={700}>Recent Projects</Typography>
-            <Typography variant="caption" color="text.secondary">Last updated</Typography>
+            <Typography variant="subtitle1" fontWeight={700}>{t('dashboard.recentProjects.title')}</Typography>
+            <Typography variant="caption" color="text.secondary">{t('dashboard.recentProjects.subtitle')}</Typography>
           </Box>
           <Button size="small" endIcon={<ArrowForward sx={{ fontSize: 14 }} />} onClick={() => navigate('/projects')} sx={{ color: '#4F46E5', fontWeight: 600, fontSize: '0.78rem' }}>
-            View all
+            {t('dashboard.recentProjects.viewAll')}
           </Button>
         </Box>
         <Divider />
@@ -368,7 +370,7 @@ export default function Dashboard() {
                   <StatusChip status={proj.status} />
                   <Box sx={{ mt: 1.5 }}>
                     <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
-                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>Progress</Typography>
+                      <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.7rem' }}>{t('common.progress')}</Typography>
                       <Typography variant="caption" fontWeight={700} sx={{ fontSize: '0.72rem', color: proj.color || '#4F46E5' }}>{proj.progress?.percentage || 0}%</Typography>
                     </Box>
                     <LinearProgress variant="determinate" value={proj.progress?.percentage || 0} sx={{ height: 4, '& .MuiLinearProgress-bar': { backgroundColor: proj.color || '#4F46E5' } }} />
@@ -379,7 +381,7 @@ export default function Dashboard() {
           }
           {!loading && !stats?.recentProjects?.length && (
             <Box sx={{ py: 3, px: 2, color: 'text.secondary' }}>
-              <Typography variant="body2">No projects yet</Typography>
+              <Typography variant="body2">{t('dashboard.recentProjects.empty')}</Typography>
             </Box>
           )}
         </Box>

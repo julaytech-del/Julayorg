@@ -9,52 +9,31 @@ export async function generateTasks(planAnalysis) {
 
   const message = await client.messages.create({
     model: 'claude-sonnet-4-6',
-    max_tokens: 4096,
-    system: `You are an expert project manager. Generate a complete project task breakdown and return ONLY valid JSON with no markdown or explanation.`,
+    max_tokens: 8192,
+    system: `You are an expert project manager. Generate a complete project task breakdown and return ONLY valid JSON with no markdown, no explanation, no code blocks. Just raw JSON.`,
     messages: [{
       role: 'user',
-      content: `Generate a complete project breakdown for: "${planAnalysis.projectName}"
+      content: `Generate a project breakdown for: "${planAnalysis.projectName}"
 Industry: ${planAnalysis.industry}
 Complexity: ${planAnalysis.complexity}
 Duration: ${planAnalysis.estimatedDurationWeeks} weeks
 Key areas: ${planAnalysis.keyAreas.join(', ')}
 
-Return JSON with this exact structure:
-{
-  "goals": [
-    {
-      "title": "Goal/Phase Name",
-      "description": "What this phase accomplishes",
-      "order": 1,
-      "dueOffsetWeeks": 2,
-      "color": "#hexcolor",
-      "tasks": [
-        {
-          "title": "Task title",
-          "description": "Detailed task description",
-          "type": "feature|design|research|planning|meeting|review|deployment|content|testing|bug|other",
-          "priority": "critical|high|medium|low",
-          "estimatedHours": 8,
-          "skillsRequired": ["skill1"],
-          "tools": [{"name": "ToolName", "category": "design|development|testing|analytics|other", "url": "url.com", "description": "why this tool"}],
-          "subtasks": [{"title": "subtask description"}],
-          "dueOffsetDays": 7,
-          "departmentHint": "Design|Development|Marketing|etc"
-        }
-      ]
-    }
-  ]
-}
+Return ONLY this JSON structure (no markdown, no explanation):
+{"goals":[{"title":"string","description":"string","order":1,"dueOffsetWeeks":2,"color":"#6366F1","tasks":[{"title":"string","description":"string","type":"feature","priority":"high","estimatedHours":8,"skillsRequired":["skill"],"tools":[{"name":"Tool","category":"development","url":"url.com","description":"why"}],"subtasks":[{"title":"subtask"}],"dueOffsetDays":7,"departmentHint":"Development"}]}]}
 
-Create ${Math.min(Math.max(planAnalysis.estimatedDurationWeeks / 2, 4), 7)} goals/phases.
-Each goal should have 3-6 tasks. Total tasks: 20-35.
-Make tasks specific, actionable, and realistic for ${planAnalysis.industry} industry.`
+Create 5 goals. Each goal: 3-4 tasks. Keep descriptions concise (under 100 chars). Total tasks: 15-20.`
     }]
   });
 
   const content = message.content[0].text.trim();
-  const jsonMatch = content.match(/\{[\s\S]*\}/);
-  return JSON.parse(jsonMatch ? jsonMatch[0] : content);
+  try {
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    return JSON.parse(jsonMatch ? jsonMatch[0] : content);
+  } catch (e) {
+    console.error('AI JSON parse error, falling back to mock:', e.message);
+    return getMockTasks(planAnalysis);
+  }
 }
 
 function getMockTasks(planAnalysis) {

@@ -1,0 +1,404 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projekte",
+    "team": "Team",
+    "departments": "Abteilungen",
+    "aiStudio": "KI-Studio",
+    "sections": {
+      "workspace": "Arbeitsbereich",
+      "intelligence": "Intelligenz"
+    },
+    "signOut": "Abmelden",
+    "orgIndustry": "Arbeitsbereich"
+  },
+  "header": {
+    "search": "Projekte, Aufgaben, Personen suchen...",
+    "aiGenerate": "KI Generieren",
+    "notifications": "Benachrichtigungen",
+    "profile": "Mein Profil",
+    "settings": "Einstellungen",
+    "signOut": "Abmelden",
+    "pages": {
+      "/": { "title": "Dashboard", "subtitle": "Übersicht Ihres Arbeitsbereichs" },
+      "/projects": { "title": "Projekte", "subtitle": "Alle Projekte verwalten und verfolgen" },
+      "/team": { "title": "Team", "subtitle": "Mitglieder und Leistung" },
+      "/departments": { "title": "Abteilungen", "subtitle": "Organisationsstruktur" },
+      "/ai": { "title": "KI-Studio", "subtitle": "Intelligente Projektautomatisierung" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "Willkommen zurück",
+      "subtitle": "Melden Sie sich in Ihrem Arbeitsbereich an",
+      "email": "E-Mail-Adresse",
+      "password": "Passwort",
+      "emailPlaceholder": "sie@unternehmen.de",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Anmelden",
+      "submitting": "Anmeldung läuft...",
+      "noAccount": "Kein Konto?",
+      "createWorkspace": "Arbeitsbereich erstellen",
+      "demoTitle": "Demo-Konto — Klicken zum Ausfüllen",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "oder Demo verwenden",
+      "features": {
+        "f1": "Vollständige Projektpläne in Sekunden erstellen",
+        "f2": "KI weist Aufgaben basierend auf Teamfähigkeiten zu",
+        "f3": "Tägliche Standup-Berichte und Leistungsanalysen"
+      },
+      "tagline": "Ihre KI-gestützte Arbeitsmaschine",
+      "taglineDesc": "Beschreiben Sie ein Projekt in einfacher Sprache. Die KI erstellt sofort einen vollständigen Plan – Ziele, Aufgaben, Teamzuweisungen und Zeitpläne."
+    },
+    "register": {
+      "title": "Arbeitsbereich erstellen",
+      "name": "Vollständiger Name",
+      "email": "E-Mail",
+      "password": "Passwort",
+      "orgName": "Organisationsname",
+      "industry": "Branche",
+      "submit": "Arbeitsbereich erstellen",
+      "hasAccount": "Bereits ein Konto?",
+      "signIn": "Anmelden"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Guten Morgen",
+      "afternoon": "Guten Tag",
+      "evening": "Guten Abend"
+    },
+    "loading": "Arbeitsbereich wird geladen...",
+    "activeTasks": "{{count}} Aufgaben in Bearbeitung",
+    "overdueCount": "{{count}} überfällig",
+    "activeProjects": "{{count}} aktive Projekte",
+    "stats": {
+      "totalProjects": "Projekte gesamt",
+      "activeTasks": "Aktive Aufgaben",
+      "teamMembers": "Teammitglieder",
+      "completionRate": "Abschlussrate",
+      "active": "{{count}} aktiv",
+      "activeCompleted": "{{active}} aktiv · {{completed}} abgeschlossen",
+      "overdueTotal": "{{overdue}} überfällig · {{total}} gesamt",
+      "activeToday": "{{count}} heute aktiv",
+      "tasksCompleted": "{{count}} Aufgaben abgeschlossen",
+      "running": "{{count}} laufend",
+      "overdueBadge": "{{count}} überfällig",
+      "onTrack": "Im Zeitplan",
+      "needsAttention": "Aufmerksamkeit erforderlich"
+    },
+    "charts": {
+      "taskDistribution": "Aufgabenverteilung",
+      "byStatus": "Nach aktuellem Status",
+      "projectStatus": "Projektstatus",
+      "portfolioBreakdown": "Portfolio-Aufschlüsselung"
+    },
+    "activity": {
+      "title": "Letzte Aktivitäten",
+      "subtitle": "Teamaktionen in Projekten",
+      "empty": "Noch keine Aktivitäten"
+    },
+    "deadlines": {
+      "title": "Bevorstehende Fristen",
+      "subtitle": "Nächste 7 Tage",
+      "dueSoon": "{{count}} bald fällig",
+      "today": "Heute",
+      "tomorrow": "Morgen",
+      "days": "{{count}}T",
+      "allClear": "Alles klar!",
+      "allClearSub": "Keine Fristen in den nächsten 7 Tagen"
+    },
+    "recentProjects": {
+      "title": "Letzte Projekte",
+      "subtitle": "Zuletzt aktualisiert",
+      "viewAll": "Alle anzeigen",
+      "empty": "Noch keine Projekte"
+    },
+    "aiStudio": "KI-Studio",
+    "projects": "Projekte"
+  },
+  "projects": {
+    "title": "Projekte",
+    "subtitle": "{{total}} Projekte · {{active}} aktiv",
+    "newProject": "Neues Projekt",
+    "aiGenerate": "KI Generieren",
+    "search": "Projekte suchen...",
+    "filters": {
+      "all": "Alle Projekte",
+      "planning": "Planung",
+      "active": "Aktiv",
+      "on_hold": "Pausiert",
+      "completed": "Abgeschlossen"
+    },
+    "card": {
+      "noDescription": "Keine Beschreibung",
+      "progress": "Fortschritt",
+      "due": "Fällig {{date}}",
+      "ai": "KI"
+    },
+    "menu": {
+      "open": "Projekt öffnen",
+      "edit": "Details bearbeiten",
+      "delete": "Löschen"
+    },
+    "empty": {
+      "noMatch": "Keine passenden Projekte",
+      "noMatchSub": "Suche oder Filter anpassen",
+      "clearFilters": "Filter löschen",
+      "start": "Erstes Projekt starten",
+      "startSub": "Manuell erstellen oder KI einen vollständigen Plan generieren lassen.",
+      "manual": "Manuell einrichten"
+    },
+    "create": {
+      "title": "Neues Projekt",
+      "subtitle": "Manuell erstellen oder KI sofort einen vollständigen Plan generieren lassen",
+      "manual": "Manuell einrichten",
+      "ai": "KI Generieren",
+      "name": "Projektname *",
+      "namePlaceholder": "z.B. Lumex Company Plattform",
+      "description": "Beschreibung",
+      "descPlaceholder": "Kurze Projektbeschreibung...",
+      "startDate": "Startdatum",
+      "endDate": "Enddatum",
+      "priority": "Priorität",
+      "color": "Projektfarbe",
+      "cancel": "Abbrechen",
+      "submit": "Projekt erstellen",
+      "priorities": {
+        "low": "Niedrig",
+        "medium": "Mittel",
+        "high": "Hoch",
+        "critical": "Kritisch"
+      }
+    },
+    "aiCreate": {
+      "examples": "Schnellbeispiele",
+      "placeholder": "Beschreiben Sie Ihr Projekt im Detail...",
+      "startDate": "Startdatum (optional)",
+      "generating": "Plan wird generiert...",
+      "generate": "Vollständigen Projektplan generieren",
+      "loadingMsg": "KI erstellt einen vollständigen Projektplan – Ziele, Aufgaben, Zeitplan und Teamzuweisungen...",
+      "successTitle": "Projekt erfolgreich erstellt!",
+      "moreTasks": "+{{count}} weitere Aufgaben",
+      "close": "Schließen",
+      "viewProject": "Projekt anzeigen",
+      "steps": {
+        "s1": "Projektbeschreibung wird analysiert...",
+        "s2": "Branche und Technologien werden erkannt...",
+        "s3": "Projektstruktur wird erstellt...",
+        "s4": "Ziele und Meilensteine werden generiert...",
+        "s5": "Aufgaben werden aufgeteilt...",
+        "s6": "Teammitglieder werden zugewiesen...",
+        "s7": "Zeitplan wird berechnet..."
+      },
+      "stats": {
+        "industry": "Branche: {{value}}",
+        "goals": "{{count}} Ziele",
+        "tasks": "{{count}} Aufgaben",
+        "assigned": "{{count}} zugewiesen"
+      }
+    },
+    "delete": {
+      "title": "Projekt löschen",
+      "message": "\"{{name}}\" löschen? Alle Aufgaben und Ziele werden dauerhaft entfernt."
+    },
+    "snackbar": {
+      "created": "Projekt erfolgreich erstellt!",
+      "deleted": "Projekt gelöscht",
+      "aiSuccess": "Projektplan erfolgreich generiert!",
+      "aiFailed": "KI-Generierung fehlgeschlagen"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "KI Projekt-Gehirn",
+      "subtitle": "Beschreiben Sie ein Projekt und die KI erstellt einen vollständigen Arbeitsplan"
+    },
+    "generate": {
+      "title": "Vollständigen Projektplan generieren",
+      "subtitle": "Beschreiben Sie Ihr Projekt in natürlicher Sprache. KI erkennt die Branche, erstellt Abteilungen, generiert Aufgaben, weist das Team zu und erstellt einen Zeitplan.",
+      "placeholder": "Beschreiben Sie Ihr Projekt im Detail...",
+      "startDate": "Projektstartdatum",
+      "generate": "Vollständigen Projektplan generieren",
+      "generating": "Wird generiert...",
+      "examples": {
+        "e1": "Unternehmenswebsite mit Blog und CMS erstellen",
+        "e2": "E-Commerce-App für iOS und Android launchen",
+        "e3": "Patientenmanagementsystem für ein Krankenhaus entwickeln",
+        "e4": "Marketingkampagne für einen Produktlaunch erstellen"
+      }
+    },
+    "result": {
+      "success": "Plan generiert",
+      "open": "Projekt öffnen",
+      "teamAssignments": "Teamzuweisungen ({{count}})"
+    },
+    "tools": {
+      "title": "Schnelle KI-Tools",
+      "standup": {
+        "title": "Täglicher Standup",
+        "select": "Projekt auswählen",
+        "generate": "Standup generieren",
+        "generating": "Generierung..."
+      },
+      "performance": {
+        "title": "Leistungsanalyse",
+        "analyze": "Analysieren",
+        "score": "Punktzahl",
+        "onTrack": "Im Zeitplan",
+        "atRisk": "Gefährdet"
+      },
+      "replan": {
+        "title": "Automatische Neuplanung",
+        "reason": "Grund für Neuplanung",
+        "reasonPlaceholder": "z.B. Ressource nicht verfügbar, Scope-Änderung",
+        "replan": "Projekt neu planen",
+        "newEnd": "Neues Ende: {{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "Team",
+    "search": "Mitglieder suchen...",
+    "stats": {
+      "total": "Mitglieder gesamt",
+      "active": "Jetzt aktiv",
+      "avgPerformance": "Durchschnittsleistung",
+      "departments": "Abteilungen"
+    },
+    "card": {
+      "performance": "Leistung",
+      "skills": "Fähigkeiten",
+      "viewProfile": "Profil anzeigen",
+      "status": { "active": "Aktiv", "away": "Abwesend", "offline": "Offline" }
+    }
+  },
+  "departments": {
+    "title": "Abteilungen",
+    "new": "Neue Abteilung",
+    "edit": "Bearbeiten",
+    "delete": "Löschen",
+    "members": "{{count}} Mitglieder",
+    "head": "Leiter: {{name}}",
+    "noHead": "Kein Leiter zugewiesen",
+    "form": {
+      "name": "Abteilungsname",
+      "description": "Beschreibung",
+      "color": "Farbe",
+      "cancel": "Abbrechen",
+      "save": "Speichern",
+      "create": "Abteilung erstellen"
+    }
+  },
+  "kanban": {
+    "title": "Kanban-Board",
+    "columns": {
+      "planned": "Geplant",
+      "in_progress": "In Bearbeitung",
+      "blocked": "Blockiert",
+      "review": "Überprüfung",
+      "done": "Erledigt"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}} Unteraufgaben",
+      "comments": "{{count}} Kommentare"
+    }
+  },
+  "timeline": {
+    "title": "Zeitplan",
+    "today": "Heute",
+    "week": "Woche",
+    "month": "Monat",
+    "noTasks": "Keine Aufgaben mit Fälligkeitsdaten"
+  },
+  "task": {
+    "status": {
+      "planned": "Geplant",
+      "in_progress": "In Bearbeitung",
+      "blocked": "Blockiert",
+      "review": "Überprüfung",
+      "done": "Erledigt"
+    },
+    "priority": {
+      "critical": "Kritisch",
+      "high": "Hoch",
+      "medium": "Mittel",
+      "low": "Niedrig"
+    },
+    "type": {
+      "feature": "Funktion",
+      "design": "Design",
+      "research": "Forschung",
+      "planning": "Planung",
+      "meeting": "Besprechung",
+      "review": "Überprüfung",
+      "deployment": "Bereitstellung",
+      "content": "Inhalt",
+      "testing": "Testen",
+      "bug": "Fehler",
+      "other": "Sonstige"
+    },
+    "detail": {
+      "title": "Aufgabendetails",
+      "status": "Status",
+      "priority": "Priorität",
+      "type": "Typ",
+      "assignees": "Zugewiesen an",
+      "dueDate": "Fälligkeitsdatum",
+      "estimatedHours": "Geschätzte Stunden",
+      "subtasks": "Unteraufgaben",
+      "comments": "Kommentare",
+      "addComment": "Kommentar hinzufügen...",
+      "post": "Senden",
+      "noSubtasks": "Keine Unteraufgaben",
+      "noComments": "Noch keine Kommentare"
+    }
+  },
+  "common": {
+    "loading": "Wird geladen...",
+    "save": "Speichern",
+    "cancel": "Abbrechen",
+    "delete": "Löschen",
+    "edit": "Bearbeiten",
+    "create": "Erstellen",
+    "close": "Schließen",
+    "open": "Öffnen",
+    "back": "Zurück",
+    "next": "Weiter",
+    "confirm": "Bestätigen",
+    "search": "Suchen",
+    "filter": "Filtern",
+    "noData": "Keine Daten verfügbar",
+    "progress": "Fortschritt",
+    "actions": "Aktionen",
+    "name": "Name",
+    "description": "Beschreibung",
+    "date": "Datum",
+    "or": "oder"
+  },
+  "errors": {
+    "connectionError": "Keine Verbindung zum Server. Bitte Backend prüfen.",
+    "timeout": "Anfrage hat zu lange gedauert. Bitte erneut versuchen.",
+    "loginFailed": "Anmeldung fehlgeschlagen. Bitte Zugangsdaten prüfen.",
+    "generic": "Ein Fehler ist aufgetreten. Bitte erneut versuchen."
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "Übersicht",
+      "goals": "Ziele & Aufgaben",
+      "team": "Team"
+    },
+    "overallProgress": "Gesamtfortschritt",
+    "goalsProgress": "Zielfortschritt",
+    "totalTasks": "Aufgaben gesamt",
+    "completed": "Abgeschlossen",
+    "inProgress": "In Bearbeitung",
+    "blocked": "Blockiert",
+    "addGoal": "Ziel hinzufügen",
+    "addTask": "Aufgabe hinzufügen",
+    "standup": "Täglicher KI-Standup-Bericht",
+    "performance": "Leistungsanalyse",
+    "overallScore": "Gesamtpunktzahl",
+    "riskLevel": "Risikoniveau"
+  }
+}

@@ -1,0 +1,408 @@
+{
+  "nav": {
+    "dashboard": "Dashboard",
+    "projects": "Projects",
+    "team": "Team",
+    "departments": "Departments",
+    "aiStudio": "AI Studio",
+    "sections": {
+      "workspace": "Workspace",
+      "intelligence": "Intelligence"
+    },
+    "signOut": "Sign Out",
+    "orgIndustry": "workspace"
+  },
+  "header": {
+    "search": "Search projects, tasks, people...",
+    "aiGenerate": "AI Generate",
+    "notifications": "Notifications",
+    "profile": "My Profile",
+    "settings": "Settings",
+    "signOut": "Sign Out",
+    "pages": {
+      "/": { "title": "Dashboard", "subtitle": "Overview of your workspace" },
+      "/projects": { "title": "Projects", "subtitle": "Manage and track all projects" },
+      "/team": { "title": "Team", "subtitle": "Members and performance" },
+      "/departments": { "title": "Departments", "subtitle": "Organizational structure" },
+      "/ai": { "title": "AI Studio", "subtitle": "Intelligent project automation" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "Welcome back",
+      "subtitle": "Sign in to your workspace",
+      "email": "Email Address",
+      "password": "Password",
+      "emailPlaceholder": "you@company.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Sign In",
+      "submitting": "Signing in...",
+      "noAccount": "No account?",
+      "createWorkspace": "Create workspace",
+      "demoTitle": "Demo Account — Click to fill",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "or use demo",
+      "features": {
+        "f1": "Generate full project plans in seconds",
+        "f2": "AI assigns tasks based on team skills",
+        "f3": "Daily standup reports & performance analysis"
+      },
+      "tagline": "Your AI-powered work engine",
+      "taglineDesc": "Describe any project in plain language. AI generates a complete plan — goals, tasks, team assignments, and timelines — instantly."
+    },
+    "register": {
+      "title": "Create your workspace",
+      "name": "Full Name",
+      "email": "Email",
+      "password": "Password",
+      "orgName": "Organization Name",
+      "industry": "Industry",
+      "submit": "Create Workspace",
+      "hasAccount": "Already have an account?",
+      "signIn": "Sign in"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Good morning",
+      "afternoon": "Good afternoon",
+      "evening": "Good evening"
+    },
+    "loading": "Loading your workspace...",
+    "activeTasks": "{{count}} tasks in progress",
+    "overdueCount": "{{count}} overdue",
+    "activeProjects": "{{count}} active projects",
+    "stats": {
+      "totalProjects": "Total Projects",
+      "activeTasks": "Active Tasks",
+      "teamMembers": "Team Members",
+      "completionRate": "Completion Rate",
+      "active": "{{count}} active",
+      "activeCompleted": "{{active}} active · {{completed}} completed",
+      "overdueTotal": "{{overdue}} overdue · {{total}} total",
+      "activeToday": "{{count}} active today",
+      "tasksCompleted": "{{count}} tasks completed",
+      "running": "{{count}} Running",
+      "overdueBadge": "{{count}} Overdue",
+      "onTrack": "On Track",
+      "needsAttention": "Needs Attention"
+    },
+    "charts": {
+      "taskDistribution": "Task Distribution",
+      "byStatus": "By current status",
+      "projectStatus": "Project Status",
+      "portfolioBreakdown": "Portfolio breakdown"
+    },
+    "activity": {
+      "title": "Recent Activity",
+      "subtitle": "Team actions across projects",
+      "empty": "No activity yet"
+    },
+    "deadlines": {
+      "title": "Upcoming Deadlines",
+      "subtitle": "Next 7 days",
+      "dueSoon": "{{count}} due soon",
+      "today": "Today",
+      "tomorrow": "Tomorrow",
+      "days": "{{count}}d",
+      "allClear": "All clear!",
+      "allClearSub": "No deadlines in the next 7 days"
+    },
+    "recentProjects": {
+      "title": "Recent Projects",
+      "subtitle": "Last updated",
+      "viewAll": "View all",
+      "empty": "No projects yet"
+    },
+    "aiStudio": "AI Studio",
+    "projects": "Projects"
+  },
+  "projects": {
+    "title": "Projects",
+    "subtitle": "{{total}} projects · {{active}} active",
+    "newProject": "New Project",
+    "aiGenerate": "AI Generate",
+    "search": "Search projects...",
+    "filters": {
+      "all": "All Projects",
+      "planning": "Planning",
+      "active": "Active",
+      "on_hold": "On Hold",
+      "completed": "Completed"
+    },
+    "card": {
+      "noDescription": "No description",
+      "progress": "Progress",
+      "due": "Due {{date}}",
+      "ai": "AI"
+    },
+    "menu": {
+      "open": "Open Project",
+      "edit": "Edit Details",
+      "delete": "Delete"
+    },
+    "empty": {
+      "noMatch": "No matching projects",
+      "noMatchSub": "Try adjusting your search or filter",
+      "clearFilters": "Clear filters",
+      "start": "Start your first project",
+      "startSub": "Create a project manually or let AI generate a complete plan from a simple description.",
+      "manual": "Manual Setup"
+    },
+    "create": {
+      "title": "New Project",
+      "subtitle": "Create manually or let AI generate a complete plan instantly",
+      "manual": "Manual Setup",
+      "ai": "AI Generate",
+      "name": "Project Name *",
+      "namePlaceholder": "e.g., Lumex Company Platform",
+      "description": "Description",
+      "descPlaceholder": "Brief description of the project...",
+      "startDate": "Start Date",
+      "endDate": "End Date",
+      "priority": "Priority",
+      "color": "Project Color",
+      "cancel": "Cancel",
+      "submit": "Create Project",
+      "priorities": {
+        "low": "Low",
+        "medium": "Medium",
+        "high": "High",
+        "critical": "Critical"
+      }
+    },
+    "aiCreate": {
+      "examples": "Quick Examples",
+      "placeholder": "Describe your project in detail... e.g., 'Build a DevOps platform for Lumex Company to manage cloud infrastructure, CI/CD pipelines, monitoring dashboards, and team collaboration tools.'",
+      "startDate": "Start Date (optional)",
+      "generating": "Generating Plan...",
+      "generate": "Generate Full Project Plan",
+      "loadingMsg": "AI is building a complete project plan — goals, tasks, timeline, and team assignments...",
+      "successTitle": "Project Generated Successfully!",
+      "moreTasks": "+{{count}} more tasks",
+      "close": "Close",
+      "viewProject": "View Project",
+      "steps": {
+        "s1": "Analyzing project description...",
+        "s2": "Detecting industry and tech stack...",
+        "s3": "Creating project structure...",
+        "s4": "Generating goals and milestones...",
+        "s5": "Breaking down into tasks...",
+        "s6": "Assigning team members...",
+        "s7": "Calculating timeline..."
+      },
+      "stats": {
+        "industry": "Industry: {{value}}",
+        "goals": "{{count}} Goals",
+        "tasks": "{{count}} Tasks",
+        "assigned": "{{count}} Assigned"
+      }
+    },
+    "delete": {
+      "title": "Delete Project",
+      "message": "Delete \"{{name}}\"? This will permanently remove all tasks and goals."
+    },
+    "snackbar": {
+      "created": "Project created successfully!",
+      "deleted": "Project deleted",
+      "aiSuccess": "Project plan generated successfully!",
+      "aiFailed": "AI generation failed"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "AI Project Brain",
+      "subtitle": "Describe any project and AI will build a complete work plan"
+    },
+    "generate": {
+      "title": "Generate Full Project Plan",
+      "subtitle": "Describe your project in natural language. AI will detect the industry, create departments, generate tasks, assign team, and build a timeline.",
+      "placeholder": "Describe your project in detail...",
+      "startDate": "Project Start Date",
+      "generate": "Generate Full Project Plan",
+      "generating": "Generating Plan...",
+      "examples": {
+        "e1": "Build a company website with blog and CMS",
+        "e2": "Launch an e-commerce mobile app for iOS and Android",
+        "e3": "Develop a patient management system for a hospital",
+        "e4": "Create a marketing campaign for a product launch"
+      }
+    },
+    "result": {
+      "success": "Plan Generated",
+      "open": "Open Project",
+      "teamAssignments": "Team Assignments ({{count}})"
+    },
+    "tools": {
+      "title": "Quick AI Tools",
+      "standup": {
+        "title": "Daily Standup",
+        "select": "Select Project",
+        "generate": "Generate Standup",
+        "generating": "Generating..."
+      },
+      "performance": {
+        "title": "Performance Analysis",
+        "analyze": "Analyze",
+        "score": "Score",
+        "onTrack": "On Track",
+        "atRisk": "At Risk"
+      },
+      "replan": {
+        "title": "Auto Re-Plan",
+        "reason": "Reason for replan",
+        "reasonPlaceholder": "e.g., Resource unavailable, scope change",
+        "replan": "Re-Plan Project",
+        "newEnd": "New end: {{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "Team",
+    "search": "Search members...",
+    "stats": {
+      "total": "Total Members",
+      "active": "Active Now",
+      "avgPerformance": "Avg Performance",
+      "departments": "Departments"
+    },
+    "card": {
+      "performance": "Performance",
+      "skills": "Skills",
+      "viewProfile": "View Profile",
+      "status": {
+        "active": "Active",
+        "away": "Away",
+        "offline": "Offline"
+      }
+    }
+  },
+  "departments": {
+    "title": "Departments",
+    "new": "New Department",
+    "edit": "Edit",
+    "delete": "Delete",
+    "members": "{{count}} members",
+    "head": "Head: {{name}}",
+    "noHead": "No head assigned",
+    "form": {
+      "name": "Department Name",
+      "description": "Description",
+      "color": "Color",
+      "cancel": "Cancel",
+      "save": "Save",
+      "create": "Create Department"
+    }
+  },
+  "kanban": {
+    "title": "Kanban Board",
+    "columns": {
+      "planned": "Planned",
+      "in_progress": "In Progress",
+      "blocked": "Blocked",
+      "review": "Review",
+      "done": "Done"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}} subtasks",
+      "comments": "{{count}} comments"
+    }
+  },
+  "timeline": {
+    "title": "Timeline",
+    "today": "Today",
+    "week": "Week",
+    "month": "Month",
+    "noTasks": "No tasks with due dates"
+  },
+  "task": {
+    "status": {
+      "planned": "Planned",
+      "in_progress": "In Progress",
+      "blocked": "Blocked",
+      "review": "Review",
+      "done": "Done"
+    },
+    "priority": {
+      "critical": "Critical",
+      "high": "High",
+      "medium": "Medium",
+      "low": "Low"
+    },
+    "type": {
+      "feature": "Feature",
+      "design": "Design",
+      "research": "Research",
+      "planning": "Planning",
+      "meeting": "Meeting",
+      "review": "Review",
+      "deployment": "Deployment",
+      "content": "Content",
+      "testing": "Testing",
+      "bug": "Bug",
+      "other": "Other"
+    },
+    "detail": {
+      "title": "Task Details",
+      "status": "Status",
+      "priority": "Priority",
+      "type": "Type",
+      "assignees": "Assignees",
+      "dueDate": "Due Date",
+      "estimatedHours": "Est. Hours",
+      "subtasks": "Subtasks",
+      "comments": "Comments",
+      "addComment": "Add a comment...",
+      "post": "Post",
+      "noSubtasks": "No subtasks",
+      "noComments": "No comments yet"
+    }
+  },
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "create": "Create",
+    "close": "Close",
+    "open": "Open",
+    "back": "Back",
+    "next": "Next",
+    "confirm": "Confirm",
+    "search": "Search",
+    "filter": "Filter",
+    "noData": "No data available",
+    "progress": "Progress",
+    "actions": "Actions",
+    "name": "Name",
+    "description": "Description",
+    "date": "Date",
+    "or": "or"
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "Overview",
+      "goals": "Goals & Tasks",
+      "team": "Team"
+    },
+    "overallProgress": "Overall Progress",
+    "goalsProgress": "Goals Progress",
+    "totalTasks": "Total Tasks",
+    "completed": "Completed",
+    "inProgress": "In Progress",
+    "blocked": "Blocked",
+    "addGoal": "Add Goal",
+    "addTask": "Add Task",
+    "standup": "Daily AI Standup Report",
+    "performance": "Performance Analysis",
+    "overallScore": "Overall Score",
+    "riskLevel": "Risk Level"
+  },
+  "errors": {
+    "connectionError": "Cannot connect to server. Please make sure the backend is running.",
+    "timeout": "The request took too long. Please try again.",
+    "loginFailed": "Login failed. Please check your credentials.",
+    "generic": "Something went wrong. Please try again."
+  }
+}

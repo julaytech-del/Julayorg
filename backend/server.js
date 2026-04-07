@@ -6,7 +6,7 @@ const PORT = process.env.PORT || 5000;
 
 connectDB().then(() => {
   app.listen(PORT, () => {
-    console.log(`WorkOS Backend running on port ${PORT}`);
+    console.log(`Julay Backend running on port ${PORT}`);
     console.log(`Environment: ${process.env.NODE_ENV}`);
   });
 });

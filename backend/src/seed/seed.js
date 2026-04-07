@@ -10,7 +10,7 @@ import Goal from '../models/Goal.js';
 import Task from '../models/Task.js';
 import ActivityLog from '../models/ActivityLog.js';
 
-const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/work-os';
+const MONGO_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/julay';
 
 async function seed() {
   await mongoose.connect(MONGO_URI);

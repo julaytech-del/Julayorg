@@ -1,0 +1,404 @@
+{
+  "nav": {
+    "dashboard": "仪表板",
+    "projects": "项目",
+    "team": "团队",
+    "departments": "部门",
+    "aiStudio": "AI工作室",
+    "sections": {
+      "workspace": "工作空间",
+      "intelligence": "智能"
+    },
+    "signOut": "退出登录",
+    "orgIndustry": "工作空间"
+  },
+  "header": {
+    "search": "搜索项目、任务、人员...",
+    "aiGenerate": "AI生成",
+    "notifications": "通知",
+    "profile": "我的资料",
+    "settings": "设置",
+    "signOut": "退出登录",
+    "pages": {
+      "/": { "title": "仪表板", "subtitle": "工作空间概览" },
+      "/projects": { "title": "项目", "subtitle": "管理和跟踪所有项目" },
+      "/team": { "title": "团队", "subtitle": "成员与绩效" },
+      "/departments": { "title": "部门", "subtitle": "组织结构" },
+      "/ai": { "title": "AI工作室", "subtitle": "智能项目自动化" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "欢迎回来",
+      "subtitle": "登录您的工作空间",
+      "email": "电子邮箱",
+      "password": "密码",
+      "emailPlaceholder": "you@company.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "登录",
+      "submitting": "登录中...",
+      "noAccount": "没有账户？",
+      "createWorkspace": "创建工作空间",
+      "demoTitle": "演示账户 — 点击填写",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "或使用演示",
+      "features": {
+        "f1": "几秒内生成完整项目计划",
+        "f2": "AI根据团队技能分配任务",
+        "f3": "每日站会报告和绩效分析"
+      },
+      "tagline": "您的AI驱动工作引擎",
+      "taglineDesc": "用简单语言描述任何项目。AI立即生成完整计划 — 目标、任务、团队分配和时间表。"
+    },
+    "register": {
+      "title": "创建您的工作空间",
+      "name": "全名",
+      "email": "电子邮箱",
+      "password": "密码",
+      "orgName": "组织名称",
+      "industry": "行业",
+      "submit": "创建工作空间",
+      "hasAccount": "已有账户？",
+      "signIn": "登录"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "早上好",
+      "afternoon": "下午好",
+      "evening": "晚上好"
+    },
+    "loading": "正在加载工作空间...",
+    "activeTasks": "{{count}}个任务进行中",
+    "overdueCount": "{{count}}个已逾期",
+    "activeProjects": "{{count}}个活跃项目",
+    "stats": {
+      "totalProjects": "项目总数",
+      "activeTasks": "活跃任务",
+      "teamMembers": "团队成员",
+      "completionRate": "完成率",
+      "active": "{{count}}个活跃",
+      "activeCompleted": "{{active}}个活跃 · {{completed}}个已完成",
+      "overdueTotal": "{{overdue}}个逾期 · {{total}}个总计",
+      "activeToday": "今日{{count}}个活跃",
+      "tasksCompleted": "{{count}}个任务已完成",
+      "running": "{{count}}个运行中",
+      "overdueBadge": "{{count}}个逾期",
+      "onTrack": "按时进行",
+      "needsAttention": "需要关注"
+    },
+    "charts": {
+      "taskDistribution": "任务分布",
+      "byStatus": "按当前状态",
+      "projectStatus": "项目状态",
+      "portfolioBreakdown": "投资组合细分"
+    },
+    "activity": {
+      "title": "近期动态",
+      "subtitle": "团队在项目中的操作",
+      "empty": "暂无动态"
+    },
+    "deadlines": {
+      "title": "即将到来的截止日期",
+      "subtitle": "未来7天",
+      "dueSoon": "{{count}}个即将到期",
+      "today": "今天",
+      "tomorrow": "明天",
+      "days": "{{count}}天",
+      "allClear": "一切正常！",
+      "allClearSub": "未来7天内没有截止日期"
+    },
+    "recentProjects": {
+      "title": "最近项目",
+      "subtitle": "最后更新",
+      "viewAll": "查看全部",
+      "empty": "暂无项目"
+    },
+    "aiStudio": "AI工作室",
+    "projects": "项目"
+  },
+  "projects": {
+    "title": "项目",
+    "subtitle": "{{total}}个项目 · {{active}}个活跃",
+    "newProject": "新建项目",
+    "aiGenerate": "AI生成",
+    "search": "搜索项目...",
+    "filters": {
+      "all": "所有项目",
+      "planning": "规划中",
+      "active": "活跃",
+      "on_hold": "暂停",
+      "completed": "已完成"
+    },
+    "card": {
+      "noDescription": "无描述",
+      "progress": "进度",
+      "due": "{{date}}截止",
+      "ai": "AI"
+    },
+    "menu": {
+      "open": "打开项目",
+      "edit": "编辑详情",
+      "delete": "删除"
+    },
+    "empty": {
+      "noMatch": "没有匹配的项目",
+      "noMatchSub": "请调整搜索或筛选条件",
+      "clearFilters": "清除筛选",
+      "start": "开始您的第一个项目",
+      "startSub": "手动创建或让AI从简单描述生成完整计划。",
+      "manual": "手动设置"
+    },
+    "create": {
+      "title": "新建项目",
+      "subtitle": "手动创建或让AI立即生成完整计划",
+      "manual": "手动设置",
+      "ai": "AI生成",
+      "name": "项目名称 *",
+      "namePlaceholder": "例如：Lumex Company平台",
+      "description": "描述",
+      "descPlaceholder": "项目简短描述...",
+      "startDate": "开始日期",
+      "endDate": "结束日期",
+      "priority": "优先级",
+      "color": "项目颜色",
+      "cancel": "取消",
+      "submit": "创建项目",
+      "priorities": {
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "critical": "紧急"
+      }
+    },
+    "aiCreate": {
+      "examples": "快速示例",
+      "placeholder": "详细描述您的项目...",
+      "startDate": "开始日期（可选）",
+      "generating": "正在生成计划...",
+      "generate": "生成完整项目计划",
+      "loadingMsg": "AI正在构建完整项目计划 — 目标、任务、时间表和分配...",
+      "successTitle": "项目创建成功！",
+      "moreTasks": "+{{count}}个更多任务",
+      "close": "关闭",
+      "viewProject": "查看项目",
+      "steps": {
+        "s1": "分析项目描述...",
+        "s2": "检测行业和技术...",
+        "s3": "创建项目结构...",
+        "s4": "生成目标和里程碑...",
+        "s5": "分解为任务...",
+        "s6": "分配团队成员...",
+        "s7": "计算时间表..."
+      },
+      "stats": {
+        "industry": "行业：{{value}}",
+        "goals": "{{count}}个目标",
+        "tasks": "{{count}}个任务",
+        "assigned": "{{count}}个已分配"
+      }
+    },
+    "delete": {
+      "title": "删除项目",
+      "message": "删除「{{name}}」？所有任务和目标将被永久删除。"
+    },
+    "snackbar": {
+      "created": "项目创建成功！",
+      "deleted": "项目已删除",
+      "aiSuccess": "项目计划生成成功！",
+      "aiFailed": "AI生成失败"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "项目AI大脑",
+      "subtitle": "描述任何项目，AI将构建完整的工作计划"
+    },
+    "generate": {
+      "title": "生成完整项目计划",
+      "subtitle": "用自然语言描述您的项目。AI将检测行业、创建部门、生成任务、分配团队并构建时间表。",
+      "placeholder": "详细描述您的项目...",
+      "startDate": "项目开始日期",
+      "generate": "生成完整项目计划",
+      "generating": "生成中...",
+      "examples": {
+        "e1": "创建带有博客和CMS的企业网站",
+        "e2": "为iOS和Android推出电商应用",
+        "e3": "为医院开发患者管理系统",
+        "e4": "为产品发布创建营销活动"
+      }
+    },
+    "result": {
+      "success": "计划已生成",
+      "open": "打开项目",
+      "teamAssignments": "团队分配（{{count}}个）"
+    },
+    "tools": {
+      "title": "快速AI工具",
+      "standup": {
+        "title": "每日站会",
+        "select": "选择项目",
+        "generate": "生成站会报告",
+        "generating": "生成中..."
+      },
+      "performance": {
+        "title": "绩效分析",
+        "analyze": "分析",
+        "score": "评分",
+        "onTrack": "按时进行",
+        "atRisk": "有风险"
+      },
+      "replan": {
+        "title": "自动重新规划",
+        "reason": "重新规划原因",
+        "reasonPlaceholder": "例如：资源不可用，范围变更",
+        "replan": "重新规划项目",
+        "newEnd": "新结束日期：{{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "团队",
+    "search": "搜索成员...",
+    "stats": {
+      "total": "成员总数",
+      "active": "当前在线",
+      "avgPerformance": "平均绩效",
+      "departments": "部门"
+    },
+    "card": {
+      "performance": "绩效",
+      "skills": "技能",
+      "viewProfile": "查看资料",
+      "status": { "active": "在线", "away": "离开", "offline": "离线" }
+    }
+  },
+  "departments": {
+    "title": "部门",
+    "new": "新建部门",
+    "edit": "编辑",
+    "delete": "删除",
+    "members": "{{count}}名成员",
+    "head": "负责人：{{name}}",
+    "noHead": "未指定负责人",
+    "form": {
+      "name": "部门名称",
+      "description": "描述",
+      "color": "颜色",
+      "cancel": "取消",
+      "save": "保存",
+      "create": "创建部门"
+    }
+  },
+  "kanban": {
+    "title": "看板",
+    "columns": {
+      "planned": "已计划",
+      "in_progress": "进行中",
+      "blocked": "已阻塞",
+      "review": "审查中",
+      "done": "已完成"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}}个子任务",
+      "comments": "{{count}}条评论"
+    }
+  },
+  "timeline": {
+    "title": "时间线",
+    "today": "今天",
+    "week": "周",
+    "month": "月",
+    "noTasks": "没有带截止日期的任务"
+  },
+  "task": {
+    "status": {
+      "planned": "已计划",
+      "in_progress": "进行中",
+      "blocked": "已阻塞",
+      "review": "审查中",
+      "done": "已完成"
+    },
+    "priority": {
+      "critical": "紧急",
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "type": {
+      "feature": "功能",
+      "design": "设计",
+      "research": "研究",
+      "planning": "规划",
+      "meeting": "会议",
+      "review": "审查",
+      "deployment": "部署",
+      "content": "内容",
+      "testing": "测试",
+      "bug": "缺陷",
+      "other": "其他"
+    },
+    "detail": {
+      "title": "任务详情",
+      "status": "状态",
+      "priority": "优先级",
+      "type": "类型",
+      "assignees": "负责人",
+      "dueDate": "截止日期",
+      "estimatedHours": "预估工时",
+      "subtasks": "子任务",
+      "comments": "评论",
+      "addComment": "添加评论...",
+      "post": "发布",
+      "noSubtasks": "无子任务",
+      "noComments": "暂无评论"
+    }
+  },
+  "common": {
+    "loading": "加载中...",
+    "save": "保存",
+    "cancel": "取消",
+    "delete": "删除",
+    "edit": "编辑",
+    "create": "创建",
+    "close": "关闭",
+    "open": "打开",
+    "back": "返回",
+    "next": "下一步",
+    "confirm": "确认",
+    "search": "搜索",
+    "filter": "筛选",
+    "noData": "暂无数据",
+    "progress": "进度",
+    "actions": "操作",
+    "name": "名称",
+    "description": "描述",
+    "date": "日期",
+    "or": "或"
+  },
+  "errors": {
+    "connectionError": "无法连接到服务器。请检查后端是否正在运行。",
+    "timeout": "请求超时。请重试。",
+    "loginFailed": "登录失败。请检查您的凭据。",
+    "generic": "出现错误。请重试。"
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "概览",
+      "goals": "目标与任务",
+      "team": "团队"
+    },
+    "overallProgress": "整体进度",
+    "goalsProgress": "目标进度",
+    "totalTasks": "任务总数",
+    "completed": "已完成",
+    "inProgress": "进行中",
+    "blocked": "已阻塞",
+    "addGoal": "添加目标",
+    "addTask": "添加任务",
+    "standup": "每日AI站会报告",
+    "performance": "绩效分析",
+    "overallScore": "综合评分",
+    "riskLevel": "风险等级"
+  }
+}

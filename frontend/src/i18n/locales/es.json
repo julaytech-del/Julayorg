@@ -1,0 +1,404 @@
+{
+  "nav": {
+    "dashboard": "Panel",
+    "projects": "Proyectos",
+    "team": "Equipo",
+    "departments": "Departamentos",
+    "aiStudio": "Estudio IA",
+    "sections": {
+      "workspace": "Espacio de trabajo",
+      "intelligence": "Inteligencia"
+    },
+    "signOut": "Cerrar sesión",
+    "orgIndustry": "espacio de trabajo"
+  },
+  "header": {
+    "search": "Buscar proyectos, tareas, personas...",
+    "aiGenerate": "Generar IA",
+    "notifications": "Notificaciones",
+    "profile": "Mi Perfil",
+    "settings": "Configuración",
+    "signOut": "Cerrar sesión",
+    "pages": {
+      "/": { "title": "Panel", "subtitle": "Resumen de tu espacio de trabajo" },
+      "/projects": { "title": "Proyectos", "subtitle": "Gestionar y seguir todos los proyectos" },
+      "/team": { "title": "Equipo", "subtitle": "Miembros y rendimiento" },
+      "/departments": { "title": "Departamentos", "subtitle": "Estructura organizacional" },
+      "/ai": { "title": "Estudio IA", "subtitle": "Automatización inteligente de proyectos" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "Bienvenido de nuevo",
+      "subtitle": "Inicia sesión en tu espacio de trabajo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "emailPlaceholder": "tu@empresa.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "Iniciar sesión",
+      "submitting": "Iniciando sesión...",
+      "noAccount": "¿No tienes cuenta?",
+      "createWorkspace": "Crear espacio de trabajo",
+      "demoTitle": "Cuenta Demo — Haz clic para completar",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "o usar demo",
+      "features": {
+        "f1": "Genera planes de proyecto completos en segundos",
+        "f2": "La IA asigna tareas según las habilidades del equipo",
+        "f3": "Informes diarios de standup y análisis de rendimiento"
+      },
+      "tagline": "Tu motor de trabajo potenciado por IA",
+      "taglineDesc": "Describe cualquier proyecto en lenguaje simple. La IA genera un plan completo — objetivos, tareas, asignaciones de equipo y cronogramas — al instante."
+    },
+    "register": {
+      "title": "Crea tu espacio de trabajo",
+      "name": "Nombre completo",
+      "email": "Correo electrónico",
+      "password": "Contraseña",
+      "orgName": "Nombre de la organización",
+      "industry": "Industria",
+      "submit": "Crear espacio",
+      "hasAccount": "¿Ya tienes cuenta?",
+      "signIn": "Iniciar sesión"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "Buenos días",
+      "afternoon": "Buenas tardes",
+      "evening": "Buenas noches"
+    },
+    "loading": "Cargando tu espacio de trabajo...",
+    "activeTasks": "{{count}} tareas en progreso",
+    "overdueCount": "{{count}} vencidas",
+    "activeProjects": "{{count}} proyectos activos",
+    "stats": {
+      "totalProjects": "Total de Proyectos",
+      "activeTasks": "Tareas Activas",
+      "teamMembers": "Miembros del Equipo",
+      "completionRate": "Tasa de Completado",
+      "active": "{{count}} activos",
+      "activeCompleted": "{{active}} activos · {{completed}} completados",
+      "overdueTotal": "{{overdue}} vencidas · {{total}} total",
+      "activeToday": "{{count}} activos hoy",
+      "tasksCompleted": "{{count}} tareas completadas",
+      "running": "{{count}} en curso",
+      "overdueBadge": "{{count}} vencidas",
+      "onTrack": "En plazo",
+      "needsAttention": "Necesita atención"
+    },
+    "charts": {
+      "taskDistribution": "Distribución de Tareas",
+      "byStatus": "Por estado actual",
+      "projectStatus": "Estado de Proyectos",
+      "portfolioBreakdown": "Desglose del portafolio"
+    },
+    "activity": {
+      "title": "Actividad Reciente",
+      "subtitle": "Acciones del equipo en proyectos",
+      "empty": "Sin actividad aún"
+    },
+    "deadlines": {
+      "title": "Próximas Fechas Límite",
+      "subtitle": "Próximos 7 días",
+      "dueSoon": "{{count}} próximas a vencer",
+      "today": "Hoy",
+      "tomorrow": "Mañana",
+      "days": "{{count}}d",
+      "allClear": "¡Todo en orden!",
+      "allClearSub": "Sin fechas límite en los próximos 7 días"
+    },
+    "recentProjects": {
+      "title": "Proyectos Recientes",
+      "subtitle": "Última actualización",
+      "viewAll": "Ver todos",
+      "empty": "Aún no hay proyectos"
+    },
+    "aiStudio": "Estudio IA",
+    "projects": "Proyectos"
+  },
+  "projects": {
+    "title": "Proyectos",
+    "subtitle": "{{total}} proyectos · {{active}} activos",
+    "newProject": "Nuevo Proyecto",
+    "aiGenerate": "Generar IA",
+    "search": "Buscar proyectos...",
+    "filters": {
+      "all": "Todos los Proyectos",
+      "planning": "Planificación",
+      "active": "Activo",
+      "on_hold": "En espera",
+      "completed": "Completado"
+    },
+    "card": {
+      "noDescription": "Sin descripción",
+      "progress": "Progreso",
+      "due": "Vence {{date}}",
+      "ai": "IA"
+    },
+    "menu": {
+      "open": "Abrir proyecto",
+      "edit": "Editar detalles",
+      "delete": "Eliminar"
+    },
+    "empty": {
+      "noMatch": "No hay proyectos que coincidan",
+      "noMatchSub": "Intenta ajustar tu búsqueda o filtro",
+      "clearFilters": "Limpiar filtros",
+      "start": "Inicia tu primer proyecto",
+      "startSub": "Crea un proyecto manualmente o deja que la IA genere un plan completo desde una descripción simple.",
+      "manual": "Configuración manual"
+    },
+    "create": {
+      "title": "Nuevo Proyecto",
+      "subtitle": "Crea manualmente o deja que la IA genere un plan completo al instante",
+      "manual": "Configuración manual",
+      "ai": "Generar IA",
+      "name": "Nombre del Proyecto *",
+      "namePlaceholder": "ej: Plataforma Lumex Company",
+      "description": "Descripción",
+      "descPlaceholder": "Breve descripción del proyecto...",
+      "startDate": "Fecha de Inicio",
+      "endDate": "Fecha de Fin",
+      "priority": "Prioridad",
+      "color": "Color del Proyecto",
+      "cancel": "Cancelar",
+      "submit": "Crear Proyecto",
+      "priorities": {
+        "low": "Baja",
+        "medium": "Media",
+        "high": "Alta",
+        "critical": "Crítica"
+      }
+    },
+    "aiCreate": {
+      "examples": "Ejemplos rápidos",
+      "placeholder": "Describe tu proyecto en detalle...",
+      "startDate": "Fecha de inicio (opcional)",
+      "generating": "Generando plan...",
+      "generate": "Generar Plan de Proyecto Completo",
+      "loadingMsg": "La IA está construyendo un plan de proyecto completo — objetivos, tareas, cronograma y asignaciones...",
+      "successTitle": "¡Proyecto creado exitosamente!",
+      "moreTasks": "+{{count}} tareas más",
+      "close": "Cerrar",
+      "viewProject": "Ver Proyecto",
+      "steps": {
+        "s1": "Analizando descripción del proyecto...",
+        "s2": "Detectando industria y tecnologías...",
+        "s3": "Creando estructura del proyecto...",
+        "s4": "Generando objetivos e hitos...",
+        "s5": "Dividiendo en tareas...",
+        "s6": "Asignando miembros del equipo...",
+        "s7": "Calculando cronograma..."
+      },
+      "stats": {
+        "industry": "Industria: {{value}}",
+        "goals": "{{count}} Objetivos",
+        "tasks": "{{count}} Tareas",
+        "assigned": "{{count}} Asignados"
+      }
+    },
+    "delete": {
+      "title": "Eliminar Proyecto",
+      "message": "¿Eliminar \"{{name}}\"? Todas las tareas y objetivos se eliminarán permanentemente."
+    },
+    "snackbar": {
+      "created": "¡Proyecto creado exitosamente!",
+      "deleted": "Proyecto eliminado",
+      "aiSuccess": "¡Plan de proyecto generado exitosamente!",
+      "aiFailed": "Falló la generación con IA"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "Cerebro IA del Proyecto",
+      "subtitle": "Describe cualquier proyecto y la IA construirá un plan de trabajo completo"
+    },
+    "generate": {
+      "title": "Generar Plan de Proyecto Completo",
+      "subtitle": "Describe tu proyecto en lenguaje natural. La IA detectará la industria, creará departamentos, generará tareas, asignará el equipo y construirá un cronograma.",
+      "placeholder": "Describe tu proyecto en detalle...",
+      "startDate": "Fecha de Inicio del Proyecto",
+      "generate": "Generar Plan de Proyecto Completo",
+      "generating": "Generando...",
+      "examples": {
+        "e1": "Crear sitio web corporativo con blog y CMS",
+        "e2": "Lanzar app de e-commerce para iOS y Android",
+        "e3": "Desarrollar sistema de gestión de pacientes para hospital",
+        "e4": "Crear campaña de marketing para lanzamiento de producto"
+      }
+    },
+    "result": {
+      "success": "Plan Generado",
+      "open": "Abrir Proyecto",
+      "teamAssignments": "Asignaciones del Equipo ({{count}})"
+    },
+    "tools": {
+      "title": "Herramientas IA Rápidas",
+      "standup": {
+        "title": "Standup Diario",
+        "select": "Seleccionar Proyecto",
+        "generate": "Generar Standup",
+        "generating": "Generando..."
+      },
+      "performance": {
+        "title": "Análisis de Rendimiento",
+        "analyze": "Analizar",
+        "score": "Puntuación",
+        "onTrack": "En Plazo",
+        "atRisk": "En Riesgo"
+      },
+      "replan": {
+        "title": "Replanificación Automática",
+        "reason": "Motivo de replanificación",
+        "reasonPlaceholder": "ej: Recurso no disponible, cambio de alcance",
+        "replan": "Replanificar Proyecto",
+        "newEnd": "Nuevo fin: {{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "Equipo",
+    "search": "Buscar miembros...",
+    "stats": {
+      "total": "Total de Miembros",
+      "active": "Activos ahora",
+      "avgPerformance": "Rendimiento promedio",
+      "departments": "Departamentos"
+    },
+    "card": {
+      "performance": "Rendimiento",
+      "skills": "Habilidades",
+      "viewProfile": "Ver Perfil",
+      "status": { "active": "Activo", "away": "Ausente", "offline": "Desconectado" }
+    }
+  },
+  "departments": {
+    "title": "Departamentos",
+    "new": "Nuevo Departamento",
+    "edit": "Editar",
+    "delete": "Eliminar",
+    "members": "{{count}} miembros",
+    "head": "Responsable: {{name}}",
+    "noHead": "Sin responsable asignado",
+    "form": {
+      "name": "Nombre del Departamento",
+      "description": "Descripción",
+      "color": "Color",
+      "cancel": "Cancelar",
+      "save": "Guardar",
+      "create": "Crear Departamento"
+    }
+  },
+  "kanban": {
+    "title": "Tablero Kanban",
+    "columns": {
+      "planned": "Planificado",
+      "in_progress": "En Progreso",
+      "blocked": "Bloqueado",
+      "review": "Revisión",
+      "done": "Completado"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}} subtareas",
+      "comments": "{{count}} comentarios"
+    }
+  },
+  "timeline": {
+    "title": "Cronograma",
+    "today": "Hoy",
+    "week": "Semana",
+    "month": "Mes",
+    "noTasks": "Sin tareas con fechas límite"
+  },
+  "task": {
+    "status": {
+      "planned": "Planificado",
+      "in_progress": "En Progreso",
+      "blocked": "Bloqueado",
+      "review": "Revisión",
+      "done": "Completado"
+    },
+    "priority": {
+      "critical": "Crítica",
+      "high": "Alta",
+      "medium": "Media",
+      "low": "Baja"
+    },
+    "type": {
+      "feature": "Funcionalidad",
+      "design": "Diseño",
+      "research": "Investigación",
+      "planning": "Planificación",
+      "meeting": "Reunión",
+      "review": "Revisión",
+      "deployment": "Despliegue",
+      "content": "Contenido",
+      "testing": "Pruebas",
+      "bug": "Error",
+      "other": "Otro"
+    },
+    "detail": {
+      "title": "Detalles de la Tarea",
+      "status": "Estado",
+      "priority": "Prioridad",
+      "type": "Tipo",
+      "assignees": "Asignados",
+      "dueDate": "Fecha Límite",
+      "estimatedHours": "Horas Estimadas",
+      "subtasks": "Subtareas",
+      "comments": "Comentarios",
+      "addComment": "Agregar comentario...",
+      "post": "Publicar",
+      "noSubtasks": "Sin subtareas",
+      "noComments": "Aún no hay comentarios"
+    }
+  },
+  "common": {
+    "loading": "Cargando...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "edit": "Editar",
+    "create": "Crear",
+    "close": "Cerrar",
+    "open": "Abrir",
+    "back": "Volver",
+    "next": "Siguiente",
+    "confirm": "Confirmar",
+    "search": "Buscar",
+    "filter": "Filtrar",
+    "noData": "Sin datos disponibles",
+    "progress": "Progreso",
+    "actions": "Acciones",
+    "name": "Nombre",
+    "description": "Descripción",
+    "date": "Fecha",
+    "or": "o"
+  },
+  "errors": {
+    "connectionError": "No se puede conectar al servidor. Verifica que el backend esté funcionando.",
+    "timeout": "La solicitud tardó demasiado. Por favor, inténtalo de nuevo.",
+    "loginFailed": "Error de inicio de sesión. Verifica tus credenciales.",
+    "generic": "Algo salió mal. Por favor, inténtalo de nuevo."
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "Resumen",
+      "goals": "Objetivos & Tareas",
+      "team": "Equipo"
+    },
+    "overallProgress": "Progreso General",
+    "goalsProgress": "Progreso de Objetivos",
+    "totalTasks": "Total de Tareas",
+    "completed": "Completado",
+    "inProgress": "En Progreso",
+    "blocked": "Bloqueado",
+    "addGoal": "Agregar Objetivo",
+    "addTask": "Agregar Tarea",
+    "standup": "Informe Diario de Standup IA",
+    "performance": "Análisis de Rendimiento",
+    "overallScore": "Puntuación General",
+    "riskLevel": "Nivel de Riesgo"
+  }
+}

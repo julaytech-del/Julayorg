@@ -1,0 +1,404 @@
+{
+  "nav": {
+    "dashboard": "ダッシュボード",
+    "projects": "プロジェクト",
+    "team": "チーム",
+    "departments": "部署",
+    "aiStudio": "AIスタジオ",
+    "sections": {
+      "workspace": "ワークスペース",
+      "intelligence": "インテリジェンス"
+    },
+    "signOut": "サインアウト",
+    "orgIndustry": "ワークスペース"
+  },
+  "header": {
+    "search": "プロジェクト、タスク、人を検索...",
+    "aiGenerate": "AIで生成",
+    "notifications": "通知",
+    "profile": "マイプロフィール",
+    "settings": "設定",
+    "signOut": "サインアウト",
+    "pages": {
+      "/": { "title": "ダッシュボード", "subtitle": "ワークスペースの概要" },
+      "/projects": { "title": "プロジェクト", "subtitle": "すべてのプロジェクトを管理・追跡" },
+      "/team": { "title": "チーム", "subtitle": "メンバーとパフォーマンス" },
+      "/departments": { "title": "部署", "subtitle": "組織構造" },
+      "/ai": { "title": "AIスタジオ", "subtitle": "インテリジェントなプロジェクト自動化" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "おかえりなさい",
+      "subtitle": "ワークスペースにサインイン",
+      "email": "メールアドレス",
+      "password": "パスワード",
+      "emailPlaceholder": "you@company.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "サインイン",
+      "submitting": "サインイン中...",
+      "noAccount": "アカウントをお持ちでないですか？",
+      "createWorkspace": "ワークスペースを作成",
+      "demoTitle": "デモアカウント — クリックして入力",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "またはデモを使用",
+      "features": {
+        "f1": "数秒で完全なプロジェクト計画を作成",
+        "f2": "AIがチームのスキルに基づいてタスクを割り当て",
+        "f3": "毎日のスタンドアップレポートとパフォーマンス分析"
+      },
+      "tagline": "AIを活用した作業エンジン",
+      "taglineDesc": "プロジェクトを簡単な言葉で説明してください。AIが即座に完全な計画を作成します — 目標、タスク、チーム割り当て、スケジュール。"
+    },
+    "register": {
+      "title": "ワークスペースを作成",
+      "name": "フルネーム",
+      "email": "メール",
+      "password": "パスワード",
+      "orgName": "組織名",
+      "industry": "業界",
+      "submit": "ワークスペースを作成",
+      "hasAccount": "すでにアカウントをお持ちですか？",
+      "signIn": "サインイン"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "おはようございます",
+      "afternoon": "こんにちは",
+      "evening": "こんばんは"
+    },
+    "loading": "ワークスペースを読み込み中...",
+    "activeTasks": "{{count}}件のタスクが進行中",
+    "overdueCount": "{{count}}件の期限超過",
+    "activeProjects": "{{count}}件のアクティブプロジェクト",
+    "stats": {
+      "totalProjects": "プロジェクト総数",
+      "activeTasks": "アクティブタスク",
+      "teamMembers": "チームメンバー",
+      "completionRate": "完了率",
+      "active": "{{count}}件アクティブ",
+      "activeCompleted": "{{active}}件アクティブ · {{completed}}件完了",
+      "overdueTotal": "{{overdue}}件期限超過 · {{total}}件合計",
+      "activeToday": "本日{{count}}件アクティブ",
+      "tasksCompleted": "{{count}}件のタスク完了",
+      "running": "{{count}}件実行中",
+      "overdueBadge": "{{count}}件期限超過",
+      "onTrack": "順調",
+      "needsAttention": "要注意"
+    },
+    "charts": {
+      "taskDistribution": "タスク分布",
+      "byStatus": "現在のステータス別",
+      "projectStatus": "プロジェクトステータス",
+      "portfolioBreakdown": "ポートフォリオ内訳"
+    },
+    "activity": {
+      "title": "最近のアクティビティ",
+      "subtitle": "プロジェクトでのチームの行動",
+      "empty": "まだアクティビティはありません"
+    },
+    "deadlines": {
+      "title": "今後の締め切り",
+      "subtitle": "今後7日間",
+      "dueSoon": "{{count}}件が間もなく期限",
+      "today": "今日",
+      "tomorrow": "明日",
+      "days": "{{count}}日",
+      "allClear": "問題なし！",
+      "allClearSub": "今後7日間に締め切りはありません"
+    },
+    "recentProjects": {
+      "title": "最近のプロジェクト",
+      "subtitle": "最終更新",
+      "viewAll": "すべて表示",
+      "empty": "プロジェクトはまだありません"
+    },
+    "aiStudio": "AIスタジオ",
+    "projects": "プロジェクト"
+  },
+  "projects": {
+    "title": "プロジェクト",
+    "subtitle": "{{total}}件のプロジェクト · {{active}}件アクティブ",
+    "newProject": "新規プロジェクト",
+    "aiGenerate": "AIで生成",
+    "search": "プロジェクトを検索...",
+    "filters": {
+      "all": "すべてのプロジェクト",
+      "planning": "計画中",
+      "active": "アクティブ",
+      "on_hold": "保留中",
+      "completed": "完了"
+    },
+    "card": {
+      "noDescription": "説明なし",
+      "progress": "進捗",
+      "due": "{{date}}締め切り",
+      "ai": "AI"
+    },
+    "menu": {
+      "open": "プロジェクトを開く",
+      "edit": "詳細を編集",
+      "delete": "削除"
+    },
+    "empty": {
+      "noMatch": "一致するプロジェクトなし",
+      "noMatchSub": "検索またはフィルターを調整してください",
+      "clearFilters": "フィルターをクリア",
+      "start": "最初のプロジェクトを開始",
+      "startSub": "手動で作成するか、AIに簡単な説明から完全な計画を作成させてください。",
+      "manual": "手動セットアップ"
+    },
+    "create": {
+      "title": "新規プロジェクト",
+      "subtitle": "手動で作成するか、AIに即座に完全な計画を作成させてください",
+      "manual": "手動セットアップ",
+      "ai": "AIで生成",
+      "name": "プロジェクト名 *",
+      "namePlaceholder": "例：Lumex Companyプラットフォーム",
+      "description": "説明",
+      "descPlaceholder": "プロジェクトの簡単な説明...",
+      "startDate": "開始日",
+      "endDate": "終了日",
+      "priority": "優先度",
+      "color": "プロジェクトカラー",
+      "cancel": "キャンセル",
+      "submit": "プロジェクトを作成",
+      "priorities": {
+        "low": "低",
+        "medium": "中",
+        "high": "高",
+        "critical": "重大"
+      }
+    },
+    "aiCreate": {
+      "examples": "クイック例",
+      "placeholder": "プロジェクトを詳しく説明してください...",
+      "startDate": "開始日（任意）",
+      "generating": "計画を生成中...",
+      "generate": "完全なプロジェクト計画を生成",
+      "loadingMsg": "AIが完全なプロジェクト計画を作成中 — 目標、タスク、スケジュール、割り当て...",
+      "successTitle": "プロジェクトが正常に作成されました！",
+      "moreTasks": "+{{count}}件の追加タスク",
+      "close": "閉じる",
+      "viewProject": "プロジェクトを表示",
+      "steps": {
+        "s1": "プロジェクトの説明を分析中...",
+        "s2": "業界と技術を検出中...",
+        "s3": "プロジェクト構造を作成中...",
+        "s4": "目標とマイルストーンを生成中...",
+        "s5": "タスクに分解中...",
+        "s6": "チームメンバーを割り当て中...",
+        "s7": "スケジュールを計算中..."
+      },
+      "stats": {
+        "industry": "業界：{{value}}",
+        "goals": "{{count}}件の目標",
+        "tasks": "{{count}}件のタスク",
+        "assigned": "{{count}}件割り当て済み"
+      }
+    },
+    "delete": {
+      "title": "プロジェクトを削除",
+      "message": "「{{name}}」を削除しますか？すべてのタスクと目標が完全に削除されます。"
+    },
+    "snackbar": {
+      "created": "プロジェクトが正常に作成されました！",
+      "deleted": "プロジェクトが削除されました",
+      "aiSuccess": "プロジェクト計画が正常に生成されました！",
+      "aiFailed": "AI生成に失敗しました"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "プロジェクトAIブレイン",
+      "subtitle": "プロジェクトを説明するとAIが完全な作業計画を作成します"
+    },
+    "generate": {
+      "title": "完全なプロジェクト計画を生成",
+      "subtitle": "自然言語でプロジェクトを説明してください。AIが業界を検出し、部署を作成し、タスクを生成し、チームを割り当て、スケジュールを作成します。",
+      "placeholder": "プロジェクトを詳しく説明してください...",
+      "startDate": "プロジェクト開始日",
+      "generate": "完全なプロジェクト計画を生成",
+      "generating": "生成中...",
+      "examples": {
+        "e1": "ブログとCMSを含むコーポレートウェブサイトを作成",
+        "e2": "iOSとAndroid向けeコマースアプリをローンチ",
+        "e3": "病院向け患者管理システムを開発",
+        "e4": "製品ローンチ向けマーケティングキャンペーンを作成"
+      }
+    },
+    "result": {
+      "success": "計画が生成されました",
+      "open": "プロジェクトを開く",
+      "teamAssignments": "チーム割り当て（{{count}}件）"
+    },
+    "tools": {
+      "title": "クイックAIツール",
+      "standup": {
+        "title": "デイリースタンドアップ",
+        "select": "プロジェクトを選択",
+        "generate": "スタンドアップを生成",
+        "generating": "生成中..."
+      },
+      "performance": {
+        "title": "パフォーマンス分析",
+        "analyze": "分析",
+        "score": "スコア",
+        "onTrack": "順調",
+        "atRisk": "リスクあり"
+      },
+      "replan": {
+        "title": "自動再計画",
+        "reason": "再計画の理由",
+        "reasonPlaceholder": "例：リソース不足、スコープ変更",
+        "replan": "プロジェクトを再計画",
+        "newEnd": "新しい終了日：{{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "チーム",
+    "search": "メンバーを検索...",
+    "stats": {
+      "total": "総メンバー数",
+      "active": "現在アクティブ",
+      "avgPerformance": "平均パフォーマンス",
+      "departments": "部署"
+    },
+    "card": {
+      "performance": "パフォーマンス",
+      "skills": "スキル",
+      "viewProfile": "プロフィールを表示",
+      "status": { "active": "アクティブ", "away": "離席中", "offline": "オフライン" }
+    }
+  },
+  "departments": {
+    "title": "部署",
+    "new": "新規部署",
+    "edit": "編集",
+    "delete": "削除",
+    "members": "{{count}}名",
+    "head": "責任者：{{name}}",
+    "noHead": "責任者未設定",
+    "form": {
+      "name": "部署名",
+      "description": "説明",
+      "color": "カラー",
+      "cancel": "キャンセル",
+      "save": "保存",
+      "create": "部署を作成"
+    }
+  },
+  "kanban": {
+    "title": "かんばんボード",
+    "columns": {
+      "planned": "計画済み",
+      "in_progress": "進行中",
+      "blocked": "ブロック中",
+      "review": "レビュー",
+      "done": "完了"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}}件のサブタスク",
+      "comments": "{{count}}件のコメント"
+    }
+  },
+  "timeline": {
+    "title": "タイムライン",
+    "today": "今日",
+    "week": "週",
+    "month": "月",
+    "noTasks": "締め切り日のあるタスクはありません"
+  },
+  "task": {
+    "status": {
+      "planned": "計画済み",
+      "in_progress": "進行中",
+      "blocked": "ブロック中",
+      "review": "レビュー",
+      "done": "完了"
+    },
+    "priority": {
+      "critical": "重大",
+      "high": "高",
+      "medium": "中",
+      "low": "低"
+    },
+    "type": {
+      "feature": "機能",
+      "design": "デザイン",
+      "research": "調査",
+      "planning": "計画",
+      "meeting": "ミーティング",
+      "review": "レビュー",
+      "deployment": "デプロイ",
+      "content": "コンテンツ",
+      "testing": "テスト",
+      "bug": "バグ",
+      "other": "その他"
+    },
+    "detail": {
+      "title": "タスクの詳細",
+      "status": "ステータス",
+      "priority": "優先度",
+      "type": "種類",
+      "assignees": "担当者",
+      "dueDate": "期限日",
+      "estimatedHours": "見積時間",
+      "subtasks": "サブタスク",
+      "comments": "コメント",
+      "addComment": "コメントを追加...",
+      "post": "投稿",
+      "noSubtasks": "サブタスクなし",
+      "noComments": "まだコメントはありません"
+    }
+  },
+  "common": {
+    "loading": "読み込み中...",
+    "save": "保存",
+    "cancel": "キャンセル",
+    "delete": "削除",
+    "edit": "編集",
+    "create": "作成",
+    "close": "閉じる",
+    "open": "開く",
+    "back": "戻る",
+    "next": "次へ",
+    "confirm": "確認",
+    "search": "検索",
+    "filter": "フィルター",
+    "noData": "データなし",
+    "progress": "進捗",
+    "actions": "アクション",
+    "name": "名前",
+    "description": "説明",
+    "date": "日付",
+    "or": "または"
+  },
+  "errors": {
+    "connectionError": "サーバーに接続できません。バックエンドが起動していることを確認してください。",
+    "timeout": "リクエストに時間がかかりすぎました。もう一度お試しください。",
+    "loginFailed": "ログインに失敗しました。認証情報を確認してください。",
+    "generic": "エラーが発生しました。もう一度お試しください。"
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "概要",
+      "goals": "目標とタスク",
+      "team": "チーム"
+    },
+    "overallProgress": "全体の進捗",
+    "goalsProgress": "目標の進捗",
+    "totalTasks": "タスク総数",
+    "completed": "完了",
+    "inProgress": "進行中",
+    "blocked": "ブロック中",
+    "addGoal": "目標を追加",
+    "addTask": "タスクを追加",
+    "standup": "毎日のAIスタンドアップレポート",
+    "performance": "パフォーマンス分析",
+    "overallScore": "総合スコア",
+    "riskLevel": "リスクレベル"
+  }
+}

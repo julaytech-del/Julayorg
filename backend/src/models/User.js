@@ -27,7 +27,12 @@ const userSchema = new mongoose.Schema({
     onTimeRate: { type: Number, default: 100 }
   },
   lastActive: { type: Date, default: Date.now },
-  isAdmin: { type: Boolean, default: false }
+  isAdmin: { type: Boolean, default: false },
+  subscription: {
+    plan: { type: String, enum: ['free', 'pro'], default: 'free' },
+    subscribedAt: { type: Date },
+    expiresAt: { type: Date }
+  }
 }, { timestamps: true });
 
 userSchema.pre('save', async function (next) {

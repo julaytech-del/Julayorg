@@ -26,6 +26,21 @@ export const protect = async (req, res, next) => {
   }
 };
 
+export const requireSubscription = (req, res, next) => {
+  const user = req.user;
+  if (!user) return res.status(401).json({ success: false, message: 'Not authenticated' });
+  if (user.isAdmin) return next();
+
+  const { plan, expiresAt } = user.subscription || {};
+  if (plan !== 'pro') {
+    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_REQUIRED', message: 'هذه الميزة متاحة للمشتركين فقط — $20/شهر' });
+  }
+  if (expiresAt && new Date() > new Date(expiresAt)) {
+    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_EXPIRED', message: 'انتهى اشتراكك، يرجى التجديد' });
+  }
+  next();
+};
+
 export const requirePermission = (resource, action) => {
   return (req, res, next) => {
     const user = req.user;

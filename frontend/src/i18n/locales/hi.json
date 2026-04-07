@@ -1,0 +1,404 @@
+{
+  "nav": {
+    "dashboard": "डैशबोर्ड",
+    "projects": "प्रोजेक्ट",
+    "team": "टीम",
+    "departments": "विभाग",
+    "aiStudio": "AI स्टूडियो",
+    "sections": {
+      "workspace": "कार्यक्षेत्र",
+      "intelligence": "बुद्धिमत्ता"
+    },
+    "signOut": "साइन आउट",
+    "orgIndustry": "कार्यक्षेत्र"
+  },
+  "header": {
+    "search": "प्रोजेक्ट, कार्य, लोग खोजें...",
+    "aiGenerate": "AI से बनाएं",
+    "notifications": "सूचनाएं",
+    "profile": "मेरी प्रोफ़ाइल",
+    "settings": "सेटिंग्स",
+    "signOut": "साइन आउट",
+    "pages": {
+      "/": { "title": "डैशबोर्ड", "subtitle": "आपके कार्यक्षेत्र का अवलोकन" },
+      "/projects": { "title": "प्रोजेक्ट", "subtitle": "सभी प्रोजेक्ट प्रबंधित करें" },
+      "/team": { "title": "टीम", "subtitle": "सदस्य और प्रदर्शन" },
+      "/departments": { "title": "विभाग", "subtitle": "संगठन संरचना" },
+      "/ai": { "title": "AI स्टूडियो", "subtitle": "बुद्धिमान प्रोजेक्ट स्वचालन" }
+    }
+  },
+  "auth": {
+    "login": {
+      "greeting": "वापस आपका स्वागत है",
+      "subtitle": "अपने कार्यक्षेत्र में साइन इन करें",
+      "email": "ईमेल पता",
+      "password": "पासवर्ड",
+      "emailPlaceholder": "aap@company.com",
+      "passwordPlaceholder": "••••••••",
+      "submit": "साइन इन करें",
+      "submitting": "साइन इन हो रहा है...",
+      "noAccount": "खाता नहीं है?",
+      "createWorkspace": "कार्यक्षेत्र बनाएं",
+      "demoTitle": "डेमो खाता — भरने के लिए क्लिक करें",
+      "demoSubtitle": "admin@techcorp.com · password123",
+      "orDemo": "या डेमो उपयोग करें",
+      "features": {
+        "f1": "सेकंडों में पूरी प्रोजेक्ट योजना बनाएं",
+        "f2": "AI टीम कौशल के आधार पर कार्य सौंपता है",
+        "f3": "दैनिक स्टैंडअप रिपोर्ट और प्रदर्शन विश्लेषण"
+      },
+      "tagline": "आपका AI-संचालित कार्य इंजन",
+      "taglineDesc": "किसी भी प्रोजेक्ट को सरल भाषा में वर्णन करें। AI तुरंत एक पूरी योजना बनाता है — लक्ष्य, कार्य, टीम असाइनमेंट और टाइमलाइन।"
+    },
+    "register": {
+      "title": "अपना कार्यक्षेत्र बनाएं",
+      "name": "पूरा नाम",
+      "email": "ईमेल",
+      "password": "पासवर्ड",
+      "orgName": "संगठन का नाम",
+      "industry": "उद्योग",
+      "submit": "कार्यक्षेत्र बनाएं",
+      "hasAccount": "पहले से खाता है?",
+      "signIn": "साइन इन करें"
+    }
+  },
+  "dashboard": {
+    "greeting": {
+      "morning": "सुप्रभात",
+      "afternoon": "नमस्ते",
+      "evening": "शुभ संध्या"
+    },
+    "loading": "आपका कार्यक्षेत्र लोड हो रहा है...",
+    "activeTasks": "{{count}} कार्य प्रगति में",
+    "overdueCount": "{{count}} अतिदेय",
+    "activeProjects": "{{count}} सक्रिय प्रोजेक्ट",
+    "stats": {
+      "totalProjects": "कुल प्रोजेक्ट",
+      "activeTasks": "सक्रिय कार्य",
+      "teamMembers": "टीम सदस्य",
+      "completionRate": "पूर्णता दर",
+      "active": "{{count}} सक्रिय",
+      "activeCompleted": "{{active}} सक्रिय · {{completed}} पूर्ण",
+      "overdueTotal": "{{overdue}} अतिदेय · {{total}} कुल",
+      "activeToday": "{{count}} आज सक्रिय",
+      "tasksCompleted": "{{count}} कार्य पूर्ण",
+      "running": "{{count}} चल रहे",
+      "overdueBadge": "{{count}} अतिदेय",
+      "onTrack": "समय पर",
+      "needsAttention": "ध्यान चाहिए"
+    },
+    "charts": {
+      "taskDistribution": "कार्य वितरण",
+      "byStatus": "वर्तमान स्थिति द्वारा",
+      "projectStatus": "प्रोजेक्ट स्थिति",
+      "portfolioBreakdown": "पोर्टफोलियो विवरण"
+    },
+    "activity": {
+      "title": "हालिया गतिविधि",
+      "subtitle": "प्रोजेक्ट में टीम की कार्रवाइयां",
+      "empty": "अभी तक कोई गतिविधि नहीं"
+    },
+    "deadlines": {
+      "title": "आगामी समय सीमाएं",
+      "subtitle": "अगले 7 दिन",
+      "dueSoon": "{{count}} जल्द देय",
+      "today": "आज",
+      "tomorrow": "कल",
+      "days": "{{count}}दिन",
+      "allClear": "सब ठीक है!",
+      "allClearSub": "अगले 7 दिनों में कोई समय सीमा नहीं"
+    },
+    "recentProjects": {
+      "title": "हालिया प्रोजेक्ट",
+      "subtitle": "अंतिम अपडेट",
+      "viewAll": "सभी देखें",
+      "empty": "अभी तक कोई प्रोजेक्ट नहीं"
+    },
+    "aiStudio": "AI स्टूडियो",
+    "projects": "प्रोजेक्ट"
+  },
+  "projects": {
+    "title": "प्रोजेक्ट",
+    "subtitle": "{{total}} प्रोजेक्ट · {{active}} सक्रिय",
+    "newProject": "नया प्रोजेक्ट",
+    "aiGenerate": "AI से बनाएं",
+    "search": "प्रोजेक्ट खोजें...",
+    "filters": {
+      "all": "सभी प्रोजेक्ट",
+      "planning": "योजना",
+      "active": "सक्रिय",
+      "on_hold": "रुका हुआ",
+      "completed": "पूर्ण"
+    },
+    "card": {
+      "noDescription": "कोई विवरण नहीं",
+      "progress": "प्रगति",
+      "due": "{{date}} तक",
+      "ai": "AI"
+    },
+    "menu": {
+      "open": "प्रोजेक्ट खोलें",
+      "edit": "विवरण संपादित करें",
+      "delete": "हटाएं"
+    },
+    "empty": {
+      "noMatch": "कोई मिलता प्रोजेक्ट नहीं",
+      "noMatchSub": "खोज या फ़िल्टर समायोजित करें",
+      "clearFilters": "फ़िल्टर साफ़ करें",
+      "start": "अपना पहला प्रोजेक्ट शुरू करें",
+      "startSub": "मैन्युअल रूप से बनाएं या AI को एक साधारण विवरण से पूरी योजना बनाने दें।",
+      "manual": "मैन्युअल सेटअप"
+    },
+    "create": {
+      "title": "नया प्रोजेक्ट",
+      "subtitle": "मैन्युअल बनाएं या AI को तुरंत पूरी योजना बनाने दें",
+      "manual": "मैन्युअल सेटअप",
+      "ai": "AI से बनाएं",
+      "name": "प्रोजेक्ट नाम *",
+      "namePlaceholder": "जैसे: Lumex Company प्लेटफ़ॉर्म",
+      "description": "विवरण",
+      "descPlaceholder": "संक्षिप्त प्रोजेक्ट विवरण...",
+      "startDate": "शुरुआत की तारीख",
+      "endDate": "अंत की तारीख",
+      "priority": "प्राथमिकता",
+      "color": "प्रोजेक्ट रंग",
+      "cancel": "रद्द करें",
+      "submit": "प्रोजेक्ट बनाएं",
+      "priorities": {
+        "low": "कम",
+        "medium": "मध्यम",
+        "high": "उच्च",
+        "critical": "महत्वपूर्ण"
+      }
+    },
+    "aiCreate": {
+      "examples": "त्वरित उदाहरण",
+      "placeholder": "अपना प्रोजेक्ट विस्तार से वर्णन करें...",
+      "startDate": "शुरुआत की तारीख (वैकल्पिक)",
+      "generating": "योजना बन रही है...",
+      "generate": "पूरी प्रोजेक्ट योजना बनाएं",
+      "loadingMsg": "AI पूरी प्रोजेक्ट योजना बना रहा है — लक्ष्य, कार्य, टाइमलाइन और असाइनमेंट...",
+      "successTitle": "प्रोजेक्ट सफलतापूर्वक बना!",
+      "moreTasks": "+{{count}} और कार्य",
+      "close": "बंद करें",
+      "viewProject": "प्रोजेक्ट देखें",
+      "steps": {
+        "s1": "प्रोजेक्ट विवरण का विश्लेषण...",
+        "s2": "उद्योग और तकनीक का पता लगाना...",
+        "s3": "प्रोजेक्ट संरचना बनाना...",
+        "s4": "लक्ष्य और मील के पत्थर बनाना...",
+        "s5": "कार्यों में विभाजित करना...",
+        "s6": "टीम सदस्यों को सौंपना...",
+        "s7": "टाइमलाइन की गणना..."
+      },
+      "stats": {
+        "industry": "उद्योग: {{value}}",
+        "goals": "{{count}} लक्ष्य",
+        "tasks": "{{count}} कार्य",
+        "assigned": "{{count}} असाइन"
+      }
+    },
+    "delete": {
+      "title": "प्रोजेक्ट हटाएं",
+      "message": "\"{{name}}\" हटाएं? सभी कार्य और लक्ष्य स्थायी रूप से हटा दिए जाएंगे।"
+    },
+    "snackbar": {
+      "created": "प्रोजेक्ट सफलतापूर्वक बना!",
+      "deleted": "प्रोजेक्ट हटाया गया",
+      "aiSuccess": "प्रोजेक्ट योजना सफलतापूर्वक बनाई!",
+      "aiFailed": "AI से बनाने में विफल"
+    }
+  },
+  "ai": {
+    "hero": {
+      "title": "प्रोजेक्ट AI दिमाग",
+      "subtitle": "किसी भी प्रोजेक्ट का वर्णन करें और AI पूरी कार्य योजना बनाएगा"
+    },
+    "generate": {
+      "title": "पूरी प्रोजेक्ट योजना बनाएं",
+      "subtitle": "अपने प्रोजेक्ट को सामान्य भाषा में वर्णन करें। AI उद्योग पहचानेगा, विभाग बनाएगा, कार्य बनाएगा, टीम सौंपेगा और टाइमलाइन बनाएगा।",
+      "placeholder": "अपना प्रोजेक्ट विस्तार से वर्णन करें...",
+      "startDate": "प्रोजेक्ट शुरुआत की तारीख",
+      "generate": "पूरी प्रोजेक्ट योजना बनाएं",
+      "generating": "बन रहा है...",
+      "examples": {
+        "e1": "ब्लॉग और CMS के साथ कॉर्पोरेट वेबसाइट बनाएं",
+        "e2": "iOS और Android के लिए e-commerce ऐप लॉन्च करें",
+        "e3": "अस्पताल के लिए रोगी प्रबंधन प्रणाली विकसित करें",
+        "e4": "उत्पाद लॉन्च के लिए मार्केटिंग अभियान बनाएं"
+      }
+    },
+    "result": {
+      "success": "योजना बनाई गई",
+      "open": "प्रोजेक्ट खोलें",
+      "teamAssignments": "टीम असाइनमेंट ({{count}})"
+    },
+    "tools": {
+      "title": "त्वरित AI टूल्स",
+      "standup": {
+        "title": "दैनिक स्टैंडअप",
+        "select": "प्रोजेक्ट चुनें",
+        "generate": "स्टैंडअप बनाएं",
+        "generating": "बन रहा है..."
+      },
+      "performance": {
+        "title": "प्रदर्शन विश्लेषण",
+        "analyze": "विश्लेषण करें",
+        "score": "स्कोर",
+        "onTrack": "समय पर",
+        "atRisk": "जोखिम में"
+      },
+      "replan": {
+        "title": "स्वचालित पुनर्योजना",
+        "reason": "पुनर्योजना का कारण",
+        "reasonPlaceholder": "जैसे: संसाधन अनुपलब्ध, दायरे में बदलाव",
+        "replan": "प्रोजेक्ट पुनर्योजना करें",
+        "newEnd": "नई समाप्ति: {{date}}"
+      }
+    }
+  },
+  "team": {
+    "title": "टीम",
+    "search": "सदस्य खोजें...",
+    "stats": {
+      "total": "कुल सदस्य",
+      "active": "अभी सक्रिय",
+      "avgPerformance": "औसत प्रदर्शन",
+      "departments": "विभाग"
+    },
+    "card": {
+      "performance": "प्रदर्शन",
+      "skills": "कौशल",
+      "viewProfile": "प्रोफ़ाइल देखें",
+      "status": { "active": "सक्रिय", "away": "अनुपस्थित", "offline": "ऑफलाइन" }
+    }
+  },
+  "departments": {
+    "title": "विभाग",
+    "new": "नया विभाग",
+    "edit": "संपादित करें",
+    "delete": "हटाएं",
+    "members": "{{count}} सदस्य",
+    "head": "प्रमुख: {{name}}",
+    "noHead": "कोई प्रमुख नहीं",
+    "form": {
+      "name": "विभाग का नाम",
+      "description": "विवरण",
+      "color": "रंग",
+      "cancel": "रद्द करें",
+      "save": "सहेजें",
+      "create": "विभाग बनाएं"
+    }
+  },
+  "kanban": {
+    "title": "कानबान बोर्ड",
+    "columns": {
+      "planned": "नियोजित",
+      "in_progress": "प्रगति में",
+      "blocked": "अवरुद्ध",
+      "review": "समीक्षा",
+      "done": "पूर्ण"
+    },
+    "card": {
+      "subtasks": "{{done}}/{{total}} उप-कार्य",
+      "comments": "{{count}} टिप्पणियां"
+    }
+  },
+  "timeline": {
+    "title": "टाइमलाइन",
+    "today": "आज",
+    "week": "सप्ताह",
+    "month": "महीना",
+    "noTasks": "समय सीमा वाले कोई कार्य नहीं"
+  },
+  "task": {
+    "status": {
+      "planned": "नियोजित",
+      "in_progress": "प्रगति में",
+      "blocked": "अवरुद्ध",
+      "review": "समीक्षा",
+      "done": "पूर्ण"
+    },
+    "priority": {
+      "critical": "महत्वपूर्ण",
+      "high": "उच्च",
+      "medium": "मध्यम",
+      "low": "कम"
+    },
+    "type": {
+      "feature": "फ़ीचर",
+      "design": "डिज़ाइन",
+      "research": "शोध",
+      "planning": "योजना",
+      "meeting": "बैठक",
+      "review": "समीक्षा",
+      "deployment": "तैनाती",
+      "content": "सामग्री",
+      "testing": "परीक्षण",
+      "bug": "बग",
+      "other": "अन्य"
+    },
+    "detail": {
+      "title": "कार्य विवरण",
+      "status": "स्थिति",
+      "priority": "प्राथमिकता",
+      "type": "प्रकार",
+      "assignees": "असाइनी",
+      "dueDate": "नियत तारीख",
+      "estimatedHours": "अनुमानित घंटे",
+      "subtasks": "उप-कार्य",
+      "comments": "टिप्पणियां",
+      "addComment": "टिप्पणी जोड़ें...",
+      "post": "पोस्ट करें",
+      "noSubtasks": "कोई उप-कार्य नहीं",
+      "noComments": "अभी तक कोई टिप्पणी नहीं"
+    }
+  },
+  "common": {
+    "loading": "लोड हो रहा है...",
+    "save": "सहेजें",
+    "cancel": "रद्द करें",
+    "delete": "हटाएं",
+    "edit": "संपादित करें",
+    "create": "बनाएं",
+    "close": "बंद करें",
+    "open": "खोलें",
+    "back": "वापस",
+    "next": "अगला",
+    "confirm": "पुष्टि करें",
+    "search": "खोजें",
+    "filter": "फ़िल्टर",
+    "noData": "कोई डेटा उपलब्ध नहीं",
+    "progress": "प्रगति",
+    "actions": "कार्रवाइयां",
+    "name": "नाम",
+    "description": "विवरण",
+    "date": "तारीख",
+    "or": "या"
+  },
+  "errors": {
+    "connectionError": "सर्वर से कनेक्ट नहीं हो सका। बैकएंड चल रहा है यह जांचें।",
+    "timeout": "अनुरोध में बहुत समय लगा। कृपया पुनः प्रयास करें।",
+    "loginFailed": "लॉगिन विफल। अपनी साख जांचें।",
+    "generic": "कुछ गलत हुआ। कृपया पुनः प्रयास करें।"
+  },
+  "projectDetail": {
+    "tabs": {
+      "overview": "अवलोकन",
+      "goals": "लक्ष्य और कार्य",
+      "team": "टीम"
+    },
+    "overallProgress": "समग्र प्रगति",
+    "goalsProgress": "लक्ष्य प्रगति",
+    "totalTasks": "कुल कार्य",
+    "completed": "पूर्ण",
+    "inProgress": "प्रगति में",
+    "blocked": "अवरुद्ध",
+    "addGoal": "लक्ष्य जोड़ें",
+    "addTask": "कार्य जोड़ें",
+    "standup": "दैनिक AI स्टैंडअप रिपोर्ट",
+    "performance": "प्रदर्शन विश्लेषण",
+    "overallScore": "समग्र स्कोर",
+    "riskLevel": "जोखिम स्तर"
+  }
+}

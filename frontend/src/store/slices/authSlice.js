@@ -4,7 +4,7 @@ import { authAPI } from '../../services/api.js';
 export const loginUser = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
     const res = await authAPI.login(email, password);
-    localStorage.setItem('work_os_token', res.data.token);
+    localStorage.setItem('julay_token', res.data.token);
     return res.data;
   } catch (err) { return rejectWithValue(err.message || 'Login failed'); }
 });
@@ -12,7 +12,7 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
 export const registerUser = createAsyncThunk('auth/register', async (data, { rejectWithValue }) => {
   try {
     const res = await authAPI.register(data);
-    localStorage.setItem('work_os_token', res.data.token);
+    localStorage.setItem('julay_token', res.data.token);
     return res.data;
   } catch (err) { return rejectWithValue(err.message || 'Registration failed'); }
 });
@@ -26,12 +26,12 @@ export const fetchCurrentUser = createAsyncThunk('auth/fetchMe', async (_, { rej
 
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { user: null, token: localStorage.getItem('work_os_token'), loading: false, error: null, initialized: !localStorage.getItem('work_os_token') },
+  initialState: { user: null, token: localStorage.getItem('julay_token'), loading: false, error: null, initialized: !localStorage.getItem('julay_token') },
   reducers: {
     logout(state) {
       state.user = null;
       state.token = null;
-      localStorage.removeItem('work_os_token');
+      localStorage.removeItem('julay_token');
     },
     clearError(state) { state.error = null; }
   },
@@ -45,7 +45,7 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
       .addCase(fetchCurrentUser.pending, s => { s.loading = true; })
       .addCase(fetchCurrentUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload; s.initialized = true; })
-      .addCase(fetchCurrentUser.rejected, s => { s.loading = false; s.token = null; s.initialized = true; localStorage.removeItem('work_os_token'); });
+      .addCase(fetchCurrentUser.rejected, s => { s.loading = false; s.token = null; s.initialized = true; localStorage.removeItem('julay_token'); });
   }
 });
 

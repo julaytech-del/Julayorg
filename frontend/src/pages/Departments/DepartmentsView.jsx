@@ -2,12 +2,14 @@ import React, { useEffect, useState } from 'react';
 import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
 import { Add, Edit, Delete, Business } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { departmentsAPI } from '../../services/api.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 
 export default function DepartmentsView() {
   const dispatch = useDispatch();
+  const { t } = useTranslation();
   const [departments, setDepartments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -29,26 +31,26 @@ export default function DepartmentsView() {
     try {
       if (editing) await departmentsAPI.update(editing._id, form);
       else await departmentsAPI.create(form);
-      dispatch(showSnackbar({ message: editing ? 'Department updated' : 'Department created' }));
+      dispatch(showSnackbar({ message: editing ? t('departments.form.save') : t('departments.form.create') }));
       setDialogOpen(false);
       load();
-    } catch { dispatch(showSnackbar({ message: 'Failed to save', severity: 'error' })); }
+    } catch { dispatch(showSnackbar({ message: t('errors.generic'), severity: 'error' })); }
   };
 
   const handleDelete = async () => {
     try {
       await departmentsAPI.delete(deleteTarget._id);
-      dispatch(showSnackbar({ message: 'Department deleted', severity: 'info' }));
+      dispatch(showSnackbar({ message: t('departments.delete'), severity: 'info' }));
       setDeleteTarget(null);
       load();
-    } catch { dispatch(showSnackbar({ message: 'Failed to delete', severity: 'error' })); }
+    } catch { dispatch(showSnackbar({ message: t('errors.generic'), severity: 'error' })); }
   };
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
-        <Typography variant="h5" fontWeight={700}>Departments</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>New Department</Button>
+        <Typography variant="h5" fontWeight={700}>{t('departments.title')}</Typography>
+        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>{t('departments.new')}</Button>
       </Box>
 
       <Grid container spacing={2.5}>
@@ -64,7 +66,7 @@ export default function DepartmentsView() {
                     </Box>
                     <Box>
                       <Typography variant="subtitle1" fontWeight={700}>{dept.name}</Typography>
-                      <Chip label={`${dept.memberCount || 0} members`} size="small" sx={{ height: 18, fontSize: '0.65rem' }} />
+                      <Chip label={t('departments.members', { count: dept.memberCount || 0 })} size="small" sx={{ height: 18, fontSize: '0.65rem' }} />
                     </Box>
                   </Box>
                   <Box sx={{ display: 'flex', gap: 0.5 }}>
@@ -76,7 +78,7 @@ export default function DepartmentsView() {
                 {dept.head && (
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                     <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: dept.color }}>{dept.head.name?.[0]}</Avatar>
-                    <Typography variant="caption" color="text.secondary">Head: {dept.head.name}</Typography>
+                    <Typography variant="caption" color="text.secondary">{t('departments.head', { name: dept.head.name })}</Typography>
                   </Box>
                 )}
               </CardContent>
@@ -87,32 +89,40 @@ export default function DepartmentsView() {
           <Grid item xs={12}>
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Business sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
-              <Typography color="text.secondary">No departments yet</Typography>
-              <Button variant="contained" startIcon={<Add />} sx={{ mt: 2 }} onClick={() => handleOpen()}>Create Department</Button>
+              <Typography color="text.secondary">{t('common.noData')}</Typography>
+              <Button variant="contained" startIcon={<Add />} sx={{ mt: 2 }} onClick={() => handleOpen()}>{t('departments.form.create')}</Button>
             </Box>
           </Grid>
         )}
       </Grid>
 
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle fontWeight={700}>{editing ? 'Edit Department' : 'New Department'}</DialogTitle>
+        <DialogTitle fontWeight={700}>{editing ? t('departments.edit') : t('departments.new')}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
-          <TextField label="Department Name" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required fullWidth />
-          <TextField label="Description" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} multiline rows={2} fullWidth />
+          <TextField label={t('departments.form.name')} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required fullWidth />
+          <TextField label={t('departments.form.description')} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} multiline rows={2} fullWidth />
           <Box>
-            <Typography variant="caption" color="text.secondary" display="block" mb={0.75}>Color</Typography>
+            <Typography variant="caption" color="text.secondary" display="block" mb={0.75}>{t('departments.form.color')}</Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
               {COLORS.map(c => <Box key={c} onClick={() => setForm(p => ({ ...p, color: c }))} sx={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: c, cursor: 'pointer', border: form.color === c ? '3px solid #1E293B' : '2px solid transparent', transition: 'all 0.1s' }} />)}
             </Box>
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleSave} disabled={!form.name.trim()}>{editing ? 'Save' : 'Create'}</Button>
+          <Button onClick={() => setDialogOpen(false)}>{t('departments.form.cancel')}</Button>
+          <Button variant="contained" onClick={handleSave} disabled={!form.name.trim()}>
+            {editing ? t('departments.form.save') : t('departments.form.create')}
+          </Button>
         </DialogActions>
       </Dialog>
 
-      <ConfirmDialog open={Boolean(deleteTarget)} title="Delete Department" message={`Delete "${deleteTarget?.name}"? Members will be unassigned.`} onConfirm={handleDelete} onCancel={() => setDeleteTarget(null)} />
+      <ConfirmDialog
+        open={Boolean(deleteTarget)}
+        title={t('departments.delete') + ' ' + (deleteTarget?.name || '')}
+        message={`${t('departments.delete')} "${deleteTarget?.name}"?`}
+        onConfirm={handleDelete}
+        onCancel={() => setDeleteTarget(null)}
+      />
     </Box>
   );
 }
