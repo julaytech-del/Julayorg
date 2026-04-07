@@ -9,10 +9,13 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H 34.227.78.81 >> ~/.ssh/known_hosts
+
       - name: Deploy to server
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: 34.227.78.81
-          username: ubuntu
-          key: ${{ secrets.DEPLOY_SSH_KEY }}
-          script: /home/ubuntu/deploy.sh
+        run: |
+          ssh -i ~/.ssh/deploy_key ubuntu@34.227.78.81 "/home/ubuntu/deploy.sh"
