@@ -108,18 +108,6 @@ export default function Login() {
                 </Button>
               </form>
 
-              <Divider sx={{ my: 2.5, borderColor: 'rgba(255,255,255,0.07)' }}>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem' }}>{t('auth.login.orDemo')}</Typography>
-              </Divider>
-
-              <Box onClick={fillDemo} sx={{ p: 2, borderRadius: 2, border: '1px dashed rgba(99,102,241,0.3)', backgroundColor: 'rgba(99,102,241,0.06)', cursor: 'pointer', transition: 'all 0.15s', '&:hover': { backgroundColor: 'rgba(99,102,241,0.1)', borderColor: 'rgba(99,102,241,0.5)' } }}>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                  <AutoAwesome sx={{ fontSize: 14, color: '#818CF8' }} />
-                  <Typography variant="caption" fontWeight={700} sx={{ color: '#818CF8', fontSize: '0.75rem' }}>{t('auth.login.demoTitle')}</Typography>
-                </Box>
-                <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.72rem', display: 'block' }}>{t('auth.login.demoSubtitle')}</Typography>
-              </Box>
-
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.35)', textAlign: 'center', mt: 2.5, fontSize: '0.8rem' }}>
                 {t('auth.login.noAccount')}{' '}
                 <Link component={RouterLink} to="/register" sx={{ color: '#818CF8', fontWeight: 700, textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}>{t('auth.login.createWorkspace')}</Link>
