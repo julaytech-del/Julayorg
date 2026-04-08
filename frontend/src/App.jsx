@@ -14,12 +14,19 @@ import GanttView from './pages/Timeline/GanttView.jsx';
 import AIStudio from './pages/AI/AIStudio.jsx';
 import TeamView from './pages/Team/TeamView.jsx';
 import DepartmentsView from './pages/Departments/DepartmentsView.jsx';
+import Landing from './pages/Landing.jsx';
 import SnackbarAlert from './components/common/SnackbarAlert.jsx';
 
 function ProtectedRoute({ children }) {
   const { token, initialized, loading } = useSelector(s => s.auth);
   if (!initialized && loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
-  if (!token) return <Navigate to="/login" replace />;
+  if (!token) return <Navigate to="/" replace />;
+  return children;
+}
+
+function PublicRoute({ children }) {
+  const { token } = useSelector(s => s.auth);
+  if (token) return <Navigate to="/dashboard" replace />;
   return children;
 }
 
@@ -38,9 +45,10 @@ export default function App() {
   return (
     <>
       <Routes>
-        <Route path="/login" element={<Login />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+        <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+        <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+        <Route path="/dashboard" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
           <Route index element={<Dashboard />} />
           <Route path="projects" element={<ProjectList />} />
           <Route path="projects/:id" element={<ProjectDetail />} />

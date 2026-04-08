@@ -192,7 +192,14 @@ export default function AIStudio() {
               </Typography>
             ))}
           </Box>
-          <Button variant="contained" size="large" fullWidth sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', py: 1.5, fontSize: 16, fontWeight: 700 }}>
+          <Button variant="contained" size="large" fullWidth sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', py: 1.5, fontSize: 16, fontWeight: 700 }}
+            onClick={async () => {
+              try {
+                const { default: api } = await import('../../services/api.js');
+                const res = await api.post('/subscription/checkout');
+                if (res.url) window.location.href = res.url;
+              } catch (e) { alert('حدث خطأ، حاول مرة أخرى'); }
+            }}>
             اشترك الآن — $20/شهر
           </Button>
         </Card>

@@ -18,17 +18,17 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
 
   const NAV = [
     { title: t('nav.sections.workspace'), items: [
-      { label: t('nav.dashboard'), icon: Dashboard, path: '/' },
-      { label: t('nav.projects'), icon: FolderOpen, path: '/projects' },
-      { label: t('nav.team'), icon: Group, path: '/team' },
-      { label: t('nav.departments'), icon: Business, path: '/departments' },
+      { label: t('nav.dashboard'), icon: Dashboard, path: '/dashboard' },
+      { label: t('nav.projects'), icon: FolderOpen, path: '/dashboard/projects' },
+      { label: t('nav.team'), icon: Group, path: '/dashboard/team' },
+      { label: t('nav.departments'), icon: Business, path: '/dashboard/departments' },
     ]},
     { title: t('nav.sections.intelligence'), items: [
-      { label: t('nav.aiStudio'), icon: AutoAwesome, path: '/ai', badge: 'NEW' },
+      { label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'NEW' },
     ]}
   ];
 
-  const isActive = (path) => path === '/' ? location.pathname === '/' : location.pathname.startsWith(path);
+  const isActive = (path) => path === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(path);
   const handleNav = (path) => { navigate(path); if (variant === 'temporary') onClose?.(); };
 
   const content = (

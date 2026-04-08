@@ -6,7 +6,8 @@ import { BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer, PieChart, Pi
 import { format, formatDistanceToNow } from 'date-fns';
 import { dashboardAPI } from '../services/api.js';
 import { useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { Alert, Snackbar } from '@mui/material';
 import StatusChip from '../components/common/StatusChip.jsx';
 import PriorityChip from '../components/common/PriorityChip.jsx';
 
@@ -72,8 +73,10 @@ export default function Dashboard() {
   const user = useSelector(s => s.auth.user);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [searchParams] = useSearchParams();
   const [stats, setStats] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [upgraded, setUpgraded] = useState(searchParams.get('upgraded') === '1');
 
   useEffect(() => {
     dashboardAPI.getStats()
@@ -94,6 +97,11 @@ export default function Dashboard() {
 
   return (
     <Box>
+      <Snackbar open={upgraded} autoHideDuration={6000} onClose={() => setUpgraded(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
+        <Alert severity="success" onClose={() => setUpgraded(false)} sx={{ fontWeight: 700 }}>
+          🎉 Welcome to Julay Pro! AI Studio is now unlocked.
+        </Alert>
+      </Snackbar>
       {/* Welcome Banner */}
       <Box sx={{
         mb: 3, p: 3, borderRadius: 3,
