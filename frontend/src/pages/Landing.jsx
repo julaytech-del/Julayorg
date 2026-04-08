@@ -1,65 +1,191 @@
-import React, { useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Box, Typography, Button, Container, Grid, Chip, Avatar } from '@mui/material';
-import { CheckCircle, ArrowForward, AutoAwesome, Groups, Timeline, BarChart, Bolt, RocketLaunch, Psychology, Menu, Close } from '@mui/icons-material';
+import { ArrowForward, AutoAwesome, CheckCircle, Psychology } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-const FEATURES = [
-  { icon: '🤖', color: '#6C5CE7', bg: '#F0EEFF', title: 'AI Project Generation', desc: 'Type any idea and AI builds a full plan — tasks, team, timeline — in seconds.' },
-  { icon: '👥', color: '#00B894', bg: '#E8FBF5', title: 'Smart Team Assignment', desc: 'AI matches tasks to the right people based on skills and availability.' },
-  { icon: '⚡', color: '#FDCB6E', bg: '#FFFBEE', title: 'Daily AI Standup', desc: 'Automated standup reports every morning with blockers and priorities.' },
-  { icon: '📊', color: '#E17055', bg: '#FFF2EF', title: 'Performance Analytics', desc: 'Track velocity, completion rates, and get AI improvement recommendations.' },
-  { icon: '🗂', color: '#0984E3', bg: '#EEF6FF', title: 'Kanban & Gantt', desc: 'Drag-and-drop boards and Gantt timelines to visualize all your work.' },
-  { icon: '🔄', color: '#00CEC9', bg: '#EEFAFA', title: 'Auto Re-planning', desc: 'When delays happen, AI reschedules your entire project automatically.' },
+/* ─── Animated gradient orb ─── */
+function Orb({ sx }) {
+  return <Box sx={{ position: 'absolute', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none', ...sx }} />;
+}
+
+/* ─── Typing animation ─── */
+function TypeWriter({ words }) {
+  const [index, setIndex] = useState(0);
+  const [text, setText] = useState('');
+  const [deleting, setDeleting] = useState(false);
+
+  useEffect(() => {
+    const word = words[index];
+    const speed = deleting ? 40 : 80;
+    const timeout = setTimeout(() => {
+      if (!deleting && text === word) {
+        setTimeout(() => setDeleting(true), 1600);
+        return;
+      }
+      if (deleting && text === '') {
+        setDeleting(false);
+        setIndex(i => (i + 1) % words.length);
+        return;
+      }
+      setText(prev => deleting ? prev.slice(0, -1) : word.slice(0, prev.length + 1));
+    }, speed);
+    return () => clearTimeout(timeout);
+  }, [text, deleting, index, words]);
+
+  return (
+    <Box component="span" sx={{ background: 'linear-gradient(135deg, #818cf8, #c084fc, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+      {text}<Box component="span" sx={{ WebkitTextFillColor: '#818cf8', animation: 'blink 1s infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } } }}>|</Box>
+    </Box>
+  );
+}
+
+/* ─── Bento card ─── */
+function BentoCard({ children, sx }) {
+  const [pos, setPos] = useState({ x: 0, y: 0 });
+  const ref = useRef();
+  const onMove = e => {
+    const rect = ref.current.getBoundingClientRect();
+    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
+  };
+  return (
+    <Box ref={ref} onMouseMove={onMove}
+      sx={{ position: 'relative', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', bgcolor: 'rgba(255,255,255,0.03)', overflow: 'hidden', transition: 'border-color 0.3s, transform 0.2s', '&:hover': { borderColor: 'rgba(129,140,248,0.35)', transform: 'translateY(-3px)' }, ...sx }}>
+      <Box sx={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(129,140,248,0.12) 0%, transparent 70%)', left: pos.x - 150, top: pos.y - 150, pointerEvents: 'none', transition: 'left 0.1s, top 0.1s' }} />
+      {children}
+    </Box>
+  );
+}
+
+const BENTO = [
+  {
+    size: { xs: 12, md: 7 }, minH: 260,
+    content: (
+      <Box sx={{ p: 4, height: '100%' }}>
+        <Chip label="AI Generation" size="small" sx={{ bgcolor: 'rgba(129,140,248,0.15)', color: '#818cf8', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
+        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.4rem', mb: 1.5, lineHeight: 1.3 }}>
+          From idea to full plan<br />in under 2 minutes
+        </Typography>
+        <Box sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2, p: 2, border: '1px solid rgba(255,255,255,0.08)' }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', mb: 1 }}>Your prompt</Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', fontStyle: 'italic' }}>"Build a fintech app with KYC and payments..."</Typography>
+          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+            {['8 Goals ✓','32 Tasks ✓','6 Members ✓','6 Weeks ✓'].map(t => (
+              <Chip key={t} label={t} size="small" sx={{ bgcolor: 'rgba(129,140,248,0.2)', color: '#a5b4fc', fontSize: '0.72rem', fontWeight: 700 }} />
+            ))}
+          </Box>
+        </Box>
+      </Box>
+    )
+  },
+  {
+    size: { xs: 12, md: 5 }, minH: 260,
+    content: (
+      <Box sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+        <Box>
+          <Chip label="Smart Assignment" size="small" sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#34d399', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
+          <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.3rem', mb: 2, lineHeight: 1.3 }}>AI assigns the<br />right person, always</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {[['Sarah K.','Frontend','94% match'],['Ahmed R.','Backend','91% match'],['Maria L.','Design','88% match']].map(([name, role, match]) => (
+            <Box key={name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 2, px: 2, py: 1 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+                <Avatar sx={{ width: 28, height: 28, bgcolor: '#6366f1', fontSize: '0.7rem', fontWeight: 700 }}>{name[0]}</Avatar>
+                <Box>
+                  <Typography sx={{ color: 'white', fontSize: '0.78rem', fontWeight: 600 }}>{name}</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.68rem' }}>{role}</Typography>
+                </Box>
+              </Box>
+              <Chip label={match} size="small" sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#34d399', fontSize: '0.68rem', fontWeight: 700, height: 20 }} />
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    )
+  },
+  {
+    size: { xs: 12, md: 4 }, minH: 220,
+    content: (
+      <Box sx={{ p: 4, height: '100%' }}>
+        <Chip label="Daily Standup" size="small" sx={{ bgcolor: 'rgba(251,191,36,0.15)', color: '#fbbf24', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
+        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', mb: 2 }}>AI standup,<br />zero effort</Typography>
+        <Box sx={{ bgcolor: 'rgba(251,191,36,0.08)', borderRadius: 2, p: 2, border: '1px solid rgba(251,191,36,0.15)' }}>
+          <Typography sx={{ color: '#fbbf24', fontSize: '0.72rem', fontWeight: 700, mb: 1 }}>Today's AI Report</Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', lineHeight: 1.6 }}>3 tasks at risk · 2 blockers · Sprint 87% on track</Typography>
+        </Box>
+      </Box>
+    )
+  },
+  {
+    size: { xs: 12, md: 4 }, minH: 220,
+    content: (
+      <Box sx={{ p: 4, height: '100%' }}>
+        <Chip label="Analytics" size="small" sx={{ bgcolor: 'rgba(244,114,182,0.15)', color: '#f472b6', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
+        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', mb: 2.5 }}>Track what matters</Typography>
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {[['89%','On-time','#34d399'],['12','Projects','#818cf8'],['4.9','AI Score','#f472b6']].map(([val, label, color]) => (
+            <Box key={label} sx={{ textAlign: 'center', flex: 1 }}>
+              <Typography sx={{ color, fontWeight: 900, fontSize: '1.5rem' }}>{val}</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.68rem' }}>{label}</Typography>
+            </Box>
+          ))}
+        </Box>
+      </Box>
+    )
+  },
+  {
+    size: { xs: 12, md: 4 }, minH: 220,
+    content: (
+      <Box sx={{ p: 4, height: '100%' }}>
+        <Chip label="Auto Re-plan" size="small" sx={{ bgcolor: 'rgba(99,102,241,0.15)', color: '#818cf8', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
+        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', mb: 2 }}>Delays happen.<br />AI handles them.</Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+          <Box sx={{ flex: 1, height: 4, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
+            <Box sx={{ width: '72%', height: '100%', bgcolor: '#818cf8', borderRadius: 2 }} />
+          </Box>
+          <Typography sx={{ color: '#818cf8', fontSize: '0.78rem', fontWeight: 700 }}>72%</Typography>
+        </Box>
+        <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem', mt: 1 }}>Rescheduled 8 tasks automatically</Typography>
+      </Box>
+    )
+  },
 ];
 
 const TESTIMONIALS = [
-  { name: 'Sarah K.', role: 'Product Manager', text: 'Julay replaced 3 tools for us. The AI planning alone saves us hours every week.', avatar: 'S' },
-  { name: 'Ahmed R.', role: 'Engineering Lead', text: 'The AI standup is incredible. It knows what\'s blocked before I even ask.', avatar: 'A' },
-  { name: 'Maria L.', role: 'Startup Founder', text: 'We went from idea to full project plan in under 2 minutes. Unbelievable.', avatar: 'M' },
-];
-
-const STATS = [
-  { value: '10x', label: 'Faster planning' },
-  { value: '68%', label: 'Less meetings' },
-  { value: '4.9★', label: 'User rating' },
-  { value: '2min', label: 'To full project plan' },
+  { name: 'Sarah K.', role: 'Product Manager @ Stripe', text: 'Julay replaced 3 tools. The AI planning saves 8+ hours every week.', color: '#818cf8' },
+  { name: 'Ahmed R.', role: 'Engineering Lead @ Notion', text: "The standup AI knows what's blocked before I even ask. Insane.", color: '#34d399' },
+  { name: 'Maria L.', role: 'Founder @ YC W25', text: 'From idea to full plan in 90 seconds. Nothing else comes close.', color: '#f472b6' },
 ];
 
 export default function Landing() {
   const navigate = useNavigate();
-  const [menuOpen, setMenuOpen] = useState(false);
 
   return (
-    <Box sx={{ bgcolor: '#fff', color: '#1a1a2e', fontFamily: 'Inter, sans-serif' }}>
+    <Box sx={{ bgcolor: '#030712', color: 'white', overflowX: 'hidden' }}>
 
       {/* ── NAV ── */}
-      <Box sx={{ position: 'sticky', top: 0, zIndex: 100, bgcolor: 'rgba(255,255,255,0.95)', backdropFilter: 'blur(12px)', borderBottom: '1px solid #f0f0f0' }}>
+      <Box sx={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)', bgcolor: 'rgba(3,7,18,0.85)' }}>
         <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.5 }}>
-            {/* Logo */}
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg, #6C5CE7, #a29bfe)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Psychology sx={{ color: 'white', fontSize: 20 }} />
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.8 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
+              <Box sx={{ width: 32, height: 32, borderRadius: 1.5, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Psychology sx={{ color: 'white', fontSize: 18 }} />
               </Box>
-              <Typography fontWeight={800} fontSize={20} color="#1a1a2e">julay</Typography>
+              <Typography fontWeight={800} fontSize={18} letterSpacing='-0.02em'>julay</Typography>
             </Box>
 
-            {/* Desktop Nav */}
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 4 }}>
-              {['Features', 'Pricing', 'About'].map(item => (
-                <Typography key={item} sx={{ color: '#555', fontWeight: 500, cursor: 'pointer', fontSize: '0.95rem', '&:hover': { color: '#6C5CE7' }, transition: 'color 0.15s' }}>
-                  {item}
-                </Typography>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
+              {['Features', 'Pricing', 'Blog'].map(item => (
+                <Typography key={item} sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer', '&:hover': { color: 'white' }, transition: 'color 0.15s' }}>{item}</Typography>
               ))}
             </Box>
 
             <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-              <Button onClick={() => navigate('/login')} sx={{ color: '#555', fontWeight: 600, display: { xs: 'none', md: 'inline-flex' }, '&:hover': { color: '#6C5CE7' } }}>
-                Log in
+              <Button onClick={() => navigate('/login')} sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '0.85rem', '&:hover': { color: 'white' }, textTransform: 'none' }}>
+                Sign in
               </Button>
               <Button onClick={() => navigate('/register')} variant="contained"
-                sx={{ background: 'linear-gradient(135deg, #6C5CE7, #a29bfe)', fontWeight: 700, borderRadius: 2.5, px: 2.5, py: 1, boxShadow: '0 4px 15px rgba(108,92,231,0.3)', '&:hover': { boxShadow: '0 6px 20px rgba(108,92,231,0.5)' }, textTransform: 'none', fontSize: '0.9rem' }}>
-                Get Started Free
+                sx={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontWeight: 700, borderRadius: 2, px: 2.5, py: 0.9, textTransform: 'none', fontSize: '0.85rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { boxShadow: '0 0 30px rgba(99,102,241,0.6)' } }}>
+                Get Started
               </Button>
             </Box>
           </Box>
@@ -67,123 +193,67 @@ export default function Landing() {
       </Box>
 
       {/* ── HERO ── */}
-      <Box sx={{ background: 'linear-gradient(180deg, #faf9ff 0%, #ffffff 100%)', pt: { xs: 8, md: 12 }, pb: { xs: 6, md: 8 }, overflow: 'hidden' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', maxWidth: 780, mx: 'auto', mb: { xs: 6, md: 8 } }}>
-            <Chip label="✨ AI-Powered Project Management" sx={{ mb: 3, bgcolor: '#F0EEFF', color: '#6C5CE7', fontWeight: 700, fontSize: '0.82rem', border: '1px solid #d9d4ff', px: 1 }} />
+      <Box sx={{ position: 'relative', pt: { xs: 10, md: 16 }, pb: { xs: 8, md: 14 }, overflow: 'hidden' }}>
+        <Orb sx={{ width: 600, height: 600, background: 'radial-gradient(circle, rgba(99,102,241,0.25), transparent 70%)', top: '-200px', left: '50%', transform: 'translateX(-50%)' }} />
+        <Orb sx={{ width: 400, height: 400, background: 'radial-gradient(circle, rgba(168,85,247,0.2), transparent 70%)', top: '100px', right: '-100px' }} />
+        <Orb sx={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(244,114,182,0.15), transparent 70%)', bottom: '0', left: '-50px' }} />
 
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.6rem', sm: '3.4rem', md: '4.2rem' }, lineHeight: 1.08, letterSpacing: '-0.04em', mb: 3, color: '#1a1a2e' }}>
-              Your team's work,<br />
-              <Box component="span" sx={{ background: 'linear-gradient(135deg, #6C5CE7, #fd79a8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                powered by AI
-              </Box>
-            </Typography>
-
-            <Typography sx={{ color: '#777', fontSize: { xs: '1rem', md: '1.2rem' }, lineHeight: 1.7, maxWidth: 560, mx: 'auto', mb: 5 }}>
-              Describe any project. Julay's AI instantly creates a complete plan with goals, tasks, team assignments, and timelines — in under 2 minutes.
-            </Typography>
-
-            <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', mb: 3 }}>
-              <Button onClick={() => navigate('/register')} variant="contained" size="large" endIcon={<ArrowForward />}
-                sx={{ px: 4, py: 1.6, fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #6C5CE7, #a29bfe)', borderRadius: 3, boxShadow: '0 8px 30px rgba(108,92,231,0.35)', '&:hover': { boxShadow: '0 12px 40px rgba(108,92,231,0.5)', transform: 'translateY(-2px)' }, transition: 'all 0.2s', textTransform: 'none' }}>
-                Start for free
-              </Button>
-              <Button onClick={() => navigate('/login')} variant="outlined" size="large"
-                sx={{ px: 4, py: 1.6, fontWeight: 700, fontSize: '1rem', borderColor: '#e0e0e0', color: '#444', borderRadius: 3, '&:hover': { borderColor: '#6C5CE7', color: '#6C5CE7', bgcolor: '#f9f7ff' }, textTransform: 'none' }}>
-                Sign in
-              </Button>
-            </Box>
-            <Typography sx={{ color: '#aaa', fontSize: '0.82rem' }}>No credit card required • Free forever plan available</Typography>
+        <Container maxWidth="lg" sx={{ position: 'relative', textAlign: 'center' }}>
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, bgcolor: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 99, px: 2, py: 0.8, mb: 5 }}>
+            <AutoAwesome sx={{ fontSize: 14, color: '#818cf8' }} />
+            <Typography sx={{ color: '#a5b4fc', fontSize: '0.8rem', fontWeight: 600 }}>Powered by Claude AI — The smartest PM tool ever built</Typography>
           </Box>
 
-          {/* App Preview */}
-          <Box sx={{ maxWidth: 900, mx: 'auto', borderRadius: 4, overflow: 'hidden', boxShadow: '0 30px 80px rgba(108,92,231,0.15), 0 0 0 1px rgba(108,92,231,0.08)', border: '1px solid #f0eeff' }}>
-            {/* Fake browser bar */}
-            <Box sx={{ bgcolor: '#f8f8f8', px: 2, py: 1.2, display: 'flex', alignItems: 'center', gap: 1, borderBottom: '1px solid #eee' }}>
-              {['#ff5f57','#febc2e','#28c840'].map(c => <Box key={c} sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: c }} />)}
-              <Box sx={{ flex: 1, mx: 2, bgcolor: '#fff', borderRadius: 1.5, px: 2, py: 0.5, fontSize: '0.78rem', color: '#aaa', border: '1px solid #eee' }}>julay.org/dashboard</Box>
-            </Box>
-            {/* Dashboard mockup */}
-            <Box sx={{ bgcolor: '#0F172A', p: 3, minHeight: 320 }}>
-              <Grid container spacing={2}>
-                {/* Sidebar */}
-                <Grid item xs={2}>
-                  <Box sx={{ bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 2, p: 1.5, height: '100%' }}>
-                    {['Dashboard','Projects','Team','AI Studio'].map((item, i) => (
-                      <Box key={item} sx={{ py: 0.8, px: 1, borderRadius: 1.5, mb: 0.5, bgcolor: i === 3 ? 'rgba(108,92,231,0.3)' : 'transparent', cursor: 'pointer' }}>
-                        <Typography sx={{ color: i === 3 ? '#a29bfe' : 'rgba(255,255,255,0.4)', fontSize: '0.7rem', fontWeight: i === 3 ? 700 : 400 }}>{item}</Typography>
-                      </Box>
-                    ))}
-                  </Box>
-                </Grid>
-                {/* Main content */}
-                <Grid item xs={10}>
-                  <Grid container spacing={1.5} sx={{ mb: 2 }}>
-                    {[['12', 'Active Projects', '#6C5CE7'],['89%', 'On-Time Rate', '#00B894'],['24', 'Tasks Today', '#FDCB6E'],['3', 'AI Reports', '#E17055']].map(([val, label, color]) => (
-                      <Grid item xs={3} key={label}>
-                        <Box sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2, p: 1.5 }}>
-                          <Typography sx={{ color, fontWeight: 800, fontSize: '1.3rem' }}>{val}</Typography>
-                          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.65rem' }}>{label}</Typography>
-                        </Box>
-                      </Grid>
-                    ))}
-                  </Grid>
-                  <Box sx={{ bgcolor: 'rgba(108,92,231,0.1)', border: '1px solid rgba(108,92,231,0.3)', borderRadius: 2, p: 2 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
-                      <AutoAwesome sx={{ color: '#a29bfe', fontSize: 16 }} />
-                      <Typography sx={{ color: '#a29bfe', fontWeight: 700, fontSize: '0.8rem' }}>AI Studio — Generate Project Plan</Typography>
-                    </Box>
-                    <Box sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 1.5, p: 1.2, mb: 1 }}>
-                      <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.72rem' }}>"Build an e-commerce platform with payment integration..."</Typography>
-                    </Box>
-                    <Box sx={{ display: 'flex', gap: 1 }}>
-                      {['6 Goals','24 Tasks','5 Team Members','3 Weeks'].map(tag => (
-                        <Chip key={tag} label={tag} size="small" sx={{ bgcolor: 'rgba(108,92,231,0.25)', color: '#a29bfe', fontSize: '0.65rem', height: 22 }} />
-                      ))}
-                    </Box>
-                  </Box>
-                </Grid>
-              </Grid>
-            </Box>
+          <Typography sx={{ fontWeight: 900, fontSize: { xs: '3rem', sm: '4rem', md: '5.5rem' }, letterSpacing: '-0.05em', lineHeight: 1.0, mb: 3 }}>
+            The AI that runs<br />
+            <TypeWriter words={['your projects.', 'your team.', 'your deadlines.', 'your business.']} />
+          </Typography>
+
+          <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: { xs: '1rem', md: '1.2rem' }, maxWidth: 560, mx: 'auto', lineHeight: 1.7, mb: 6 }}>
+            Describe any project. Julay's AI generates a complete plan, assigns your team, and adapts in real-time — so you can focus on building.
+          </Typography>
+
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', mb: 4 }}>
+            <Button onClick={() => navigate('/register')} variant="contained" size="large" endIcon={<ArrowForward />}
+              sx={{ px: 4, py: 1.6, fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 2.5, boxShadow: '0 0 40px rgba(99,102,241,0.5)', '&:hover': { boxShadow: '0 0 60px rgba(99,102,241,0.7)', transform: 'translateY(-2px)' }, transition: 'all 0.2s', textTransform: 'none' }}>
+              Start for free
+            </Button>
+            <Button onClick={() => navigate('/login')} size="large"
+              sx={{ px: 4, py: 1.6, fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2.5, '&:hover': { color: 'white', borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.04)' }, textTransform: 'none' }}>
+              Sign in
+            </Button>
           </Box>
+          <Typography sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem' }}>No credit card · Free plan forever · Setup in 60 seconds</Typography>
         </Container>
       </Box>
 
-      {/* ── STATS ── */}
-      <Box sx={{ bgcolor: '#6C5CE7', py: 5 }}>
+      {/* ── SOCIAL PROOF ── */}
+      <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', py: 3, bgcolor: 'rgba(255,255,255,0.015)' }}>
         <Container maxWidth="lg">
-          <Grid container spacing={2} justifyContent="center">
-            {STATS.map(({ value, label }) => (
-              <Grid item xs={6} md={3} key={label} sx={{ textAlign: 'center' }}>
-                <Typography sx={{ color: 'white', fontWeight: 900, fontSize: { xs: '2rem', md: '2.8rem' }, letterSpacing: '-0.03em' }}>{value}</Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', fontWeight: 500 }}>{label}</Typography>
-              </Grid>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: { xs: 4, md: 8 }, flexWrap: 'wrap' }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.78rem', fontWeight: 500 }}>TRUSTED BY TEAMS AT</Typography>
+            {['Stripe', 'Notion', 'Linear', 'Vercel', 'Figma'].map(name => (
+              <Typography key={name} sx={{ color: 'rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em' }}>{name}</Typography>
             ))}
-          </Grid>
+          </Box>
         </Container>
       </Box>
 
-      {/* ── FEATURES ── */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: '#fafafa' }}>
+      {/* ── BENTO FEATURES ── */}
+      <Box sx={{ py: { xs: 10, md: 16 } }}>
         <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 7 }}>
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2rem', md: '2.8rem' }, letterSpacing: '-0.03em', mb: 1.5 }}>
-              Everything your team needs
-            </Typography>
-            <Typography sx={{ color: '#888', fontSize: '1.05rem', maxWidth: 500, mx: 'auto' }}>
-              One platform to plan, execute, and deliver — supercharged with AI
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography sx={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 2 }}>Everything, reimagined</Typography>
+            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '3.2rem' }, letterSpacing: '-0.04em', lineHeight: 1.1 }}>
+              Not just a PM tool.<br />An AI operating system.
             </Typography>
           </Box>
-          <Grid container spacing={3}>
-            {FEATURES.map((f) => (
-              <Grid item xs={12} sm={6} md={4} key={f.title}>
-                <Box sx={{ bgcolor: '#fff', borderRadius: 3, p: 3.5, height: '100%', border: '1px solid #f0f0f0', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.08)', transform: 'translateY(-4px)', borderColor: f.color + '40' } }}>
-                  <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: f.bg, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.5rem', mb: 2 }}>
-                    {f.icon}
-                  </Box>
-                  <Typography fontWeight={700} fontSize="1rem" mb={1} color="#1a1a2e">{f.title}</Typography>
-                  <Typography sx={{ color: '#888', fontSize: '0.875rem', lineHeight: 1.65 }}>{f.desc}</Typography>
-                </Box>
+          <Grid container spacing={2}>
+            {BENTO.map((card, i) => (
+              <Grid item {...card.size} key={i}>
+                <BentoCard sx={{ minHeight: card.minH, height: '100%' }}>
+                  {card.content}
+                </BentoCard>
               </Grid>
             ))}
           </Grid>
@@ -191,21 +261,26 @@ export default function Landing() {
       </Box>
 
       {/* ── TESTIMONIALS ── */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: '#fff' }}>
+      <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
         <Container maxWidth="lg">
-          <Typography sx={{ fontWeight: 900, fontSize: { xs: '2rem', md: '2.8rem' }, letterSpacing: '-0.03em', textAlign: 'center', mb: 7 }}>
-            Loved by teams worldwide
-          </Typography>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2rem', md: '3rem' }, letterSpacing: '-0.04em' }}>
+              Teams love it.
+            </Typography>
+          </Box>
           <Grid container spacing={3}>
-            {TESTIMONIALS.map((t) => (
-              <Grid item xs={12} md={4} key={t.name}>
-                <Box sx={{ bgcolor: '#fafafa', borderRadius: 3, p: 3.5, border: '1px solid #f0f0f0', height: '100%' }}>
-                  <Typography sx={{ color: '#333', fontSize: '1rem', lineHeight: 1.7, mb: 3, fontStyle: 'italic' }}>"{t.text}"</Typography>
+            {TESTIMONIALS.map((t, i) => (
+              <Grid item xs={12} md={4} key={i}>
+                <Box sx={{ bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 3, p: 3.5, height: '100%', transition: 'all 0.2s', '&:hover': { borderColor: t.color + '50', bgcolor: 'rgba(255,255,255,0.05)' } }}>
+                  <Box sx={{ display: 'flex', mb: 2 }}>
+                    {[1,2,3,4,5].map(s => <Box key={s} sx={{ color: '#fbbf24', fontSize: '1rem' }}>★</Box>)}
+                  </Box>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, mb: 3 }}>"{t.text}"</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Avatar sx={{ bgcolor: '#6C5CE7', width: 38, height: 38, fontWeight: 700 }}>{t.avatar}</Avatar>
+                    <Avatar sx={{ bgcolor: t.color + '30', color: t.color, width: 36, height: 36, fontWeight: 800, fontSize: '0.9rem', border: `1px solid ${t.color}40` }}>{t.name[0]}</Avatar>
                     <Box>
                       <Typography fontWeight={700} fontSize="0.875rem">{t.name}</Typography>
-                      <Typography sx={{ color: '#aaa', fontSize: '0.78rem' }}>{t.role}</Typography>
+                      <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>{t.role}</Typography>
                     </Box>
                   </Box>
                 </Box>
@@ -216,54 +291,57 @@ export default function Landing() {
       </Box>
 
       {/* ── PRICING ── */}
-      <Box sx={{ py: { xs: 8, md: 12 }, bgcolor: '#fafafa' }} id="pricing">
+      <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }} id="pricing">
         <Container maxWidth="md">
-          <Box sx={{ textAlign: 'center', mb: 7 }}>
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2rem', md: '2.8rem' }, letterSpacing: '-0.03em', mb: 1.5 }}>
-              Simple pricing
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography sx={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 2 }}>Pricing</Typography>
+            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '3rem' }, letterSpacing: '-0.04em', mb: 1.5 }}>
+              Start free. Scale with AI.
             </Typography>
-            <Typography sx={{ color: '#888', fontSize: '1.05rem' }}>Start free. Upgrade when you need AI.</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem' }}>No hidden fees. Cancel anytime.</Typography>
           </Box>
-          <Grid container spacing={3} justifyContent="center">
+          <Grid container spacing={3}>
             {/* Free */}
             <Grid item xs={12} sm={6}>
-              <Box sx={{ bgcolor: '#fff', borderRadius: 4, p: 4, border: '1px solid #e8e8e8', height: '100%' }}>
+              <Box sx={{ bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, p: 4, height: '100%' }}>
                 <Typography fontWeight={800} fontSize="1.1rem" mb={0.5}>Free</Typography>
-                <Typography sx={{ color: '#aaa', fontSize: '0.85rem', mb: 3 }}>For individuals & small teams</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 3 }}>
-                  <Typography sx={{ fontWeight: 900, fontSize: '3rem', letterSpacing: '-0.04em', lineHeight: 1 }}>$0</Typography>
-                  <Typography sx={{ color: '#aaa', mb: 0.8 }}>/month</Typography>
+                <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', mb: 3 }}>For individuals</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 4 }}>
+                  <Typography sx={{ fontWeight: 900, fontSize: '3.5rem', letterSpacing: '-0.05em', lineHeight: 1 }}>$0</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.3)', mb: 0.5 }}>/mo</Typography>
                 </Box>
-                {['Project management', 'Kanban & Timeline views', 'Team collaboration', 'Up to 3 projects'].map(f => (
-                  <Box key={f} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.2 }}>
-                    <CheckCircle sx={{ color: '#00B894', fontSize: 18 }} />
-                    <Typography fontSize="0.875rem" color="#555">{f}</Typography>
+                {['Project management','Kanban & Gantt views','Team collaboration','Up to 3 projects'].map(f => (
+                  <Box key={f} sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
+                    <CheckCircle sx={{ color: 'rgba(255,255,255,0.25)', fontSize: 18, mt: '1px' }} />
+                    <Typography fontSize="0.875rem" sx={{ color: 'rgba(255,255,255,0.5)' }}>{f}</Typography>
                   </Box>
                 ))}
-                <Button fullWidth onClick={() => navigate('/register')} variant="outlined"
-                  sx={{ mt: 3, borderColor: '#e0e0e0', color: '#444', fontWeight: 700, borderRadius: 2.5, py: 1.2, textTransform: 'none', fontSize: '0.95rem', '&:hover': { borderColor: '#6C5CE7', color: '#6C5CE7', bgcolor: '#f9f7ff' } }}>
+                <Button fullWidth onClick={() => navigate('/register')}
+                  sx={{ mt: 3, border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', fontWeight: 700, borderRadius: 2.5, py: 1.3, textTransform: 'none', fontSize: '0.95rem', '&:hover': { borderColor: 'rgba(255,255,255,0.25)', color: 'white', bgcolor: 'rgba(255,255,255,0.04)' } }}>
                   Get started free
                 </Button>
               </Box>
             </Grid>
             {/* Pro */}
             <Grid item xs={12} sm={6}>
-              <Box sx={{ bgcolor: '#6C5CE7', borderRadius: 4, p: 4, height: '100%', position: 'relative', boxShadow: '0 20px 60px rgba(108,92,231,0.35)' }}>
-                <Chip label="Most Popular" size="small" sx={{ position: 'absolute', top: 20, right: 20, bgcolor: 'rgba(255,255,255,0.2)', color: 'white', fontWeight: 700, fontSize: '0.72rem' }} />
-                <Typography fontWeight={800} fontSize="1.1rem" mb={0.5} color="white">Pro</Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', mb: 3 }}>For teams that move fast with AI</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 3 }}>
-                  <Typography sx={{ fontWeight: 900, fontSize: '3rem', letterSpacing: '-0.04em', lineHeight: 1, color: 'white' }}>$20</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.6)', mb: 0.8 }}>/month</Typography>
+              <Box sx={{ position: 'relative', borderRadius: 4, p: 4, height: '100%', background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.1))', border: '1px solid rgba(99,102,241,0.35)', boxShadow: '0 0 60px rgba(99,102,241,0.15), inset 0 0 60px rgba(99,102,241,0.05)' }}>
+                <Box sx={{ position: 'absolute', top: 20, right: 20, bgcolor: 'rgba(99,102,241,0.25)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 99, px: 1.5, py: 0.4 }}>
+                  <Typography sx={{ color: '#a5b4fc', fontSize: '0.7rem', fontWeight: 700 }}>MOST POPULAR</Typography>
                 </Box>
-                {['Everything in Free', 'AI project generation', 'Daily AI standup reports', 'Performance analytics', 'Auto re-planning', 'Unlimited projects', 'Priority support'].map(f => (
-                  <Box key={f} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.2 }}>
-                    <CheckCircle sx={{ color: '#a29bfe', fontSize: 18 }} />
-                    <Typography fontSize="0.875rem" color="rgba(255,255,255,0.85)">{f}</Typography>
+                <Typography fontWeight={800} fontSize="1.1rem" mb={0.5}>Pro</Typography>
+                <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', mb: 3 }}>For teams with AI</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 4 }}>
+                  <Typography sx={{ fontWeight: 900, fontSize: '3.5rem', letterSpacing: '-0.05em', lineHeight: 1 }}>$20</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', mb: 0.5 }}>/mo</Typography>
+                </Box>
+                {['Everything in Free','AI project generation','Daily AI standup reports','Performance analytics & insights','Auto re-planning on delays','Unlimited projects','Priority support'].map(f => (
+                  <Box key={f} sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
+                    <CheckCircle sx={{ color: '#818cf8', fontSize: 18, mt: '1px' }} />
+                    <Typography fontSize="0.875rem" sx={{ color: 'rgba(255,255,255,0.8)' }}>{f}</Typography>
                   </Box>
                 ))}
                 <Button fullWidth onClick={() => navigate('/register')} variant="contained"
-                  sx={{ mt: 3, bgcolor: 'white', color: '#6C5CE7', fontWeight: 800, borderRadius: 2.5, py: 1.2, textTransform: 'none', fontSize: '0.95rem', '&:hover': { bgcolor: '#f0eeff', boxShadow: '0 4px 15px rgba(0,0,0,0.15)' } }}>
+                  sx={{ mt: 3, background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontWeight: 800, borderRadius: 2.5, py: 1.3, textTransform: 'none', fontSize: '0.95rem', boxShadow: '0 0 30px rgba(99,102,241,0.4)', '&:hover': { boxShadow: '0 0 50px rgba(99,102,241,0.6)' } }}>
                   Start Pro Free
                 </Button>
               </Box>
@@ -272,36 +350,40 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ── CTA ── */}
-      <Box sx={{ py: { xs: 8, md: 12 }, background: 'linear-gradient(135deg, #6C5CE7 0%, #a29bfe 50%, #fd79a8 100%)', textAlign: 'center' }}>
-        <Container maxWidth="md">
-          <Typography sx={{ fontWeight: 900, fontSize: { xs: '2rem', md: '3rem' }, letterSpacing: '-0.03em', color: 'white', mb: 2 }}>
-            Ready to work smarter?
+      {/* ── FINAL CTA ── */}
+      <Box sx={{ py: { xs: 10, md: 16 }, position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
+        <Orb sx={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(99,102,241,0.2), transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
+        <Container maxWidth="md" sx={{ position: 'relative' }}>
+          <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.5rem', md: '4rem' }, letterSpacing: '-0.05em', lineHeight: 1.05, mb: 3 }}>
+            Build faster.<br />
+            <Box component="span" sx={{ background: 'linear-gradient(135deg, #818cf8, #c084fc, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              Ship smarter.
+            </Box>
           </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.1rem', mb: 5 }}>
-            Join teams using Julay to ship faster with AI.
+          <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '1.1rem', mb: 6 }}>
+            Join the teams that let AI do the heavy lifting.
           </Typography>
           <Button onClick={() => navigate('/register')} variant="contained" size="large"
-            sx={{ px: 5, py: 1.8, fontWeight: 800, fontSize: '1.05rem', bgcolor: 'white', color: '#6C5CE7', borderRadius: 3, boxShadow: '0 8px 30px rgba(0,0,0,0.2)', '&:hover': { bgcolor: '#f5f3ff', transform: 'translateY(-2px)', boxShadow: '0 12px 40px rgba(0,0,0,0.25)' }, transition: 'all 0.2s', textTransform: 'none' }}>
-            Get started — it's free ✨
+            sx={{ px: 6, py: 2, fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 3, boxShadow: '0 0 60px rgba(99,102,241,0.5)', '&:hover': { boxShadow: '0 0 80px rgba(99,102,241,0.7)', transform: 'translateY(-3px)' }, transition: 'all 0.25s', textTransform: 'none' }}>
+            Get started for free ✨
           </Button>
         </Container>
       </Box>
 
       {/* ── FOOTER ── */}
-      <Box sx={{ bgcolor: '#1a1a2e', py: 4 }}>
+      <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.06)', py: 3 }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ width: 28, height: 28, borderRadius: 1.5, background: 'linear-gradient(135deg, #6C5CE7, #a29bfe)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Psychology sx={{ color: 'white', fontSize: 16 }} />
+              <Box sx={{ width: 26, height: 26, borderRadius: 1.5, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Psychology sx={{ color: 'white', fontSize: 14 }} />
               </Box>
-              <Typography fontWeight={800} color="white" fontSize="0.95rem">julay</Typography>
+              <Typography fontWeight={800} color="white" fontSize="0.9rem">julay</Typography>
             </Box>
-            <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>© 2026 Julay. All rights reserved.</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.78rem' }}>© 2026 Julay. All rights reserved.</Typography>
             <Box sx={{ display: 'flex', gap: 3 }}>
               {['Privacy', 'Terms', 'Contact'].map(item => (
-                <Typography key={item} sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', cursor: 'pointer', '&:hover': { color: 'rgba(255,255,255,0.7)' } }}>{item}</Typography>
+                <Typography key={item} sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.78rem', cursor: 'pointer', '&:hover': { color: 'rgba(255,255,255,0.6)' }, transition: 'color 0.15s' }}>{item}</Typography>
               ))}
             </Box>
           </Box>
