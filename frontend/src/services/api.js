@@ -93,4 +93,19 @@ export const aiAPI = {
   replan: (projectId, reason) => api.post(`/ai/replan/${projectId}`, { reason })
 };
 
+// Context / Smart Share
+export const contextAPI = {
+  analyze: (text, projectId, source) => api.post('/context/analyze', { text, projectId, source }),
+  getSuggestions: () => api.get('/context/suggestions'),
+  getCount: () => api.get('/context/suggestions/count'),
+  applyItem: (suggestionId, itemIndex) => api.post(`/context/suggestions/${suggestionId}/items/${itemIndex}/apply`),
+  rejectItem: (suggestionId, itemIndex) => api.post(`/context/suggestions/${suggestionId}/items/${itemIndex}/reject`)
+};
+
+// Subscription
+export const subscriptionAPI = {
+  checkout: () => api.post('/subscription/checkout'),
+  status: () => api.get('/subscription/status')
+};
+
 export default api;

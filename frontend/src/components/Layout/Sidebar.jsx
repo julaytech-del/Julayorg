@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Psychology } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Psychology, Apps, Share, PictureAsPdf } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 
 const SIDEBAR_WIDTH = 268;
@@ -25,6 +25,11 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     ]},
     { title: t('nav.sections.intelligence'), items: [
       { label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'NEW' },
+    ]},
+    { title: 'Apps', items: [
+      { label: 'Workspace Apps', icon: Apps, path: '/dashboard/apps' },
+      { label: 'Smart Share', icon: Share, path: '/dashboard/apps/share' },
+      { label: 'PDF + AI', icon: PictureAsPdf, path: '/dashboard/apps/pdf' },
     ]}
   ];
 

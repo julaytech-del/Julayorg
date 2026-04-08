@@ -3,6 +3,7 @@ import { Box, Toolbar, useMediaQuery, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
+import SuggestionsPanel from '../AI/SuggestionsPanel.jsx';
 
 const SIDEBAR_WIDTH = 268;
 
@@ -33,6 +34,7 @@ export default function MainLayout() {
           <Outlet />
         </Box>
       </Box>
+      <SuggestionsPanel />
     </Box>
   );
 }

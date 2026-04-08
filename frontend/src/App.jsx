@@ -16,6 +16,9 @@ import TeamView from './pages/Team/TeamView.jsx';
 import DepartmentsView from './pages/Departments/DepartmentsView.jsx';
 import Landing from './pages/Landing.jsx';
 import SnackbarAlert from './components/common/SnackbarAlert.jsx';
+import AppsHub from './pages/Apps/AppsHub.jsx';
+import ShareWithAI from './pages/Apps/ShareWithAI.jsx';
+import PDFViewer from './pages/Apps/PDFViewer.jsx';
 
 function ProtectedRoute({ children }) {
   const { token, initialized, loading } = useSelector(s => s.auth);
@@ -57,6 +60,9 @@ export default function App() {
           <Route path="ai" element={<AIStudio />} />
           <Route path="team" element={<TeamView />} />
           <Route path="departments" element={<DepartmentsView />} />
+          <Route path="apps" element={<AppsHub />} />
+          <Route path="apps/share" element={<ShareWithAI />} />
+          <Route path="apps/pdf" element={<PDFViewer />} />
         </Route>
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

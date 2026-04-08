@@ -11,6 +11,7 @@ import departmentRoutes from './routes/department.routes.js';
 import dashboardRoutes from './routes/dashboard.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import subscriptionRoutes from './routes/subscription.routes.js';
+import contextRoutes from './routes/context.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/departments', departmentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/subscription', subscriptionRoutes);
+app.use('/api/context', aiLimiter, contextRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
