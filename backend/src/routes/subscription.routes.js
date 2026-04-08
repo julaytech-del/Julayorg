@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import Stripe from 'stripe';
 import { protect } from '../middleware/auth.middleware.js';
 import User from '../models/User.js';
+import Organization from '../models/Organization.js';
 
 const router = Router();
 
@@ -14,15 +15,16 @@ const getStripe = () => {
 router.post('/checkout', protect, async (req, res) => {
   try {
     const stripe = getStripe();
+    const orgId = req.user.organization?._id || req.user.organization;
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
       customer_email: req.user.email,
-      metadata: { userId: req.user._id.toString() },
+      metadata: { orgId: orgId.toString(), userId: req.user._id.toString() },
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Julay Pro', description: 'AI-powered project management — unlimited everything' },
+          product_data: { name: 'Julay Pro', description: 'AI-powered project management — all AI features for your team' },
           unit_amount: 2000,
           recurring: { interval: 'month' },
         },
@@ -37,7 +39,7 @@ router.post('/checkout', protect, async (req, res) => {
   }
 });
 
-// Stripe webhook — auto-activate subscription
+// Stripe webhook — auto-activate org subscription
 router.post('/webhook', express.raw({ type: 'application/json' }), async (req, res) => {
   const stripe = getStripe();
   const sig = req.headers['stripe-signature'];
@@ -50,13 +52,12 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
 
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
-    const userId = session.metadata?.userId;
-    if (userId) {
+    const orgId = session.metadata?.orgId;
+    if (orgId) {
       const expiresAt = new Date();
       expiresAt.setMonth(expiresAt.getMonth() + 1);
-      await User.findByIdAndUpdate(userId, {
+      await Organization.findByIdAndUpdate(orgId, {
         'subscription.plan': 'pro',
-        'subscription.subscribedAt': new Date(),
         'subscription.expiresAt': expiresAt,
         'subscription.stripeSessionId': session.id,
       });
@@ -64,26 +65,31 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   }
 
   if (event.type === 'customer.subscription.deleted') {
-    const sub = event.data.object;
-    const user = await User.findOne({ 'subscription.stripeCustomerId': sub.customer });
-    if (user) await user.updateOne({ 'subscription.plan': 'free' });
+    const session = event.data.object;
+    const orgId = session.metadata?.orgId;
+    if (orgId) await Organization.findByIdAndUpdate(orgId, { 'subscription.plan': 'free' });
   }
 
   res.json({ received: true });
 });
 
-// Admin: manually set subscription
+// Admin: manually activate org subscription
 router.post('/admin/set', protect, async (req, res) => {
   if (!req.user.isAdmin) return res.status(403).json({ success: false, message: 'Admin only' });
-  const { userId, plan } = req.body;
+  const { orgId, plan } = req.body;
   const expiresAt = plan === 'pro' ? new Date(Date.now() + 30 * 24 * 60 * 60 * 1000) : null;
-  await User.findByIdAndUpdate(userId, { 'subscription.plan': plan, 'subscription.expiresAt': expiresAt, 'subscription.subscribedAt': new Date() });
+  await Organization.findByIdAndUpdate(orgId, {
+    'subscription.plan': plan,
+    'subscription.expiresAt': expiresAt,
+  });
   res.json({ success: true });
 });
 
-// Get subscription status
-router.get('/status', protect, (req, res) => {
-  const { plan, expiresAt } = req.user.subscription || {};
+// Get subscription status for current org
+router.get('/status', protect, async (req, res) => {
+  const orgId = req.user.organization?._id || req.user.organization;
+  const org = await Organization.findById(orgId);
+  const { plan, expiresAt } = org?.subscription || {};
   const active = plan === 'pro' && (!expiresAt || new Date() < new Date(expiresAt));
   res.json({ success: true, plan: plan || 'free', active, expiresAt });
 });

@@ -21,7 +21,8 @@ const organizationSchema = new mongoose.Schema({
   },
   subscription: {
     plan: { type: String, enum: ['free', 'pro', 'enterprise'], default: 'free' },
-    expiresAt: { type: Date }
+    expiresAt: { type: Date },
+    stripeSessionId: { type: String }
   }
 }, { timestamps: true });
 
