@@ -4,7 +4,7 @@ import { Psychology } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { registerUser } from '../../store/slices/authSlice.js';
+import { registerUser, clearError } from '../../store/slices/authSlice.js';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher.jsx';
 
 const INDUSTRIES = ['technology','healthcare','finance','education','construction','retail','media','consulting','manufacturing','other'];
@@ -15,6 +15,8 @@ export default function Register() {
   const { t } = useTranslation();
   const { loading, error } = useSelector(s => s.auth);
   const [form, setForm] = useState({ name: '', email: '', password: '', organizationName: '', industry: 'technology' });
+
+  React.useEffect(() => { dispatch(clearError()); }, []);
 
   const handle = e => setForm(p => ({ ...p, [e.target.name]: e.target.value }));
   const handleSubmit = async e => {

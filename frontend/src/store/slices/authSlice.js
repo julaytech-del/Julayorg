@@ -14,7 +14,7 @@ export const registerUser = createAsyncThunk('auth/register', async (data, { rej
     const res = await authAPI.register(data);
     localStorage.setItem('julay_token', res.data.token);
     return res.data;
-  } catch (err) { return rejectWithValue(err.message || 'Registration failed'); }
+  } catch (err) { return rejectWithValue(err.message || err.error || 'Registration failed'); }
 });
 
 export const fetchCurrentUser = createAsyncThunk('auth/fetchMe', async (_, { rejectWithValue }) => {
