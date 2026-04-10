@@ -10,6 +10,7 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Snackbar } from '@mui/material';
 import StatusChip from '../components/common/StatusChip.jsx';
 import PriorityChip from '../components/common/PriorityChip.jsx';
+import OnboardingWizard from '../components/common/OnboardingWizard.jsx';
 
 const STATUS_COLORS = { planned: '#94A3B8', in_progress: '#4F46E5', blocked: '#EF4444', review: '#F59E0B', done: '#10B981' };
 const PIE_COLORS = ['#4F46E5', '#0EA5E9', '#F59E0B', '#10B981', '#EF4444'];
@@ -97,6 +98,7 @@ export default function Dashboard() {
 
   return (
     <Box>
+      <OnboardingWizard />
       <Snackbar open={upgraded} autoHideDuration={6000} onClose={() => setUpgraded(false)} anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
         <Alert severity="success" onClose={() => setUpgraded(false)} sx={{ fontWeight: 700 }}>
           🎉 Welcome to Julay Pro! AI Studio is now unlocked.

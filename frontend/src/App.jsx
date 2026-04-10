@@ -27,6 +27,11 @@ import WebhooksPage from './pages/Settings/WebhooksPage.jsx';
 import FormViewBuilder from './pages/Views/FormViewBuilder.jsx';
 import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
 import CustomDashboard from './pages/Dashboard/CustomDashboard.jsx';
+import MyTasksPage from './pages/MyTasks/MyTasksPage.jsx';
+import SprintBoard from './pages/Sprint/SprintBoard.jsx';
+import PortfolioView from './pages/Portfolio/PortfolioView.jsx';
+import ActivityLogPage from './pages/Activity/ActivityLogPage.jsx';
+import SettingsPage from './pages/Settings/SettingsPage.jsx';
 
 function ProtectedRoute({ children }) {
   const { token, initialized, loading } = useSelector(s => s.auth);
@@ -78,6 +83,11 @@ export default function App() {
           <Route path="settings/webhooks" element={<WebhooksPage />} />
           <Route path="views/forms" element={<FormViewBuilder />} />
           <Route path="custom-dashboard" element={<CustomDashboard />} />
+          <Route path="my-tasks" element={<MyTasksPage />} />
+          <Route path="sprints" element={<SprintBoard />} />
+          <Route path="portfolio" element={<PortfolioView />} />
+          <Route path="activity" element={<ActivityLogPage />} />
+          <Route path="settings" element={<SettingsPage />} />
         </Route>
         <Route path="/forms/:token" element={<FormViewRenderer />} />
         <Route path="*" element={<Navigate to="/" replace />} />

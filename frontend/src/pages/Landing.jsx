@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
-import { Box, Typography, Button, Container, Grid, Chip, Avatar } from '@mui/material';
-import { ArrowForward, AutoAwesome, CheckCircle, Psychology } from '@mui/icons-material';
+import { Box, Typography, Button, Container, Grid, Chip, Avatar, ToggleButtonGroup, ToggleButton } from '@mui/material';
+import { ArrowForward, AutoAwesome, CheckCircle, Psychology, Star } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 /* ─── Animated gradient orb ─── */
@@ -156,6 +156,162 @@ const TESTIMONIALS = [
   { name: 'Maria L.', role: 'Founder @ YC W25', text: 'From idea to full plan in 90 seconds. Nothing else comes close.', color: '#f472b6' },
 ];
 
+const PLANS = [
+  {
+    name: 'FREE',
+    monthlyPrice: 0,
+    yearlyPrice: 0,
+    description: 'Perfect for individuals getting started',
+    features: ['3 projects', '3 team members', '5 AI requests/mo', 'Kanban & Gantt views', 'Basic analytics'],
+    cta: 'Get Started Free',
+    ctaUrl: '/register',
+    highlight: false,
+  },
+  {
+    name: 'STARTER',
+    monthlyPrice: 9,
+    yearlyPrice: 7,
+    description: 'Great for small teams',
+    features: ['10 projects', '10 team members', '100 AI requests/mo', 'Everything in Free', 'Priority support'],
+    cta: 'Start Free Trial',
+    ctaUrl: '/register?plan=starter',
+    highlight: false,
+  },
+  {
+    name: 'PROFESSIONAL',
+    monthlyPrice: 29,
+    yearlyPrice: 23,
+    description: 'For growing teams with AI',
+    features: ['Unlimited projects', '25 team members', '500 AI requests/mo', 'AI project generation', 'Daily AI standup reports', 'Auto re-planning', 'Advanced analytics'],
+    cta: 'Start Free Trial',
+    ctaUrl: '/register?plan=professional',
+    highlight: true,
+    badge: 'Most Popular',
+  },
+  {
+    name: 'BUSINESS',
+    monthlyPrice: 79,
+    yearlyPrice: 63,
+    description: 'For large organizations',
+    features: ['Unlimited projects', 'Unlimited members', '2000 AI requests/mo', 'Everything in Pro', 'SSO & SAML', 'Dedicated support', 'Custom integrations'],
+    cta: 'Start Free Trial',
+    ctaUrl: '/register?plan=business',
+    highlight: false,
+  },
+];
+
+function PricingSection({ navigate }) {
+  const [yearly, setYearly] = useState(false);
+
+  return (
+    <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }} id="pricing">
+      <Container maxWidth="lg">
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography sx={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 2 }}>Pricing</Typography>
+          <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '3rem' }, letterSpacing: '-0.04em', mb: 1 }}>
+            Simple, Transparent Pricing
+          </Typography>
+          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.05rem', mb: 4 }}>
+            Start free, scale as you grow
+          </Typography>
+          {/* Monthly/Yearly toggle */}
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 2, bgcolor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 99, px: 2, py: 0.75 }}>
+            <Typography sx={{ color: yearly ? 'rgba(255,255,255,0.35)' : 'white', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => setYearly(false)}>Monthly</Typography>
+            <Box onClick={() => setYearly(y => !y)} sx={{ width: 44, height: 24, borderRadius: 99, bgcolor: yearly ? '#6366f1' : 'rgba(255,255,255,0.15)', cursor: 'pointer', position: 'relative', transition: 'background-color 0.25s', flexShrink: 0 }}>
+              <Box sx={{ position: 'absolute', top: 2, left: yearly ? 22 : 2, width: 20, height: 20, borderRadius: '50%', bgcolor: 'white', transition: 'left 0.25s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }} />
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              <Typography sx={{ color: yearly ? 'white' : 'rgba(255,255,255,0.35)', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => setYearly(true)}>Yearly</Typography>
+              {yearly && <Chip label="Save 20%" size="small" sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#34d399', fontWeight: 700, fontSize: '0.68rem', height: 20 }} />}
+            </Box>
+          </Box>
+        </Box>
+
+        <Grid container spacing={2.5} alignItems="stretch">
+          {PLANS.map(plan => (
+            <Grid item xs={12} sm={6} lg={3} key={plan.name}>
+              <Box sx={{
+                position: 'relative', borderRadius: 4, p: 3.5, height: '100%', display: 'flex', flexDirection: 'column',
+                bgcolor: plan.highlight ? 'transparent' : 'rgba(255,255,255,0.03)',
+                background: plan.highlight ? 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(168,85,247,0.12))' : undefined,
+                border: plan.highlight ? '1.5px solid rgba(99,102,241,0.5)' : '1px solid rgba(255,255,255,0.07)',
+                boxShadow: plan.highlight ? '0 0 60px rgba(99,102,241,0.18), inset 0 0 40px rgba(99,102,241,0.04)' : 'none',
+                transition: 'transform 0.22s, box-shadow 0.22s, border-color 0.22s',
+                '&:hover': {
+                  transform: 'translateY(-6px)',
+                  boxShadow: plan.highlight
+                    ? '0 0 80px rgba(99,102,241,0.28), inset 0 0 40px rgba(99,102,241,0.06)'
+                    : '0 20px 60px rgba(0,0,0,0.3)',
+                  borderColor: plan.highlight ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.15)',
+                },
+              }}>
+                {plan.badge && (
+                  <Box sx={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', bgcolor: 'linear-gradient(135deg, #6366f1, #a855f7)', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 99, px: 2, py: 0.4, display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Star sx={{ fontSize: 11, color: '#fbbf24' }} />
+                    <Typography sx={{ color: 'white', fontSize: '0.7rem', fontWeight: 800, whiteSpace: 'nowrap' }}>{plan.badge}</Typography>
+                  </Box>
+                )}
+
+                <Box sx={{ mb: 3 }}>
+                  <Typography sx={{ color: plan.highlight ? '#a5b4fc' : 'rgba(255,255,255,0.5)', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', mb: 0.75 }}>{plan.name}</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 0.5 }}>
+                    <Typography sx={{ fontWeight: 900, fontSize: '2.8rem', letterSpacing: '-0.05em', lineHeight: 1, color: 'white' }}>
+                      ${yearly ? plan.yearlyPrice : plan.monthlyPrice}
+                    </Typography>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.35)', mb: 0.5, fontSize: '0.9rem' }}>/mo</Typography>
+                  </Box>
+                  {yearly && plan.monthlyPrice > 0 && (
+                    <Typography sx={{ color: '#34d399', fontSize: '0.72rem', fontWeight: 600 }}>
+                      ${plan.yearlyPrice * 12}/yr · Save ${(plan.monthlyPrice - plan.yearlyPrice) * 12}
+                    </Typography>
+                  )}
+                  <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem', mt: 1 }}>{plan.description}</Typography>
+                </Box>
+
+                <Box sx={{ flex: 1, mb: 3 }}>
+                  {plan.features.map(f => (
+                    <Box key={f} sx={{ display: 'flex', gap: 1.25, mb: 1.25, alignItems: 'flex-start' }}>
+                      <CheckCircle sx={{ color: plan.highlight ? '#818cf8' : 'rgba(255,255,255,0.3)', fontSize: 16, mt: '1px', flexShrink: 0 }} />
+                      <Typography fontSize="0.82rem" sx={{ color: plan.highlight ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)' }}>{f}</Typography>
+                    </Box>
+                  ))}
+                </Box>
+
+                <Button
+                  fullWidth
+                  variant={plan.highlight ? 'contained' : 'outlined'}
+                  onClick={() => {
+                    if (plan.name === 'BUSINESS' && plan.monthlyPrice > 60) {
+                      window.location.href = 'mailto:sales@julay.org';
+                    } else {
+                      navigate(plan.ctaUrl);
+                    }
+                  }}
+                  sx={plan.highlight
+                    ? { background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontWeight: 800, borderRadius: 2.5, py: 1.2, textTransform: 'none', fontSize: '0.9rem', boxShadow: '0 0 24px rgba(99,102,241,0.4)', '&:hover': { boxShadow: '0 0 40px rgba(99,102,241,0.6)' } }
+                    : { border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.65)', fontWeight: 700, borderRadius: 2.5, py: 1.2, textTransform: 'none', fontSize: '0.9rem', '&:hover': { borderColor: 'rgba(255,255,255,0.3)', color: 'white', bgcolor: 'rgba(255,255,255,0.04)' } }
+                  }
+                >
+                  {plan.cta}
+                </Button>
+              </Box>
+            </Grid>
+          ))}
+        </Grid>
+
+        {/* Enterprise note */}
+        <Box sx={{ textAlign: 'center', mt: 5 }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>
+            Need a custom plan?{' '}
+            <Box component="a" href="mailto:sales@julay.org" sx={{ color: '#818cf8', textDecoration: 'none', fontWeight: 600, '&:hover': { textDecoration: 'underline' } }}>Contact sales</Box>
+            {' '}— we build custom contracts for enterprises.
+          </Typography>
+        </Box>
+      </Container>
+    </Box>
+  );
+}
+
 export default function Landing() {
   const navigate = useNavigate();
 
@@ -291,64 +447,7 @@ export default function Landing() {
       </Box>
 
       {/* ── PRICING ── */}
-      <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }} id="pricing">
-        <Container maxWidth="md">
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography sx={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 2 }}>Pricing</Typography>
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '3rem' }, letterSpacing: '-0.04em', mb: 1.5 }}>
-              Start free. Scale with AI.
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem' }}>No hidden fees. Cancel anytime.</Typography>
-          </Box>
-          <Grid container spacing={3}>
-            {/* Free */}
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 4, p: 4, height: '100%' }}>
-                <Typography fontWeight={800} fontSize="1.1rem" mb={0.5}>Free</Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', mb: 3 }}>For individuals</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 4 }}>
-                  <Typography sx={{ fontWeight: 900, fontSize: '3.5rem', letterSpacing: '-0.05em', lineHeight: 1 }}>$0</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.3)', mb: 0.5 }}>/mo</Typography>
-                </Box>
-                {['Project management','Kanban & Gantt views','Team collaboration','Up to 3 projects'].map(f => (
-                  <Box key={f} sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
-                    <CheckCircle sx={{ color: 'rgba(255,255,255,0.25)', fontSize: 18, mt: '1px' }} />
-                    <Typography fontSize="0.875rem" sx={{ color: 'rgba(255,255,255,0.5)' }}>{f}</Typography>
-                  </Box>
-                ))}
-                <Button fullWidth onClick={() => navigate('/register')}
-                  sx={{ mt: 3, border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.6)', fontWeight: 700, borderRadius: 2.5, py: 1.3, textTransform: 'none', fontSize: '0.95rem', '&:hover': { borderColor: 'rgba(255,255,255,0.25)', color: 'white', bgcolor: 'rgba(255,255,255,0.04)' } }}>
-                  Get started free
-                </Button>
-              </Box>
-            </Grid>
-            {/* Pro */}
-            <Grid item xs={12} sm={6}>
-              <Box sx={{ position: 'relative', borderRadius: 4, p: 4, height: '100%', background: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(168,85,247,0.1))', border: '1px solid rgba(99,102,241,0.35)', boxShadow: '0 0 60px rgba(99,102,241,0.15), inset 0 0 60px rgba(99,102,241,0.05)' }}>
-                <Box sx={{ position: 'absolute', top: 20, right: 20, bgcolor: 'rgba(99,102,241,0.25)', border: '1px solid rgba(99,102,241,0.4)', borderRadius: 99, px: 1.5, py: 0.4 }}>
-                  <Typography sx={{ color: '#a5b4fc', fontSize: '0.7rem', fontWeight: 700 }}>MOST POPULAR</Typography>
-                </Box>
-                <Typography fontWeight={800} fontSize="1.1rem" mb={0.5}>Pro</Typography>
-                <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', mb: 3 }}>For teams with AI</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 4 }}>
-                  <Typography sx={{ fontWeight: 900, fontSize: '3.5rem', letterSpacing: '-0.05em', lineHeight: 1 }}>$20</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', mb: 0.5 }}>/mo</Typography>
-                </Box>
-                {['Everything in Free','AI project generation','Daily AI standup reports','Performance analytics & insights','Auto re-planning on delays','Unlimited projects','Priority support'].map(f => (
-                  <Box key={f} sx={{ display: 'flex', gap: 1.5, mb: 1.5 }}>
-                    <CheckCircle sx={{ color: '#818cf8', fontSize: 18, mt: '1px' }} />
-                    <Typography fontSize="0.875rem" sx={{ color: 'rgba(255,255,255,0.8)' }}>{f}</Typography>
-                  </Box>
-                ))}
-                <Button fullWidth onClick={() => navigate('/register')} variant="contained"
-                  sx={{ mt: 3, background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontWeight: 800, borderRadius: 2.5, py: 1.3, textTransform: 'none', fontSize: '0.95rem', boxShadow: '0 0 30px rgba(99,102,241,0.4)', '&:hover': { boxShadow: '0 0 50px rgba(99,102,241,0.6)' } }}>
-                  Start Pro Free
-                </Button>
-              </Box>
-            </Grid>
-          </Grid>
-        </Container>
-      </Box>
+      <PricingSection navigate={navigate} />
 
       {/* ── FINAL CTA ── */}
       <Box sx={{ py: { xs: 10, md: 16 }, position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>

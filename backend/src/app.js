@@ -20,6 +20,12 @@ import webhookRoutes from './routes/webhook.routes.js';
 import dashboardConfigRoutes from './routes/dashboardConfig.routes.js';
 import reportsRoutes from './routes/reports.routes.js';
 import formViewRoutes from './routes/formView.routes.js';
+import sprintRoutes from './routes/sprint.routes.js';
+import timeEntryRoutes from './routes/timeEntry.routes.js';
+import activityLogRoutes from './routes/activityLog.routes.js';
+import searchRoutes from './routes/search.routes.js';
+import myTasksRoutes from './routes/myTasks.routes.js';
+import portfolioRoutes from './routes/portfolio.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -53,6 +59,12 @@ app.use('/api/automations', automationRoutes);
 app.use('/api/webhooks', webhookRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/forms', formViewRoutes);
+app.use('/api/sprints', sprintRoutes);
+app.use('/api/time-entries', timeEntryRoutes);
+app.use('/api/activity', activityLogRoutes);
+app.use('/api/search', searchRoutes);
+app.use('/api/my-tasks', myTasksRoutes);
+app.use('/api/portfolio', portfolioRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

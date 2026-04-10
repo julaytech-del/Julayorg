@@ -11,21 +11,46 @@ const getStripe = () => {
   return new Stripe(process.env.STRIPE_SECRET_KEY);
 };
 
+const PLAN_PRICES = {
+  starter: { amount: 900, name: 'Julay Starter', description: 'Up to 10 projects, 100 AI requests/month' },
+  professional: { amount: 2900, name: 'Julay Professional', description: 'Unlimited projects, 500 AI requests/month' },
+  business: { amount: 7900, name: 'Julay Business', description: 'Unlimited everything, 2000 AI requests/month' },
+};
+
+// GET /subscription/plans — public, no auth required
+router.get('/plans', (req, res) => {
+  res.json({
+    success: true,
+    data: [
+      { id: 'free', name: 'Free', price: 0, yearlyPrice: 0, aiRequests: 5, projects: 3, members: 3, features: ['3 projects', '3 team members', '5 AI requests/month', 'Basic Kanban & List views', '1 GB storage'] },
+      { id: 'starter', name: 'Starter', price: 9, yearlyPrice: 7, aiRequests: 100, projects: 10, members: 10, popular: false, features: ['10 projects', '10 team members', '100 AI requests/month', 'All views (Calendar, Gantt, Workload)', '10 GB storage', 'Email support'] },
+      { id: 'professional', name: 'Professional', price: 29, yearlyPrice: 23, aiRequests: 500, projects: -1, members: 25, popular: true, features: ['Unlimited projects', '25 team members', '500 AI requests/month', 'Automations, Reports, Webhooks, Forms', 'Time Tracking & Custom Fields', '50 GB storage', 'Priority support'] },
+      { id: 'business', name: 'Business', price: 79, yearlyPrice: 63, aiRequests: 2000, projects: -1, members: -1, popular: false, features: ['Everything in Professional', 'Unlimited team members', '2000 AI requests/month', 'API access', 'Custom Dashboards & Analytics', '200 GB storage', 'Dedicated support'] },
+      { id: 'enterprise', name: 'Enterprise', price: null, yearlyPrice: null, aiRequests: -1, projects: -1, members: -1, popular: false, features: ['Unlimited everything', 'Unlimited AI requests', 'SSO / SAML authentication', 'Custom contracts & SLA', 'White-label options', '24/7 dedicated support'] }
+    ]
+  });
+});
+
 // Create Stripe checkout session
 router.post('/checkout', protect, async (req, res) => {
   try {
     const stripe = getStripe();
     const orgId = req.user.organization?._id || req.user.organization;
+    const plan = req.body.plan || 'professional';
+    const planConfig = PLAN_PRICES[plan];
+
+    if (!planConfig) return res.status(400).json({ success: false, message: 'Invalid plan. Choose: starter, professional, business' });
+
     const session = await stripe.checkout.sessions.create({
       payment_method_types: ['card'],
       mode: 'subscription',
       customer_email: req.user.email,
-      metadata: { orgId: orgId.toString(), userId: req.user._id.toString() },
+      metadata: { orgId: orgId.toString(), userId: req.user._id.toString(), plan },
       line_items: [{
         price_data: {
           currency: 'usd',
-          product_data: { name: 'Julay Pro', description: 'AI-powered project management — all AI features for your team' },
-          unit_amount: 2000,
+          product_data: { name: planConfig.name, description: planConfig.description },
+          unit_amount: planConfig.amount,
           recurring: { interval: 'month' },
         },
         quantity: 1,
@@ -53,13 +78,16 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   if (event.type === 'checkout.session.completed') {
     const session = event.data.object;
     const orgId = session.metadata?.orgId;
+    const plan = session.metadata?.plan || 'professional';
     if (orgId) {
       const expiresAt = new Date();
       expiresAt.setMonth(expiresAt.getMonth() + 1);
       await Organization.findByIdAndUpdate(orgId, {
-        'subscription.plan': 'pro',
+        'subscription.plan': plan,
         'subscription.expiresAt': expiresAt,
         'subscription.stripeSessionId': session.id,
+        'subscription.stripeCustomerId': session.customer,
+        'subscription.billingPeriodStart': new Date(),
       });
     }
   }

@@ -178,3 +178,37 @@ export const formsAPI = {
   getPublic: (token) => api.get(`/forms/public/${token}`),
   submit: (token, data) => api.post(`/forms/public/${token}`, data),
 };
+
+// My Tasks
+export const myTasksAPI = {
+  getTasks: (params) => api.get('/my-tasks', { params }),
+  getStats: () => api.get('/my-tasks/stats'),
+};
+
+// Sprints
+export const sprintsAPI = {
+  getAll: (params) => api.get('/sprints', { params }),
+  create: (data) => api.post('/sprints', data),
+  update: (id, data) => api.put(`/sprints/${id}`, data),
+  delete: (id) => api.delete(`/sprints/${id}`),
+  addTask: (id, taskId) => api.post(`/sprints/${id}/tasks`, { taskId }),
+  removeTask: (id, taskId) => api.delete(`/sprints/${id}/tasks/${taskId}`),
+  getBurndown: (id) => api.get(`/sprints/${id}/burndown`),
+};
+
+// Portfolio
+export const portfolioAPI = {
+  getPortfolio: () => api.get('/portfolio'),
+};
+
+// Activity
+export const activityAPI = {
+  getLog: (params) => api.get('/activity', { params }),
+};
+
+// Settings
+export const settingsAPI = {
+  updateProfile: (data) => api.put('/users/me', data),
+  changePassword: (data) => api.post('/auth/change-password', data),
+  getOrgMembers: () => api.get('/users'),
+};

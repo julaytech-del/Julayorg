@@ -20,9 +20,12 @@ const organizationSchema = new mongoose.Schema({
     }
   },
   subscription: {
-    plan: { type: String, enum: ['free', 'pro', 'enterprise'], default: 'free' },
+    plan: { type: String, enum: ['free', 'starter', 'professional', 'business', 'enterprise'], default: 'free' },
     expiresAt: { type: Date },
-    stripeSessionId: { type: String }
+    stripeSessionId: { type: String },
+    stripeCustomerId: { type: String },
+    aiUsedThisMonth: { type: Number, default: 0 },
+    billingPeriodStart: { type: Date, default: Date.now }
   }
 }, { timestamps: true });
 

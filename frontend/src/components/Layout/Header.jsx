@@ -1,18 +1,20 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Box, InputBase, IconButton, Badge, Avatar, Menu, MenuItem, Typography, Chip, Divider, Tooltip } from '@mui/material';
-import { Search, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown } from '@mui/icons-material';
+import { Search, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown, DarkMode, LightMode } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../store/slices/authSlice.js';
+import { toggleDarkMode } from '../../store/slices/uiSlice.js';
 import LanguageSwitcher from '../common/LanguageSwitcher.jsx';
 import NotificationBell from '../common/NotificationBell.jsx';
 
-export default function Header({ sidebarWidth = 268 }) {
+export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const location = useLocation();
   const user = useSelector(s => s.auth.user);
+  const darkMode = useSelector(s => s.ui.darkMode);
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState(null);
 
@@ -21,18 +23,21 @@ export default function Header({ sidebarWidth = 268 }) {
   const pageInfo = t(`header.pages.${pageKey}`, { returnObjects: true });
 
   return (
-    <AppBar position="fixed" elevation={0} sx={{ left: { md: sidebarWidth }, width: { md: `calc(100% - ${sidebarWidth}px)` }, backgroundColor: '#FFFFFF', zIndex: th => th.zIndex.drawer - 1 }}>
+    <AppBar position="fixed" elevation={0} sx={{ left: { md: sidebarWidth }, width: { md: `calc(100% - ${sidebarWidth}px)` }, backgroundColor: darkMode ? '#1E293B' : '#FFFFFF', zIndex: th => th.zIndex.drawer - 1 }}>
       <Toolbar sx={{ gap: 1.5, px: { xs: 2, sm: 3 }, minHeight: '60px !important' }}>
         <Box sx={{ display: { xs: 'none', md: 'block' }, mr: 0.5 }}>
           <Typography variant="subtitle1" sx={{ fontWeight: 700, color: 'text.primary', lineHeight: 1.2, fontSize: '0.95rem' }}>{pageInfo?.title}</Typography>
           <Typography variant="caption" sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>{pageInfo?.subtitle}</Typography>
         </Box>
-        <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' }, borderColor: '#E2E8F0', mx: 0.5 }} />
+        <Divider orientation="vertical" flexItem sx={{ display: { xs: 'none', md: 'block' }, mx: 0.5 }} />
 
-        <Box sx={{ flex: 1, maxWidth: 360, display: { xs: 'none', sm: 'flex' }, alignItems: 'center', backgroundColor: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 2.5, px: 1.5, py: 0.6, gap: 1, transition: 'all 0.15s', '&:focus-within': { borderColor: '#6366F1', backgroundColor: '#FEFEFF', boxShadow: '0 0 0 3px rgba(99,102,241,0.08)' } }}>
+        {/* Search bar / Command Palette trigger */}
+        <Box
+          onClick={onOpenCommandPalette}
+          sx={{ flex: 1, maxWidth: 360, display: { xs: 'none', sm: 'flex' }, alignItems: 'center', backgroundColor: darkMode ? '#0F172A' : '#F8FAFC', border: `1.5px solid ${darkMode ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`, borderRadius: 2.5, px: 1.5, py: 0.6, gap: 1, cursor: 'pointer', transition: 'all 0.15s', '&:hover': { borderColor: '#6366F1', backgroundColor: darkMode ? '#1E293B' : '#FEFEFF', boxShadow: '0 0 0 3px rgba(99,102,241,0.08)' } }}>
           <Search sx={{ color: '#94A3B8', fontSize: 16 }} />
-          <InputBase placeholder={t('header.search')} sx={{ fontSize: '0.82rem', flex: 1, color: 'text.primary', '& input::placeholder': { color: '#94A3B8' } }} />
-          <Box sx={{ px: 0.75, py: 0.25, borderRadius: 1, backgroundColor: '#F1F5F9', border: '1px solid #E2E8F0' }}>
+          <InputBase placeholder={t('header.search')} readOnly sx={{ fontSize: '0.82rem', flex: 1, color: 'text.primary', pointerEvents: 'none', '& input::placeholder': { color: '#94A3B8' } }} />
+          <Box sx={{ px: 0.75, py: 0.25, borderRadius: 1, backgroundColor: darkMode ? 'rgba(255,255,255,0.06)' : '#F1F5F9', border: `1px solid ${darkMode ? 'rgba(255,255,255,0.1)' : '#E2E8F0'}` }}>
             <Typography sx={{ fontSize: '0.65rem', color: '#94A3B8', fontWeight: 600 }}>⌘K</Typography>
           </Box>
         </Box>
@@ -43,9 +48,16 @@ export default function Header({ sidebarWidth = 268 }) {
         <Chip icon={<AutoAwesome sx={{ fontSize: '14px !important' }} />} label={t('header.aiGenerate')} onClick={() => navigate('/dashboard/ai')} size="small"
           sx={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', fontWeight: 700, fontSize: '0.75rem', px: 0.5, cursor: 'pointer', '& .MuiChip-icon': { color: 'white' }, '&:hover': { opacity: 0.88, transform: 'translateY(-1px)' }, transition: 'all 0.15s', boxShadow: '0 2px 8px rgba(79,70,229,0.35)' }} />
 
+        {/* Dark mode toggle */}
+        <Tooltip title={darkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}>
+          <IconButton onClick={() => dispatch(toggleDarkMode())} size="small" sx={{ color: 'text.secondary', '&:hover': { backgroundColor: darkMode ? 'rgba(255,255,255,0.06)' : '#F1F5F9' } }}>
+            {darkMode ? <LightMode sx={{ fontSize: 18 }} /> : <DarkMode sx={{ fontSize: 18 }} />}
+          </IconButton>
+        </Tooltip>
+
         <NotificationBell />
 
-        <Box onClick={e => setAnchorEl(e.currentTarget)} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', p: 0.5, pl: 1, borderRadius: 2.5, border: '1.5px solid #E2E8F0', backgroundColor: '#F8FAFC', '&:hover': { backgroundColor: '#F1F5F9', borderColor: '#CBD5E1' }, transition: 'all 0.15s' }}>
+        <Box onClick={e => setAnchorEl(e.currentTarget)} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', p: 0.5, pl: 1, borderRadius: 2.5, border: `1.5px solid ${darkMode ? 'rgba(255,255,255,0.1)' : '#E2E8F0'}`, backgroundColor: darkMode ? '#0F172A' : '#F8FAFC', '&:hover': { backgroundColor: darkMode ? '#1E293B' : '#F1F5F9' }, transition: 'all 0.15s' }}>
           <Avatar sx={{ width: 26, height: 26, fontSize: '0.72rem', background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}>{user?.name?.[0]?.toUpperCase()}</Avatar>
           <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', display: { xs: 'none', sm: 'block' }, maxWidth: 100, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', fontSize: '0.78rem' }}>{user?.name?.split(' ')[0]}</Typography>
           <KeyboardArrowDown sx={{ fontSize: 14, color: '#94A3B8' }} />
