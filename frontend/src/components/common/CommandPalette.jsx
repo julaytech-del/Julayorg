@@ -14,8 +14,9 @@ const NAV_ITEMS = [
   { id: 'nav-calendar', title: 'Calendar', subtitle: 'Timeline & scheduling', url: '/dashboard/calendar', icon: <CalendarMonth sx={{ fontSize: 18 }} /> },
   { id: 'nav-workload', title: 'Workload', subtitle: 'Team capacity view', url: '/dashboard/workload', icon: <Group sx={{ fontSize: 18 }} /> },
   { id: 'nav-reports', title: 'Reports', subtitle: 'Analytics & insights', url: '/dashboard/reports', icon: <BarChart sx={{ fontSize: 18 }} /> },
-  { id: 'nav-portfolio', title: 'Portfolio', subtitle: 'All projects overview', url: '/dashboard/projects', icon: <Folder sx={{ fontSize: 18 }} /> },
-  { id: 'nav-settings', title: 'Settings', subtitle: 'App configuration', url: '/dashboard/settings/webhooks', icon: <Settings sx={{ fontSize: 18 }} /> },
+  { id: 'nav-portfolio', title: 'Portfolio', subtitle: 'All projects overview', url: '/dashboard/portfolio', icon: <Folder sx={{ fontSize: 18 }} /> },
+  { id: 'nav-sprints', title: 'Sprints', subtitle: 'Agile sprint board', url: '/dashboard/sprints', icon: <ViewKanban sx={{ fontSize: 18 }} /> },
+  { id: 'nav-settings', title: 'Settings', subtitle: 'App configuration', url: '/dashboard/settings', icon: <Settings sx={{ fontSize: 18 }} /> },
 ];
 
 const ACTION_ITEMS = [

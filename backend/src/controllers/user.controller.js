@@ -54,3 +54,13 @@ export const deleteUser = async (req, res, next) => {
     res.json({ success: true, message: 'User deleted' });
   } catch (err) { next(err); }
 };
+
+export const updateMe = async (req, res, next) => {
+  try {
+    const { password, email, isAdmin, organization, ...updates } = req.body;
+    const user = await User.findByIdAndUpdate(req.user._id, updates, { new: true, runValidators: true })
+      .populate('role', 'name level').populate('department', 'name color');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, data: user });
+  } catch (err) { next(err); }
+};
