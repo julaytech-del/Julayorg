@@ -1,3 +1,4 @@
+import mongoose from 'mongoose';
 import Project from '../models/Project.js';
 import Goal from '../models/Goal.js';
 import Task from '../models/Task.js';
@@ -11,24 +12,45 @@ import { generateTimeline } from '../services/ai/timeline.service.js';
 import { generateStandup, analyzePerformance, generateReplan } from '../services/ai/standup.service.js';
 
 export const generatePlan = async (req, res, next) => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
   try {
     const { prompt, startDate, teamUserIds } = req.body;
     if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
 
     const orgId = req.user.organization._id || req.user.organization;
 
-    // Step 1: Analyze the plan
+    // Step 1: Analyze the plan (AI call — outside transaction, read-only)
     const planAnalysis = await analyzePlan(prompt);
 
-    // Step 2: Generate task structure
+    // Step 2: Generate task structure (AI call — outside transaction, read-only)
     const taskStructure = await generateTasks(planAnalysis);
 
-    // Step 3: Create project
+    // Step 3: Get team members (read-only, before transaction writes)
+    let teamMembers = [];
+    if (teamUserIds && teamUserIds.length > 0) {
+      teamMembers = await User.find({ _id: { $in: teamUserIds }, organization: orgId });
+    } else {
+      teamMembers = await User.find({ organization: orgId, status: 'active' }).limit(10);
+    }
+
+    // Step 4: AI assignments (AI call — outside transaction, read-only)
     const projectStart = startDate ? new Date(startDate) : new Date();
+    const timedGoals = generateTimeline(taskStructure.goals, projectStart, teamMembers);
+    const allTaskTitles = timedGoals.flatMap(g => g.tasks || []);
+    let assignments = [];
+    if (teamMembers.length > 0) {
+      assignments = await assignTeam(allTaskTitles, teamMembers);
+    }
+    const assignmentMap = assignments.reduce((m, a) => { m[a.taskTitle] = a.assigneeEmail; return m; }, {});
+
+    // ── All writes below are inside the transaction ──────────────────────────
+
+    // Step 5: Create project
     const projectEnd = new Date(projectStart);
     projectEnd.setDate(projectEnd.getDate() + (planAnalysis.estimatedDurationWeeks || 8) * 7);
 
-    const project = await Project.create({
+    const [project] = await Project.create([{
       name: planAnalysis.projectName,
       description: planAnalysis.projectDescription,
       organization: orgId,
@@ -41,39 +63,20 @@ export const generatePlan = async (req, res, next) => {
       aiMetadata: { originalPrompt: prompt, generatedAt: new Date(), confidence: 0.9, detectedIndustry: planAnalysis.industry },
       createdBy: req.user._id,
       color: '#6366F1'
-    });
-
-    // Step 4: Get team members
-    let teamMembers = [];
-    if (teamUserIds && teamUserIds.length > 0) {
-      teamMembers = await User.find({ _id: { $in: teamUserIds }, organization: orgId });
-    } else {
-      teamMembers = await User.find({ organization: orgId, status: 'active' }).limit(10);
-    }
+    }], { session });
 
     // Add team to project
     if (teamMembers.length > 0) {
       const teamData = teamMembers.map((u, i) => ({ user: u._id, role: i === 0 ? 'owner' : 'member' }));
-      await Project.findByIdAndUpdate(project._id, { team: teamData });
+      await Project.findByIdAndUpdate(project._id, { team: teamData }, { session });
     }
 
-    // Step 5: Apply timeline
-    const timedGoals = generateTimeline(taskStructure.goals, projectStart, teamMembers);
-
-    // Step 6: Get AI assignments
-    const allTaskTitles = timedGoals.flatMap(g => g.tasks || []);
-    let assignments = [];
-    if (teamMembers.length > 0) {
-      assignments = await assignTeam(allTaskTitles, teamMembers);
-    }
-    const assignmentMap = assignments.reduce((m, a) => { m[a.taskTitle] = a.assigneeEmail; return m; }, {});
-
-    // Step 7: Create goals and tasks in DB
+    // Step 6: Create goals and tasks
     const createdGoals = [];
     let taskPosition = 0;
 
     for (const goalData of timedGoals) {
-      const goal = await Goal.create({
+      const [goal] = await Goal.create([{
         title: goalData.title,
         description: goalData.description,
         project: project._id,
@@ -82,14 +85,14 @@ export const generatePlan = async (req, res, next) => {
         color: goalData.color,
         aiGenerated: true,
         status: 'not_started'
-      });
+      }], { session });
 
       const createdTasks = [];
       for (const taskData of (goalData.tasks || [])) {
         const assigneeEmail = assignmentMap[taskData.title];
         const assignee = assigneeEmail ? teamMembers.find(m => m.email === assigneeEmail) : null;
 
-        const task = await Task.create({
+        const [task] = await Task.create([{
           title: taskData.title,
           description: taskData.description,
           project: project._id,
@@ -107,7 +110,7 @@ export const generatePlan = async (req, res, next) => {
           aiGenerated: true,
           aiMetadata: { reason: 'AI generated', estimationBasis: 'Historical data', skillsRequired: taskData.skillsRequired || [] },
           createdBy: req.user._id
-        });
+        }], { session });
         createdTasks.push(task);
       }
 
@@ -116,9 +119,11 @@ export const generatePlan = async (req, res, next) => {
 
     // Update project progress
     const totalTasks = createdGoals.reduce((sum, g) => sum + g.tasks.length, 0);
-    await Project.findByIdAndUpdate(project._id, { 'progress.totalTasks': totalTasks });
+    await Project.findByIdAndUpdate(project._id, { 'progress.totalTasks': totalTasks }, { session });
 
-    await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'ai_generated', entityType: 'project', entityId: project._id, entityName: project.name, metadata: { prompt, industry: planAnalysis.industry } });
+    await ActivityLog.create([{ organization: orgId, user: req.user._id, userName: req.user.name, action: 'ai_generated', entityType: 'project', entityId: project._id, entityName: project.name, metadata: { prompt, industry: planAnalysis.industry } }], { session });
+
+    await session.commitTransaction();
 
     const fullProject = await Project.findById(project._id).populate('team.user', 'name avatar email');
 
@@ -133,7 +138,10 @@ export const generatePlan = async (req, res, next) => {
       }
     });
   } catch (err) {
+    await session.abortTransaction();
     next(err);
+  } finally {
+    session.endSession();
   }
 };
 

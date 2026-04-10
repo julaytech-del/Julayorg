@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider } from '@mui/material';
-import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow } from '@mui/icons-material';
+import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
+import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow, Menu as MenuIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
 /* ─── Gradient orb ─── */
@@ -182,17 +182,53 @@ const FAQS = [
   { q: 'Do I need to know how to use AI?', a: 'Not at all. You write your goal in plain English (or Arabic). Julay does the rest. No prompts, no templates — just describe what you need to achieve.' },
   { q: 'Is there a free plan?', a: 'Yes — free forever. 3 projects, 3 team members, 5 AI requests per month. No credit card required. Upgrade when you need more.' },
   { q: 'How secure is my data?', a: 'All data is encrypted at rest and in transit. We use HMAC-signed webhooks, JWT authentication, and role-based access control. Your data is never used to train AI models.' },
-  { q: 'Can I migrate from Monday or Asana?', a: 'Yes. Our CSV import tool handles task data from any major tool. Our team can assist with large migrations on Business and Enterprise plans.' },
-  { q: 'What AI model powers Julay?', a: 'Julay uses Anthropic\'s Claude claude-sonnet-4-6 — the same model used by leading AI companies. It\'s the most capable model for structured planning, risk analysis, and executive summaries.' },
+  { q: 'Can I migrate from Monday or Asana?', a: 'Yes. You can recreate your project structure in Julay in minutes using AI generation. Describe your existing project and Julay will build the full task breakdown automatically. Business and Enterprise plans include onboarding assistance.' },
+  { q: 'What AI model powers Julay?', a: 'Julay is powered by Anthropic\'s Claude — one of the most capable AI models available for structured planning, risk analysis, and executive reporting.' },
 ];
+
+const NAV_LINKS = ['Features', 'Compare', 'Pricing', 'FAQ'];
 
 export default function Landing() {
   const navigate = useNavigate();
   const [billing, setBilling] = useState('monthly');
   const [openFaq, setOpenFaq] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const demoRef = useRef(null);
+
+  const scrollToDemo = () => {
+    demoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  };
 
   return (
     <Box sx={{ fontFamily: '"Inter", sans-serif', overflowX: 'hidden' }}>
+
+      {/* ─── MOBILE DRAWER ─── */}
+      <Drawer anchor="right" open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}
+        PaperProps={{ sx: { width: 260, background: '#09090B', borderLeft: '1px solid rgba(255,255,255,0.08)' } }}>
+        <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end' }}>
+          <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: 'rgba(255,255,255,0.6)' }}>
+            <Close />
+          </IconButton>
+        </Box>
+        <List>
+          {NAV_LINKS.map(l => (
+            <ListItemButton key={l} component="a" href={`#${l.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)}
+              sx={{ px: 3, py: 1.5, '&:hover': { background: 'rgba(255,255,255,0.06)' } }}>
+              <ListItemText primary={l} primaryTypographyProps={{ sx: { color: 'rgba(255,255,255,0.75)', fontWeight: 600, fontSize: '1rem' } }} />
+            </ListItemButton>
+          ))}
+        </List>
+        <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 1.5, mt: 2 }}>
+          <Button onClick={() => { setMobileMenuOpen(false); navigate('/login'); }} variant="outlined"
+            sx={{ borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, py: 1.25, borderRadius: 2 }}>
+            Log in
+          </Button>
+          <Button onClick={() => { setMobileMenuOpen(false); navigate('/register'); }} variant="contained"
+            sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, py: 1.25, borderRadius: 2 }}>
+            Start Free →
+          </Button>
+        </Box>
+      </Drawer>
 
       {/* ─── NAV ─── */}
       <Box component="nav" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
@@ -203,17 +239,26 @@ export default function Landing() {
             </Box>
             <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>Julay</Typography>
           </Box>
+
+          {/* Desktop nav links */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
-            {['Features', 'Compare', 'Pricing', 'FAQ'].map(l => (
+            {NAV_LINKS.map(l => (
               <Typography key={l} component="a" href={`#${l.toLowerCase()}`} sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', textDecoration: 'none', cursor: 'pointer', transition: 'color 0.15s', '&:hover': { color: 'white' } }}>{l}</Typography>
             ))}
           </Box>
-          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+
+          {/* Desktop buttons */}
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1.5, alignItems: 'center' }}>
             <Button onClick={() => navigate('/login')} variant="text" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.06)' } }}>Log in</Button>
             <Button onClick={() => navigate('/register')} variant="contained" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 2.5, py: 0.9, borderRadius: 2, fontSize: '0.88rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9, boxShadow: '0 0 30px rgba(99,102,241,0.5)' } }}>
               Start Free →
             </Button>
           </Box>
+
+          {/* Mobile hamburger */}
+          <IconButton onClick={() => setMobileMenuOpen(true)} sx={{ display: { xs: 'flex', md: 'none' }, color: 'rgba(255,255,255,0.7)' }}>
+            <MenuIcon />
+          </IconButton>
         </Box>
       </Box>
 
@@ -248,45 +293,47 @@ export default function Landing() {
               <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
                 Start Free — No credit card
               </Button>
-              <Button onClick={() => navigate('/login')} variant="outlined" size="large" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, px: 3.5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' } }}>
-                <PlayArrow sx={{ fontSize: 18, mr: 0.75 }} /> See it in action
+              <Button onClick={scrollToDemo} variant="outlined" size="large" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, px: 3.5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' } }}>
+                <PlayArrow sx={{ fontSize: 18, mr: 0.75 }} /> See how it works
               </Button>
             </Box>
             <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
-              Trusted by 2,000+ teams · Free plan forever · Setup in 60 seconds
+              Free plan forever · No credit card · Setup in 60 seconds
             </Typography>
           </Box>
 
           {/* AI Demo */}
           <FadeIn delay={300}>
-            <AIDemoCard />
+            <Box ref={demoRef}>
+              <AIDemoCard />
+            </Box>
           </FadeIn>
         </Container>
       </Box>
 
-      {/* ─── LOGO BAR ─── */}
+      {/* ─── FEATURE BADGES ─── */}
       <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: 4 }}>
         <Container maxWidth="lg">
-          <Typography sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem', mb: 3, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
-            Trusted by teams at
-          </Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: { xs: 2.5, md: 5 } }}>
-            {LOGOS.map(l => (
-              <Typography key={l} sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '-0.01em', transition: 'color 0.2s', '&:hover': { color: 'rgba(255,255,255,0.5)' } }}>{l}</Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: { xs: 2, md: 5 } }}>
+            {['12 AI-powered features', '10 languages supported', 'Kanban · Gantt · Sprints', 'Free plan forever', 'No per-seat pricing'].map(badge => (
+              <Box key={badge} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                <CheckCircleOutline sx={{ color: '#6366F1', fontSize: 14 }} />
+                <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.83rem', fontWeight: 500 }}>{badge}</Typography>
+              </Box>
             ))}
           </Box>
         </Container>
       </Box>
 
-      {/* ─── STATS ─── */}
+      {/* ─── PRODUCT STATS ─── */}
       <Box sx={{ background: '#09090B', borderBottom: '1px solid rgba(255,255,255,0.06)', py: 8 }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 3 }}>
             {[
-              { num: 2000, suffix: '+', label: 'Teams worldwide' },
-              { num: 94, suffix: '%', label: 'Delivery rate improvement' },
-              { num: 8, suffix: 'h', label: 'Saved per sprint' },
-              { num: 60, suffix: 's', label: 'To generate a project plan' },
+              { num: 12, suffix: '', label: 'AI-powered features' },
+              { num: 20, suffix: '+', label: 'Views & tools included' },
+              { num: 10, suffix: '', label: 'Languages supported' },
+              { num: 60, suffix: 's', label: 'To generate a full project' },
             ].map((s, i) => (
               <FadeIn key={i} delay={i * 100}>
                 <Box sx={{ textAlign: 'center', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
@@ -402,36 +449,35 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ─── TESTIMONIALS ─── */}
+      {/* ─── EARLY ADOPTERS CTA ─── */}
       <Box sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
-        <Container maxWidth="lg">
+        <Container maxWidth="md">
           <FadeIn>
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label="TESTIMONIALS" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15 }}>
-                Teams that ship faster with Julay
+            <Box sx={{ textAlign: 'center', p: { xs: 5, md: 8 }, borderRadius: 4, border: '2px solid #E2E8F0', background: 'linear-gradient(135deg, #F8FAFC, #EEF2FF)' }}>
+              <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: '#EEF2FF', border: '1px solid rgba(99,102,241,0.3)', mb: 3 }}>
+                <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#6366F1', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+                <Typography sx={{ color: '#4F46E5', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em' }}>NOW IN EARLY ACCESS</Typography>
+              </Box>
+              <Typography variant="h2" sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' }, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', mb: 2 }}>
+                Be among the first teams to use Julay
               </Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1rem', lineHeight: 1.7, mb: 4, maxWidth: 480, mx: 'auto' }}>
+                We're launching Julay with a small group of early users. Create your account now — get full access for free and help shape the product.
+              </Typography>
+              <Button onClick={() => window.location.href = '/register'} variant="contained" size="large"
+                sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } }}>
+                Get Early Access — Free <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+              </Button>
+              <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 4 }}>
+                {['No credit card', 'Cancel anytime', 'Full feature access'].map(t => (
+                  <Box key={t} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                    <CheckCircle sx={{ color: '#10B981', fontSize: 15 }} />
+                    <Typography sx={{ color: '#64748B', fontSize: '0.82rem' }}>{t}</Typography>
+                  </Box>
+                ))}
+              </Box>
             </Box>
           </FadeIn>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
-            {TESTIMONIALS.map((t, i) => (
-              <FadeIn key={i} delay={i * 100}>
-                <Box sx={{ p: 4, borderRadius: 3, border: '1.5px solid #E2E8F0', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.08)', transform: 'translateY(-4px)' } }}>
-                  <Box sx={{ display: 'flex', gap: 0.5, mb: 2.5 }}>
-                    {Array.from({ length: t.stars }).map((_, s) => <Typography key={s} sx={{ color: '#F59E0B', fontSize: '1rem' }}>★</Typography>)}
-                  </Box>
-                  <Typography sx={{ color: '#1E293B', fontSize: '0.95rem', lineHeight: 1.7, mb: 3, fontStyle: 'italic' }}>"{t.text}"</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Avatar sx={{ width: 38, height: 38, fontWeight: 700, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)' }}>{t.avatar}</Avatar>
-                    <Box>
-                      <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#0F172A' }}>{t.name}</Typography>
-                      <Typography sx={{ fontSize: '0.78rem', color: '#64748B' }}>{t.title}</Typography>
-                    </Box>
-                  </Box>
-                </Box>
-              </FadeIn>
-            ))}
-          </Box>
         </Container>
       </Box>
 
@@ -541,7 +587,7 @@ export default function Landing() {
               <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>right now.</Box>
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto' }}>
-              Join 2,000+ teams who replaced planning meetings with Julay AI. Free forever. No credit card.
+              Replace planning meetings with Julay AI. Describe your goal, get a full project in 60 seconds. Free forever. No credit card.
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
               <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 12px 48px rgba(99,102,241,0.6)' }, transition: 'all 0.2s' }}>

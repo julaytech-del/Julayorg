@@ -30,16 +30,14 @@ jobs:
           mkdir -p ~/.ssh
           echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
           chmod 600 ~/.ssh/deploy_key
-          ssh-keyscan -H 34.227.78.81 >> ~/.ssh/known_hosts
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
       - name: Deploy to server
         run: |
-          # Copy built frontend to server
           rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
-            frontend/dist/ ubuntu@34.227.78.81:/home/ubuntu/Julayorg/frontend/dist/
+            frontend/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/home/ubuntu/Julayorg/frontend/dist/
 
-          # Update backend and restart
-          ssh -i ~/.ssh/deploy_key ubuntu@34.227.78.81 "
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
             cd /home/ubuntu/Julayorg
             git pull origin main
             cd backend && npm install --production

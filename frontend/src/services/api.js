@@ -13,7 +13,7 @@ api.interceptors.response.use(
   res => res.data,
   err => {
     if (!err.response) {
-      return Promise.reject({ success: false, message: err.code === 'ECONNABORTED' ? 'الطلب استغرق وقتاً طويلاً، يرجى المحاولة مرة أخرى.' : 'تعذّر الاتصال بالخادم، يرجى التأكد من تشغيل الـ backend.' });
+      return Promise.reject({ success: false, message: err.code === 'ECONNABORTED' ? 'Request timed out. Please try again.' : 'Unable to connect to the server. Please check your connection.' });
     }
     if (err.response.status === 401) {
       localStorage.removeItem('julay_token');
@@ -101,9 +101,9 @@ export const notificationsAPI = {
 
 // Dashboard Config
 export const dashboardConfigAPI = {
-  getConfig: () => api.get('/dashboard/config'),
-  updateConfig: (data) => api.put('/dashboard/config', data),
-  getAIInsight: () => api.get('/dashboard/ai-insight'),
+  getConfig: () => api.get('/dashboard-config/config'),
+  updateConfig: (data) => api.put('/dashboard-config/config', data),
+  getAIInsight: () => api.get('/dashboard-config/ai-insight'),
 };
 
 // Reports

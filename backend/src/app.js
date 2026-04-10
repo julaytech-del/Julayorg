@@ -48,7 +48,7 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
-app.use('/api/dashboard', dashboardConfigRoutes);
+app.use('/api/dashboard-config', dashboardConfigRoutes);
 app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/context', aiLimiter, contextRoutes);

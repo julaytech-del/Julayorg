@@ -9,7 +9,9 @@ export const protect = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const decoded = jwt.verify(token, process.env.JWT_SECRET || 'fallback-secret');
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) throw new Error('JWT_SECRET environment variable is not set');
+    const decoded = jwt.verify(token, jwtSecret);
 
     const user = await User.findById(decoded.id).populate('role').populate('department').populate('organization');
     if (!user) {
@@ -34,10 +36,10 @@ export const requireSubscription = (req, res, next) => {
   const { plan, expiresAt } = org?.subscription || {};
 
   if (plan !== 'pro') {
-    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_REQUIRED', message: 'هذه الميزة متاحة للمشتركين فقط — $20/شهر' });
+    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_REQUIRED', message: 'This feature requires a Professional plan ($29/mo) or higher.' });
   }
   if (expiresAt && new Date() > new Date(expiresAt)) {
-    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_EXPIRED', message: 'انتهى اشتراك منظمتك، يرجى التجديد' });
+    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_EXPIRED', message: 'Your organization subscription has expired. Please renew to continue.' });
   }
   next();
 };
