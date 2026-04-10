@@ -1,493 +1,601 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Typography, Button, Container, Grid, Chip, Avatar, ToggleButtonGroup, ToggleButton } from '@mui/material';
-import { ArrowForward, AutoAwesome, CheckCircle, Psychology, Star } from '@mui/icons-material';
+import React, { useEffect, useState, useRef } from 'react';
+import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider } from '@mui/material';
+import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 
-/* ─── Animated gradient orb ─── */
-function Orb({ sx }) {
-  return <Box sx={{ position: 'absolute', borderRadius: '50%', filter: 'blur(80px)', pointerEvents: 'none', ...sx }} />;
-}
+/* ─── Gradient orb ─── */
+const Orb = ({ sx }) => <Box sx={{ position: 'absolute', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none', ...sx }} />;
 
-/* ─── Typing animation ─── */
-function TypeWriter({ words }) {
-  const [index, setIndex] = useState(0);
-  const [text, setText] = useState('');
-  const [deleting, setDeleting] = useState(false);
-
-  useEffect(() => {
-    const word = words[index];
-    const speed = deleting ? 40 : 80;
-    const timeout = setTimeout(() => {
-      if (!deleting && text === word) {
-        setTimeout(() => setDeleting(true), 1600);
-        return;
-      }
-      if (deleting && text === '') {
-        setDeleting(false);
-        setIndex(i => (i + 1) % words.length);
-        return;
-      }
-      setText(prev => deleting ? prev.slice(0, -1) : word.slice(0, prev.length + 1));
-    }, speed);
-    return () => clearTimeout(timeout);
-  }, [text, deleting, index, words]);
-
-  return (
-    <Box component="span" sx={{ background: 'linear-gradient(135deg, #818cf8, #c084fc, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-      {text}<Box component="span" sx={{ WebkitTextFillColor: '#818cf8', animation: 'blink 1s infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } } }}>|</Box>
-    </Box>
-  );
-}
-
-/* ─── Bento card ─── */
-function BentoCard({ children, sx }) {
-  const [pos, setPos] = useState({ x: 0, y: 0 });
+/* ─── Animated counter ─── */
+function AnimCounter({ end, suffix = '', duration = 2000 }) {
+  const [val, setVal] = useState(0);
   const ref = useRef();
-  const onMove = e => {
-    const rect = ref.current.getBoundingClientRect();
-    setPos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
-  };
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => {
+      if (!e.isIntersecting) return;
+      obs.disconnect();
+      let start = 0;
+      const step = end / (duration / 16);
+      const tick = () => {
+        start = Math.min(start + step, end);
+        setVal(Math.floor(start));
+        if (start < end) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, { threshold: 0.3 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, [end, duration]);
+  return <span ref={ref}>{val.toLocaleString()}{suffix}</span>;
+}
+
+/* ─── Section fade-in ─── */
+function FadeIn({ children, delay = 0 }) {
+  const ref = useRef();
+  const [vis, setVis] = useState(false);
+  useEffect(() => {
+    const obs = new IntersectionObserver(([e]) => { if (e.isIntersecting) { setVis(true); obs.disconnect(); } }, { threshold: 0.1 });
+    if (ref.current) obs.observe(ref.current);
+    return () => obs.disconnect();
+  }, []);
   return (
-    <Box ref={ref} onMouseMove={onMove}
-      sx={{ position: 'relative', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', bgcolor: 'rgba(255,255,255,0.03)', overflow: 'hidden', transition: 'border-color 0.3s, transform 0.2s', '&:hover': { borderColor: 'rgba(129,140,248,0.35)', transform: 'translateY(-3px)' }, ...sx }}>
-      <Box sx={{ position: 'absolute', width: 300, height: 300, borderRadius: '50%', background: 'radial-gradient(circle, rgba(129,140,248,0.12) 0%, transparent 70%)', left: pos.x - 150, top: pos.y - 150, pointerEvents: 'none', transition: 'left 0.1s, top 0.1s' }} />
+    <Box ref={ref} sx={{ opacity: vis ? 1 : 0, transform: vis ? 'translateY(0)' : 'translateY(28px)', transition: `opacity 0.6s ease ${delay}ms, transform 0.6s ease ${delay}ms` }}>
       {children}
     </Box>
   );
 }
 
-const BENTO = [
-  {
-    size: { xs: 12, md: 7 }, minH: 260,
-    content: (
-      <Box sx={{ p: 4, height: '100%' }}>
-        <Chip label="AI Generation" size="small" sx={{ bgcolor: 'rgba(129,140,248,0.15)', color: '#818cf8', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
-        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.4rem', mb: 1.5, lineHeight: 1.3 }}>
-          From idea to full plan<br />in under 2 minutes
-        </Typography>
-        <Box sx={{ bgcolor: 'rgba(255,255,255,0.05)', borderRadius: 2, p: 2, border: '1px solid rgba(255,255,255,0.08)' }}>
-          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', mb: 1 }}>Your prompt</Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.9rem', fontStyle: 'italic' }}>"Build a fintech app with KYC and payments..."</Typography>
-          <Box sx={{ mt: 2, display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-            {['8 Goals ✓','32 Tasks ✓','6 Members ✓','6 Weeks ✓'].map(t => (
-              <Chip key={t} label={t} size="small" sx={{ bgcolor: 'rgba(129,140,248,0.2)', color: '#a5b4fc', fontSize: '0.72rem', fontWeight: 700 }} />
-            ))}
-          </Box>
-        </Box>
-      </Box>
-    )
-  },
-  {
-    size: { xs: 12, md: 5 }, minH: 260,
-    content: (
-      <Box sx={{ p: 4, height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
-        <Box>
-          <Chip label="Smart Assignment" size="small" sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#34d399', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
-          <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.3rem', mb: 2, lineHeight: 1.3 }}>AI assigns the<br />right person, always</Typography>
-        </Box>
-        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-          {[['Sarah K.','Frontend','94% match'],['Ahmed R.','Backend','91% match'],['Maria L.','Design','88% match']].map(([name, role, match]) => (
-            <Box key={name} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', bgcolor: 'rgba(255,255,255,0.04)', borderRadius: 2, px: 2, py: 1 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-                <Avatar sx={{ width: 28, height: 28, bgcolor: '#6366f1', fontSize: '0.7rem', fontWeight: 700 }}>{name[0]}</Avatar>
-                <Box>
-                  <Typography sx={{ color: 'white', fontSize: '0.78rem', fontWeight: 600 }}>{name}</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.68rem' }}>{role}</Typography>
-                </Box>
-              </Box>
-              <Chip label={match} size="small" sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#34d399', fontSize: '0.68rem', fontWeight: 700, height: 20 }} />
-            </Box>
-          ))}
-        </Box>
-      </Box>
-    )
-  },
-  {
-    size: { xs: 12, md: 4 }, minH: 220,
-    content: (
-      <Box sx={{ p: 4, height: '100%' }}>
-        <Chip label="Daily Standup" size="small" sx={{ bgcolor: 'rgba(251,191,36,0.15)', color: '#fbbf24', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
-        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', mb: 2 }}>AI standup,<br />zero effort</Typography>
-        <Box sx={{ bgcolor: 'rgba(251,191,36,0.08)', borderRadius: 2, p: 2, border: '1px solid rgba(251,191,36,0.15)' }}>
-          <Typography sx={{ color: '#fbbf24', fontSize: '0.72rem', fontWeight: 700, mb: 1 }}>Today's AI Report</Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.75rem', lineHeight: 1.6 }}>3 tasks at risk · 2 blockers · Sprint 87% on track</Typography>
-        </Box>
-      </Box>
-    )
-  },
-  {
-    size: { xs: 12, md: 4 }, minH: 220,
-    content: (
-      <Box sx={{ p: 4, height: '100%' }}>
-        <Chip label="Analytics" size="small" sx={{ bgcolor: 'rgba(244,114,182,0.15)', color: '#f472b6', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
-        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', mb: 2.5 }}>Track what matters</Typography>
-        <Box sx={{ display: 'flex', gap: 2 }}>
-          {[['89%','On-time','#34d399'],['12','Projects','#818cf8'],['4.9','AI Score','#f472b6']].map(([val, label, color]) => (
-            <Box key={label} sx={{ textAlign: 'center', flex: 1 }}>
-              <Typography sx={{ color, fontWeight: 900, fontSize: '1.5rem' }}>{val}</Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.68rem' }}>{label}</Typography>
-            </Box>
-          ))}
-        </Box>
-      </Box>
-    )
-  },
-  {
-    size: { xs: 12, md: 4 }, minH: 220,
-    content: (
-      <Box sx={{ p: 4, height: '100%' }}>
-        <Chip label="Auto Re-plan" size="small" sx={{ bgcolor: 'rgba(99,102,241,0.15)', color: '#818cf8', fontWeight: 700, mb: 2.5, fontSize: '0.72rem' }} />
-        <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.2rem', mb: 2 }}>Delays happen.<br />AI handles them.</Typography>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-          <Box sx={{ flex: 1, height: 4, bgcolor: 'rgba(255,255,255,0.08)', borderRadius: 2, overflow: 'hidden' }}>
-            <Box sx={{ width: '72%', height: '100%', bgcolor: '#818cf8', borderRadius: 2 }} />
-          </Box>
-          <Typography sx={{ color: '#818cf8', fontSize: '0.78rem', fontWeight: 700 }}>72%</Typography>
-        </Box>
-        <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem', mt: 1 }}>Rescheduled 8 tasks automatically</Typography>
-      </Box>
-    )
-  },
-];
+/* ─── AI Demo animation ─── */
+function AIDemoCard() {
+  const [step, setStep] = useState(0);
+  const [typed, setTyped] = useState('');
+  const prompt = 'Launch v2.0 of our SaaS in Q4';
+  const tasks = [
+    { title: 'Market research & competitor analysis', assignee: 'Sara', hours: 12, status: 'done' },
+    { title: 'Design system & UI components', assignee: 'Alex', hours: 24, status: 'in_progress' },
+    { title: 'Backend API refactor', assignee: 'Mohammed', hours: 40, status: 'in_progress' },
+    { title: 'QA testing & bug fixes', assignee: 'Dana', hours: 16, status: 'todo' },
+    { title: 'DevOps & deployment pipeline', assignee: 'Karim', hours: 8, status: 'todo' },
+  ];
 
-const TESTIMONIALS = [
-  { name: 'Sarah K.', role: 'Product Manager @ Stripe', text: 'Julay replaced 3 tools. The AI planning saves 8+ hours every week.', color: '#818cf8' },
-  { name: 'Ahmed R.', role: 'Engineering Lead @ Notion', text: "The standup AI knows what's blocked before I even ask. Insane.", color: '#34d399' },
-  { name: 'Maria L.', role: 'Founder @ YC W25', text: 'From idea to full plan in 90 seconds. Nothing else comes close.', color: '#f472b6' },
-];
-
-const PLANS = [
-  {
-    name: 'FREE',
-    monthlyPrice: 0,
-    yearlyPrice: 0,
-    description: 'Perfect for individuals getting started',
-    features: ['3 projects', '3 team members', '5 AI requests/mo', 'Kanban & Gantt views', 'Basic analytics'],
-    cta: 'Get Started Free',
-    ctaUrl: '/register',
-    highlight: false,
-  },
-  {
-    name: 'STARTER',
-    monthlyPrice: 9,
-    yearlyPrice: 7,
-    description: 'Great for small teams',
-    features: ['10 projects', '10 team members', '100 AI requests/mo', 'Everything in Free', 'Priority support'],
-    cta: 'Start Free Trial',
-    ctaUrl: '/register?plan=starter',
-    highlight: false,
-  },
-  {
-    name: 'PROFESSIONAL',
-    monthlyPrice: 29,
-    yearlyPrice: 23,
-    description: 'For growing teams with AI',
-    features: ['Unlimited projects', '25 team members', '500 AI requests/mo', 'AI project generation', 'Daily AI standup reports', 'Auto re-planning', 'Advanced analytics'],
-    cta: 'Start Free Trial',
-    ctaUrl: '/register?plan=professional',
-    highlight: true,
-    badge: 'Most Popular',
-  },
-  {
-    name: 'BUSINESS',
-    monthlyPrice: 79,
-    yearlyPrice: 63,
-    description: 'For large organizations',
-    features: ['Unlimited projects', 'Unlimited members', '2000 AI requests/mo', 'Everything in Pro', 'SSO & SAML', 'Dedicated support', 'Custom integrations'],
-    cta: 'Start Free Trial',
-    ctaUrl: '/register?plan=business',
-    highlight: false,
-  },
-];
-
-function PricingSection({ navigate }) {
-  const [yearly, setYearly] = useState(false);
+  useEffect(() => {
+    if (step === 0) {
+      let i = 0;
+      const t = setInterval(() => {
+        i++;
+        setTyped(prompt.slice(0, i));
+        if (i >= prompt.length) { clearInterval(t); setTimeout(() => setStep(1), 800); }
+      }, 55);
+      return () => clearInterval(t);
+    }
+    if (step === 1) { setTimeout(() => setStep(2), 1200); }
+  }, [step]);
 
   return (
-    <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }} id="pricing">
-      <Container maxWidth="lg">
-        <Box sx={{ textAlign: 'center', mb: 6 }}>
-          <Typography sx={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 2 }}>Pricing</Typography>
-          <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '3rem' }, letterSpacing: '-0.04em', mb: 1 }}>
-            Simple, Transparent Pricing
-          </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '1.05rem', mb: 4 }}>
-            Start free, scale as you grow
-          </Typography>
-          {/* Monthly/Yearly toggle */}
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 2, bgcolor: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 99, px: 2, py: 0.75 }}>
-            <Typography sx={{ color: yearly ? 'rgba(255,255,255,0.35)' : 'white', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => setYearly(false)}>Monthly</Typography>
-            <Box onClick={() => setYearly(y => !y)} sx={{ width: 44, height: 24, borderRadius: 99, bgcolor: yearly ? '#6366f1' : 'rgba(255,255,255,0.15)', cursor: 'pointer', position: 'relative', transition: 'background-color 0.25s', flexShrink: 0 }}>
-              <Box sx={{ position: 'absolute', top: 2, left: yearly ? 22 : 2, width: 20, height: 20, borderRadius: '50%', bgcolor: 'white', transition: 'left 0.25s', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }} />
-            </Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Typography sx={{ color: yearly ? 'white' : 'rgba(255,255,255,0.35)', fontWeight: 600, fontSize: '0.85rem', cursor: 'pointer', transition: 'color 0.2s' }} onClick={() => setYearly(true)}>Yearly</Typography>
-              {yearly && <Chip label="Save 20%" size="small" sx={{ bgcolor: 'rgba(52,211,153,0.15)', color: '#34d399', fontWeight: 700, fontSize: '0.68rem', height: 20 }} />}
-            </Box>
+    <Box sx={{ background: '#0F172A', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', width: '100%', maxWidth: 560, mx: 'auto', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
+      {/* Window chrome */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }}>
+        {['#EF4444','#F59E0B','#10B981'].map(c => <Box key={c} sx={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: c }} />)}
+        <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem', ml: 1 }}>julay.org · AI Studio</Typography>
+      </Box>
+      <Box sx={{ p: 3 }}>
+        {/* Input */}
+        <Box sx={{ mb: 2.5 }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', mb: 1, textTransform: 'uppercase', letterSpacing: '0.08em' }}>Describe your project goal</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid rgba(99,102,241,0.5)', background: 'rgba(99,102,241,0.06)' }}>
+            <Typography sx={{ color: '#E2E8F0', fontSize: '0.88rem', flex: 1 }}>{typed}{step < 1 && <Box component="span" sx={{ display: 'inline-block', width: 2, height: '1em', background: '#818CF8', ml: '2px', animation: 'blink 1s steps(1) infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } } }} />}</Typography>
+            {step >= 1 && <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.6, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', cursor: 'pointer' }}>
+              <AutoAwesome sx={{ fontSize: 13, color: 'white' }} />
+              <Typography sx={{ color: 'white', fontSize: '0.75rem', fontWeight: 700 }}>Generate</Typography>
+            </Box>}
           </Box>
         </Box>
-
-        <Grid container spacing={2.5} alignItems="stretch">
-          {PLANS.map(plan => (
-            <Grid item xs={12} sm={6} lg={3} key={plan.name}>
-              <Box sx={{
-                position: 'relative', borderRadius: 4, p: 3.5, height: '100%', display: 'flex', flexDirection: 'column',
-                bgcolor: plan.highlight ? 'transparent' : 'rgba(255,255,255,0.03)',
-                background: plan.highlight ? 'linear-gradient(135deg, rgba(99,102,241,0.18), rgba(168,85,247,0.12))' : undefined,
-                border: plan.highlight ? '1.5px solid rgba(99,102,241,0.5)' : '1px solid rgba(255,255,255,0.07)',
-                boxShadow: plan.highlight ? '0 0 60px rgba(99,102,241,0.18), inset 0 0 40px rgba(99,102,241,0.04)' : 'none',
-                transition: 'transform 0.22s, box-shadow 0.22s, border-color 0.22s',
-                '&:hover': {
-                  transform: 'translateY(-6px)',
-                  boxShadow: plan.highlight
-                    ? '0 0 80px rgba(99,102,241,0.28), inset 0 0 40px rgba(99,102,241,0.06)'
-                    : '0 20px 60px rgba(0,0,0,0.3)',
-                  borderColor: plan.highlight ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.15)',
-                },
-              }}>
-                {plan.badge && (
-                  <Box sx={{ position: 'absolute', top: -13, left: '50%', transform: 'translateX(-50%)', bgcolor: 'linear-gradient(135deg, #6366f1, #a855f7)', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 99, px: 2, py: 0.4, display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Star sx={{ fontSize: 11, color: '#fbbf24' }} />
-                    <Typography sx={{ color: 'white', fontSize: '0.7rem', fontWeight: 800, whiteSpace: 'nowrap' }}>{plan.badge}</Typography>
-                  </Box>
-                )}
-
-                <Box sx={{ mb: 3 }}>
-                  <Typography sx={{ color: plan.highlight ? '#a5b4fc' : 'rgba(255,255,255,0.5)', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.12em', mb: 0.75 }}>{plan.name}</Typography>
-                  <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 0.5 }}>
-                    <Typography sx={{ fontWeight: 900, fontSize: '2.8rem', letterSpacing: '-0.05em', lineHeight: 1, color: 'white' }}>
-                      ${yearly ? plan.yearlyPrice : plan.monthlyPrice}
-                    </Typography>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.35)', mb: 0.5, fontSize: '0.9rem' }}>/mo</Typography>
-                  </Box>
-                  {yearly && plan.monthlyPrice > 0 && (
-                    <Typography sx={{ color: '#34d399', fontSize: '0.72rem', fontWeight: 600 }}>
-                      ${plan.yearlyPrice * 12}/yr · Save ${(plan.monthlyPrice - plan.yearlyPrice) * 12}
-                    </Typography>
-                  )}
-                  <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.8rem', mt: 1 }}>{plan.description}</Typography>
+        {/* Generated tasks */}
+        {step >= 2 && (
+          <Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+              <Typography sx={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 600 }}>AI generated 5 tasks · assigned team · estimated 100h</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {tasks.map((t, i) => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', animation: `slideIn 0.3s ease ${i * 100}ms both`, '@keyframes slideIn': { from: { opacity: 0, transform: 'translateX(-10px)' }, to: { opacity: 1, transform: 'translateX(0)' } } }}>
+                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: t.status === 'done' ? '#10B981' : t.status === 'in_progress' ? '#6366F1' : '#475569' }} />
+                  <Typography sx={{ color: '#E2E8F0', fontSize: '0.8rem', flex: 1 }} noWrap>{t.title}</Typography>
+                  <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>{t.assignee[0]}</Avatar>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.7rem', flexShrink: 0 }}>{t.hours}h</Typography>
                 </Box>
-
-                <Box sx={{ flex: 1, mb: 3 }}>
-                  {plan.features.map(f => (
-                    <Box key={f} sx={{ display: 'flex', gap: 1.25, mb: 1.25, alignItems: 'flex-start' }}>
-                      <CheckCircle sx={{ color: plan.highlight ? '#818cf8' : 'rgba(255,255,255,0.3)', fontSize: 16, mt: '1px', flexShrink: 0 }} />
-                      <Typography fontSize="0.82rem" sx={{ color: plan.highlight ? 'rgba(255,255,255,0.85)' : 'rgba(255,255,255,0.5)' }}>{f}</Typography>
-                    </Box>
-                  ))}
-                </Box>
-
-                <Button
-                  fullWidth
-                  variant={plan.highlight ? 'contained' : 'outlined'}
-                  onClick={() => {
-                    if (plan.name === 'BUSINESS' && plan.monthlyPrice > 60) {
-                      window.location.href = 'mailto:sales@julay.org';
-                    } else {
-                      navigate(plan.ctaUrl);
-                    }
-                  }}
-                  sx={plan.highlight
-                    ? { background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontWeight: 800, borderRadius: 2.5, py: 1.2, textTransform: 'none', fontSize: '0.9rem', boxShadow: '0 0 24px rgba(99,102,241,0.4)', '&:hover': { boxShadow: '0 0 40px rgba(99,102,241,0.6)' } }
-                    : { border: '1px solid rgba(255,255,255,0.12)', color: 'rgba(255,255,255,0.65)', fontWeight: 700, borderRadius: 2.5, py: 1.2, textTransform: 'none', fontSize: '0.9rem', '&:hover': { borderColor: 'rgba(255,255,255,0.3)', color: 'white', bgcolor: 'rgba(255,255,255,0.04)' } }
-                  }
-                >
-                  {plan.cta}
-                </Button>
-              </Box>
-            </Grid>
-          ))}
-        </Grid>
-
-        {/* Enterprise note */}
-        <Box sx={{ textAlign: 'center', mt: 5 }}>
-          <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.875rem' }}>
-            Need a custom plan?{' '}
-            <Box component="a" href="mailto:sales@julay.org" sx={{ color: '#818cf8', textDecoration: 'none', fontWeight: 600, '&:hover': { textDecoration: 'underline' } }}>Contact sales</Box>
-            {' '}— we build custom contracts for enterprises.
-          </Typography>
-        </Box>
-      </Container>
+              ))}
+            </Box>
+          </Box>
+        )}
+        {step < 2 && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {[1,2,3].map(i => <Box key={i} sx={{ height: 42, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', animation: 'shimmer 1.5s infinite', '@keyframes shimmer': { '0%,100%': { opacity: 0.4 }, '50%': { opacity: 0.8 } } }} />)}
+          </Box>
+        )}
+      </Box>
     </Box>
   );
 }
 
+/* ─── Comparison data ─── */
+const COMPARE = [
+  { feature: 'AI Project Planning', julay: true, monday: false, asana: false, notion: false },
+  { feature: 'Auto Task Breakdown', julay: true, monday: false, asana: false, notion: false },
+  { feature: 'Smart Team Assignment', julay: true, monday: false, asana: false, notion: false },
+  { feature: 'AI Deadline Optimizer', julay: true, monday: false, asana: false, notion: false },
+  { feature: 'Workload AI Rebalancer', julay: true, monday: false, asana: false, notion: false },
+  { feature: 'Critical Path (CPM)', julay: true, monday: true, asana: false, notion: false },
+  { feature: 'Automation Rules', julay: true, monday: true, asana: true, notion: false },
+  { feature: 'Gantt Timeline', julay: true, monday: true, asana: true, notion: false },
+  { feature: 'Calendar View', julay: true, monday: true, asana: true, notion: false },
+  { feature: 'Custom Dashboards', julay: true, monday: true, asana: false, notion: false },
+  { feature: 'Sprint / Agile Board', julay: true, monday: true, asana: true, notion: false },
+  { feature: 'Time Tracking', julay: true, monday: true, asana: true, notion: false },
+  { feature: 'Public Form Builder', julay: true, monday: true, asana: false, notion: false },
+  { feature: 'Webhook System', julay: true, monday: true, asana: false, notion: false },
+  { feature: 'Starting Price', julay: '$9/mo', monday: '$9/seat', asana: '$13/seat', notion: '$10/seat' },
+  { feature: 'AI Included in Base Plan', julay: true, monday: false, asana: false, notion: false },
+];
+
+const TOOLS = ['Monday', 'Asana', 'Notion'];
+
+/* ─── Testimonials ─── */
+const TESTIMONIALS = [
+  { name: 'Sarah Chen', title: 'CTO, NovaTech', avatar: 'S', stars: 5, text: 'Julay replaced our entire project stack. The AI planning feature alone saves us 8 hours per sprint. It just thinks ahead — assigning tasks, spotting risks, optimizing deadlines before I even notice the problem.' },
+  { name: 'Ahmed Al-Rashid', title: 'Product Lead, Tamatem Games', avatar: 'A', stars: 5, text: 'We were on Monday for 3 years. Switched to Julay in a week and never looked back. The AI breaks down projects in seconds — what used to take a planning session now happens instantly.' },
+  { name: 'Marcus Weber', title: 'Founder, BuildStack', avatar: 'M', stars: 5, text: 'The workload AI is insane. It tells me who is overloaded before they burn out. My team\'s delivery rate went from 62% to 91% in 6 weeks. This is what project management should have always been.' },
+  { name: 'Layla Karimi', title: 'Engineering Manager, Fintech.io', avatar: 'L', stars: 5, text: 'Every feature feels intentional. The Critical Path analysis, the Gantt with AI risks — it\'s like having a senior PM always watching your project. The pricing is unreal for what you get.' },
+];
+
+/* ─── Company logos (placeholder) ─── */
+const LOGOS = ['NovaTech', 'Tamatem', 'BuildStack', 'Fintech.io', 'ZeroGravity', 'Shift Media', 'Launchpad', 'CoreSystems'];
+
+/* ─── Pricing plans ─── */
+const PLANS = [
+  { id: 'free', name: 'Free', price: 0, yearlyPrice: 0, description: 'Perfect to get started', features: ['3 projects', '3 team members', '5 AI requests/month', 'Kanban & List views', '1 GB storage'], cta: 'Start for Free', ctaVariant: 'outlined', highlight: false },
+  { id: 'starter', name: 'Starter', price: 9, yearlyPrice: 7, description: 'For solo professionals', features: ['10 projects', '10 team members', '100 AI requests/month', 'All views (Calendar, Gantt)', '10 GB storage', 'Email support'], cta: 'Start Free Trial', ctaVariant: 'outlined', highlight: false },
+  { id: 'professional', name: 'Professional', price: 29, yearlyPrice: 23, description: 'For growing teams', popular: true, features: ['Unlimited projects', '25 team members', '500 AI requests/month', 'Automations & Webhooks', 'Reports & Forms', 'Time Tracking + Custom Fields', '50 GB storage', 'Priority support'], cta: 'Start Free Trial', ctaVariant: 'contained', highlight: true },
+  { id: 'business', name: 'Business', price: 79, yearlyPrice: 63, description: 'For scaling companies', features: ['Everything in Professional', 'Unlimited team members', '2,000 AI requests/month', 'API access', 'Custom analytics', '200 GB storage', 'Dedicated support'], cta: 'Start Free Trial', ctaVariant: 'outlined', highlight: false },
+];
+
+/* ─── Feature grid ─── */
+const FEATURES = [
+  { icon: '🧠', title: 'AI Project Planning', desc: 'Describe your goal in plain language. Julay AI generates a full project breakdown — tasks, timelines, and team assignments — in seconds.' },
+  { icon: '⚡', title: 'Smart Auto-Assignment', desc: 'AI analyzes team skills, workload, and availability to assign tasks to the right person automatically.' },
+  { icon: '📊', title: 'Critical Path (CPM)', desc: 'Automatically identifies which tasks can delay your entire project. Visual warnings keep you ahead of schedule.' },
+  { icon: '🎯', title: 'Workload Balancer', desc: 'Real-time heatmap shows who is overloaded. One click AI rebalancing reassigns tasks intelligently across your team.' },
+  { icon: '📅', title: 'Deadline Optimizer', desc: 'AI analyzes assignee workload and suggests the best due dates — with confidence scores and risk warnings.' },
+  { icon: '🔔', title: 'Smart Notifications', desc: 'Get alerted before things go wrong. AI monitors your projects 24/7 and surfaces what matters, when it matters.' },
+  { icon: '⚙️', title: 'Automation Engine', desc: 'Build powerful if-this-then-that rules. Trigger notifications, status changes, subtask creation — all automatically.' },
+  { icon: '📋', title: 'Public Form Builder', desc: 'Create shareable intake forms that auto-create and assign tasks when submitted. No dev required.' },
+  { icon: '📈', title: 'AI Executive Reports', desc: 'One click generates a 2-paragraph executive summary of your project status, written by Claude AI.' },
+  { icon: '🔗', title: 'Webhook System', desc: 'Send real-time events to Slack, Zapier, or any endpoint. HMAC-signed payloads for enterprise security.' },
+  { icon: '🏃', title: 'Sprint / Agile Board', desc: 'Full Scrum support. Plan sprints, track velocity, view burndown charts. Switch between Agile and waterfall in one click.' },
+  { icon: '🌐', title: 'Portfolio View', desc: 'See every project\'s health in one executive dashboard. On Track, At Risk, Off Track — at a glance.' },
+];
+
+/* ─── FAQ ─── */
+const FAQS = [
+  { q: 'How is Julay different from Monday.com or Asana?', a: 'Julay is the only project management tool built AI-first. Monday and Asana have AI bolt-ons. Julay\'s AI plans your project, assigns your team, balances workload, and warns you about risks — all automatically. It\'s not a feature, it\'s the engine.' },
+  { q: 'Do I need to know how to use AI?', a: 'Not at all. You write your goal in plain English (or Arabic). Julay does the rest. No prompts, no templates — just describe what you need to achieve.' },
+  { q: 'Is there a free plan?', a: 'Yes — free forever. 3 projects, 3 team members, 5 AI requests per month. No credit card required. Upgrade when you need more.' },
+  { q: 'How secure is my data?', a: 'All data is encrypted at rest and in transit. We use HMAC-signed webhooks, JWT authentication, and role-based access control. Your data is never used to train AI models.' },
+  { q: 'Can I migrate from Monday or Asana?', a: 'Yes. Our CSV import tool handles task data from any major tool. Our team can assist with large migrations on Business and Enterprise plans.' },
+  { q: 'What AI model powers Julay?', a: 'Julay uses Anthropic\'s Claude claude-sonnet-4-6 — the same model used by leading AI companies. It\'s the most capable model for structured planning, risk analysis, and executive summaries.' },
+];
+
 export default function Landing() {
   const navigate = useNavigate();
+  const [billing, setBilling] = useState('monthly');
+  const [openFaq, setOpenFaq] = useState(null);
 
   return (
-    <Box sx={{ bgcolor: '#030712', color: 'white', overflowX: 'hidden' }}>
+    <Box sx={{ fontFamily: '"Inter", sans-serif', overflowX: 'hidden' }}>
 
-      {/* ── NAV ── */}
-      <Box sx={{ position: 'sticky', top: 0, zIndex: 100, borderBottom: '1px solid rgba(255,255,255,0.06)', backdropFilter: 'blur(20px)', bgcolor: 'rgba(3,7,18,0.85)' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 1.8 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.2 }}>
-              <Box sx={{ width: 32, height: 32, borderRadius: 1.5, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Psychology sx={{ color: 'white', fontSize: 18 }} />
-              </Box>
-              <Typography fontWeight={800} fontSize={18} letterSpacing='-0.02em'>julay</Typography>
+      {/* ─── NAV ─── */}
+      <Box component="nav" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+            <Box sx={{ width: 32, height: 32, borderRadius: 1.5, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1rem' }}>J</Typography>
+            </Box>
+            <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>Julay</Typography>
+          </Box>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
+            {['Features', 'Compare', 'Pricing', 'FAQ'].map(l => (
+              <Typography key={l} component="a" href={`#${l.toLowerCase()}`} sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', textDecoration: 'none', cursor: 'pointer', transition: 'color 0.15s', '&:hover': { color: 'white' } }}>{l}</Typography>
+            ))}
+          </Box>
+          <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+            <Button onClick={() => navigate('/login')} variant="text" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.06)' } }}>Log in</Button>
+            <Button onClick={() => navigate('/register')} variant="contained" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 2.5, py: 0.9, borderRadius: 2, fontSize: '0.88rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9, boxShadow: '0 0 30px rgba(99,102,241,0.5)' } }}>
+              Start Free →
+            </Button>
+          </Box>
+        </Box>
+      </Box>
+
+      {/* ─── HERO ─── */}
+      <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
+        <Orb sx={{ width: 600, height: 600, background: 'rgba(99,102,241,0.15)', top: -200, left: -200 }} />
+        <Orb sx={{ width: 500, height: 500, background: 'rgba(139,92,246,0.12)', top: 100, right: -150 }} />
+        <Orb sx={{ width: 300, height: 300, background: 'rgba(6,182,212,0.08)', bottom: 50, left: '40%' }} />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: { xs: 8, md: 12 } }}>
+          <Box sx={{ textAlign: 'center', maxWidth: 800, mx: 'auto', mb: 8 }}>
+            {/* Badge */}
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, border: '1px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.1)', mb: 4 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1, transform: 'scale(1)' }, '50%': { opacity: 0.5, transform: 'scale(0.8)' } } }} />
+              <Typography sx={{ color: '#A5B4FC', fontSize: '0.8rem', fontWeight: 600 }}>Powered by Claude AI · Now live</Typography>
             </Box>
 
-            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 4 }}>
-              {['Features', 'Pricing', 'Blog'].map(item => (
-                <Typography key={item} sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 500, fontSize: '0.9rem', cursor: 'pointer', '&:hover': { color: 'white' }, transition: 'color 0.15s' }}>{item}</Typography>
+            {/* H1 */}
+            <Typography variant="h1" sx={{ color: 'white', fontSize: { xs: '2.8rem', md: '4.5rem', lg: '5.2rem' }, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.04em', mb: 3 }}>
+              We don't manage tasks.{' '}
+              <Box component="span" sx={{ background: 'linear-gradient(135deg, #818CF8, #C084FC, #38BDF8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                We build execution systems.
+              </Box>
+            </Typography>
+
+            <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: { xs: '1.05rem', md: '1.25rem' }, lineHeight: 1.65, mb: 5, maxWidth: 600, mx: 'auto' }}>
+              Julay uses AI to plan, break down, and execute your work — automatically.
+              Describe your goal. Get a full project in seconds.
+            </Typography>
+
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', mb: 3 }}>
+              <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
+                Start Free — No credit card
+              </Button>
+              <Button onClick={() => navigate('/login')} variant="outlined" size="large" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, px: 3.5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' } }}>
+                <PlayArrow sx={{ fontSize: 18, mr: 0.75 }} /> See it in action
+              </Button>
+            </Box>
+            <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
+              Trusted by 2,000+ teams · Free plan forever · Setup in 60 seconds
+            </Typography>
+          </Box>
+
+          {/* AI Demo */}
+          <FadeIn delay={300}>
+            <AIDemoCard />
+          </FadeIn>
+        </Container>
+      </Box>
+
+      {/* ─── LOGO BAR ─── */}
+      <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: 4 }}>
+        <Container maxWidth="lg">
+          <Typography sx={{ textAlign: 'center', color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem', mb: 3, textTransform: 'uppercase', letterSpacing: '0.1em', fontWeight: 600 }}>
+            Trusted by teams at
+          </Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: { xs: 2.5, md: 5 } }}>
+            {LOGOS.map(l => (
+              <Typography key={l} sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.95rem', fontWeight: 700, letterSpacing: '-0.01em', transition: 'color 0.2s', '&:hover': { color: 'rgba(255,255,255,0.5)' } }}>{l}</Typography>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ─── STATS ─── */}
+      <Box sx={{ background: '#09090B', borderBottom: '1px solid rgba(255,255,255,0.06)', py: 8 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 3 }}>
+            {[
+              { num: 2000, suffix: '+', label: 'Teams worldwide' },
+              { num: 94, suffix: '%', label: 'Delivery rate improvement' },
+              { num: 8, suffix: 'h', label: 'Saved per sprint' },
+              { num: 60, suffix: 's', label: 'To generate a project plan' },
+            ].map((s, i) => (
+              <FadeIn key={i} delay={i * 100}>
+                <Box sx={{ textAlign: 'center', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
+                  <Typography sx={{ color: 'white', fontSize: { xs: '2.2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.04em', background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                    <AnimCounter end={s.num} suffix={s.suffix} />
+                  </Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', mt: 0.5 }}>{s.label}</Typography>
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ─── PROBLEM ─── */}
+      <Box sx={{ background: '#09090B', py: { xs: 8, md: 14 } }}>
+        <Container maxWidth="md">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip label="THE PROBLEM" sx={{ mb: 3, background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.25)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
+                Your current PM tool is just a{' '}
+                <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>fancy to-do list</Box>
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', lineHeight: 1.7 }}>
+                Monday, Asana, and Notion help you track work — but they don't think. You still need to plan, assign, schedule, and risk-check everything manually.
+              </Typography>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
+            {['You spend Monday planning your whole week', 'Tasks get assigned based on guesswork', 'Nobody sees the deadline risk until it\'s too late', 'Standups replace actual visibility', 'AI tools require you to write perfect prompts', 'Reporting takes hours every week'].map((p, i) => (
+              <FadeIn key={i} delay={i * 80}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2, border: '1px solid rgba(239,68,68,0.15)', background: 'rgba(239,68,68,0.04)' }}>
+                  <Close sx={{ color: '#EF4444', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
+                  <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', lineHeight: 1.5 }}>{p}</Typography>
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ─── FEATURES ─── */}
+      <Box id="features" sx={{ background: 'white', py: { xs: 8, md: 16 } }}>
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 10 }}>
+              <Chip label="FEATURES" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
+                Everything your team needs.{' '}
+                <Box component="span" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Nothing they don't.</Box>
+              </Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.1rem', maxWidth: 550, mx: 'auto' }}>
+                12 core features. All AI-connected. All designed to actually reduce your team's workload.
+              </Typography>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3,1fr)' }, gap: 2.5 }}>
+            {FEATURES.map((f, i) => (
+              <FadeIn key={i} delay={i * 50}>
+                <Box sx={{ p: 3, borderRadius: 3, border: '1.5px solid #E2E8F0', transition: 'all 0.2s', '&:hover': { borderColor: '#6366F1', boxShadow: '0 8px 32px rgba(99,102,241,0.12)', transform: 'translateY(-4px)' } }}>
+                  <Typography sx={{ fontSize: '2rem', mb: 1.5 }}>{f.icon}</Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', mb: 0.75 }}>{f.title}</Typography>
+                  <Typography sx={{ color: '#64748B', fontSize: '0.875rem', lineHeight: 1.65 }}>{f.desc}</Typography>
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ─── COMPARE ─── */}
+      <Box id="compare" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip label="COMPARISON" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
+                How Julay stacks up
+              </Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.05rem' }}>Spoiler: the AI column changes everything.</Typography>
+            </Box>
+          </FadeIn>
+          <Box sx={{ borderRadius: 4, overflow: 'hidden', border: '1.5px solid #E2E8F0', background: 'white', boxShadow: '0 4px 32px rgba(0,0,0,0.06)' }}>
+            {/* Header */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: '2fr repeat(4,1fr)', background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0' }}>
+              <Box sx={{ p: 2.5 }} />
+              {['Julay', ...TOOLS].map((t, i) => (
+                <Box key={i} sx={{ p: 2.5, textAlign: 'center', borderLeft: '1px solid #E2E8F0', background: t === 'Julay' ? 'linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.06))' : 'transparent' }}>
+                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: t === 'Julay' ? '#4F46E5' : '#475569' }}>{t}</Typography>
+                  {t === 'Julay' && <Box sx={{ width: 40, height: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', mx: 'auto', mt: 0.5, borderRadius: 1 }} />}
+                </Box>
               ))}
             </Box>
-
-            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-              <Button onClick={() => navigate('/login')} sx={{ color: 'rgba(255,255,255,0.5)', fontWeight: 600, fontSize: '0.85rem', '&:hover': { color: 'white' }, textTransform: 'none' }}>
-                Sign in
-              </Button>
-              <Button onClick={() => navigate('/register')} variant="contained"
-                sx={{ background: 'linear-gradient(135deg, #6366f1, #a855f7)', fontWeight: 700, borderRadius: 2, px: 2.5, py: 0.9, textTransform: 'none', fontSize: '0.85rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { boxShadow: '0 0 30px rgba(99,102,241,0.6)' } }}>
-                Get Started
-              </Button>
-            </Box>
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ── HERO ── */}
-      <Box sx={{ position: 'relative', pt: { xs: 10, md: 16 }, pb: { xs: 8, md: 14 }, overflow: 'hidden' }}>
-        <Orb sx={{ width: 600, height: 600, background: 'radial-gradient(circle, rgba(99,102,241,0.25), transparent 70%)', top: '-200px', left: '50%', transform: 'translateX(-50%)' }} />
-        <Orb sx={{ width: 400, height: 400, background: 'radial-gradient(circle, rgba(168,85,247,0.2), transparent 70%)', top: '100px', right: '-100px' }} />
-        <Orb sx={{ width: 300, height: 300, background: 'radial-gradient(circle, rgba(244,114,182,0.15), transparent 70%)', bottom: '0', left: '-50px' }} />
-
-        <Container maxWidth="lg" sx={{ position: 'relative', textAlign: 'center' }}>
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, bgcolor: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', borderRadius: 99, px: 2, py: 0.8, mb: 5 }}>
-            <AutoAwesome sx={{ fontSize: 14, color: '#818cf8' }} />
-            <Typography sx={{ color: '#a5b4fc', fontSize: '0.8rem', fontWeight: 600 }}>Powered by Claude AI — The smartest PM tool ever built</Typography>
-          </Box>
-
-          <Typography sx={{ fontWeight: 900, fontSize: { xs: '3rem', sm: '4rem', md: '5.5rem' }, letterSpacing: '-0.05em', lineHeight: 1.0, mb: 3 }}>
-            The AI that runs<br />
-            <TypeWriter words={['your projects.', 'your team.', 'your deadlines.', 'your business.']} />
-          </Typography>
-
-          <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: { xs: '1rem', md: '1.2rem' }, maxWidth: 560, mx: 'auto', lineHeight: 1.7, mb: 6 }}>
-            Describe any project. Julay's AI generates a complete plan, assigns your team, and adapts in real-time — so you can focus on building.
-          </Typography>
-
-          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap', mb: 4 }}>
-            <Button onClick={() => navigate('/register')} variant="contained" size="large" endIcon={<ArrowForward />}
-              sx={{ px: 4, py: 1.6, fontWeight: 700, fontSize: '1rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 2.5, boxShadow: '0 0 40px rgba(99,102,241,0.5)', '&:hover': { boxShadow: '0 0 60px rgba(99,102,241,0.7)', transform: 'translateY(-2px)' }, transition: 'all 0.2s', textTransform: 'none' }}>
-              Start for free
-            </Button>
-            <Button onClick={() => navigate('/login')} size="large"
-              sx={{ px: 4, py: 1.6, fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.6)', border: '1px solid rgba(255,255,255,0.1)', borderRadius: 2.5, '&:hover': { color: 'white', borderColor: 'rgba(255,255,255,0.25)', bgcolor: 'rgba(255,255,255,0.04)' }, textTransform: 'none' }}>
-              Sign in
-            </Button>
-          </Box>
-          <Typography sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.8rem' }}>No credit card · Free plan forever · Setup in 60 seconds</Typography>
-        </Container>
-      </Box>
-
-      {/* ── SOCIAL PROOF ── */}
-      <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.05)', borderBottom: '1px solid rgba(255,255,255,0.05)', py: 3, bgcolor: 'rgba(255,255,255,0.015)' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: { xs: 4, md: 8 }, flexWrap: 'wrap' }}>
-            <Typography sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.78rem', fontWeight: 500 }}>TRUSTED BY TEAMS AT</Typography>
-            {['Stripe', 'Notion', 'Linear', 'Vercel', 'Figma'].map(name => (
-              <Typography key={name} sx={{ color: 'rgba(255,255,255,0.2)', fontWeight: 800, fontSize: '1rem', letterSpacing: '-0.02em' }}>{name}</Typography>
-            ))}
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ── BENTO FEATURES ── */}
-      <Box sx={{ py: { xs: 10, md: 16 } }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography sx={{ color: '#818cf8', fontWeight: 700, fontSize: '0.85rem', letterSpacing: '0.1em', textTransform: 'uppercase', mb: 2 }}>Everything, reimagined</Typography>
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.2rem', md: '3.2rem' }, letterSpacing: '-0.04em', lineHeight: 1.1 }}>
-              Not just a PM tool.<br />An AI operating system.
-            </Typography>
-          </Box>
-          <Grid container spacing={2}>
-            {BENTO.map((card, i) => (
-              <Grid item {...card.size} key={i}>
-                <BentoCard sx={{ minHeight: card.minH, height: '100%' }}>
-                  {card.content}
-                </BentoCard>
-              </Grid>
-            ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* ── TESTIMONIALS ── */}
-      <Box sx={{ py: { xs: 10, md: 14 }, borderTop: '1px solid rgba(255,255,255,0.05)' }}>
-        <Container maxWidth="lg">
-          <Box sx={{ textAlign: 'center', mb: 8 }}>
-            <Typography sx={{ fontWeight: 900, fontSize: { xs: '2rem', md: '3rem' }, letterSpacing: '-0.04em' }}>
-              Teams love it.
-            </Typography>
-          </Box>
-          <Grid container spacing={3}>
-            {TESTIMONIALS.map((t, i) => (
-              <Grid item xs={12} md={4} key={i}>
-                <Box sx={{ bgcolor: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 3, p: 3.5, height: '100%', transition: 'all 0.2s', '&:hover': { borderColor: t.color + '50', bgcolor: 'rgba(255,255,255,0.05)' } }}>
-                  <Box sx={{ display: 'flex', mb: 2 }}>
-                    {[1,2,3,4,5].map(s => <Box key={s} sx={{ color: '#fbbf24', fontSize: '1rem' }}>★</Box>)}
+            {COMPARE.map((row, i) => (
+              <Box key={i} sx={{ display: 'grid', gridTemplateColumns: '2fr repeat(4,1fr)', borderBottom: i < COMPARE.length - 1 ? '1px solid #F1F5F9' : 'none', '&:hover': { background: '#FAFAFA' } }}>
+                <Box sx={{ p: 2, px: 2.5, display: 'flex', alignItems: 'center' }}>
+                  <Typography sx={{ fontSize: '0.875rem', color: '#334155', fontWeight: 500 }}>{row.feature}</Typography>
+                </Box>
+                {['julay', 'monday', 'asana', 'notion'].map(k => (
+                  <Box key={k} sx={{ p: 2, textAlign: 'center', borderLeft: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', background: k === 'julay' ? 'rgba(99,102,241,0.03)' : 'transparent' }}>
+                    {typeof row[k] === 'boolean'
+                      ? row[k]
+                        ? <CheckCircle sx={{ color: k === 'julay' ? '#6366F1' : '#10B981', fontSize: 20 }} />
+                        : <Close sx={{ color: '#CBD5E1', fontSize: 18 }} />
+                      : <Typography sx={{ fontSize: '0.8rem', fontWeight: k === 'julay' ? 700 : 500, color: k === 'julay' ? '#4F46E5' : '#64748B' }}>{row[k]}</Typography>
+                    }
                   </Box>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '1rem', lineHeight: 1.7, mb: 3 }}>"{t.text}"</Typography>
+                ))}
+              </Box>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ─── TESTIMONIALS ─── */}
+      <Box sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip label="TESTIMONIALS" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15 }}>
+                Teams that ship faster with Julay
+              </Typography>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3 }}>
+            {TESTIMONIALS.map((t, i) => (
+              <FadeIn key={i} delay={i * 100}>
+                <Box sx={{ p: 4, borderRadius: 3, border: '1.5px solid #E2E8F0', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.08)', transform: 'translateY(-4px)' } }}>
+                  <Box sx={{ display: 'flex', gap: 0.5, mb: 2.5 }}>
+                    {Array.from({ length: t.stars }).map((_, s) => <Typography key={s} sx={{ color: '#F59E0B', fontSize: '1rem' }}>★</Typography>)}
+                  </Box>
+                  <Typography sx={{ color: '#1E293B', fontSize: '0.95rem', lineHeight: 1.7, mb: 3, fontStyle: 'italic' }}>"{t.text}"</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Avatar sx={{ bgcolor: t.color + '30', color: t.color, width: 36, height: 36, fontWeight: 800, fontSize: '0.9rem', border: `1px solid ${t.color}40` }}>{t.name[0]}</Avatar>
+                    <Avatar sx={{ width: 38, height: 38, fontWeight: 700, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)' }}>{t.avatar}</Avatar>
                     <Box>
-                      <Typography fontWeight={700} fontSize="0.875rem">{t.name}</Typography>
-                      <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>{t.role}</Typography>
+                      <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#0F172A' }}>{t.name}</Typography>
+                      <Typography sx={{ fontSize: '0.78rem', color: '#64748B' }}>{t.title}</Typography>
                     </Box>
                   </Box>
                 </Box>
-              </Grid>
+              </FadeIn>
             ))}
-          </Grid>
-        </Container>
-      </Box>
-
-      {/* ── PRICING ── */}
-      <PricingSection navigate={navigate} />
-
-      {/* ── FINAL CTA ── */}
-      <Box sx={{ py: { xs: 10, md: 16 }, position: 'relative', overflow: 'hidden', borderTop: '1px solid rgba(255,255,255,0.05)', textAlign: 'center' }}>
-        <Orb sx={{ width: 700, height: 700, background: 'radial-gradient(circle, rgba(99,102,241,0.2), transparent 70%)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
-        <Container maxWidth="md" sx={{ position: 'relative' }}>
-          <Typography sx={{ fontWeight: 900, fontSize: { xs: '2.5rem', md: '4rem' }, letterSpacing: '-0.05em', lineHeight: 1.05, mb: 3 }}>
-            Build faster.<br />
-            <Box component="span" sx={{ background: 'linear-gradient(135deg, #818cf8, #c084fc, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              Ship smarter.
-            </Box>
-          </Typography>
-          <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '1.1rem', mb: 6 }}>
-            Join the teams that let AI do the heavy lifting.
-          </Typography>
-          <Button onClick={() => navigate('/register')} variant="contained" size="large"
-            sx={{ px: 6, py: 2, fontWeight: 800, fontSize: '1.1rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 3, boxShadow: '0 0 60px rgba(99,102,241,0.5)', '&:hover': { boxShadow: '0 0 80px rgba(99,102,241,0.7)', transform: 'translateY(-3px)' }, transition: 'all 0.25s', textTransform: 'none' }}>
-            Get started for free ✨
-          </Button>
-        </Container>
-      </Box>
-
-      {/* ── FOOTER ── */}
-      <Box sx={{ borderTop: '1px solid rgba(255,255,255,0.06)', py: 3 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Box sx={{ width: 26, height: 26, borderRadius: 1.5, background: 'linear-gradient(135deg, #6366f1, #a855f7)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Psychology sx={{ color: 'white', fontSize: 14 }} />
-              </Box>
-              <Typography fontWeight={800} color="white" fontSize="0.9rem">julay</Typography>
-            </Box>
-            <Typography sx={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.78rem' }}>© 2026 Julay. All rights reserved.</Typography>
-            <Box sx={{ display: 'flex', gap: 3 }}>
-              {['Privacy', 'Terms', 'Contact'].map(item => (
-                <Typography key={item} sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.78rem', cursor: 'pointer', '&:hover': { color: 'rgba(255,255,255,0.6)' }, transition: 'color 0.15s' }}>{item}</Typography>
-              ))}
-            </Box>
           </Box>
         </Container>
       </Box>
+
+      {/* ─── PRICING ─── */}
+      <Box id="pricing" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip label="PRICING" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
+                Start free. Scale as you grow.
+              </Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 4 }}>No surprises. No per-seat traps. Cancel anytime.</Typography>
+              <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
+                <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>Monthly</ToggleButton>
+                <ToggleButton value="yearly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>
+                  Yearly <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4,1fr)' }, gap: 2.5, alignItems: 'start' }}>
+            {PLANS.map((plan, i) => (
+              <FadeIn key={i} delay={i * 80}>
+                <Box sx={{ position: 'relative', borderRadius: 3, border: plan.highlight ? '2px solid #6366F1' : '1.5px solid #E2E8F0', background: plan.highlight ? 'white' : 'white', boxShadow: plan.highlight ? '0 8px 40px rgba(99,102,241,0.2)' : '0 1px 4px rgba(0,0,0,0.04)', transform: plan.highlight ? 'scale(1.03)' : 'none', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.1)', transform: plan.highlight ? 'scale(1.05)' : 'translateY(-4px)' } }}>
+                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>MOST POPULAR</Typography></Box>}
+                  <Box sx={{ p: 3.5 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', mb: 0.5 }}>{plan.name}</Typography>
+                    <Typography sx={{ color: '#64748B', fontSize: '0.82rem', mb: 2.5 }}>{plan.description}</Typography>
+                    <Box sx={{ mb: 3 }}>
+                      {plan.price === 0 ? (
+                        <Typography sx={{ fontSize: '2.5rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>Free</Typography>
+                      ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#64748B', mt: 0.5 }}>$</Typography>
+                          <Typography sx={{ fontSize: '2.8rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                            {billing === 'yearly' ? plan.yearlyPrice : plan.price}
+                          </Typography>
+                          <Typography sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>/mo</Typography>
+                        </Box>
+                      )}
+                      {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>Save ${(plan.price - plan.yearlyPrice) * 12}/year</Typography>}
+                    </Box>
+                    <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
+                      {plan.cta}
+                    </Button>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                      {plan.features.map((f, fi) => (
+                        <Box key={fi} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                          <CheckCircle sx={{ color: plan.highlight ? '#6366F1' : '#10B981', fontSize: 16, flexShrink: 0, mt: 0.2 }} />
+                          <Typography sx={{ color: '#475569', fontSize: '0.83rem', lineHeight: 1.4 }}>{f}</Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+          <FadeIn delay={200}>
+            <Box sx={{ mt: 6, p: 4, borderRadius: 3, border: '1.5px solid #E2E8F0', background: 'white', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' }, justifyContent: 'space-between', gap: 3 }}>
+              <Box>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', mb: 0.5 }}>Enterprise</Typography>
+                <Typography sx={{ color: '#64748B', fontSize: '0.9rem' }}>Unlimited AI · SSO/SAML · White-label · Custom SLA · Dedicated support · On-premise option</Typography>
+              </Box>
+              <Button variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>Contact Sales</Button>
+            </Box>
+          </FadeIn>
+        </Container>
+      </Box>
+
+      {/* ─── FAQ ─── */}
+      <Box id="faq" sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
+        <Container maxWidth="md">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip label="FAQ" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A' }}>
+                Questions? We've got answers.
+              </Typography>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {FAQS.map((faq, i) => (
+              <FadeIn key={i} delay={i * 60}>
+                <Box sx={{ borderRadius: 2.5, border: '1.5px solid', borderColor: openFaq === i ? '#6366F1' : '#E2E8F0', overflow: 'hidden', transition: 'all 0.2s', '&:hover': { borderColor: '#6366F1' } }}>
+                  <Box onClick={() => setOpenFaq(openFaq === i ? null : i)} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2.5, cursor: 'pointer', background: openFaq === i ? 'rgba(99,102,241,0.04)' : 'transparent' }}>
+                    <Typography sx={{ fontWeight: 600, fontSize: '0.95rem', color: '#0F172A', pr: 2 }}>{faq.q}</Typography>
+                    <Typography sx={{ color: '#6366F1', fontWeight: 800, fontSize: '1.3rem', flexShrink: 0, transform: openFaq === i ? 'rotate(45deg)' : 'none', transition: 'transform 0.2s' }}>+</Typography>
+                  </Box>
+                  {openFaq === i && <Box sx={{ px: 2.5, pb: 2.5, borderTop: '1px solid rgba(99,102,241,0.1)' }}><Typography sx={{ color: '#475569', lineHeight: 1.7, fontSize: '0.9rem', pt: 2 }}>{faq.a}</Typography></Box>}
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
+      {/* ─── FINAL CTA ─── */}
+      <Box sx={{ background: '#09090B', py: { xs: 10, md: 18 }, position: 'relative', overflow: 'hidden' }}>
+        <Orb sx={{ width: 700, height: 700, background: 'rgba(99,102,241,0.12)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
+        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
+          <FadeIn>
+            <Typography sx={{ color: '#818CF8', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', mb: 3 }}>Stop planning. Start executing.</Typography>
+            <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1, mb: 3 }}>
+              Your next project starts{' '}
+              <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>right now.</Box>
+            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto' }}>
+              Join 2,000+ teams who replaced planning meetings with Julay AI. Free forever. No credit card.
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
+              <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 12px 48px rgba(99,102,241,0.6)' }, transition: 'all 0.2s' }}>
+                Build your first project free <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+              </Button>
+            </Box>
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center', mt: 5 }}>
+              {['Free forever plan', 'No credit card', 'Setup in 60 seconds', 'Cancel anytime'].map(t => (
+                <Box key={t} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                  <CheckCircleOutline sx={{ color: '#10B981', fontSize: 15 }} />
+                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem' }}>{t}</Typography>
+                </Box>
+              ))}
+            </Box>
+          </FadeIn>
+        </Container>
+      </Box>
+
+      {/* ─── FOOTER ─── */}
+      <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: 6 }}>
+        <Container maxWidth="lg">
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
+            <Box sx={{ maxWidth: 280 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2 }}>
+                <Box sx={{ width: 28, height: 28, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '0.9rem' }}>J</Typography>
+                </Box>
+                <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1rem' }}>Julay</Typography>
+              </Box>
+              <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>AI-powered project management for modern teams. Plan smarter. Execute faster.</Typography>
+            </Box>
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5 }}>
+              {[
+                { title: 'Product', links: ['Features', 'Pricing', 'Compare', 'Changelog'] },
+                { title: 'Company', links: ['About', 'Blog', 'Careers', 'Contact'] },
+                { title: 'Legal', links: ['Privacy', 'Terms', 'Security', 'Cookies'] },
+              ].map(col => (
+                <Box key={col.title}>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 2 }}>{col.title}</Typography>
+                  {col.links.map(l => (
+                    <Typography key={l} sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', transition: 'color 0.15s', '&:hover': { color: 'rgba(255,255,255,0.7)' } }}>{l}</Typography>
+                  ))}
+                </Box>
+              ))}
+            </Box>
+          </Box>
+          <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 4 }} />
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
+            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>© 2025 Julay. All rights reserved.</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>Built with ❤️ · Powered by Claude AI</Typography>
+          </Box>
+        </Container>
+      </Box>
+
     </Box>
   );
 }
