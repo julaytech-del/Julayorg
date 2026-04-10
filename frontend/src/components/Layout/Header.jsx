@@ -1,11 +1,12 @@
 import React, { useState } from 'react';
 import { AppBar, Toolbar, Box, InputBase, IconButton, Badge, Avatar, Menu, MenuItem, Typography, Chip, Divider, Tooltip } from '@mui/material';
-import { Search, Notifications, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown } from '@mui/icons-material';
+import { Search, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../store/slices/authSlice.js';
 import LanguageSwitcher from '../common/LanguageSwitcher.jsx';
+import NotificationBell from '../common/NotificationBell.jsx';
 
 export default function Header({ sidebarWidth = 268 }) {
   const dispatch = useDispatch();
@@ -42,13 +43,7 @@ export default function Header({ sidebarWidth = 268 }) {
         <Chip icon={<AutoAwesome sx={{ fontSize: '14px !important' }} />} label={t('header.aiGenerate')} onClick={() => navigate('/dashboard/ai')} size="small"
           sx={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%)', color: 'white', fontWeight: 700, fontSize: '0.75rem', px: 0.5, cursor: 'pointer', '& .MuiChip-icon': { color: 'white' }, '&:hover': { opacity: 0.88, transform: 'translateY(-1px)' }, transition: 'all 0.15s', boxShadow: '0 2px 8px rgba(79,70,229,0.35)' }} />
 
-        <Tooltip title={t('header.notifications')}>
-          <IconButton size="small" sx={{ backgroundColor: '#F8FAFC', border: '1.5px solid #E2E8F0', borderRadius: 2, width: 34, height: 34 }}>
-            <Badge badgeContent={3} color="error" sx={{ '& .MuiBadge-badge': { fontSize: '0.6rem', minWidth: 14, height: 14, top: 2, right: 2 } }}>
-              <Notifications sx={{ fontSize: 18, color: '#475569' }} />
-            </Badge>
-          </IconButton>
-        </Tooltip>
+        <NotificationBell />
 
         <Box onClick={e => setAnchorEl(e.currentTarget)} sx={{ display: 'flex', alignItems: 'center', gap: 1, cursor: 'pointer', p: 0.5, pl: 1, borderRadius: 2.5, border: '1.5px solid #E2E8F0', backgroundColor: '#F8FAFC', '&:hover': { backgroundColor: '#F1F5F9', borderColor: '#CBD5E1' }, transition: 'all 0.15s' }}>
           <Avatar sx={{ width: 26, height: 26, fontSize: '0.72rem', background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}>{user?.name?.[0]?.toUpperCase()}</Avatar>

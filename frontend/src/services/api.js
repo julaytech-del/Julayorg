@@ -84,6 +84,44 @@ export const dashboardAPI = {
   getActivity: (page = 1, limit = 20) => api.get('/dashboard/activity', { params: { page, limit } })
 };
 
+// Gantt
+export const ganttAPI = {
+  getData: (projectId) => api.get(`/projects/${projectId}/gantt`),
+  saveBaseline: (projectId) => api.post(`/projects/${projectId}/gantt/baseline`),
+  getAIRisks: (projectId) => api.post(`/projects/${projectId}/gantt/ai-risks`),
+};
+
+// Notifications
+export const notificationsAPI = {
+  getAll: (params) => api.get('/notifications', { params }),
+  getCount: () => api.get('/notifications/count'),
+  markRead: (id) => api.patch(`/notifications/${id}/read`),
+  markAllRead: () => api.patch('/notifications/read-all'),
+};
+
+// Dashboard Config
+export const dashboardConfigAPI = {
+  getConfig: () => api.get('/dashboard/config'),
+  updateConfig: (data) => api.put('/dashboard/config', data),
+  getAIInsight: () => api.get('/dashboard/ai-insight'),
+};
+
+// Reports
+export const reportsAPI = {
+  generate: (config) => api.post('/reports/generate', config),
+  exportExcel: (config) => api.post('/reports/export-excel', config, { responseType: 'blob' }),
+  getAINarrative: (data) => api.post('/reports/ai-narrative', data),
+};
+
+// Webhooks
+export const webhooksAPI = {
+  getAll: () => api.get('/webhooks'),
+  create: (data) => api.post('/webhooks', data),
+  update: (id, data) => api.put(`/webhooks/${id}`, data),
+  delete: (id) => api.delete(`/webhooks/${id}`),
+  test: (id) => api.post(`/webhooks/${id}/test`),
+};
+
 // AI
 export const aiAPI = {
   generatePlan: data => api.post('/ai/generate-plan', data),
@@ -109,3 +147,34 @@ export const subscriptionAPI = {
 };
 
 export default api;
+
+// Calendar
+export const calendarAPI = {
+  getTasks: (params) => api.get('/calendar', { params }),
+  optimizeDeadline: (data) => api.post('/calendar/optimize-deadline', data),
+};
+
+// Workload
+export const workloadAPI = {
+  getWorkload: (params) => api.get('/workload', { params }),
+  aiRebalance: (data) => api.post('/workload/ai-rebalance', data),
+};
+
+// Automations
+export const automationsAPI = {
+  getAll: () => api.get('/automations'),
+  create: (data) => api.post('/automations', data),
+  update: (id, data) => api.put(`/automations/${id}`, data),
+  delete: (id) => api.delete(`/automations/${id}`),
+  toggle: (id) => api.patch(`/automations/${id}/toggle`),
+};
+
+// Forms
+export const formsAPI = {
+  getAll: () => api.get('/forms'),
+  create: (data) => api.post('/forms', data),
+  update: (id, data) => api.put(`/forms/${id}`, data),
+  delete: (id) => api.delete(`/forms/${id}`),
+  getPublic: (token) => api.get(`/forms/public/${token}`),
+  submit: (token, data) => api.post(`/forms/public/${token}`, data),
+};

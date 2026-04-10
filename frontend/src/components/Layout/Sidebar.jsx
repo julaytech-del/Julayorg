@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Psychology, Apps, Share, PictureAsPdf } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Psychology, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 
 const SIDEBAR_WIDTH = 268;
@@ -23,8 +23,19 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       { label: t('nav.team'), icon: Group, path: '/dashboard/team' },
       { label: t('nav.departments'), icon: Business, path: '/dashboard/departments' },
     ]},
+    { title: 'Views', items: [
+      { label: 'Calendar', icon: CalendarMonth, path: '/dashboard/calendar' },
+      { label: 'Workload', icon: Speed, path: '/dashboard/workload' },
+      { label: 'Custom Dashboard', icon: ViewQuilt, path: '/dashboard/custom-dashboard' },
+    ]},
     { title: t('nav.sections.intelligence'), items: [
-      { label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'NEW' },
+      { label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' },
+      { label: 'Reports', icon: BarChart, path: '/dashboard/reports' },
+    ]},
+    { title: 'Automation', items: [
+      { label: 'Automations', icon: Bolt, path: '/dashboard/automations' },
+      { label: 'Form Views', icon: DynamicForm, path: '/dashboard/views/forms' },
+      { label: 'Webhooks', icon: Webhook, path: '/dashboard/settings/webhooks' },
     ]},
     { title: 'Apps', items: [
       { label: 'Workspace Apps', icon: Apps, path: '/dashboard/apps' },

@@ -19,6 +19,14 @@ import SnackbarAlert from './components/common/SnackbarAlert.jsx';
 import AppsHub from './pages/Apps/AppsHub.jsx';
 import ShareWithAI from './pages/Apps/ShareWithAI.jsx';
 import PDFViewer from './pages/Apps/PDFViewer.jsx';
+import CalendarView from './pages/Calendar/CalendarView.jsx';
+import WorkloadView from './pages/Workload/WorkloadView.jsx';
+import AutomationsPage from './pages/Automations/AutomationsPage.jsx';
+import ReportsPage from './pages/Reports/ReportsPage.jsx';
+import WebhooksPage from './pages/Settings/WebhooksPage.jsx';
+import FormViewBuilder from './pages/Views/FormViewBuilder.jsx';
+import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
+import CustomDashboard from './pages/Dashboard/CustomDashboard.jsx';
 
 function ProtectedRoute({ children }) {
   const { token, initialized, loading } = useSelector(s => s.auth);
@@ -63,7 +71,15 @@ export default function App() {
           <Route path="apps" element={<AppsHub />} />
           <Route path="apps/share" element={<ShareWithAI />} />
           <Route path="apps/pdf" element={<PDFViewer />} />
+          <Route path="calendar" element={<CalendarView />} />
+          <Route path="workload" element={<WorkloadView />} />
+          <Route path="automations" element={<AutomationsPage />} />
+          <Route path="reports" element={<ReportsPage />} />
+          <Route path="settings/webhooks" element={<WebhooksPage />} />
+          <Route path="views/forms" element={<FormViewBuilder />} />
+          <Route path="custom-dashboard" element={<CustomDashboard />} />
         </Route>
+        <Route path="/forms/:token" element={<FormViewRenderer />} />
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       <SnackbarAlert />

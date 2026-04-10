@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { getProjects, createProject, getProject, updateProject, deleteProject, getProjectStats, getGoals, createGoal, updateGoal, deleteGoal } from '../controllers/project.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
+import ganttRouter from './gantt.routes.js';
 
 const router = Router();
 router.use(protect);
@@ -12,6 +13,7 @@ router.put('/:id', updateProject);
 router.delete('/:id', deleteProject);
 router.get('/:id/stats', getProjectStats);
 
+router.use('/:id/gantt', ganttRouter);
 router.get('/:id/goals', getGoals);
 router.post('/:id/goals', createGoal);
 router.put('/:id/goals/:goalId', updateGoal);

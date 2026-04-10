@@ -12,6 +12,14 @@ import dashboardRoutes from './routes/dashboard.routes.js';
 import aiRoutes from './routes/ai.routes.js';
 import subscriptionRoutes from './routes/subscription.routes.js';
 import contextRoutes from './routes/context.routes.js';
+import calendarRoutes from './routes/calendar.routes.js';
+import workloadRoutes from './routes/workload.routes.js';
+import notificationRoutes from './routes/notification.routes.js';
+import automationRoutes from './routes/automation.routes.js';
+import webhookRoutes from './routes/webhook.routes.js';
+import dashboardConfigRoutes from './routes/dashboardConfig.routes.js';
+import reportsRoutes from './routes/reports.routes.js';
+import formViewRoutes from './routes/formView.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -21,10 +29,10 @@ app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
+app.use(express.urlencoded({ extended: true }));
 
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { success: false, message: 'Too many attempts, please try again later.' } });
-const aiLimiter = rateLimit({ windowMs: 60 * 1000, max: 10, message: { success: false, message: 'Too many AI requests, please slow down.' } });
-app.use(express.urlencoded({ extended: true }));
+const aiLimiter = rateLimit({ windowMs: 60 * 1000, max: 20, message: { success: false, message: 'Too many AI requests, please slow down.' } });
 
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
@@ -34,9 +42,17 @@ app.use('/api/tasks', taskRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/departments', departmentRoutes);
 app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/dashboard', dashboardConfigRoutes);
 app.use('/api/ai', aiLimiter, aiRoutes);
 app.use('/api/subscription', subscriptionRoutes);
 app.use('/api/context', aiLimiter, contextRoutes);
+app.use('/api/calendar', calendarRoutes);
+app.use('/api/workload', workloadRoutes);
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/automations', automationRoutes);
+app.use('/api/webhooks', webhookRoutes);
+app.use('/api/reports', reportsRoutes);
+app.use('/api/forms', formViewRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
