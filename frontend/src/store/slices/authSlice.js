@@ -33,7 +33,13 @@ const authSlice = createSlice({
       state.token = null;
       localStorage.removeItem('julay_token');
     },
-    clearError(state) { state.error = null; }
+    clearError(state) { state.error = null; },
+    setCredentials(state, action) {
+      state.user = action.payload.user;
+      state.token = action.payload.token;
+      state.initialized = true;
+      localStorage.setItem('julay_token', action.payload.token);
+    }
   },
   extraReducers: builder => {
     builder
@@ -49,5 +55,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { logout, clearError } = authSlice.actions;
+export const { logout, clearError, setCredentials } = authSlice.actions;
 export default authSlice.reducer;
