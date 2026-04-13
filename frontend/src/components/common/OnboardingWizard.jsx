@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import { CheckCircle, Add, Close, Celebration, FolderOpen, Group, AutoAwesome, ArrowForward, ArrowBack, Rocket } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { projectsAPI } from '../../services/api.js';
+import api, { projectsAPI } from '../../services/api.js';
 
 const STEPS = ['Welcome', 'Create Project', 'Invite Team', 'All Set!'];
 
@@ -42,6 +42,7 @@ export default function OnboardingWizard() {
   const [projectDesc, setProjectDesc] = useState('');
   const [emails, setEmails] = useState(['', '', '']);
   const [loading, setLoading] = useState(false);
+  const [inviteResults, setInviteResults] = useState([]);
 
   useEffect(() => {
     const done = localStorage.getItem('julay_onboarding_done');
@@ -77,6 +78,25 @@ export default function OnboardingWizard() {
         // silent — don't block onboarding
       } finally {
         setLoading(false);
+      }
+    }
+    if (step === 2) {
+      const filled = emails.filter(e => e.trim());
+      if (filled.length > 0) {
+        setLoading(true);
+        const results = await Promise.all(
+          filled.map(async (email) => {
+            try {
+              const res = await api.post('/auth/invite', { email: email.trim() });
+              return { email: email.trim(), link: res.data.data.inviteLink, ok: true };
+            } catch (e) {
+              return { email: email.trim(), error: e.response?.data?.message || 'Failed', ok: false };
+            }
+          })
+        );
+        setInviteResults(results);
+        setLoading(false);
+        return; // stay on step 2 to show results
       }
     }
     if (step < STEPS.length - 1) {
@@ -231,32 +251,56 @@ export default function OnboardingWizard() {
                 <Typography fontWeight={800} fontSize="1.3rem" color="text.primary" letterSpacing="-0.02em">Invite your team</Typography>
               </Box>
               <Typography color="text.secondary" fontSize="0.875rem" mb={3}>
-                Add teammates by email. You can always do this later from the Team page.
+                Add teammates by email. They'll get a unique link to create their account.
               </Typography>
-              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
-                {emails.map((email, idx) => (
-                  <TextField
-                    key={idx}
-                    label={`Teammate ${idx + 1} email`}
-                    value={email}
-                    onChange={e => updateEmail(idx, e.target.value)}
-                    placeholder="colleague@company.com"
-                    type="email"
-                    fullWidth
-                    autoFocus={idx === 0}
-                  />
-                ))}
-              </Box>
-              <Typography fontSize="0.78rem" color="text.secondary" mb={3} sx={{ bgcolor: 'action.hover', borderRadius: 1.5, px: 1.5, py: 1 }}>
-                Invite functionality coming soon — invites will be sent when available.
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 1.5 }}>
-                <Button onClick={handleBack} startIcon={<ArrowBack />} sx={{ textTransform: 'none', fontWeight: 600, color: 'text.secondary' }}>Back</Button>
-                <Button fullWidth variant="contained" onClick={handleNext}
-                  sx={{ py: 1.2, fontWeight: 700, fontSize: '0.9rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 2.5, textTransform: 'none' }}>
-                  {emails.some(e => e.trim()) ? 'Send Invites & Continue' : 'Skip for now'}
-                </Button>
-              </Box>
+
+              {inviteResults.length === 0 ? (
+                <>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mb: 3 }}>
+                    {emails.map((email, idx) => (
+                      <TextField
+                        key={idx}
+                        label={`Teammate ${idx + 1} email`}
+                        value={email}
+                        onChange={e => updateEmail(idx, e.target.value)}
+                        placeholder="colleague@company.com"
+                        type="email"
+                        fullWidth
+                        autoFocus={idx === 0}
+                      />
+                    ))}
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 1.5 }}>
+                    <Button onClick={handleBack} startIcon={<ArrowBack />} sx={{ textTransform: 'none', fontWeight: 600, color: 'text.secondary' }}>Back</Button>
+                    <Button fullWidth variant="contained" onClick={handleNext} disabled={loading}
+                      sx={{ py: 1.2, fontWeight: 700, fontSize: '0.9rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 2.5, textTransform: 'none' }}>
+                      {loading ? 'Sending…' : emails.some(e => e.trim()) ? 'Generate Invite Links' : 'Skip for now'}
+                    </Button>
+                  </Box>
+                </>
+              ) : (
+                <>
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5, mb: 3 }}>
+                    {inviteResults.map((r, i) => (
+                      <Box key={i} sx={{ p: 1.5, borderRadius: 2, border: '1px solid', borderColor: r.ok ? 'success.light' : 'error.light', bgcolor: r.ok ? 'success.50' : 'error.50' }}>
+                        <Typography fontSize="0.8rem" fontWeight={700} color={r.ok ? 'success.dark' : 'error.dark'}>{r.email}</Typography>
+                        {r.ok ? (
+                          <Typography fontSize="0.72rem" color="text.secondary" sx={{ wordBreak: 'break-all', fontFamily: 'monospace', mt: 0.5 }}>{r.link}</Typography>
+                        ) : (
+                          <Typography fontSize="0.72rem" color="error.main">{r.error}</Typography>
+                        )}
+                      </Box>
+                    ))}
+                  </Box>
+                  <Typography fontSize="0.78rem" color="text.secondary" mb={2}>
+                    Copy the links above and share via WhatsApp, email, or any messaging app. Links are valid for 7 days.
+                  </Typography>
+                  <Button fullWidth variant="contained" onClick={() => { setStep(s => s + 1); }}
+                    sx={{ py: 1.2, fontWeight: 700, fontSize: '0.9rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', borderRadius: 2.5, textTransform: 'none' }}>
+                    Continue →
+                  </Button>
+                </>
+              )}
             </Box>
           )}
 
