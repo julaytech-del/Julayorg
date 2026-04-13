@@ -6,6 +6,8 @@
   "scripts": {
     "dev": "vite",
     "build": "vite build",
+    "postbuild": "react-snap || true",
+    "prerender": "react-snap",
     "preview": "vite preview",
     "build:mobile": "vite build --mode production",
     "mobile:sync": "npm run build:mobile && npx cap sync",
@@ -46,10 +48,20 @@
     "recharts": "^2.12.2",
     "stylis-plugin-rtl": "^2.1.1"
   },
+  "reactSnap": {
+    "source": "dist",
+    "destination": "dist",
+    "routes": ["/"],
+    "puppeteerArgs": ["--no-sandbox", "--disable-setuid-sandbox"],
+    "skipThirdPartyRequests": true,
+    "inlineCss": false,
+    "saveAs": "html"
+  },
   "devDependencies": {
     "@types/react": "^18.2.64",
     "@types/react-dom": "^18.2.21",
     "@vitejs/plugin-react": "^4.2.1",
+    "react-snap": "^1.23.0",
     "typescript": "^6.0.2",
     "vite": "^5.1.5"
   }

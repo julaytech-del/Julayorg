@@ -18,7 +18,6 @@ async function initMobile() {
     await StatusBar.setStyle({ style: Style.Dark });
     await StatusBar.setBackgroundColor({ color: '#0F172A' });
 
-    // Android back button → go back in history
     CapApp.addListener('backButton', ({ canGoBack }) => {
       if (canGoBack) window.history.back();
       else CapApp.exitApp();
@@ -30,7 +29,9 @@ async function initMobile() {
 
 initMobile();
 
-ReactDOM.createRoot(document.getElementById('root')).render(
+const rootElement = document.getElementById('root');
+
+const app = (
   <React.StrictMode>
     <Provider store={store}>
       <BrowserRouter>
@@ -42,3 +43,12 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </Provider>
   </React.StrictMode>
 );
+
+// If the root already has HTML children (pre-rendered by react-snap),
+// hydrate instead of creating a new root — preserves the pre-rendered HTML
+// until React takes over, giving instant FCP with no layout shift.
+if (rootElement.hasChildNodes()) {
+  ReactDOM.hydrateRoot(rootElement, app);
+} else {
+  ReactDOM.createRoot(rootElement).render(app);
+}
