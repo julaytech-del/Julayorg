@@ -400,5 +400,141 @@
     "performance": "绩效分析",
     "overallScore": "综合评分",
     "riskLevel": "风险等级"
+  },
+  "landing": {
+    "demo": {
+      "label": "描述您的项目目标",
+      "prompt": "在Q4推出我们的SaaS v2.0",
+      "generate": "生成",
+      "generated": "AI生成了5个任务 · 分配团队完成 · 预计100小时",
+      "tasks": [
+        { "title": "市场调研与竞品分析", "assignee": "Sara", "hours": 12, "status": "done" },
+        { "title": "设计系统与UI组件", "assignee": "Alex", "hours": 24, "status": "in_progress" },
+        { "title": "后端API重构", "assignee": "Mohammed", "hours": 40, "status": "in_progress" },
+        { "title": "QA测试与问题修复", "assignee": "Dana", "hours": 16, "status": "todo" },
+        { "title": "DevOps与部署流水线", "assignee": "Karim", "hours": 8, "status": "todo" }
+      ]
+    },
+    "nav": { "features": "功能", "compare": "对比", "pricing": "定价", "faq": "常见问题", "login": "登录", "start": "免费开始 →" },
+    "hero": {
+      "badge": "AI驱动 · 现已上线",
+      "h1a": "我们不管理任务，",
+      "h1b": "我们构建执行系统。",
+      "sub": "Julay使用AI自动规划、分解和执行您的工作。描述您的目标，几秒内获得完整项目计划。",
+      "cta1": "免费开始 — 无需信用卡",
+      "cta2": "了解工作原理",
+      "tagline": "永久免费计划 · 无需信用卡 · 60秒完成设置"
+    },
+    "badges": ["12项AI驱动功能", "支持10种语言", "看板 · 甘特图 · 冲刺", "永久免费计划", "无按席收费"],
+    "stats": [
+      { "label": "AI驱动功能" },
+      { "label": "视图与工具" },
+      { "label": "支持语言数" },
+      { "label": "生成完整项目" }
+    ],
+    "problem": {
+      "chip": "问题所在",
+      "title": "您现在的项目管理工具只是一个",
+      "strike": "花哨的待办清单",
+      "sub": "Monday、Asana和Notion帮助您跟踪工作——但它们不会思考。您仍需手动规划、分配、排期和风险检查。",
+      "pains": [
+        "每周一花整个上午规划当周工作",
+        "任务分配依靠猜测",
+        "截止日期风险等到太晚才发现",
+        "站会替代了真正的可见性",
+        "AI工具需要您编写完美的提示词",
+        "每周报告耗费数小时"
+      ]
+    },
+    "features": {
+      "chip": "功能特性",
+      "title": "团队所需的一切。",
+      "titleGrad": "没有多余的东西。",
+      "sub": "12项核心功能。全部AI互联。全部旨在真正减少团队工作量。",
+      "items": [
+        { "icon": "🧠", "title": "AI项目规划", "desc": "用自然语言描述您的目标。Julay AI在数秒内生成完整项目分解——任务、时间线和团队分配。" },
+        { "icon": "⚡", "title": "智能自动分配", "desc": "AI分析团队技能、工作量和可用性，自动将任务分配给最合适的人。" },
+        { "icon": "📊", "title": "关键路径（CPM）", "desc": "自动识别哪些任务可能延误整个项目。可视化警告让您提前掌控进度。" },
+        { "icon": "🎯", "title": "工作量均衡器", "desc": "实时热力图显示谁的工作量过载。一键AI重新均衡，智能跨团队重新分配任务。" },
+        { "icon": "📅", "title": "截止日期优化", "desc": "AI分析被分配者工作量，提供带置信度评分和风险警告的最佳截止日期建议。" },
+        { "icon": "🔔", "title": "智能通知", "desc": "在问题发生前收到提醒。AI全天候监控您的项目，在恰当的时机呈现重要信息。" },
+        { "icon": "⚙️", "title": "自动化引擎", "desc": "构建强大的如果-那么规则。自动触发通知、状态变更、子任务创建——全部自动完成。" },
+        { "icon": "📋", "title": "公开表单构建器", "desc": "创建可分享的接收表单，提交时自动创建并分配任务。无需开发。" },
+        { "icon": "📈", "title": "AI高管报告", "desc": "一键生成由Claude AI撰写的2段项目状态高管摘要。" },
+        { "icon": "🔗", "title": "Webhook系统", "desc": "向Slack、Zapier或任何端点发送实时事件。HMAC签名载荷确保企业级安全。" },
+        { "icon": "🏃", "title": "冲刺 / 敏捷看板", "desc": "完整Scrum支持。规划冲刺、跟踪速度、查看燃尽图。一键在敏捷和瀑布之间切换。" },
+        { "icon": "🌐", "title": "投资组合视图", "desc": "在一个高管仪表板中查看所有项目健康状况。正常、有风险、偏离轨道——一目了然。" }
+      ]
+    },
+    "compare": {
+      "chip": "产品对比",
+      "title": "Julay与竞品对比",
+      "sub": "剧透：AI那列改变了一切。",
+      "featureNames": [
+        "AI项目规划", "自动任务分解", "智能团队分配",
+        "AI截止日期优化", "工作量AI重新均衡", "关键路径（CPM）",
+        "自动化规则", "甘特时间线", "日历视图", "自定义仪表板",
+        "冲刺 / 敏捷看板", "时间跟踪", "公开表单构建器",
+        "Webhook系统", "起始价格", "基础计划包含AI"
+      ],
+      "startingPrice": { "julay": "$9/月", "monday": "$9/席", "asana": "$13/席", "notion": "$10/席" }
+    },
+    "earlyAccess": {
+      "badge": "现已开放早期访问",
+      "title": "成为最早使用Julay的团队之一",
+      "sub": "我们正在与一小批早期用户一起推出Julay。现在创建您的账户——免费获得完整访问权限，帮助塑造产品。",
+      "cta": "获取早期访问 — 免费",
+      "perks": ["无需信用卡", "随时取消", "完整功能访问"]
+    },
+    "pricing": {
+      "chip": "定价",
+      "title": "免费开始，随增长扩展。",
+      "sub": "没有惊喜。没有按席收费陷阱。随时取消。",
+      "monthly": "按月付费",
+      "yearly": "按年付费",
+      "free": "免费",
+      "perMo": "/月",
+      "saveYear": "每年节省${{amount}}",
+      "mostPopular": "最受欢迎",
+      "enterprise": {
+        "title": "企业版",
+        "sub": "无限AI · SSO/SAML · 白标 · 自定义SLA · 专属支持 · 本地部署选项",
+        "cta": "联系销售"
+      },
+      "plans": [
+        { "id": "free", "name": "免费版", "price": 0, "yearlyPrice": 0, "ctaVariant": "outlined", "highlight": false, "description": "入门首选", "features": ["3个项目", "3名团队成员", "每月5次AI请求", "看板和列表视图", "1GB存储"], "cta": "免费开始" },
+        { "id": "starter", "name": "入门版", "price": 9, "yearlyPrice": 7, "ctaVariant": "outlined", "highlight": false, "description": "适合个人专业人士", "features": ["10个项目", "10名团队成员", "每月100次AI请求", "全部视图（日历、甘特图）", "10GB存储", "邮件支持"], "cta": "开始免费试用" },
+        { "id": "professional", "name": "专业版", "price": 29, "yearlyPrice": 23, "ctaVariant": "contained", "highlight": true, "popular": true, "description": "适合成长型团队", "features": ["无限项目", "25名团队成员", "每月500次AI请求", "自动化与Webhook", "报告与表单", "时间跟踪+自定义字段", "50GB存储", "优先支持"], "cta": "开始免费试用" },
+        { "id": "business", "name": "商业版", "price": 79, "yearlyPrice": 63, "ctaVariant": "outlined", "highlight": false, "description": "适合快速扩张的公司", "features": ["专业版所有功能", "无限团队成员", "每月2,000次AI请求", "API访问", "自定义分析", "200GB存储", "专属支持"], "cta": "开始免费试用" }
+      ]
+    },
+    "faq": {
+      "chip": "常见问题",
+      "title": "有疑问？我们来解答。",
+      "items": [
+        { "q": "Julay与Monday.com或Asana有何不同？", "a": "Julay是唯一以AI为核心构建的项目管理工具。Monday和Asana只是附加了AI功能。Julay的AI规划您的项目、分配您的团队、均衡工作量并警告风险——全部自动完成。它不是一个功能，而是核心引擎。" },
+        { "q": "我需要懂得如何使用AI吗？", "a": "完全不需要。用中文（或英文）写下您的目标，Julay处理其余一切。无需提示词，无需模板——只需描述您想实现的目标。" },
+        { "q": "有免费计划吗？", "a": "有——永久免费。3个项目、3名团队成员、每月5次AI请求。无需信用卡。需要更多时升级即可。" },
+        { "q": "我的数据安全吗？", "a": "所有数据在存储和传输时均已加密。我们使用HMAC签名Webhook、JWT身份验证和基于角色的访问控制。您的数据永远不会用于训练AI模型。" },
+        { "q": "我能从Monday或Asana迁移吗？", "a": "可以。使用AI生成，您可以在几分钟内在Julay中重建项目结构。描述您现有的项目，Julay将自动构建完整的任务分解。商业版和企业版计划包含入驻协助。" },
+        { "q": "Julay使用哪个AI模型？", "a": "Julay由Anthropic的Claude驱动——这是目前在结构化规划、风险分析和高管报告方面最强大的AI模型之一。" }
+      ]
+    },
+    "finalCta": {
+      "eyebrow": "停止规划，开始执行。",
+      "title": "您的下一个项目",
+      "titleGrad": "从现在开始。",
+      "sub": "用Julay AI替代规划会议。描述您的目标，60秒内获得完整项目计划。永久免费，无需信用卡。",
+      "cta": "免费创建您的第一个项目",
+      "perks": ["永久免费计划", "无需信用卡", "60秒完成设置", "随时取消"]
+    },
+    "footer": {
+      "tagline": "面向现代团队的AI驱动项目管理。更智慧地规划，更高效地执行。",
+      "product": { "title": "产品", "links": ["功能", "定价", "对比", "更新日志"] },
+      "company": { "title": "公司", "links": ["关于我们", "博客", "招聘", "联系我们"] },
+      "legal": { "title": "法律", "links": ["隐私政策", "服务条款", "安全", "Cookie"] },
+      "copy": "© 2025 Julay. 保留所有权利。",
+      "built": "由 Julay.org 构建"
+    }
   }
 }

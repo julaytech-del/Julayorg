@@ -400,5 +400,141 @@
     "performance": "Análise de Desempenho",
     "overallScore": "Pontuação Geral",
     "riskLevel": "Nível de Risco"
+  },
+  "landing": {
+    "demo": {
+      "label": "DESCREVA O OBJETIVO DO SEU PROJETO",
+      "prompt": "Lançar a v2.0 do nosso SaaS no Q4",
+      "generate": "Gerar",
+      "generated": "IA gerou 5 tarefas · equipe atribuída · estimativa 100h",
+      "tasks": [
+        { "title": "Pesquisa de mercado e análise de concorrentes", "assignee": "Sara", "hours": 12, "status": "done" },
+        { "title": "Sistema de design e componentes de UI", "assignee": "Alex", "hours": 24, "status": "in_progress" },
+        { "title": "Refatoração do Backend API", "assignee": "Mohammed", "hours": 40, "status": "in_progress" },
+        { "title": "Testes QA e correção de bugs", "assignee": "Dana", "hours": 16, "status": "todo" },
+        { "title": "DevOps e pipeline de implantação", "assignee": "Karim", "hours": 8, "status": "todo" }
+      ]
+    },
+    "nav": { "features": "Recursos", "compare": "Comparar", "pricing": "Preços", "faq": "FAQ", "login": "Entrar", "start": "Começar grátis →" },
+    "hero": {
+      "badge": "Impulsionado por IA · Disponível agora",
+      "h1a": "Não gerenciamos tarefas.",
+      "h1b": "Construímos sistemas de execução.",
+      "sub": "Julay usa IA para planejar, decompor e executar seu trabalho — automaticamente. Descreva seu objetivo. Obtenha um projeto completo em segundos.",
+      "cta1": "Começar grátis — Sem cartão de crédito",
+      "cta2": "Ver como funciona",
+      "tagline": "Plano gratuito para sempre · Sem cartão de crédito · Configuração em 60 segundos"
+    },
+    "badges": ["12 recursos com IA", "10 idiomas suportados", "Kanban · Gantt · Sprints", "Plano gratuito para sempre", "Sem preço por assento"],
+    "stats": [
+      { "label": "Recursos com IA" },
+      { "label": "Visualizações e ferramentas incluídas" },
+      { "label": "Idiomas suportados" },
+      { "label": "Para gerar um projeto completo" }
+    ],
+    "problem": {
+      "chip": "O PROBLEMA",
+      "title": "Sua ferramenta PM atual é apenas uma",
+      "strike": "lista de tarefas sofisticada",
+      "sub": "Monday, Asana e Notion ajudam a rastrear o trabalho — mas não pensam. Você ainda precisa planejar, atribuir, agendar e verificar riscos manualmente.",
+      "pains": [
+        "Você passa a segunda-feira planejando toda a sua semana",
+        "As tarefas são atribuídas por intuição",
+        "Ninguém vê o risco de prazo até ser tarde demais",
+        "As standups substituem a visibilidade real",
+        "Ferramentas de IA exigem prompts perfeitos",
+        "Relatórios levam horas toda semana"
+      ]
+    },
+    "features": {
+      "chip": "RECURSOS",
+      "title": "Tudo que sua equipe precisa.",
+      "titleGrad": "Nada que não precisam.",
+      "sub": "12 recursos principais. Todos conectados à IA. Todos projetados para reduzir a carga de trabalho da sua equipe.",
+      "items": [
+        { "icon": "🧠", "title": "Planejamento IA de projetos", "desc": "Descreva seu objetivo em linguagem simples. Julay IA gera um plano completo — tarefas, cronogramas e atribuições — em segundos." },
+        { "icon": "⚡", "title": "Atribuição automática inteligente", "desc": "A IA analisa habilidades, carga de trabalho e disponibilidade para atribuir tarefas à pessoa certa automaticamente." },
+        { "icon": "📊", "title": "Caminho Crítico (CPM)", "desc": "Identifica automaticamente as tarefas que podem atrasar seu projeto. Alertas visuais mantêm você no prazo." },
+        { "icon": "🎯", "title": "Balanceador de carga", "desc": "Um mapa de calor em tempo real mostra quem está sobrecarregado. Um clique reatribui tarefas inteligentemente." },
+        { "icon": "📅", "title": "Otimizador de prazos", "desc": "A IA sugere as melhores datas de vencimento com pontuações de confiança e alertas de risco." },
+        { "icon": "🔔", "title": "Notificações inteligentes", "desc": "Seja alertado antes que os problemas ocorram. A IA monitora seus projetos 24/7." },
+        { "icon": "⚙️", "title": "Motor de automação", "desc": "Crie regras se-isso-então. Dispare notificações e mudanças de status automaticamente." },
+        { "icon": "📋", "title": "Construtor de formulários", "desc": "Crie formulários compartilháveis que criam e atribuem tarefas automaticamente ao serem enviados. Sem desenvolvimento." },
+        { "icon": "📈", "title": "Relatórios IA executivos", "desc": "Um clique gera um resumo executivo de 2 parágrafos do status do seu projeto." },
+        { "icon": "🔗", "title": "Sistema de webhooks", "desc": "Envie eventos em tempo real para Slack, Zapier ou qualquer endpoint. Payloads assinados HMAC." },
+        { "icon": "🏃", "title": "Quadro Sprint / Agile", "desc": "Suporte Scrum completo. Planeje sprints, acompanhe velocidade, visualize burndowns." },
+        { "icon": "🌐", "title": "Visão de Portfólio", "desc": "Veja a saúde de cada projeto em um único dashboard executivo. No prazo, em risco, fora do prazo — de relance." }
+      ]
+    },
+    "compare": {
+      "chip": "COMPARAÇÃO",
+      "title": "Como o Julay se compara",
+      "sub": "Spoiler: a coluna de IA muda tudo.",
+      "featureNames": [
+        "Planejamento IA", "Decomposição automática", "Atribuição inteligente de equipe",
+        "Otimizador de prazos IA", "Rebalanceador de carga IA", "Caminho Crítico (CPM)",
+        "Regras de automação", "Timeline Gantt", "Visão Calendário", "Dashboards personalizados",
+        "Quadro Sprint / Agile", "Rastreamento de tempo", "Construtor de formulários",
+        "Sistema de webhooks", "Preço inicial", "IA incluída no plano base"
+      ],
+      "startingPrice": { "julay": "R$9/mês", "monday": "R$9/assento", "asana": "R$13/assento", "notion": "R$10/assento" }
+    },
+    "earlyAccess": {
+      "badge": "ACESSO ANTECIPADO",
+      "title": "Seja um dos primeiros times a usar o Julay",
+      "sub": "Estamos lançando o Julay com um pequeno grupo de usuários. Crie sua conta agora — acesso completo gratuito.",
+      "cta": "Obter acesso antecipado — Grátis",
+      "perks": ["Sem cartão de crédito", "Cancele quando quiser", "Acesso completo aos recursos"]
+    },
+    "pricing": {
+      "chip": "PREÇOS",
+      "title": "Comece grátis. Escale conforme cresce.",
+      "sub": "Sem surpresas. Sem preço por assento. Cancele quando quiser.",
+      "monthly": "Mensal",
+      "yearly": "Anual",
+      "free": "Grátis",
+      "perMo": "/mês",
+      "saveYear": "Economize ${{amount}}/ano",
+      "mostPopular": "MAIS POPULAR",
+      "enterprise": {
+        "title": "Enterprise",
+        "sub": "IA ilimitada · SSO/SAML · White-label · SLA personalizado · Suporte dedicado · Opção on-premise",
+        "cta": "Falar com vendas"
+      },
+      "plans": [
+        { "id": "free", "name": "Grátis", "price": 0, "yearlyPrice": 0, "ctaVariant": "outlined", "highlight": false, "description": "Perfeito para começar", "features": ["3 projetos", "3 membros", "5 pedidos IA/mês", "Visões Kanban e Lista", "1 GB armazenamento"], "cta": "Começar grátis" },
+        { "id": "starter", "name": "Starter", "price": 9, "yearlyPrice": 7, "ctaVariant": "outlined", "highlight": false, "description": "Para profissionais independentes", "features": ["10 projetos", "10 membros", "100 pedidos IA/mês", "Todas as visões", "10 GB", "Suporte por e-mail"], "cta": "Iniciar teste grátis" },
+        { "id": "professional", "name": "Profissional", "price": 29, "yearlyPrice": 23, "ctaVariant": "contained", "highlight": true, "popular": true, "description": "Para equipes em crescimento", "features": ["Projetos ilimitados", "25 membros", "500 pedidos IA/mês", "Automações & Webhooks", "Relatórios & Formulários", "Rastreamento de tempo + Campos personalizados", "50 GB", "Suporte prioritário"], "cta": "Iniciar teste grátis" },
+        { "id": "business", "name": "Business", "price": 79, "yearlyPrice": 63, "ctaVariant": "outlined", "highlight": false, "description": "Para empresas em expansão", "features": ["Tudo do Profissional", "Membros ilimitados", "2.000 pedidos IA/mês", "Acesso API", "Análises personalizadas", "200 GB", "Suporte dedicado"], "cta": "Iniciar teste grátis" }
+      ]
+    },
+    "faq": {
+      "chip": "FAQ",
+      "title": "Perguntas? Temos respostas.",
+      "items": [
+        { "q": "Como o Julay é diferente do Monday.com ou Asana?", "a": "Julay é a única ferramenta de gerenciamento de projetos construída com IA em primeiro lugar. A IA planeja seu projeto, atribui sua equipe, equilibra a carga e avisa sobre riscos — automaticamente." },
+        { "q": "Preciso saber usar IA?", "a": "De jeito nenhum. Escreva seu objetivo em português. Julay faz o resto. Sem prompts, sem modelos." },
+        { "q": "Há um plano gratuito?", "a": "Sim — gratuito para sempre. 3 projetos, 3 membros, 5 pedidos de IA por mês. Sem cartão de crédito." },
+        { "q": "Meus dados são seguros?", "a": "Todos os dados são criptografados. Usamos webhooks assinados HMAC, autenticação JWT e controle de acesso por papéis." },
+        { "q": "Posso migrar do Monday ou Asana?", "a": "Sim. Descreva seu projeto e o Julay reconstruirá a estrutura completa automaticamente." },
+        { "q": "Qual modelo de IA alimenta o Julay?", "a": "Julay é alimentado por IA de ponta para planejamento estruturado, análise de riscos e relatórios executivos." }
+      ]
+    },
+    "finalCta": {
+      "eyebrow": "Pare de planejar. Comece a executar.",
+      "title": "Seu próximo projeto começa",
+      "titleGrad": "agora mesmo.",
+      "sub": "Substitua reuniões de planejamento pelo Julay IA. Descreva seu objetivo, obtenha um projeto em 60 segundos. Grátis para sempre.",
+      "cta": "Construa seu primeiro projeto grátis",
+      "perks": ["Plano gratuito para sempre", "Sem cartão de crédito", "Configuração em 60 segundos", "Cancele quando quiser"]
+    },
+    "footer": {
+      "tagline": "Gerenciamento de projetos com IA para equipes modernas. Planeje com inteligência. Execute mais rápido.",
+      "product": { "title": "Produto", "links": ["Recursos", "Preços", "Comparar", "Changelog"] },
+      "company": { "title": "Empresa", "links": ["Sobre nós", "Blog", "Carreiras", "Contato"] },
+      "legal": { "title": "Legal", "links": ["Privacidade", "Termos", "Segurança", "Cookies"] },
+      "copy": "© 2025 Julay. Todos os direitos reservados.",
+      "built": "Desenvolvido por Julay.org"
+    }
   }
 }
