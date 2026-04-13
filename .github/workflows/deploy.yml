@@ -26,6 +26,7 @@ jobs:
         env:
           VITE_GOOGLE_CLIENT_ID: 722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
           VITE_PLAUSIBLE_DOMAIN: julay.org
+          VITE_SENTRY_DSN: https://f89dc5462cfea4330b27e4357384cbdb@o4511212808175616.ingest.us.sentry.io/4511212814401536
         run: npm run build
 
       - name: Setup SSH key
