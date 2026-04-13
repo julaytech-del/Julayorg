@@ -406,6 +406,19 @@
     "generic": "Something went wrong. Please try again."
   },
   "landing": {
+    "demo": {
+      "label": "DESCRIBE YOUR PROJECT GOAL",
+      "prompt": "Launch v2.0 of our SaaS in Q4",
+      "generate": "Generate",
+      "generated": "AI generated 5 tasks · assigned team · estimated 100h",
+      "tasks": [
+        { "title": "Market research & competitor analysis", "assignee": "Sara", "hours": 12, "status": "done" },
+        { "title": "Design system & UI components", "assignee": "Alex", "hours": 24, "status": "in_progress" },
+        { "title": "Backend API refactor", "assignee": "Mohammed", "hours": 40, "status": "in_progress" },
+        { "title": "QA testing & bug fixes", "assignee": "Dana", "hours": 16, "status": "todo" },
+        { "title": "DevOps & deployment pipeline", "assignee": "Karim", "hours": 8, "status": "todo" }
+      ]
+    },
     "nav": { "features": "Features", "compare": "Compare", "pricing": "Pricing", "faq": "FAQ", "login": "Log in", "start": "Start Free →" },
     "hero": {
       "badge": "Powered by Claude AI · Now live",

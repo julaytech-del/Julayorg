@@ -406,6 +406,19 @@
     "generic": "حدث خطأ ما. يرجى المحاولة مرة أخرى."
   },
   "landing": {
+    "demo": {
+      "label": "صف هدف مشروعك",
+      "prompt": "إطلاق النسخة 2.0 من SaaS في الربع الرابع",
+      "generate": "توليد",
+      "generated": "الذكاء الاصطناعي ولّد 5 مهام · عيّن الفريق · تقدير 100 ساعة",
+      "tasks": [
+        { "title": "أبحاث السوق وتحليل المنافسين", "assignee": "سارة", "hours": 12, "status": "done" },
+        { "title": "نظام التصميم ومكونات الواجهة", "assignee": "أليكس", "hours": 24, "status": "in_progress" },
+        { "title": "إعادة هيكلة Backend API", "assignee": "محمد", "hours": 40, "status": "in_progress" },
+        { "title": "اختبار الجودة وإصلاح الأخطاء", "assignee": "دانا", "hours": 16, "status": "todo" },
+        { "title": "DevOps وخط أنابيب النشر", "assignee": "كريم", "hours": 8, "status": "todo" }
+      ]
+    },
     "nav": { "features": "الميزات", "compare": "المقارنة", "pricing": "الأسعار", "faq": "الأسئلة الشائعة", "login": "تسجيل الدخول", "start": "ابدأ مجاناً ←" },
     "hero": {
       "badge": "مدعوم بـ Claude AI · متاح الآن",
