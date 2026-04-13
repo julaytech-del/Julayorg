@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { loginUser, clearError, setCredentials } from '../../store/slices/authSlice.js';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher.jsx';
 import api from '../../services/api.js';
+import GoogleAuthButton from '../../components/common/GoogleAuthButton.jsx';
 
 const inputSx = { '& .MuiOutlinedInput-root': { backgroundColor: 'rgba(255,255,255,0.05)', color: 'white', '& .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: 'rgba(255,255,255,0.2)' }, '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#6366F1' }, '& input::placeholder': { color: 'rgba(255,255,255,0.25)' } } };
 const labelSx = { color: 'rgba(255,255,255,0.5)', fontSize: '0.72rem', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', mb: 0.75, fontWeight: 700 };
@@ -203,6 +204,14 @@ export default function Login() {
               </Tabs>
 
               {authTab === 'password' ? <PasswordForm /> : <OTPForm />}
+
+              {/* Google */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, my: 2.5 }}>
+                <Box sx={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+                <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.72rem' }}>OR</Typography>
+                <Box sx={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.08)' }} />
+              </Box>
+              <GoogleAuthButton dark />
 
               <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.35)', textAlign: 'center', mt: 2.5, fontSize: '0.8rem' }}>
                 {t('auth.login.noAccount')}{' '}

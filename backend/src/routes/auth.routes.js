@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { register, login, getMe, changePassword, createInvite, getInviteInfo, acceptInvite, sendOTP, verifyOTPLogin, verifyOTPRegister } from '../controllers/auth.controller.js';
+import { register, login, getMe, changePassword, createInvite, getInviteInfo, acceptInvite, sendOTP, verifyOTPLogin, verifyOTPRegister, googleAuth } from '../controllers/auth.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -14,4 +14,7 @@ router.post('/accept-invite/:token', acceptInvite);
 router.post('/otp/send', sendOTP);
 router.post('/otp/verify-login', verifyOTPLogin);
 router.post('/otp/verify-register', verifyOTPRegister);
+// Google OAuth
+router.post('/google', googleAuth);
+router.post('/google-token', googleAuth);
 export default router;

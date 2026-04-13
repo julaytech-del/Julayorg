@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import { registerUser, clearError, setCredentials } from '../../store/slices/authSlice.js';
 import LanguageSwitcher from '../../components/common/LanguageSwitcher.jsx';
 import api from '../../services/api.js';
+import GoogleAuthButton from '../../components/common/GoogleAuthButton.jsx';
 
 const INDUSTRIES = ['technology','healthcare','finance','education','construction','retail','media','consulting','manufacturing','other'];
 
@@ -173,6 +174,14 @@ export default function Register() {
           </Tabs>
 
           {authTab === 'password' ? <PasswordRegister /> : <OTPRegister />}
+
+          {/* Google */}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, my: 2 }}>
+            <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+            <Typography variant="caption" color="text.secondary">OR</Typography>
+            <Box sx={{ flex: 1, height: '1px', bgcolor: 'divider' }} />
+          </Box>
+          <GoogleAuthButton />
 
           <Typography variant="body2" color="text.secondary" textAlign="center" mt={2}>
             {t('auth.register.hasAccount')}{' '}

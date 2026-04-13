@@ -7,6 +7,9 @@ import Department from '../models/Department.js';
 import Invite from '../models/Invite.js';
 import OTP from '../models/OTP.js';
 import { sendOTPEmail } from '../utils/email.js';
+import { OAuth2Client } from 'google-auth-library';
+
+const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET || 'fallback-secret', {
   expiresIn: process.env.JWT_EXPIRES_IN || '7d'
@@ -224,6 +227,43 @@ export const verifyOTPRegister = async (req, res, next) => {
     // Random password for OTP-registered users (they can set one later)
     const randomPass = crypto.randomBytes(20).toString('hex');
     const user = await User.create({ name, email: email.toLowerCase().trim(), password: randomPass, organization: org._id, role: adminRole._id, department: dept._id, isAdmin: true, jobTitle: 'Administrator' });
+
+    const token = signToken(user._id);
+    const userData = await User.findById(user._id).populate('role').populate('department');
+    res.status(201).json({ success: true, data: { token, user: userData } });
+  } catch (err) { next(err); }
+};
+
+// ── Google OAuth ─────────────────────────────────────────────────────────────
+
+export const googleAuth = async (req, res, next) => {
+  try {
+    const { access_token } = req.body;
+    if (!access_token) return res.status(400).json({ success: false, message: 'Google access token is required' });
+
+    // Verify token by fetching Google userinfo
+    const gRes = await fetch(`https://www.googleapis.com/oauth2/v3/userinfo`, {
+      headers: { Authorization: `Bearer ${access_token}` },
+    });
+    if (!gRes.ok) return res.status(401).json({ success: false, message: 'Invalid Google token' });
+    const { email, name, picture } = await gRes.json();
+    if (!email) return res.status(401).json({ success: false, message: 'Could not get email from Google' });
+
+    // Check if user already exists
+    let user = await User.findOne({ email }).populate('role').populate('department').populate('organization');
+    if (user) {
+      await User.findByIdAndUpdate(user._id, { lastActive: new Date(), ...(picture && !user.avatar ? { avatar: picture } : {}) });
+      const token = signToken(user._id);
+      return res.json({ success: true, data: { token, user: user.toJSON() } });
+    }
+
+    // New user — create workspace
+    const org = await Organization.create({ name: `${name}'s Organization`, industry: 'technology' });
+    const roles = await createDefaultRoles(org._id);
+    const adminRole = roles.find(r => r.level === 'admin');
+    const dept = await Department.create({ name: 'General', organization: org._id, description: 'Default department', color: '#6366F1' });
+    const randomPass = crypto.randomBytes(20).toString('hex');
+    user = await User.create({ name, email, password: randomPass, avatar: picture || '', organization: org._id, role: adminRole._id, department: dept._id, isAdmin: true, jobTitle: 'Administrator' });
 
     const token = signToken(user._id);
     const userData = await User.findById(user._id).populate('role').populate('department');
