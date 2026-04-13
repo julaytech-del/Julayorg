@@ -23,6 +23,8 @@ jobs:
 
       - name: Build frontend
         working-directory: frontend
+        env:
+          VITE_GOOGLE_CLIENT_ID: 722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
         run: npx vite build
 
       - name: Setup SSH key
@@ -40,7 +42,8 @@ jobs:
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
             cd /home/ubuntu/Julayorg
             git pull origin main
-            cd backend && npm install --production
+            cd backend
+            npm install --production
             pm2 restart julay-backend
             echo 'Deploy complete!'
           "
