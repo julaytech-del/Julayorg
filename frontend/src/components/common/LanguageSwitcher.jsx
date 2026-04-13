@@ -16,7 +16,7 @@ const LANGUAGES = [
   { code: 'zh', label: '中文', flag: '🇨🇳' },
 ];
 
-export default function LanguageSwitcher() {
+export default function LanguageSwitcher({ dark = false }) {
   const { i18n } = useTranslation();
   const [anchor, setAnchor] = useState(null);
   const current = LANGUAGES.find(l => l.code === i18n.language) || LANGUAGES[0];
@@ -26,7 +26,13 @@ export default function LanguageSwitcher() {
       <Tooltip title="Language / اللغة / Langue">
         <Box
           onClick={e => setAnchor(e.currentTarget)}
-          sx={{
+          sx={dark ? {
+            display: 'flex', alignItems: 'center', gap: 0.75, cursor: 'pointer',
+            px: 1.25, py: 0.6, borderRadius: 2,
+            border: '1.5px solid rgba(255,255,255,0.15)', backgroundColor: 'rgba(255,255,255,0.07)',
+            '&:hover': { backgroundColor: 'rgba(255,255,255,0.12)', borderColor: 'rgba(255,255,255,0.3)' },
+            transition: 'all 0.15s', userSelect: 'none'
+          } : {
             display: 'flex', alignItems: 'center', gap: 0.75, cursor: 'pointer',
             px: 1.25, py: 0.6, borderRadius: 2,
             border: '1.5px solid #E2E8F0', backgroundColor: '#F8FAFC',
@@ -35,7 +41,7 @@ export default function LanguageSwitcher() {
           }}
         >
           <Typography sx={{ fontSize: '1rem', lineHeight: 1 }}>{current.flag}</Typography>
-          <Typography variant="caption" fontWeight={700} sx={{ color: '#475569', fontSize: '0.75rem' }}>
+          <Typography variant="caption" fontWeight={700} sx={{ color: dark ? 'rgba(255,255,255,0.75)' : '#475569', fontSize: '0.75rem' }}>
             {current.code.toUpperCase()}
           </Typography>
         </Box>

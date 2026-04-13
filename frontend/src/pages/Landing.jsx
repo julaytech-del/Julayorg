@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow, Menu as MenuIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx';
 
 /* ─── Gradient orb ─── */
 const Orb = ({ sx }) => <Box sx={{ position: 'absolute', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none', ...sx }} />;
@@ -219,6 +220,9 @@ export default function Landing() {
           ))}
         </List>
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 1.5, mt: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <LanguageSwitcher dark />
+          </Box>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/login'); }} variant="outlined"
             sx={{ borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, py: 1.25, borderRadius: 2 }}>
             Log in
@@ -249,6 +253,7 @@ export default function Landing() {
 
           {/* Desktop buttons */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1.5, alignItems: 'center' }}>
+            <LanguageSwitcher dark />
             <Button onClick={() => navigate('/login')} variant="text" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.06)' } }}>Log in</Button>
             <Button onClick={() => navigate('/register')} variant="contained" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 2.5, py: 0.9, borderRadius: 2, fontSize: '0.88rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9, boxShadow: '0 0 30px rgba(99,102,241,0.5)' } }}>
               Start Free →
@@ -341,51 +346,6 @@ export default function Landing() {
                     <AnimCounter end={s.num} suffix={s.suffix} />
                   </Typography>
                   <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', mt: 0.5 }}>{s.label}</Typography>
-                </Box>
-              </FadeIn>
-            ))}
-          </Box>
-        </Container>
-      </Box>
-
-      {/* ─── LANGUAGES ─── */}
-      <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: { xs: 8, md: 12 } }}>
-        <Container maxWidth="lg">
-          <FadeIn>
-            <Box sx={{ textAlign: 'center', mb: 7 }}>
-              <Chip label="GLOBAL REACH" sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', border: '1px solid rgba(99,102,241,0.3)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
-              <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '1.9rem', md: '2.8rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
-                Built for teams{' '}
-                <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>around the world</Box>
-              </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', maxWidth: 480, mx: 'auto' }}>
-                Julay speaks your language. Full UI translation in 10 languages — including right-to-left support for Arabic.
-              </Typography>
-            </Box>
-          </FadeIn>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2,1fr)', sm: 'repeat(3,1fr)', md: 'repeat(5,1fr)' }, gap: 2 }}>
-            {[
-              { flag: '🇺🇸', en: 'English',    native: 'English',    rtl: false },
-              { flag: '🇸🇦', en: 'Arabic',     native: 'العربية',    rtl: true  },
-              { flag: '🇫🇷', en: 'French',     native: 'Français',   rtl: false },
-              { flag: '🇩🇪', en: 'German',     native: 'Deutsch',    rtl: false },
-              { flag: '🇪🇸', en: 'Spanish',    native: 'Español',    rtl: false },
-              { flag: '🇧🇷', en: 'Portuguese', native: 'Português',  rtl: false },
-              { flag: '🇮🇳', en: 'Hindi',      native: 'हिन्दी',      rtl: false },
-              { flag: '🇷🇺', en: 'Russian',    native: 'Русский',    rtl: false },
-              { flag: '🇯🇵', en: 'Japanese',   native: '日本語',      rtl: false },
-              { flag: '🇨🇳', en: 'Chinese',    native: '中文',        rtl: false },
-            ].map((lang, i) => (
-              <FadeIn key={lang.en} delay={i * 50}>
-                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, p: 2.5, borderRadius: 2.5, border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.03)', transition: 'all 0.2s', cursor: 'default', '&:hover': { border: '1px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.08)', transform: 'translateY(-3px)' } }}>
-                  <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{lang.flag}</Typography>
-                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.9rem', direction: lang.rtl ? 'rtl' : 'ltr' }}>{lang.native}</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem' }}>{lang.en}</Typography>
-                  {lang.rtl && (
-                    <Box sx={{ px: 1, py: 0.2, borderRadius: 1, background: 'rgba(139,92,246,0.25)', border: '1px solid rgba(139,92,246,0.4)' }}>
-                      <Typography sx={{ color: '#C084FC', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.04em' }}>RTL</Typography>
-                    </Box>
-                  )}
                 </Box>
               </FadeIn>
             ))}
