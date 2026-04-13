@@ -5,6 +5,8 @@ import Organization from '../models/Organization.js';
 import Role from '../models/Role.js';
 import Department from '../models/Department.js';
 import Invite from '../models/Invite.js';
+import OTP from '../models/OTP.js';
+import { sendOTPEmail } from '../utils/email.js';
 
 const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET || 'fallback-secret', {
   expiresIn: process.env.JWT_EXPIRES_IN || '7d'
@@ -173,5 +175,58 @@ export const changePassword = async (req, res, next) => {
     user.password = newPassword;
     await user.save();
     res.json({ success: true, message: 'Password changed successfully' });
+  } catch (err) { next(err); }
+};
+
+// ── OTP Auth ────────────────────────────────────────────────────────────────
+
+export const sendOTP = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+    const code = await OTP.generate(email.toLowerCase().trim());
+    await sendOTPEmail(email.toLowerCase().trim(), code);
+    res.json({ success: true, message: 'Verification code sent to your email' });
+  } catch (err) { next(err); }
+};
+
+export const verifyOTPLogin = async (req, res, next) => {
+  try {
+    const { email, code } = req.body;
+    if (!email || !code) return res.status(400).json({ success: false, message: 'Email and code are required' });
+    const valid = await OTP.verify(email.toLowerCase().trim(), code.trim());
+    if (!valid) return res.status(401).json({ success: false, message: 'Invalid or expired code' });
+
+    const user = await User.findOne({ email: email.toLowerCase().trim() }).populate('role').populate('department').populate('organization');
+    if (!user) return res.status(404).json({ success: false, message: 'No account found. Please register first.' });
+
+    await User.findByIdAndUpdate(user._id, { lastActive: new Date() });
+    const token = signToken(user._id);
+    res.json({ success: true, data: { token, user: user.toJSON() } });
+  } catch (err) { next(err); }
+};
+
+export const verifyOTPRegister = async (req, res, next) => {
+  try {
+    const { email, code, name, organizationName, industry } = req.body;
+    if (!email || !code || !name) return res.status(400).json({ success: false, message: 'Email, code and name are required' });
+    const valid = await OTP.verify(email.toLowerCase().trim(), code.trim());
+    if (!valid) return res.status(401).json({ success: false, message: 'Invalid or expired code' });
+
+    const existing = await User.findOne({ email: email.toLowerCase().trim() });
+    if (existing) return res.status(409).json({ success: false, message: 'Email already registered. Please log in.' });
+
+    const org = await Organization.create({ name: organizationName || `${name}'s Organization`, industry: industry || 'technology' });
+    const roles = await createDefaultRoles(org._id);
+    const adminRole = roles.find(r => r.level === 'admin');
+    const dept = await Department.create({ name: 'General', organization: org._id, description: 'Default department', color: '#6366F1' });
+
+    // Random password for OTP-registered users (they can set one later)
+    const randomPass = crypto.randomBytes(20).toString('hex');
+    const user = await User.create({ name, email: email.toLowerCase().trim(), password: randomPass, organization: org._id, role: adminRole._id, department: dept._id, isAdmin: true, jobTitle: 'Administrator' });
+
+    const token = signToken(user._id);
+    const userData = await User.findById(user._id).populate('role').populate('department');
+    res.status(201).json({ success: true, data: { token, user: userData } });
   } catch (err) { next(err); }
 };

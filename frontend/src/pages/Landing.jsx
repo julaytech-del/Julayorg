@@ -467,6 +467,70 @@ export default function Landing() {
         </Container>
       </Box>
 
+      {/* ─── INVITE A FRIEND ─── */}
+      <Box sx={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%)', py: { xs: 8, md: 14 }, position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: '10%', right: '5%', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <Box sx={{ position: 'absolute', bottom: '10%', left: '5%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
+              <Chip label="REFER A FRIEND" sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em', border: '1px solid rgba(99,102,241,0.3)' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, color: 'white', letterSpacing: '-0.03em', mb: 2 }}>
+                Share Julay.{' '}
+                <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                  Earn rewards.
+                </Box>
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>
+                Invite friends to Julay. When they sign up, you both win — they get a free account, you get a free month.
+              </Typography>
+            </Box>
+
+            {/* How it works */}
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3,1fr)' }, gap: 3, mb: 8 }}>
+              {[
+                { step: '01', icon: '🔗', title: 'Get your link', desc: 'Sign up and find your unique referral link in Settings → Invite a Friend.' },
+                { step: '02', icon: '📤', title: 'Share it', desc: 'Send it via WhatsApp, email, or any messaging app. One click, done.' },
+                { step: '03', icon: '🎁', title: 'Both win', desc: 'Your friend gets a free Julay account. You get 1 month free on any paid plan.' },
+              ].map((item) => (
+                <Box key={item.step} sx={{ position: 'relative', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)' }}>
+                  <Typography sx={{ position: 'absolute', top: 16, right: 20, fontSize: '0.72rem', fontWeight: 800, color: 'rgba(99,102,241,0.5)', letterSpacing: '0.1em' }}>{item.step}</Typography>
+                  <Typography sx={{ fontSize: '2.2rem', mb: 2 }}>{item.icon}</Typography>
+                  <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.05rem', mb: 1 }}>{item.title}</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.875rem', lineHeight: 1.65 }}>{item.desc}</Typography>
+                </Box>
+              ))}
+            </Box>
+
+            {/* Perks banner */}
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2, mb: 8 }}>
+              {[
+                { icon: '♾️', label: 'Unlimited referrals' },
+                { icon: '🆓', label: 'Friend gets free account' },
+                { icon: '📅', label: '1 free month per referral' },
+                { icon: '⚡', label: 'Instant rewards' },
+              ].map((p) => (
+                <Box key={p.label} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1, borderRadius: 99, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
+                  <Typography sx={{ fontSize: '1rem' }}>{p.icon}</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem', fontWeight: 600 }}>{p.label}</Typography>
+                </Box>
+              ))}
+            </Box>
+
+            {/* CTA */}
+            <Box sx={{ textAlign: 'center' }}>
+              <Button onClick={() => window.location.href = '/register'} variant="contained" size="large"
+                sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9 } }}>
+                Sign up & get your referral link <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+              </Button>
+              <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', mt: 2 }}>
+                Already have an account? Go to Settings → Invite a Friend
+              </Typography>
+            </Box>
+          </FadeIn>
+        </Container>
+      </Box>
+
       {/* ─── PRICING ─── */}
       <Box id="pricing" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
         <Container maxWidth="lg">
