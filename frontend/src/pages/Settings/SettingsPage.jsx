@@ -10,7 +10,7 @@ import {
 import {
   Person, Group, CreditCard, Security, Notifications, Extension,
   Lock, Email, GitHub, Webhook, FlashOn, VideoCall, Edit, CheckCircle,
-  Cancel, LockOutlined, Add, Visibility, VisibilityOff, ContentCopy, LinkOutlined,
+  Cancel, LockOutlined, Add, Visibility, VisibilityOff, ContentCopy, AddLink,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -168,7 +168,7 @@ function TeamTab({ currentUser }) {
 
       <Dialog open={inviteOpen} onClose={handleClose} maxWidth="sm" fullWidth>
         <DialogTitle fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <LinkOutlined sx={{ color: '#6366F1' }} /> Invite Team Member
+          <AddLink sx={{ color: '#6366F1' }} /> Invite Team Member
         </DialogTitle>
         <DialogContent>
           {!inviteLink ? (
