@@ -11,6 +11,7 @@ import {
   Person, Group, CreditCard, Security, Notifications, Extension,
   Lock, Email, GitHub, Webhook, FlashOn, VideoCall, Edit, CheckCircle,
   Cancel, LockOutlined, Add, Visibility, VisibilityOff, ContentCopy, AddLink,
+  CardGiftcard, Share, WhatsApp,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -501,6 +502,116 @@ function IntegrationsTab() {
   );
 }
 
+// ── Refer a Friend Tab ─────────────────────────────────────────────────────
+function ReferTab({ user }) {
+  const dispatch = useDispatch();
+  const [copied, setCopied] = useState(false);
+
+  const referralLink = `https://julay.org/register?ref=${user?._id || ''}`;
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(referralLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    dispatch(showSnackbar({ message: 'Referral link copied!', severity: 'success' }));
+  };
+
+  const shareText = `Join me on Julay — the AI-powered project management platform. Sign up free: ${referralLink}`;
+
+  const handleWhatsApp = () => {
+    window.open(`https://wa.me/?text=${encodeURIComponent(shareText)}`, '_blank');
+  };
+
+  const handleEmail = () => {
+    window.open(`mailto:?subject=${encodeURIComponent('Join me on Julay')}&body=${encodeURIComponent(shareText)}`, '_blank');
+  };
+
+  const PERKS = [
+    { icon: '🚀', title: 'Your friend gets', desc: 'Full free plan access — 3 projects, AI features, Kanban & more' },
+    { icon: '🎁', title: 'You get', desc: '1 month free on any paid plan for each friend who signs up' },
+    { icon: '♾️', title: 'No limit', desc: 'Refer as many friends as you want — rewards stack up' },
+  ];
+
+  return (
+    <Box>
+      <Typography variant="h6" fontWeight={700} sx={{ mb: 0.5 }}>Invite a Friend</Typography>
+      <Typography color="text.secondary" variant="body2" sx={{ mb: 3 }}>
+        Share Julay with your network. Your friend gets a free account — you get rewarded.
+      </Typography>
+
+      {/* Perks */}
+      <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, mb: 4 }}>
+        {PERKS.map((p, i) => (
+          <Box key={i} sx={{ flex: 1, p: 2, borderRadius: 2, border: '1.5px solid', borderColor: 'divider', background: 'linear-gradient(135deg,#F8F7FF,#F0F0FF)' }}>
+            <Typography fontSize="1.6rem" mb={0.5}>{p.icon}</Typography>
+            <Typography fontWeight={700} fontSize="0.85rem" mb={0.25}>{p.title}</Typography>
+            <Typography color="text.secondary" fontSize="0.78rem">{p.desc}</Typography>
+          </Box>
+        ))}
+      </Box>
+
+      {/* Referral link box */}
+      <Typography fontWeight={700} fontSize="0.875rem" mb={1}>Your referral link</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid', borderColor: copied ? 'success.main' : 'divider', background: '#F8FAFC', mb: 3, transition: 'border-color 0.2s' }}>
+        <Typography variant="body2" sx={{ flex: 1, wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.8rem', color: 'text.secondary' }}>
+          {referralLink}
+        </Typography>
+        <Tooltip title={copied ? 'Copied!' : 'Copy link'}>
+          <IconButton size="small" onClick={handleCopy} color={copied ? 'success' : 'default'}>
+            {copied ? <CheckCircle fontSize="small" /> : <ContentCopy fontSize="small" />}
+          </IconButton>
+        </Tooltip>
+      </Box>
+
+      {/* Share buttons */}
+      <Typography fontWeight={700} fontSize="0.875rem" mb={1.5}>Share via</Typography>
+      <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+        <Button
+          variant="contained"
+          startIcon={<WhatsApp />}
+          onClick={handleWhatsApp}
+          sx={{ background: '#25D366', '&:hover': { background: '#1ebe5d' }, borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
+          WhatsApp
+        </Button>
+        <Button
+          variant="outlined"
+          startIcon={<Email />}
+          onClick={handleEmail}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
+          Email
+        </Button>
+        <Button
+          variant={copied ? 'contained' : 'outlined'}
+          startIcon={copied ? <CheckCircle /> : <ContentCopy />}
+          onClick={handleCopy}
+          color={copied ? 'success' : 'inherit'}
+          sx={{ borderRadius: 2, textTransform: 'none', fontWeight: 600 }}
+        >
+          {copied ? 'Copied!' : 'Copy Link'}
+        </Button>
+      </Box>
+
+      {/* Stats placeholder */}
+      <Box sx={{ mt: 4, p: 2.5, borderRadius: 2, border: '1px dashed', borderColor: 'divider', display: 'flex', gap: 4, flexWrap: 'wrap' }}>
+        <Box>
+          <Typography fontSize="1.6rem" fontWeight={800} color="#6366F1">0</Typography>
+          <Typography fontSize="0.78rem" color="text.secondary">Friends referred</Typography>
+        </Box>
+        <Box>
+          <Typography fontSize="1.6rem" fontWeight={800} color="#10B981">0</Typography>
+          <Typography fontSize="0.78rem" color="text.secondary">Friends signed up</Typography>
+        </Box>
+        <Box>
+          <Typography fontSize="1.6rem" fontWeight={800} color="#F59E0B">0 mo</Typography>
+          <Typography fontSize="0.78rem" color="text.secondary">Free months earned</Typography>
+        </Box>
+      </Box>
+    </Box>
+  );
+}
+
 // ── main ───────────────────────────────────────────────────────────────────
 const TABS = [
   { value: 'profile',       label: 'Profile',       icon: Person },
@@ -509,6 +620,7 @@ const TABS = [
   { value: 'security',      label: 'Security',       icon: Security },
   { value: 'notifications', label: 'Notifications',  icon: Notifications },
   { value: 'integrations',  label: 'Integrations',   icon: Extension },
+  { value: 'refer',         label: 'Invite a Friend', icon: CardGiftcard },
 ];
 
 export default function SettingsPage() {
@@ -523,6 +635,7 @@ export default function SettingsPage() {
       case 'security':      return <SecurityTab />;
       case 'notifications': return <NotificationsTab />;
       case 'integrations':  return <IntegrationsTab />;
+      case 'refer':         return <ReferTab user={user} />;
       default: return null;
     }
   };
