@@ -1,0 +1,88 @@
+/* ─── Skip to main content ──────────────────────────────────────────────────── */
+.skip-to-main {
+  position: absolute;
+  top: -100%;
+  left: 16px;
+  z-index: 10000;
+  padding: 12px 20px;
+  background: #6366F1;
+  color: #fff;
+  font-family: 'Inter', system-ui, sans-serif;
+  font-weight: 700;
+  font-size: 0.9rem;
+  border-radius: 0 0 8px 8px;
+  text-decoration: none;
+  transition: top 0.15s;
+  outline: none;
+  white-space: nowrap;
+}
+.skip-to-main:focus {
+  top: 0;
+}
+
+/* ─── Focus indicators — WCAG 2.1 AA (2px min, 3:1 contrast) ──────────────── */
+*:focus-visible {
+  outline: 2px solid #6366F1 !important;
+  outline-offset: 2px !important;
+  border-radius: 3px;
+}
+
+/* Remove default outline only when focus-visible is supported */
+*:focus:not(:focus-visible) {
+  outline: none !important;
+}
+
+/* MUI components sometimes suppress focus — restore it */
+.MuiButtonBase-root:focus-visible,
+.MuiTab-root:focus-visible,
+.MuiMenuItem-root:focus-visible,
+.MuiListItemButton-root:focus-visible,
+.MuiIconButton-root:focus-visible,
+.MuiCheckbox-root:focus-visible,
+.MuiSwitch-root:focus-visible,
+.MuiSelect-select:focus-visible,
+.MuiAccordionSummary-root:focus-visible {
+  outline: 2px solid #6366F1 !important;
+  outline-offset: 2px !important;
+}
+
+/* ─── Screen-reader only utility ────────────────────────────────────────────── */
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ─── Reduced motion support ─────────────────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ─── High contrast mode support ─────────────────────────────────────────────── */
+@media (forced-colors: active) {
+  .skip-to-main {
+    forced-color-adjust: none;
+    background: Highlight;
+    color: HighlightText;
+  }
+}
+
+/* ─── Ensure text contrast (darken secondary text if needed) ──────────────────── */
+/* #64748B on white = 4.54:1 — just meets AA. On dark backgrounds it's fine. */
+/* Override where used on white/light backgrounds: */
+.text-secondary-on-white {
+  color: #475569 !important; /* 5.74:1 on white — safely above 4.5:1 */
+}

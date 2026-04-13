@@ -27,11 +27,29 @@ const createDefaultRoles = async (orgId) => {
   return Role.insertMany(roles.map(r => ({ ...r, organization: orgId })));
 };
 
+const validatePassword = (pwd) => {
+  if (!pwd || pwd.length < 12) return 'Password must be at least 12 characters';
+  if (!/[A-Z]/.test(pwd)) return 'Password must contain at least one uppercase letter';
+  if (!/[0-9]/.test(pwd)) return 'Password must contain at least one number';
+  if (!/[^A-Za-z0-9]/.test(pwd)) return 'Password must contain at least one special character';
+  return null;
+};
+
 export const register = async (req, res, next) => {
   try {
-    const { name, email, password, organizationName, industry } = req.body;
+    const { name, email, password, organizationName, industry, website } = req.body;
 
-    const existing = await User.findOne({ email });
+    // Honeypot check
+    if (website) return res.status(400).json({ success: false, message: 'Invalid submission.' });
+
+    // Password policy
+    const pwdError = validatePassword(password);
+    if (pwdError) return res.status(400).json({ success: false, message: pwdError });
+
+    if (!name?.trim()) return res.status(400).json({ success: false, message: 'Name is required.' });
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return res.status(400).json({ success: false, message: 'Invalid email address.' });
+
+    const existing = await User.findOne({ email: email.toLowerCase() });
     if (existing) return res.status(409).json({ success: false, message: 'Email already registered' });
 
     const org = await Organization.create({ name: organizationName || `${name}'s Organization`, industry: industry || 'technology' });

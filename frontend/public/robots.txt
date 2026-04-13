@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /dashboard/
+Disallow: /api/
+Disallow: /register
+Disallow: /login
+Sitemap: https://julay.org/sitemap.xml

@@ -1,5 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
+import { initSentry } from './lib/sentry.js';
+
+initSentry();
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
@@ -7,6 +10,7 @@ import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App.jsx';
 import store from './store/index.js';
 import './i18n/index.js';
+import './styles/accessibility.css';
 import ThemeWrapper from './ThemeWrapper.jsx';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';

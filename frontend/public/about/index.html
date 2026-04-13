@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="index, follow" />
+  <title>About Julay — AI Work Operating System</title>
+  <meta name="description" content="Learn about Julay, the team building the future of AI-powered project management." />
+
+  <!-- Open Graph -->
+  <meta property="og:type"        content="website" />
+  <meta property="og:url"         content="https://julay.org/about" />
+  <meta property="og:title"       content="About Julay — AI Work Operating System" />
+  <meta property="og:description" content="Learn about Julay, the team building the future of AI-powered project management." />
+  <meta property="og:image"       content="https://julay.org/logo.png" />
+
+  <!-- Twitter / X Card -->
+  <meta name="twitter:card"        content="summary_large_image" />
+  <meta name="twitter:title"       content="About Julay — AI Work Operating System" />
+  <meta name="twitter:description" content="Learn about Julay, the team building the future of AI-powered project management." />
+  <meta name="twitter:image"       content="https://julay.org/logo.png" />
+
+  <!-- Canonical -->
+  <link rel="canonical" href="https://julay.org/about" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:        #FFFFFF;
+      --text:      #1E293B;
+      --secondary: #64748B;
+      --border:    #E2E8F0;
+      --primary:   #6366F1;
+      --footer-bg: #F8FAFC;
+      --radius:    10px;
+      --radius-lg: 16px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* ── Sticky nav ── */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--primary);
+    }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px 0 64px;
+      text-align: center;
+    }
+
+    .hero-eyebrow {
+      display: inline-block;
+      background: #EEF2FF;
+      color: var(--primary);
+      font-size: 0.8rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      padding: 6px 14px;
+      border-radius: 20px;
+      margin-bottom: 24px;
+    }
+
+    .hero h1 {
+      font-size: clamp(2rem, 5vw, 2.8rem);
+      font-weight: 800;
+      letter-spacing: -1px;
+      color: var(--text);
+      line-height: 1.15;
+      margin-bottom: 20px;
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: var(--primary);
+    }
+
+    .hero-lead {
+      font-size: 1.1rem;
+      color: var(--secondary);
+      max-width: 600px;
+      margin: 0 auto;
+      line-height: 1.75;
+    }
+
+    /* ── Section headings ── */
+    .section-heading {
+      font-size: 1.5rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .section-sub {
+      color: var(--secondary);
+      margin-bottom: 36px;
+      font-size: 1rem;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin: 0;
+    }
+
+    /* ── Company section ── */
+    .company-section {
+      padding: 64px 0;
+    }
+
+    .company-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: start;
+    }
+
+    .company-grid .text-col p {
+      color: var(--secondary);
+      margin-bottom: 16px;
+    }
+
+    .company-grid .text-col p:last-child { margin-bottom: 0; }
+
+    .company-grid .text-col a {
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .stat-col {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .stat-card {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+    }
+
+    .stat-card .stat-value {
+      font-size: 1.75rem;
+      font-weight: 800;
+      color: var(--primary);
+      letter-spacing: -1px;
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+
+    .stat-card .stat-label {
+      font-size: 0.875rem;
+      color: var(--secondary);
+      font-weight: 500;
+    }
+
+    /* ── Why Julay ── */
+    .why-section {
+      padding: 64px 0;
+      background: #F8FAFC;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .why-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .why-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+    }
+
+    .why-card .icon {
+      width: 40px;
+      height: 40px;
+      background: #EEF2FF;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+      font-size: 1.1rem;
+    }
+
+    .why-card h3 {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .why-card p {
+      font-size: 0.875rem;
+      color: var(--secondary);
+      line-height: 1.6;
+    }
+
+    /* ── Founders ── */
+    .founders-section {
+      padding: 64px 0;
+    }
+
+    .founders-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+
+    .founder-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 28px 24px;
+      text-align: center;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+
+    .founder-card:hover {
+      box-shadow: 0 8px 30px rgba(99, 102, 241, 0.08);
+      transform: translateY(-2px);
+    }
+
+    .founder-avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      margin: 0 auto 16px;
+      background: linear-gradient(135deg, #EEF2FF, #C7D2FE);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: var(--primary);
+      letter-spacing: -1px;
+    }
+
+    .founder-name {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .founder-title {
+      font-size: 0.825rem;
+      color: var(--secondary);
+      font-weight: 500;
+      margin-bottom: 16px;
+    }
+
+    .founder-linkedin {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+      border: 1px solid #C7D2FE;
+      background: #EEF2FF;
+      padding: 5px 12px;
+      border-radius: 20px;
+      transition: background 0.15s;
+    }
+
+    .founder-linkedin:hover {
+      background: #C7D2FE;
+    }
+
+    .founder-linkedin svg {
+      width: 13px;
+      height: 13px;
+      fill: currentColor;
+    }
+
+    /* ── Contact section ── */
+    .contact-section {
+      padding: 64px 0;
+      background: #F8FAFC;
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .contact-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 16px;
+    }
+
+    .contact-card {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .contact-card .contact-type {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .contact-card a {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: var(--primary);
+      text-decoration: none;
+    }
+
+    .contact-card a:hover { text-decoration: underline; }
+
+    .contact-card .contact-desc {
+      font-size: 0.8rem;
+      color: var(--secondary);
+    }
+
+    /* ── Social links ── */
+    .social-section {
+      padding: 64px 0;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+    }
+
+    .social-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--text);
+      text-decoration: none;
+      border: 1px solid var(--border);
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .social-link:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+      background: #EEF2FF;
+    }
+
+    .social-link svg {
+      width: 16px;
+      height: 16px;
+      fill: currentColor;
+      flex-shrink: 0;
+    }
+
+    /* ── Mission statement ── */
+    .mission-section {
+      padding: 64px 0;
+    }
+
+    .mission-block {
+      background: linear-gradient(135deg, #EEF2FF 0%, #F0F9FF 100%);
+      border: 1px solid #C7D2FE;
+      border-radius: var(--radius-lg);
+      padding: 40px 48px;
+      text-align: center;
+    }
+
+    .mission-block blockquote {
+      font-size: clamp(1.1rem, 2.5vw, 1.3rem);
+      font-weight: 600;
+      color: var(--text);
+      line-height: 1.55;
+      border: none;
+      padding: 0;
+      margin-bottom: 20px;
+      font-style: italic;
+    }
+
+    .mission-block .mission-lead {
+      font-size: 0.9rem;
+      color: var(--secondary);
+      max-width: 560px;
+      margin: 0 auto;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--footer-bg);
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+    }
+
+    .footer-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.875rem;
+      color: var(--secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--primary); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--secondary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 700px) {
+      .company-grid   { grid-template-columns: 1fr; }
+      .why-grid       { grid-template-columns: 1fr 1fr; }
+      .founders-grid  { grid-template-columns: 1fr 1fr; }
+      .contact-grid   { grid-template-columns: 1fr; }
+      .mission-block  { padding: 28px 24px; }
+    }
+
+    @media (max-width: 480px) {
+      .why-grid      { grid-template-columns: 1fr; }
+      .founders-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <header class="site-nav" role="banner">
+    <nav class="nav-inner" aria-label="Primary navigation">
+      <a href="/" class="nav-logo" aria-label="Julay home">Julay</a>
+      <ul class="nav-links">
+        <li><a href="/terms">Terms</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/cookies">Cookies</a></li>
+        <li><a href="/about" aria-current="page">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ── Main ── -->
+  <main id="main-content">
+
+    <!-- Hero -->
+    <section class="hero" aria-labelledby="hero-heading">
+      <div class="container">
+        <span class="hero-eyebrow">Our story</span>
+        <h1 id="hero-heading">We're building the<br /><em>future of work</em></h1>
+        <p class="hero-lead">
+          Julay is an AI Work Operating System — a single place for teams to plan, execute,
+          and learn from their work, with AI woven through every step of the process.
+        </p>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- Company -->
+    <section class="company-section" aria-labelledby="company-heading">
+      <div class="container">
+        <h2 class="section-heading" id="company-heading">About Julay</h2>
+        <p class="section-sub">Founded in 2026 to change how teams work with AI.</p>
+
+        <div class="company-grid">
+          <div class="text-col">
+            <p>
+              Julay was founded in 2026 with a clear conviction: AI-powered project management
+              should not be a privilege reserved for large enterprises with dedicated tooling budgets.
+              Every team — a two-person startup, a school department, a creative agency — deserves
+              intelligent software that reduces busywork and amplifies human judgment.
+            </p>
+            <p>
+              We built Julay to be the operating layer for modern work: one workspace where your
+              projects, tasks, documents, and AI assistants live together and learn from each other.
+              No more stitching together a dozen apps. No more losing context as work moves between
+              tools.
+            </p>
+            <p>
+              We are a fully distributed team. Our investors, advisors, and early customers span
+              multiple continents, and we are proud to build a product that works for teams
+              regardless of where they are in the world.
+            </p>
+          </div>
+
+          <div class="stat-col">
+            <div class="stat-card">
+              <div class="stat-value">2026</div>
+              <div class="stat-label">Year founded</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">100%</div>
+              <div class="stat-label">Remote-first team</div>
+            </div>
+            <div class="stat-card">
+              <div class="stat-value">AI-first</div>
+              <div class="stat-label">Architecture, not an afterthought</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Why Julay -->
+    <section class="why-section" aria-labelledby="why-heading">
+      <div class="container">
+        <h2 class="section-heading" id="why-heading">Why Julay?</h2>
+        <p class="section-sub">
+          We believe great work happens when intelligent tooling gets out of your way.
+        </p>
+
+        <div class="why-grid">
+          <div class="why-card">
+            <div class="icon" aria-hidden="true">&#9889;</div>
+            <h3>AI at the core</h3>
+            <p>
+              AI is not a bolt-on feature in Julay — it is built into the data model. Every
+              project, task, and document is AI-aware from the moment it is created.
+            </p>
+          </div>
+          <div class="why-card">
+            <div class="icon" aria-hidden="true">&#128275;</div>
+            <h3>Privacy by design</h3>
+            <p>
+              Your work data is yours. We do not train models on your content, and we never
+              sell your data. Privacy and security are non-negotiable defaults.
+            </p>
+          </div>
+          <div class="why-card">
+            <div class="icon" aria-hidden="true">&#9878;</div>
+            <h3>Built for every team</h3>
+            <p>
+              From solo founders to growing companies, Julay scales with you. Start free,
+              grow without friction, and never pay for features you do not use.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Mission statement -->
+    <section class="mission-section" aria-labelledby="mission-heading">
+      <div class="container">
+        <h2 class="section-heading" id="mission-heading">Our mission</h2>
+        <p class="section-sub">What we are here to do.</p>
+
+        <div class="mission-block">
+          <blockquote>
+            "To make AI-powered project management accessible, trustworthy, and genuinely useful
+            for every team on earth."
+          </blockquote>
+          <p class="mission-lead">
+            We measure success not by the sophistication of our AI features, but by the reduction
+            in friction experienced by the teams who trust us with their work. When Julay is at its
+            best, you stop thinking about the software and start thinking about the work.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <hr class="divider" />
+
+    <!-- Founders -->
+    <section class="founders-section" aria-labelledby="founders-heading">
+      <div class="container">
+        <h2 class="section-heading" id="founders-heading">The team</h2>
+        <p class="section-sub">The people behind Julay.</p>
+
+        <!-- [Add real founder info] — update names, titles, LinkedIn URLs, and initials below -->
+        <div class="founders-grid">
+
+          <!-- Founder 1 -->
+          <!-- [Add real founder info]: Update name, title, and LinkedIn URL -->
+          <article class="founder-card">
+            <div class="founder-avatar" aria-hidden="true">JD</div>
+            <h3 class="founder-name">Jane Doe</h3>
+            <p class="founder-title">Co-founder &amp; CEO</p>
+            <!-- [Add real founder info]: Replace # with actual LinkedIn profile URL -->
+            <a href="#" class="founder-linkedin" rel="noopener noreferrer" aria-label="Jane Doe on LinkedIn">
+              <!-- LinkedIn icon -->
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              LinkedIn
+            </a>
+          </article>
+
+          <!-- Founder 2 -->
+          <!-- [Add real founder info]: Update name, title, and LinkedIn URL -->
+          <article class="founder-card">
+            <div class="founder-avatar" aria-hidden="true">AS</div>
+            <h3 class="founder-name">Alex Smith</h3>
+            <p class="founder-title">Co-founder &amp; CTO</p>
+            <!-- [Add real founder info]: Replace # with actual LinkedIn profile URL -->
+            <a href="#" class="founder-linkedin" rel="noopener noreferrer" aria-label="Alex Smith on LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              LinkedIn
+            </a>
+          </article>
+
+          <!-- Founder 3 -->
+          <!-- [Add real founder info]: Update name, title, and LinkedIn URL -->
+          <article class="founder-card">
+            <div class="founder-avatar" aria-hidden="true">MP</div>
+            <h3 class="founder-name">Morgan Park</h3>
+            <p class="founder-title">Co-founder &amp; CPO</p>
+            <!-- [Add real founder info]: Replace # with actual LinkedIn profile URL -->
+            <a href="#" class="founder-linkedin" rel="noopener noreferrer" aria-label="Morgan Park on LinkedIn">
+              <svg viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+              </svg>
+              LinkedIn
+            </a>
+          </article>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- Contact -->
+    <section class="contact-section" aria-labelledby="contact-heading">
+      <div class="container">
+        <h2 class="section-heading" id="contact-heading">Get in touch</h2>
+        <p class="section-sub">We would love to hear from you.</p>
+
+        <div class="contact-grid">
+          <div class="contact-card">
+            <span class="contact-type">General</span>
+            <a href="mailto:hello@julay.org">hello@julay.org</a>
+            <span class="contact-desc">Questions, feedback, partnerships.</span>
+          </div>
+          <div class="contact-card">
+            <span class="contact-type">Support</span>
+            <a href="mailto:support@julay.org">support@julay.org</a>
+            <span class="contact-desc">Help with your account or product.</span>
+          </div>
+          <div class="contact-card">
+            <span class="contact-type">Privacy</span>
+            <a href="mailto:privacy@julay.org">privacy@julay.org</a>
+            <span class="contact-desc">Data requests, GDPR, privacy questions.</span>
+          </div>
+          <div class="contact-card">
+            <span class="contact-type">Legal</span>
+            <a href="mailto:legal@julay.org">legal@julay.org</a>
+            <span class="contact-desc">Terms, contracts, compliance matters.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Social links -->
+    <section class="social-section" aria-labelledby="social-heading">
+      <div class="container">
+        <h2 class="section-heading" id="social-heading">Follow us</h2>
+        <p class="section-sub">Stay up to date with Julay.</p>
+
+        <div class="social-links">
+
+          <!-- [Update social links]: Replace # with actual LinkedIn company URL -->
+          <a href="#" class="social-link" rel="noopener noreferrer" aria-label="Julay on LinkedIn">
+            <!-- LinkedIn -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433a2.062 2.062 0 01-2.063-2.065 2.064 2.064 0 112.063 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/>
+            </svg>
+            LinkedIn
+          </a>
+
+          <!-- [Update social links]: Replace # with actual Twitter/X profile URL -->
+          <a href="#" class="social-link" rel="noopener noreferrer" aria-label="Julay on X (Twitter)">
+            <!-- X / Twitter -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-4.714-6.231-5.401 6.231H2.744l7.73-8.835L1.254 2.25H8.08l4.259 5.63 5.905-5.63zm-1.161 17.52h1.833L7.084 4.126H5.117z"/>
+            </svg>
+            X / Twitter
+          </a>
+
+          <!-- [Update social links]: Replace # with actual GitHub org URL -->
+          <a href="#" class="social-link" rel="noopener noreferrer" aria-label="Julay on GitHub">
+            <!-- GitHub -->
+            <svg viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M12 .297c-6.63 0-12 5.373-12 12 0 5.303 3.438 9.8 8.205 11.385.6.113.82-.258.82-.577 0-.285-.01-1.04-.015-2.04-3.338.724-4.042-1.61-4.042-1.61C4.422 18.07 3.633 17.7 3.633 17.7c-1.087-.744.084-.729.084-.729 1.205.084 1.838 1.236 1.838 1.236 1.07 1.835 2.809 1.305 3.495.998.108-.776.417-1.305.76-1.605-2.665-.3-5.466-1.332-5.466-5.93 0-1.31.465-2.38 1.235-3.22-.135-.303-.54-1.523.105-3.176 0 0 1.005-.322 3.3 1.23.96-.267 1.98-.399 3-.405 1.02.006 2.04.138 3 .405 2.28-1.552 3.285-1.23 3.285-1.23.645 1.653.24 2.873.12 3.176.765.84 1.23 1.91 1.23 3.22 0 4.61-2.805 5.625-5.475 5.92.42.36.81 1.096.81 2.22 0 1.606-.015 2.896-.015 3.286 0 .315.21.69.825.57C20.565 22.092 24 17.592 24 12.297c0-6.627-5.373-12-12-12"/>
+            </svg>
+            GitHub
+          </a>
+
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <ul class="footer-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/terms">Terms of Service</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/cookies">Cookie Policy</a></li>
+        <li><a href="mailto:hello@julay.org">Contact</a></li>
+      </ul>
+      <p class="footer-copy">&copy; 2026 Julay. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

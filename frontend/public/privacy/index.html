@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Privacy Policy — Julay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #FFFFFF;
+      color: #1E293B;
+      font-size: 16px;
+      line-height: 1.7;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── Sticky Nav ── */
+    .nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #FFFFFF;
+      border-bottom: 1px solid #E2E8F0;
+      padding: 0 24px;
+    }
+
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+    }
+
+    .nav-logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #6366F1;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    .nav-links {
+      display: flex;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: #64748B;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: #6366F1;
+    }
+
+    /* ── Layout ── */
+    .page-wrapper {
+      min-height: calc(100vh - 56px - 72px);
+    }
+
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Hero / Title ── */
+    .page-header {
+      padding: 56px 0 40px;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    .page-header .eyebrow {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      color: #6366F1;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      margin-bottom: 12px;
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 700;
+      color: #1E293B;
+      letter-spacing: -0.03em;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+
+    .page-header .meta {
+      font-size: 0.875rem;
+      color: #64748B;
+    }
+
+    .page-header .meta span {
+      margin-right: 20px;
+    }
+
+    /* ── Content Body ── */
+    .content {
+      padding: 48px 0 72px;
+    }
+
+    /* Table of Contents */
+    .toc {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+      padding: 24px 28px;
+      margin-bottom: 48px;
+    }
+
+    .toc-title {
+      font-size: 0.8125rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.07em;
+      color: #64748B;
+      margin-bottom: 14px;
+    }
+
+    .toc ol {
+      padding-left: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px 32px;
+    }
+
+    .toc ol li {
+      font-size: 0.875rem;
+    }
+
+    .toc ol a {
+      color: #1E293B;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .toc ol a:hover {
+      color: #6366F1;
+    }
+
+    /* Sections */
+    .section {
+      margin-bottom: 52px;
+    }
+
+    .section h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #6366F1;
+      margin-bottom: 16px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #EEF2FF;
+      scroll-margin-top: 72px;
+    }
+
+    .section h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1E293B;
+      margin: 20px 0 10px;
+    }
+
+    .section p {
+      color: #1E293B;
+      margin-bottom: 14px;
+    }
+
+    .section p:last-child {
+      margin-bottom: 0;
+    }
+
+    .section ul,
+    .section ol {
+      padding-left: 22px;
+      margin-bottom: 14px;
+    }
+
+    .section li {
+      margin-bottom: 6px;
+      color: #1E293B;
+    }
+
+    .section a {
+      color: #6366F1;
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .section a:hover {
+      color: #4F46E5;
+    }
+
+    /* Info box */
+    .info-box {
+      background: #EEF2FF;
+      border-left: 4px solid #6366F1;
+      border-radius: 0 8px 8px 0;
+      padding: 16px 20px;
+      margin: 20px 0;
+    }
+
+    .info-box p {
+      font-size: 0.9375rem;
+      color: #3730A3;
+      margin-bottom: 0 !important;
+    }
+
+    /* Sub-processor table */
+    .table-wrapper {
+      overflow-x: auto;
+      margin: 20px 0;
+      border: 1px solid #E2E8F0;
+      border-radius: 10px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.9rem;
+    }
+
+    thead {
+      background: #F8FAFC;
+    }
+
+    thead th {
+      padding: 12px 16px;
+      font-weight: 600;
+      font-size: 0.8125rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: #64748B;
+      text-align: left;
+      border-bottom: 1px solid #E2E8F0;
+    }
+
+    tbody td {
+      padding: 12px 16px;
+      border-bottom: 1px solid #E2E8F0;
+      vertical-align: top;
+    }
+
+    tbody tr:last-child td {
+      border-bottom: none;
+    }
+
+    tbody tr:nth-child(even) {
+      background: #FAFBFC;
+    }
+
+    /* Rights chips */
+    .rights-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      gap: 12px;
+      margin: 16px 0;
+    }
+
+    .right-chip {
+      background: #F8FAFC;
+      border: 1px solid #E2E8F0;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .right-chip strong {
+      display: block;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #6366F1;
+      margin-bottom: 4px;
+    }
+
+    .right-chip span {
+      font-size: 0.8125rem;
+      color: #64748B;
+    }
+
+    /* ── Footer ── */
+    .footer {
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      padding: 20px 24px;
+    }
+
+    .footer-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+
+    .footer-copy {
+      font-size: 0.8125rem;
+      color: #64748B;
+    }
+
+    .footer-links {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.8125rem;
+      color: #64748B;
+      text-decoration: none;
+      transition: color 0.15s ease;
+    }
+
+    .footer-links a:hover {
+      color: #6366F1;
+    }
+
+    @media (max-width: 600px) {
+      .page-header h1 {
+        font-size: 1.5rem;
+      }
+
+      .toc ol {
+        grid-template-columns: 1fr;
+      }
+
+      .nav-links {
+        gap: 16px;
+      }
+
+      .rights-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <nav class="nav" role="navigation" aria-label="Main navigation">
+    <div class="nav-inner">
+      <a href="/" class="nav-logo">Julay</a>
+      <ul class="nav-links">
+        <li><a href="/terms">Terms</a></li>
+        <li><a href="/privacy" aria-current="page">Privacy</a></li>
+        <li><a href="/cookies">Cookies</a></li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── Page ── -->
+  <div class="page-wrapper">
+    <div class="container">
+
+      <!-- Header -->
+      <header class="page-header">
+        <p class="eyebrow">Legal</p>
+        <h1>Privacy Policy</h1>
+        <p class="meta">
+          <span>Effective Date: April 13, 2026</span>
+          <span>Version: 1.0</span>
+        </p>
+      </header>
+
+      <!-- Content -->
+      <main class="content" id="main-content">
+
+        <!-- Table of Contents -->
+        <nav class="toc" aria-label="Page sections">
+          <p class="toc-title">Contents</p>
+          <ol>
+            <li><a href="#introduction">Introduction</a></li>
+            <li><a href="#data-we-collect">Data We Collect</a></li>
+            <li><a href="#how-we-use-data">How We Use Data</a></li>
+            <li><a href="#ai-processing">AI Feature Processing</a></li>
+            <li><a href="#subprocessors">Sub-Processors</a></li>
+            <li><a href="#data-retention">Data Retention</a></li>
+            <li><a href="#user-rights">Your Rights</a></li>
+            <li><a href="#cookies">Cookies</a></li>
+            <li><a href="#data-breach">Data Breach</a></li>
+            <li><a href="#contact">Contact Us</a></li>
+            <li><a href="#governing-law">Governing Law</a></li>
+            <li><a href="#changes">Changes to This Policy</a></li>
+          </ol>
+        </nav>
+
+        <!-- 1. Introduction -->
+        <section class="section" id="introduction">
+          <h2>1. Introduction</h2>
+          <p>Julay ("Julay," "we," "us," or "our") operates an AI-powered project management platform accessible at <strong>julay.org</strong> (the "Service"). This Privacy Policy explains how we collect, use, disclose, and safeguard your personal information when you use our Service, and describes the rights you have with respect to that information.</p>
+          <p>We are committed to protecting your privacy and handling your data with transparency and care. This policy applies to all users of the Service, including visitors to our website, registered account holders, and members of teams that use Julay.</p>
+          <p>By accessing or using the Service, you acknowledge that you have read and understood this Privacy Policy. If you do not agree with our practices, please do not use the Service.</p>
+          <div class="info-box">
+            <p>This policy is written to comply with the General Data Protection Regulation (GDPR) for users in the European Economic Area, the California Consumer Privacy Act (CCPA) for California residents, and applicable United States federal and state privacy laws.</p>
+          </div>
+        </section>
+
+        <!-- 2. Data We Collect -->
+        <section class="section" id="data-we-collect">
+          <h2>2. Data We Collect</h2>
+          <p>We collect information you provide directly to us, information generated automatically through your use of the Service, and information from third-party sources.</p>
+
+          <h3>2.1 Information You Provide</h3>
+          <ul>
+            <li><strong>Account Information:</strong> When you register, we collect your full name, email address, and a hashed password. If you sign in via OAuth (Google, GitHub), we receive your name, email address, and profile picture URL from the identity provider.</li>
+            <li><strong>Profile Data:</strong> Optional information you add to your profile, such as a job title, organization name, or avatar image.</li>
+            <li><strong>Project and Workspace Data:</strong> Task names and descriptions, project titles, comments, file attachments, labels, due dates, assignee assignments, and any other content you create, upload, or share within the Service.</li>
+            <li><strong>Payment Information:</strong> If you subscribe to a paid plan, our payment processor (Stripe) collects your billing name, address, and payment card details. We do not store raw card numbers on our servers; we store only a Stripe customer ID and the last four digits of your card for display purposes.</li>
+            <li><strong>Communications:</strong> When you contact our support team or send us feedback, we collect the content of those communications along with any metadata you include (e.g., your email address, account ID).</li>
+          </ul>
+
+          <h3>2.2 Information Collected Automatically</h3>
+          <ul>
+            <li><strong>Usage Data:</strong> Pages visited, features used, actions taken, time and duration of sessions, referral URLs, and search queries within the Service.</li>
+            <li><strong>Device and Technical Data:</strong> IP address, browser type and version, operating system, device type (desktop/mobile), screen resolution, preferred language, and time zone.</li>
+            <li><strong>Log Data:</strong> Server logs, error logs, and performance logs that record interactions with our servers, including timestamps, request methods, response codes, and latency.</li>
+            <li><strong>Cookies and Similar Technologies:</strong> Session tokens, preference cookies, and analytics identifiers. See Section 8 and our <a href="/cookies">Cookie Policy</a> for details.</li>
+          </ul>
+
+          <h3>2.3 Information from Third Parties</h3>
+          <ul>
+            <li>If you connect third-party integrations (e.g., GitHub, Slack, Google Calendar) we receive only the data explicitly authorized by you through the relevant OAuth or API consent flow.</li>
+            <li>We may receive information from referral partners solely for the purpose of crediting your account with any applicable promotional offer.</li>
+          </ul>
+
+          <h3>2.4 Information We Do Not Collect</h3>
+          <p>We do not knowingly collect sensitive personal information such as government-issued ID numbers, financial account numbers (other than through Stripe), biometric data, health information, or precise geolocation data. We also do not knowingly collect personal information from children under the age of 16.</p>
+        </section>
+
+        <!-- 3. How We Use Data -->
+        <section class="section" id="how-we-use-data">
+          <h2>3. How We Use Data</h2>
+          <p>We use the information we collect for the following purposes:</p>
+
+          <h3>3.1 Providing and Improving the Service</h3>
+          <ul>
+            <li>Creating and managing your account and workspace.</li>
+            <li>Processing and fulfilling your subscription, including billing and invoicing.</li>
+            <li>Operating, maintaining, and improving the features and functionality of the Service.</li>
+            <li>Diagnosing technical problems and resolving bugs.</li>
+            <li>Conducting internal research and analytics to understand how users interact with the Service and to develop new features.</li>
+          </ul>
+
+          <h3>3.2 Communications</h3>
+          <ul>
+            <li>Sending transactional emails such as account verification, password resets, subscription confirmations, and payment receipts.</li>
+            <li>Sending product updates, feature announcements, and service-related notices. You may opt out of non-essential communications at any time via your account settings or by using the unsubscribe link in our emails.</li>
+            <li>Responding to your support requests and inquiries.</li>
+          </ul>
+
+          <h3>3.3 Security and Compliance</h3>
+          <ul>
+            <li>Detecting, investigating, and preventing fraudulent transactions, abuse, and other illegal activity.</li>
+            <li>Enforcing our Terms of Service and other applicable policies.</li>
+            <li>Complying with applicable legal obligations, court orders, and requests from governmental authorities.</li>
+            <li>Protecting the rights, property, and safety of Julay, our users, and the public.</li>
+          </ul>
+
+          <h3>3.4 Legal Bases for Processing (GDPR)</h3>
+          <p>For users in the EEA, we rely on the following legal bases under Article 6 GDPR:</p>
+          <ul>
+            <li><strong>Contract performance (Art. 6(1)(b)):</strong> Processing necessary to provide the Service under our Terms of Service — e.g., account management, billing.</li>
+            <li><strong>Legitimate interests (Art. 6(1)(f)):</strong> Processing for security, fraud prevention, product improvement, and analytics, where our interests are not overridden by your rights.</li>
+            <li><strong>Legal obligation (Art. 6(1)(c)):</strong> Processing required to comply with applicable laws and regulations.</li>
+            <li><strong>Consent (Art. 6(1)(a)):</strong> Where we rely on your explicit consent (e.g., optional marketing emails, non-essential cookies), which you may withdraw at any time.</li>
+          </ul>
+
+          <h3>3.5 Sale of Personal Information</h3>
+          <p>We do not sell, rent, or trade your personal information to third parties for their independent marketing or advertising purposes. We share data only as described in this policy (e.g., with sub-processors acting on our behalf).</p>
+        </section>
+
+        <!-- 4. AI Feature Processing -->
+        <section class="section" id="ai-processing">
+          <h2>4. AI Feature Processing</h2>
+          <p>Julay offers AI-powered features — including automated project generation, task suggestions, and intelligent summaries — powered by the Claude API provided by Anthropic, PBC ("Anthropic").</p>
+
+          <h3>4.1 How AI Features Work</h3>
+          <p>When you use an AI feature, the relevant content you provide (such as a project brief, task description, or prompt) is transmitted to Anthropic's API over an encrypted connection. Anthropic processes this content to generate a response, which is then returned to you within the Service.</p>
+
+          <h3>4.2 No Training on Your Data</h3>
+          <div class="info-box">
+            <p>Anthropic does not use content submitted to the Claude API through Julay to train or improve its AI models. Your project data and prompts are not retained by Anthropic for model training purposes. This is governed by our data processing agreement with Anthropic and Anthropic's API usage policies.</p>
+          </div>
+
+          <h3>4.3 Data Transmitted to Anthropic</h3>
+          <p>Only the specific content you submit when using an AI feature is sent to Anthropic. We do not send your entire project history, personal profile, billing information, or account metadata to Anthropic. Anthropic acts as a data processor on our behalf and is contractually required to protect your data.</p>
+
+          <h3>4.4 Opting Out</h3>
+          <p>AI features in Julay are optional and clearly labeled within the interface. If you do not wish your content to be processed by the Claude API, you may opt out by simply not using the AI-powered features. No personal data is sent to Anthropic unless you explicitly invoke an AI feature.</p>
+
+          <h3>4.5 Responsibility for AI Outputs</h3>
+          <p>AI-generated content is provided as a tool to assist your work. You remain responsible for reviewing and verifying any AI-generated outputs before acting on them. We do not warrant the accuracy, completeness, or fitness for purpose of any AI-generated content.</p>
+        </section>
+
+        <!-- 5. Sub-Processors -->
+        <section class="section" id="subprocessors">
+          <h2>5. Sub-Processors</h2>
+          <p>We use the following third-party service providers ("sub-processors") to operate the Service. Each sub-processor is bound by a data processing agreement that limits how they may use your data and requires them to implement appropriate security measures.</p>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Sub-Processor</th>
+                  <th>Purpose</th>
+                  <th>Data Processed</th>
+                  <th>Location</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Amazon Web Services (AWS)</strong></td>
+                  <td>Cloud infrastructure and hosting</td>
+                  <td>All Service data including account, project, and log data</td>
+                  <td>United States (primary), EU regions where applicable</td>
+                </tr>
+                <tr>
+                  <td><strong>MongoDB Atlas</strong> (MongoDB, Inc.)</td>
+                  <td>Database hosting and management</td>
+                  <td>Account data, project data, workspace content</td>
+                  <td>United States (AWS infrastructure)</td>
+                </tr>
+                <tr>
+                  <td><strong>Resend</strong> (Resend, Inc.)</td>
+                  <td>Transactional email delivery</td>
+                  <td>Email address, name, email content</td>
+                  <td>United States</td>
+                </tr>
+                <tr>
+                  <td><strong>Stripe</strong> (Stripe, Inc.)</td>
+                  <td>Payment processing and subscription management</td>
+                  <td>Billing name, address, payment card details, subscription status</td>
+                  <td>United States</td>
+                </tr>
+                <tr>
+                  <td><strong>Anthropic, PBC</strong></td>
+                  <td>AI feature processing (Claude API)</td>
+                  <td>Content submitted when using AI features only</td>
+                  <td>United States</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>We may update this list as we add or remove sub-processors. We will notify you of material changes to our sub-processor list as described in Section 12.</p>
+
+          <h3>5.1 International Data Transfers</h3>
+          <p>Our sub-processors are primarily located in the United States. If you are located in the EEA or United Kingdom, your personal data may be transferred to the United States. Where such transfers occur, we rely on appropriate safeguards including Standard Contractual Clauses (SCCs) approved by the European Commission, or the UK International Data Transfer Agreement (IDTA), as applicable.</p>
+        </section>
+
+        <!-- 6. Data Retention -->
+        <section class="section" id="data-retention">
+          <h2>6. Data Retention</h2>
+          <p>We retain your personal information only for as long as necessary to fulfill the purposes described in this policy, unless a longer retention period is required by law.</p>
+
+          <div class="table-wrapper">
+            <table>
+              <thead>
+                <tr>
+                  <th>Data Category</th>
+                  <th>Retention Period</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><strong>Account data</strong> (name, email, preferences)</td>
+                  <td>Retained until you delete your account. Upon deletion, we remove or anonymize your account data within 30 days, except where retention is required by law.</td>
+                </tr>
+                <tr>
+                  <td><strong>Project and workspace data</strong> (tasks, comments, files)</td>
+                  <td>Retained for 90 days after your account is deleted or your subscription expires, then permanently deleted. You may export your data before deletion using our data export tool.</td>
+                </tr>
+                <tr>
+                  <td><strong>Server and application logs</strong></td>
+                  <td>Retained for 30 days, then automatically purged.</td>
+                </tr>
+                <tr>
+                  <td><strong>Billing records</strong></td>
+                  <td>Retained for 7 years as required by applicable tax and accounting regulations.</td>
+                </tr>
+                <tr>
+                  <td><strong>Support communications</strong></td>
+                  <td>Retained for 2 years from the date of last communication.</td>
+                </tr>
+                <tr>
+                  <td><strong>AI feature input data</strong> (transmitted to Anthropic)</td>
+                  <td>Not retained by Anthropic for training. Retained by Julay within your project data in accordance with the project data retention schedule above.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p>Following the applicable retention period, your data is either securely deleted or irreversibly anonymized so that it can no longer be associated with you.</p>
+        </section>
+
+        <!-- 7. User Rights -->
+        <section class="section" id="user-rights">
+          <h2>7. Your Rights</h2>
+          <p>Depending on your location, you have specific rights regarding your personal information. We honor these rights for all users regardless of jurisdiction to the extent practicable.</p>
+
+          <h3>7.1 Rights Under GDPR (EEA and UK Users)</h3>
+          <div class="rights-grid">
+            <div class="right-chip">
+              <strong>Right of Access</strong>
+              <span>Request a copy of the personal data we hold about you (Art. 15 GDPR).</span>
+            </div>
+            <div class="right-chip">
+              <strong>Right to Rectification</strong>
+              <span>Request correction of inaccurate or incomplete personal data (Art. 16 GDPR).</span>
+            </div>
+            <div class="right-chip">
+              <strong>Right to Erasure</strong>
+              <span>Request deletion of your personal data ("right to be forgotten") (Art. 17 GDPR).</span>
+            </div>
+            <div class="right-chip">
+              <strong>Right to Portability</strong>
+              <span>Receive your data in a structured, machine-readable format (Art. 20 GDPR).</span>
+            </div>
+            <div class="right-chip">
+              <strong>Right to Restriction</strong>
+              <span>Request that we limit how we process your data in certain circumstances (Art. 18 GDPR).</span>
+            </div>
+            <div class="right-chip">
+              <strong>Right to Object</strong>
+              <span>Object to processing based on legitimate interests, including for direct marketing (Art. 21 GDPR).</span>
+            </div>
+          </div>
+          <p>You also have the right to withdraw consent at any time where we rely on consent as the legal basis for processing. Withdrawal does not affect the lawfulness of processing prior to withdrawal.</p>
+          <p>If you believe we have not adequately addressed a concern, you have the right to lodge a complaint with your local data protection authority (e.g., the ICO in the UK, or the relevant supervisory authority in your EEA member state).</p>
+
+          <h3>7.2 Rights Under CCPA (California Residents)</h3>
+          <p>If you are a California resident, you have the following rights under the California Consumer Privacy Act (CCPA) as amended by the California Privacy Rights Act (CPRA):</p>
+          <ul>
+            <li><strong>Right to Know:</strong> You may request that we disclose the categories and specific pieces of personal information we have collected about you, the sources of collection, the business or commercial purposes for collection, and the categories of third parties with whom we share it.</li>
+            <li><strong>Right to Delete:</strong> You may request that we delete personal information we have collected about you, subject to certain exceptions.</li>
+            <li><strong>Right to Correct:</strong> You may request that we correct inaccurate personal information we maintain about you.</li>
+            <li><strong>Right to Opt-Out of Sale or Sharing:</strong> We do not sell or share personal information for cross-context behavioral advertising purposes. You do not need to opt out.</li>
+            <li><strong>Right to Non-Discrimination:</strong> We will not discriminate against you for exercising any of your CCPA rights.</li>
+            <li><strong>Right to Limit Use of Sensitive Personal Information:</strong> We do not use sensitive personal information for purposes beyond those specified in CPRA.</li>
+          </ul>
+
+          <h3>7.3 How to Exercise Your Rights</h3>
+          <p>You may exercise many rights directly through your account settings, including downloading your data, updating your profile, or deleting your account. For requests that cannot be fulfilled through your account, please contact us at <a href="mailto:privacy@julay.org">privacy@julay.org</a>. We will respond within 30 days (or within the timeframe required by applicable law) and may ask you to verify your identity before processing your request.</p>
+        </section>
+
+        <!-- 8. Cookies -->
+        <section class="section" id="cookies">
+          <h2>8. Cookies and Tracking Technologies</h2>
+          <p>We use cookies and similar tracking technologies to operate and improve the Service. A "cookie" is a small text file stored on your device by your browser at the request of a website.</p>
+          <p>We use the following types of cookies:</p>
+          <ul>
+            <li><strong>Strictly Necessary Cookies:</strong> Required for the Service to function (e.g., session authentication tokens). These cannot be disabled.</li>
+            <li><strong>Functional Cookies:</strong> Remember your preferences (e.g., display settings, language) to enhance your experience.</li>
+            <li><strong>Analytics Cookies:</strong> Help us understand how users interact with the Service so we can improve it. We use these only with your consent.</li>
+          </ul>
+          <p>You can manage your cookie preferences at any time through your browser settings or our cookie consent interface. Please note that disabling certain cookies may affect the functionality of the Service.</p>
+          <p>For full details on the cookies we use, their purpose, and how to control them, please see our <a href="/cookies">Cookie Policy</a>.</p>
+        </section>
+
+        <!-- 9. Data Breach -->
+        <section class="section" id="data-breach">
+          <h2>9. Data Breach Notification</h2>
+          <p>We maintain technical and organizational security measures designed to protect your personal information against unauthorized access, loss, alteration, or destruction. These measures include encryption of data in transit (TLS) and at rest, access controls, regular security assessments, and audit logging.</p>
+          <p>Despite these measures, no system is completely secure. In the event of a personal data breach that is likely to result in a risk to your rights and freedoms, we will:</p>
+          <ul>
+            <li>Notify the relevant supervisory authority (e.g., the applicable data protection authority) <strong>within 72 hours</strong> of becoming aware of the breach, as required by Article 33 of the GDPR.</li>
+            <li>Notify affected individuals without undue delay if the breach is likely to result in a <strong>high risk</strong> to their rights and freedoms, as required by Article 34 of the GDPR.</li>
+            <li>Document all breaches internally, including those that do not require external notification.</li>
+          </ul>
+          <p>Breach notifications to affected users will be sent to the email address associated with your account and/or posted as a notice within the Service. We will include information about the nature of the breach, the likely consequences, and the measures taken or proposed to address it.</p>
+        </section>
+
+        <!-- 10. Contact -->
+        <section class="section" id="contact">
+          <h2>10. Contact Us</h2>
+          <p>If you have questions, concerns, or requests regarding this Privacy Policy or your personal data, please contact us:</p>
+          <ul>
+            <li><strong>Email:</strong> <a href="mailto:privacy@julay.org">privacy@julay.org</a></li>
+            <li><strong>Support:</strong> <a href="mailto:support@julay.org">support@julay.org</a></li>
+            <li><strong>Website:</strong> <a href="/">julay.org</a></li>
+          </ul>
+          <p>We aim to respond to all privacy-related inquiries within <strong>5 business days</strong>. For formal data subject access requests, we will respond within the timeframe required by applicable law (30 days under GDPR; 45 days under CCPA).</p>
+        </section>
+
+        <!-- 11. Governing Law -->
+        <section class="section" id="governing-law">
+          <h2>11. Governing Law</h2>
+          <p>This Privacy Policy and any disputes relating to it are governed by the laws of the <strong>State of Delaware, United States</strong>, without regard to conflict of law principles, except to the extent that applicable mandatory privacy laws in your jurisdiction (including the GDPR or CCPA) provide broader protections.</p>
+        </section>
+
+        <!-- 12. Changes -->
+        <section class="section" id="changes">
+          <h2>12. Changes to This Policy</h2>
+          <p>We may update this Privacy Policy from time to time to reflect changes in our practices, technology, legal requirements, or for other operational reasons. When we make material changes, we will:</p>
+          <ul>
+            <li>Update the "Effective Date" at the top of this page.</li>
+            <li>Send a notification to the email address associated with your account at least <strong>30 days before</strong> changes take effect, where practicable.</li>
+            <li>Display a prominent notice within the Service.</li>
+          </ul>
+          <p>We encourage you to review this policy periodically. Your continued use of the Service after the effective date of a revised policy constitutes your acceptance of the changes to the extent permitted by law. If you do not agree with the revised policy, you may delete your account before the changes take effect.</p>
+          <p>Prior versions of this policy are available upon request by contacting <a href="mailto:privacy@julay.org">privacy@julay.org</a>.</p>
+        </section>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer class="footer">
+    <div class="footer-inner">
+      <p class="footer-copy">&copy; 2026 Julay. All rights reserved.</p>
+      <ul class="footer-links">
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/terms">Terms</a></li>
+        <li><a href="/cookies">Cookies</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </div>
+  </footer>
+
+</body>
+</html>

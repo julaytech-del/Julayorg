@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Maintenance | Julay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0F172A;
+      color: #F1F5F9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    nav {
+      padding: 20px 40px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #6366F1;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .icon {
+      font-size: 5rem;
+      line-height: 1;
+      margin-bottom: 28px;
+      display: block;
+      animation: gentle-spin 6s linear infinite;
+    }
+
+    @keyframes gentle-spin {
+      0%   { transform: rotate(0deg);   }
+      20%  { transform: rotate(20deg);  }
+      40%  { transform: rotate(0deg);   }
+      60%  { transform: rotate(-20deg); }
+      80%  { transform: rotate(0deg);   }
+      100% { transform: rotate(0deg);   }
+    }
+
+    .divider {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, #6366F1, #818CF8);
+      border-radius: 2px;
+      margin: 0 auto 28px;
+    }
+
+    .title {
+      font-size: 1.875rem;
+      font-weight: 800;
+      color: #F1F5F9;
+      letter-spacing: -0.03em;
+      margin-bottom: 14px;
+    }
+
+    .message {
+      font-size: 1rem;
+      color: #94A3B8;
+      line-height: 1.65;
+      margin-bottom: 32px;
+    }
+
+    .status-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: #818CF8;
+      text-decoration: none;
+      padding: 10px 20px;
+      border-radius: 8px;
+      border: 1px solid rgba(99, 102, 241, 0.3);
+      background-color: rgba(99, 102, 241, 0.08);
+      transition: background-color 0.15s ease, border-color 0.15s ease, transform 0.15s ease;
+    }
+
+    .status-link:hover {
+      background-color: rgba(99, 102, 241, 0.16);
+      border-color: rgba(99, 102, 241, 0.5);
+      transform: translateY(-1px);
+    }
+
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: #34D399;
+      display: inline-block;
+      animation: pulse 2s ease-in-out infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1;   transform: scale(1);    }
+      50%       { opacity: 0.5; transform: scale(0.85); }
+    }
+
+    footer {
+      padding: 20px 40px;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: #475569;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">Julay</a>
+  </nav>
+
+  <main>
+    <div class="container">
+      <span class="icon" role="img" aria-label="Wrench and gear">&#x1F6E0;&#xFE0F;</span>
+      <div class="divider"></div>
+      <h1 class="title">We'll be right back</h1>
+      <p class="message">
+        Julay is undergoing scheduled maintenance.<br />
+        Usually takes less than 30 minutes. Thanks for your patience.
+      </p>
+      <a href="https://status.julay.org" target="_blank" rel="noopener noreferrer" class="status-link">
+        <span class="status-dot"></span>
+        Check status.julay.org
+      </a>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Julay. All rights reserved.
+  </footer>
+</body>
+</html>

@@ -62,9 +62,7 @@ export default function AcceptInvitePage() {
 
         {/* Logo */}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 4 }}>
-          <Box sx={{ width: 36, height: 36, borderRadius: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.1rem' }}>J</Typography>
-          </Box>
+          <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 36, height: 36, objectFit: 'contain' }} />
           <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.1rem' }}>Julay</Typography>
         </Box>
 

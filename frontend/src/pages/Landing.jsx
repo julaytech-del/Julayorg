@@ -4,6 +4,7 @@ import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, Play
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx';
+import { trackEvent } from '../components/common/Analytics.jsx';
 
 /* ─── Gradient orb ─── */
 const Orb = ({ sx }) => <Box sx={{ position: 'absolute', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none', ...sx }} />;
@@ -236,13 +237,11 @@ export default function Landing() {
       </Drawer>
 
       {/* ─── NAV ─── */}
-      <Box component="nav" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
+      <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-            <Box sx={{ width: 32, height: 32, borderRadius: 1.5, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1rem' }}>J</Typography>
-            </Box>
-            <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.1rem', letterSpacing: '-0.02em' }}>Julay</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+            <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 38, height: 38, objectFit: 'contain' }} />
+            <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.25rem', letterSpacing: '-0.02em', lineHeight: 1 }}>Julay</Typography>
           </Box>
 
           {/* Desktop nav links */}
@@ -295,7 +294,7 @@ export default function Landing() {
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', mb: 3 }}>
-              <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
+              <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large" aria-label="Start for free — no credit card required" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
                 {t('landing.hero.cta1')}
               </Button>
               <Button onClick={scrollToDemo} variant="outlined" size="large" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, px: 3.5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' } }}>
@@ -676,9 +675,7 @@ export default function Landing() {
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, mb: 2 }}>
-                <Box sx={{ width: 28, height: 28, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '0.9rem' }}>J</Typography>
-                </Box>
+                <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 28, height: 28, objectFit: 'contain' }} />
                 <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1rem' }}>Julay</Typography>
               </Box>
               <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>

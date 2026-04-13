@@ -3,25 +3,47 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="robots" content="index, follow" />
+
     <title>Julay — AI Work Operating System</title>
-    <meta name="description" content="Julay — AI-powered project management. Plan smarter, work faster, deliver on time." />
-    <meta name="keywords" content="project management, AI, team collaboration, task management, Kanban, Gantt chart" />
+    <meta name="description" content="Julay uses AI to plan projects, track progress, and keep your team aligned — automatically. Start free, no credit card required." />
+    <meta name="keywords" content="AI project management, task management, Kanban, Gantt chart, sprint board, team collaboration, work OS" />
     <meta name="author" content="Julay" />
-    <meta property="og:title" content="Julay — AI Work Operating System" />
-    <meta property="og:description" content="The smartest project management platform. AI plans your projects, tracks progress, and keeps your team aligned." />
+
+    <!-- Canonical -->
+    <link rel="canonical" href="https://julay.org/" />
+
+    <!-- Open Graph -->
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://julay.org" />
+    <meta property="og:site_name" content="Julay" />
+    <meta property="og:title" content="Julay — AI Work Operating System" />
+    <meta property="og:description" content="AI-powered project management. Plan smarter, work faster, deliver on time." />
+    <meta property="og:url" content="https://julay.org/" />
     <meta property="og:image" content="https://julay.org/og-image.png" />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content="Julay — AI Work Operating System" />
+
+    <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@julay_app" />
     <meta name="twitter:title" content="Julay — AI Work Operating System" />
-    <meta name="twitter:description" content="AI-powered project management for modern teams" />
+    <meta name="twitter:description" content="AI-powered project management. Plan smarter, work faster, deliver on time." />
     <meta name="twitter:image" content="https://julay.org/og-image.png" />
+
+    <!-- PWA / Icons -->
     <meta name="theme-color" content="#6366F1" />
     <link rel="manifest" href="/manifest.json" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" href="/favicon.png" />
+
+    <!-- Fonts (preconnect first, then preload stylesheet) -->
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" onload="this.onload=null;this.rel='stylesheet'" />
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" /></noscript>
+
+    <!-- JSON-LD: SoftwareApplication -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -50,6 +72,78 @@
       ]
     }
     </script>
+
+    <!-- JSON-LD: Organization -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Organization",
+      "name": "Julay",
+      "url": "https://julay.org",
+      "logo": "https://julay.org/logo.png",
+      "sameAs": [
+        "https://twitter.com/julay_app",
+        "https://linkedin.com/company/julay",
+        "https://github.com/julaytech-del"
+      ],
+      "contactPoint": [
+        {
+          "@type": "ContactPoint",
+          "email": "hello@julay.org",
+          "contactType": "customer support"
+        }
+      ]
+    }
+    </script>
+
+    <!-- JSON-LD: FAQPage -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "Is Julay free to use?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Julay has a free plan with up to 3 projects and 5 team members. No credit card required." }
+        },
+        {
+          "@type": "Question",
+          "name": "How does the AI project generation work?",
+          "acceptedAnswer": { "@type": "Answer", "text": "You describe your goal in plain language. Julay's AI creates a full project with tasks, milestones, priorities, and suggested assignments in seconds." }
+        },
+        {
+          "@type": "Question",
+          "name": "Is my data used to train AI models?",
+          "acceptedAnswer": { "@type": "Answer", "text": "No. Your project data and inputs are never used to train AI models. See our Privacy Policy for full details." }
+        },
+        {
+          "@type": "Question",
+          "name": "Can I cancel my subscription at any time?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. You can cancel anytime from your account settings. Your plan remains active until the end of the billing period." }
+        },
+        {
+          "@type": "Question",
+          "name": "Does Julay offer a mobile app?",
+          "acceptedAnswer": { "@type": "Answer", "text": "Yes. Julay is available as a Progressive Web App (PWA) and native iOS/Android apps are in development." }
+        }
+      ]
+    }
+    </script>
+    <!-- Plausible Analytics — always present for crawler detection.
+         Tracking is blocked by plausible_ignore until user gives consent (GDPR). -->
+    <script>
+      try {
+        var _c = localStorage.getItem('julay_consent_v1');
+        if (!_c || JSON.parse(_c).analytics !== true) {
+          localStorage.setItem('plausible_ignore', 'true');
+        } else {
+          localStorage.removeItem('plausible_ignore');
+        }
+      } catch(e) {}
+    </script>
+    <script>window.plausible=window.plausible||function(){(plausible.q=plausible.q||[]).push(arguments)},plausible.init=plausible.init||function(i){plausible.o=i||{}};plausible.init()</script>
+    <script async src="https://plausible.io/js/pa-VDgEApjitSLmk--ZHpSE2.js"></script>
   </head>
   <body>
     <div id="root">
@@ -75,11 +169,14 @@
           <div class="ns-features">
             <div class="ns-feature"><h3>AI Project Generation</h3><p>Describe your goal, AI creates a full project with tasks, milestones, and assignments in seconds.</p></div>
             <div class="ns-feature"><h3>Kanban + Gantt + Sprints</h3><p>Every view your team needs — boards, timelines, sprint boards, workload charts.</p></div>
-            <div class="ns-feature"><h3>Automations & Webhooks</h3><p>Set rules that work while you sleep. Auto-assign, notify, and update without manual effort.</p></div>
+            <div class="ns-feature"><h3>Automations &amp; Webhooks</h3><p>Set rules that work while you sleep. Auto-assign, notify, and update without manual effort.</p></div>
             <div class="ns-feature"><h3>Team Workload</h3><p>See who is overloaded and who has capacity. Balance work across your entire team visually.</p></div>
             <div class="ns-feature"><h3>Custom Dashboards</h3><p>Build your command center with drag-and-drop widgets — charts, KPIs, recent tasks.</p></div>
             <div class="ns-feature"><h3>Free to Start</h3><p>Full-featured free plan. Upgrade when your team grows. No contracts, cancel anytime.</p></div>
           </div>
+          <p style="text-align:center;margin-top:40px;color:#64748B;font-size:0.875rem;">
+            <a href="/privacy">Privacy Policy</a> · <a href="/terms">Terms of Service</a> · <a href="/contact">Contact</a>
+          </p>
         </div>
       </noscript>
     </div>

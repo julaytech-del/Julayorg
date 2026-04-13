@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>500 — Server Error | Julay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html, body {
+      height: 100%;
+    }
+
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #0F172A;
+      color: #F1F5F9;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    nav {
+      padding: 20px 40px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .logo {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #6366F1;
+      text-decoration: none;
+      letter-spacing: -0.02em;
+    }
+
+    main {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px;
+    }
+
+    .container {
+      text-align: center;
+      max-width: 520px;
+      width: 100%;
+    }
+
+    .error-code {
+      font-size: clamp(7rem, 20vw, 10rem);
+      font-weight: 800;
+      color: #6366F1;
+      line-height: 1;
+      letter-spacing: -0.04em;
+      margin-bottom: 16px;
+    }
+
+    .divider {
+      width: 48px;
+      height: 3px;
+      background: linear-gradient(90deg, #6366F1, #818CF8);
+      border-radius: 2px;
+      margin: 0 auto 28px;
+    }
+
+    .subtitle {
+      font-size: 1.75rem;
+      font-weight: 700;
+      color: #F1F5F9;
+      margin-bottom: 12px;
+      letter-spacing: -0.02em;
+    }
+
+    .message {
+      font-size: 1rem;
+      color: #94A3B8;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .support-line {
+      font-size: 0.9375rem;
+      color: #64748B;
+      margin-bottom: 40px;
+    }
+
+    .support-line a {
+      color: #818CF8;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 0.15s ease;
+    }
+
+    .support-line a:hover {
+      color: #A5B4FC;
+      text-decoration: underline;
+    }
+
+    .actions {
+      display: flex;
+      justify-content: center;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 12px 28px;
+      border-radius: 8px;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.9375rem;
+      font-weight: 600;
+      text-decoration: none;
+      background-color: #6366F1;
+      color: #ffffff;
+      transition: opacity 0.15s ease, transform 0.15s ease;
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn:hover {
+      opacity: 0.88;
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: translateY(0);
+    }
+
+    footer {
+      padding: 20px 40px;
+      text-align: center;
+      font-size: 0.8125rem;
+      color: #475569;
+      border-top: 1px solid rgba(255, 255, 255, 0.06);
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="/" class="logo">Julay</a>
+  </nav>
+
+  <main>
+    <div class="container">
+      <div class="error-code">500</div>
+      <div class="divider"></div>
+      <h1 class="subtitle">Something went wrong</h1>
+      <p class="message">
+        Our team has been notified. Please try again in a moment.
+      </p>
+      <p class="support-line">
+        Need immediate help? Reach us at&nbsp;<a href="mailto:support@julay.org">support@julay.org</a>
+      </p>
+      <div class="actions">
+        <a href="/" class="btn">Go Home</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    &copy; 2026 Julay. All rights reserved.
+  </footer>
+</body>
+</html>

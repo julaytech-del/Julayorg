@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, follow" />
+  <title>Cookie Policy — Julay</title>
+  <meta name="description" content="Learn how Julay uses cookies and similar technologies, and how you can control them." />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* ── Design tokens ── */
+    :root {
+      --bg:        #FFFFFF;
+      --text:      #1E293B;
+      --secondary: #64748B;
+      --border:    #E2E8F0;
+      --primary:   #6366F1;
+      --footer-bg: #F8FAFC;
+      --radius:    8px;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: 'Inter', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      font-size: 16px;
+      line-height: 1.7;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── Container ── */
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      width: 100%;
+    }
+
+    /* ── Sticky nav ── */
+    .site-nav {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .nav-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      height: 56px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .nav-logo {
+      font-weight: 800;
+      font-size: 1.2rem;
+      color: var(--primary);
+      text-decoration: none;
+      letter-spacing: -0.5px;
+      flex-shrink: 0;
+    }
+
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      list-style: none;
+      flex-wrap: wrap;
+    }
+
+    .nav-links a {
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .nav-links a:hover,
+    .nav-links a[aria-current="page"] {
+      color: var(--primary);
+    }
+
+    /* ── Main content ── */
+    main {
+      flex: 1;
+      padding: 56px 0 72px;
+    }
+
+    .page-header {
+      margin-bottom: 48px;
+      padding-bottom: 32px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .page-header h1 {
+      font-size: 2rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: var(--text);
+      margin-bottom: 12px;
+    }
+
+    .page-header .meta {
+      font-size: 0.9rem;
+      color: var(--secondary);
+    }
+
+    .page-header .meta strong {
+      color: var(--text);
+      font-weight: 600;
+    }
+
+    /* ── Content typography ── */
+    .content section {
+      margin-bottom: 52px;
+    }
+
+    .content h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 16px;
+      padding-bottom: 8px;
+      border-bottom: 2px solid var(--primary);
+      display: inline-block;
+    }
+
+    .content h3 {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      margin: 20px 0 8px;
+    }
+
+    .content p {
+      color: var(--secondary);
+      margin-bottom: 14px;
+    }
+
+    .content p:last-child {
+      margin-bottom: 0;
+    }
+
+    .content a {
+      color: var(--primary);
+      text-decoration: underline;
+      text-underline-offset: 2px;
+    }
+
+    .content a:hover {
+      opacity: 0.8;
+    }
+
+    .content ul {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 14px;
+    }
+
+    .content ul li {
+      color: var(--secondary);
+      padding-left: 20px;
+      position: relative;
+      margin-bottom: 6px;
+    }
+
+    .content ul li::before {
+      content: '•';
+      position: absolute;
+      left: 0;
+      color: var(--primary);
+      font-weight: 700;
+    }
+
+    /* ── Cookie table ── */
+    .cookie-table-wrapper {
+      overflow-x: auto;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      margin-bottom: 28px;
+    }
+
+    .cookie-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.875rem;
+    }
+
+    .cookie-table thead {
+      background: #F1F5F9;
+    }
+
+    .cookie-table th {
+      text-align: left;
+      padding: 12px 16px;
+      font-weight: 600;
+      color: var(--text);
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      white-space: nowrap;
+    }
+
+    .cookie-table td {
+      padding: 12px 16px;
+      color: var(--secondary);
+      border-top: 1px solid var(--border);
+      vertical-align: top;
+    }
+
+    .cookie-table tr:hover td {
+      background: #FAFBFD;
+    }
+
+    .cookie-table code {
+      font-family: 'SF Mono', 'Fira Code', 'Cascadia Code', monospace;
+      font-size: 0.8rem;
+      background: #F1F5F9;
+      color: var(--primary);
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    /* ── Category badge ── */
+    .badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      letter-spacing: 0.02em;
+    }
+
+    .badge-necessary { background: #DCFCE7; color: #166534; }
+    .badge-functional { background: #DBEAFE; color: #1D4ED8; }
+    .badge-analytics  { background: #FEF3C7; color: #92400E; }
+    .badge-marketing  { background: #FCE7F3; color: #9D174D; }
+
+    /* ── No-cookie notice ── */
+    .no-cookie-notice {
+      background: #F0FDF4;
+      border: 1px solid #BBF7D0;
+      border-radius: var(--radius);
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      margin-bottom: 14px;
+      font-size: 0.9rem;
+      color: #166534;
+    }
+
+    .no-cookie-notice .icon {
+      font-size: 1rem;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+
+    /* ── Browser instructions ── */
+    .browser-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      margin-top: 8px;
+    }
+
+    .browser-card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .browser-card h4 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .browser-card p {
+      font-size: 0.82rem;
+      color: var(--secondary);
+      margin: 0;
+    }
+
+    .browser-card a {
+      color: var(--primary);
+      font-size: 0.82rem;
+      font-weight: 500;
+      display: inline-block;
+      margin-top: 8px;
+      text-decoration: none;
+    }
+
+    .browser-card a:hover { text-decoration: underline; }
+
+    /* ── Consent banner note ── */
+    .info-box {
+      background: #EEF2FF;
+      border-left: 4px solid var(--primary);
+      border-radius: 0 var(--radius) var(--radius) 0;
+      padding: 16px 20px;
+      margin-bottom: 16px;
+    }
+
+    .info-box p {
+      color: #3730A3;
+      font-size: 0.9rem;
+      margin: 0;
+    }
+
+    /* ── Footer ── */
+    .site-footer {
+      background: var(--footer-bg);
+      border-top: 1px solid var(--border);
+      padding: 36px 0;
+    }
+
+    .footer-inner {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 0 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .footer-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 16px;
+      list-style: none;
+    }
+
+    .footer-links a {
+      font-size: 0.875rem;
+      color: var(--secondary);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+
+    .footer-links a:hover { color: var(--primary); }
+
+    .footer-copy {
+      font-size: 0.8rem;
+      color: var(--secondary);
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 600px) {
+      .page-header h1 { font-size: 1.6rem; }
+      .browser-grid { grid-template-columns: 1fr 1fr; }
+    }
+
+    @media (max-width: 400px) {
+      .browser-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Navigation ── -->
+  <header class="site-nav" role="banner">
+    <nav class="nav-inner" aria-label="Primary navigation">
+      <a href="/" class="nav-logo" aria-label="Julay home">Julay</a>
+      <ul class="nav-links">
+        <li><a href="/terms">Terms</a></li>
+        <li><a href="/privacy">Privacy</a></li>
+        <li><a href="/cookies" aria-current="page">Cookies</a></li>
+        <li><a href="/about">About</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- ── Main ── -->
+  <main id="main-content">
+    <div class="container">
+
+      <div class="page-header">
+        <h1>Cookie Policy</h1>
+        <p class="meta">
+          <strong>Effective date:</strong> 13 April 2026 &nbsp;·&nbsp;
+          <strong>Last updated:</strong> 13 April 2026
+        </p>
+      </div>
+
+      <div class="content">
+
+        <!-- 1. What are cookies -->
+        <section id="what-are-cookies">
+          <h2>What are cookies?</h2>
+          <p>
+            Cookies are small text files that a website places on your device — computer, phone, or tablet —
+            when you visit. They are widely used to make websites work efficiently, remember your preferences,
+            and provide information to website owners.
+          </p>
+          <p>
+            Cookies set by the website you are visiting are called <strong>first-party cookies</strong>.
+            Cookies set by parties other than the website owner are called <strong>third-party cookies</strong>.
+            Julay uses first-party cookies only; we do not embed third-party advertising or tracking scripts.
+          </p>
+          <p>
+            Cookies may be <strong>session cookies</strong> (deleted when you close your browser) or
+            <strong>persistent cookies</strong> (stored for a defined period or until you delete them).
+          </p>
+        </section>
+
+        <!-- 2. Cookies we use -->
+        <section id="cookies-we-use">
+          <h2>Cookies we use</h2>
+          <p>
+            The table below lists every cookie Julay sets, grouped by purpose category. We keep this list
+            up to date whenever we add or remove cookies.
+          </p>
+
+          <!-- Strictly Necessary -->
+          <h3>
+            <span class="badge badge-necessary">Strictly Necessary</span>
+          </h3>
+          <p>
+            These cookies are required for the service to function. You cannot opt out of them while using
+            Julay. They do not store any personally identifiable information beyond what is needed for
+            authentication and security.
+          </p>
+          <div class="cookie-table-wrapper">
+            <table class="cookie-table" aria-label="Strictly necessary cookies">
+              <thead>
+                <tr>
+                  <th>Cookie name</th>
+                  <th>Purpose</th>
+                  <th>Duration</th>
+                  <th>Party</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>julay_session</code></td>
+                  <td>Maintains your authenticated session across page loads.</td>
+                  <td>Session</td>
+                  <td>1st party</td>
+                </tr>
+                <tr>
+                  <td><code>julay_auth</code></td>
+                  <td>Stores a secure authentication token so you stay logged in between browser sessions.</td>
+                  <td>30 days</td>
+                  <td>1st party</td>
+                </tr>
+                <tr>
+                  <td><code>julay_csrf</code></td>
+                  <td>A cross-site request forgery (CSRF) token that helps protect form submissions from malicious attacks.</td>
+                  <td>Session</td>
+                  <td>1st party</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Functional -->
+          <h3>
+            <span class="badge badge-functional">Functional</span>
+          </h3>
+          <p>
+            Functional cookies remember choices you make to personalise your experience. They are not
+            strictly necessary, but disabling them may affect how the app looks and behaves.
+          </p>
+          <div class="cookie-table-wrapper">
+            <table class="cookie-table" aria-label="Functional cookies">
+              <thead>
+                <tr>
+                  <th>Cookie name</th>
+                  <th>Purpose</th>
+                  <th>Duration</th>
+                  <th>Party</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>julay_lang</code></td>
+                  <td>Saves your language preference so you are presented with the correct locale on each visit.</td>
+                  <td>1 year</td>
+                  <td>1st party</td>
+                </tr>
+                <tr>
+                  <td><code>julay_theme</code></td>
+                  <td>Remembers your UI theme selection (light, dark, or system default).</td>
+                  <td>1 year</td>
+                  <td>1st party</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Analytics -->
+          <h3>
+            <span class="badge badge-analytics">Analytics</span>
+          </h3>
+          <p>
+            We use <strong>Plausible Analytics</strong> to understand how visitors interact with our
+            marketing site. Plausible is a privacy-first, EU-hosted analytics provider.
+          </p>
+          <div class="no-cookie-notice">
+            <span class="icon">&#10003;</span>
+            <span>
+              <strong>Plausible Analytics does not use cookies.</strong> It collects fully anonymised,
+              aggregate statistics without setting any cookies on your device and without processing any
+              personally identifiable information.
+            </span>
+          </div>
+          <p>
+            The one analytics-adjacent cookie we set is your consent record:
+          </p>
+          <div class="cookie-table-wrapper">
+            <table class="cookie-table" aria-label="Analytics cookies">
+              <thead>
+                <tr>
+                  <th>Cookie name</th>
+                  <th>Purpose</th>
+                  <th>Duration</th>
+                  <th>Party</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><code>julay_consent_v1</code></td>
+                  <td>Records your cookie consent choices so we do not show the consent banner on every page view.</td>
+                  <td>1 year</td>
+                  <td>1st party</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Marketing -->
+          <h3>
+            <span class="badge badge-marketing">Marketing</span>
+          </h3>
+          <p>
+            We currently use <strong>no marketing or advertising cookies</strong>. If this changes in the
+            future, we will update this policy and, where required by law, request your consent before
+            setting any such cookies.
+          </p>
+        </section>
+
+        <!-- 3. Managing cookies -->
+        <section id="managing-cookies">
+          <h2>How to manage cookies</h2>
+          <p>
+            You can control and delete cookies through your browser settings. Please note that
+            removing strictly necessary cookies will prevent you from using Julay — you will need to
+            sign in again and some features may not work correctly.
+          </p>
+
+          <div class="browser-grid">
+            <div class="browser-card">
+              <h4>Google Chrome</h4>
+              <p>Settings &rarr; Privacy and security &rarr; Cookies and other site data.</p>
+              <a href="https://support.google.com/chrome/answer/95647" target="_blank" rel="noopener noreferrer">
+                Chrome help &rarr;
+              </a>
+            </div>
+            <div class="browser-card">
+              <h4>Mozilla Firefox</h4>
+              <p>Settings &rarr; Privacy &amp; Security &rarr; Cookies and Site Data.</p>
+              <a href="https://support.mozilla.org/en-US/kb/clear-cookies-and-site-data-firefox" target="_blank" rel="noopener noreferrer">
+                Firefox help &rarr;
+              </a>
+            </div>
+            <div class="browser-card">
+              <h4>Apple Safari</h4>
+              <p>Preferences &rarr; Privacy &rarr; Manage Website Data.</p>
+              <a href="https://support.apple.com/en-gb/guide/safari/sfri11471/mac" target="_blank" rel="noopener noreferrer">
+                Safari help &rarr;
+              </a>
+            </div>
+            <div class="browser-card">
+              <h4>Microsoft Edge</h4>
+              <p>Settings &rarr; Cookies and site permissions &rarr; Manage and delete cookies.</p>
+              <a href="https://support.microsoft.com/en-us/microsoft-edge/delete-cookies-in-microsoft-edge-63947406-40ac-c3b8-57b9-2a946a29ae09" target="_blank" rel="noopener noreferrer">
+                Edge help &rarr;
+              </a>
+            </div>
+          </div>
+
+          <p style="margin-top: 20px;">
+            You can also use browser extensions such as
+            <a href="https://privacybadger.org/" target="_blank" rel="noopener noreferrer">Privacy Badger</a>
+            or
+            <a href="https://www.eff.org/pages/privacy-badger" target="_blank" rel="noopener noreferrer">uBlock Origin</a>
+            to manage cookies across all websites you visit.
+          </p>
+        </section>
+
+        <!-- 4. Consent banner -->
+        <section id="consent-banner">
+          <h2>Our consent banner</h2>
+          <div class="info-box">
+            <p>
+              When you first visit julay.org, a consent banner is displayed that lets you accept or
+              decline non-essential cookies. Your choice is saved in the <code>julay_consent_v1</code>
+              cookie for one year. You can change your preferences at any time using the
+              "<strong>Cookie settings</strong>" link in the footer.
+            </p>
+          </div>
+          <p>
+            Strictly necessary cookies are set regardless of your consent because they are essential for
+            the operation of the service. Functional and analytics cookie categories are only activated
+            after you give explicit consent, unless applicable law permits otherwise.
+          </p>
+          <p>
+            For full details on how we process personal data and your rights under applicable data
+            protection law, please read our <a href="/privacy">Privacy Policy</a>.
+          </p>
+        </section>
+
+        <!-- 5. Updates -->
+        <section id="updates">
+          <h2>Changes to this policy</h2>
+          <p>
+            We may update this Cookie Policy from time to time to reflect changes in our practices or
+            applicable law. When we make material changes, we will update the "Last updated" date at
+            the top of this page and, where appropriate, notify you through the product or by email.
+          </p>
+          <p>
+            We encourage you to review this page periodically to stay informed about how we use cookies.
+          </p>
+        </section>
+
+        <!-- 6. Contact -->
+        <section id="contact">
+          <h2>Contact us</h2>
+          <p>
+            If you have any questions about our use of cookies or this policy, please contact us at:
+          </p>
+          <ul>
+            <li>Email: <a href="mailto:privacy@julay.org">privacy@julay.org</a></li>
+            <li>General: <a href="mailto:hello@julay.org">hello@julay.org</a></li>
+          </ul>
+        </section>
+
+      </div><!-- /.content -->
+    </div><!-- /.container -->
+  </main>
+
+  <!-- ── Footer ── -->
+  <footer class="site-footer" role="contentinfo">
+    <div class="footer-inner">
+      <ul class="footer-links">
+        <li><a href="/">Home</a></li>
+        <li><a href="/about">About</a></li>
+        <li><a href="/terms">Terms of Service</a></li>
+        <li><a href="/privacy">Privacy Policy</a></li>
+        <li><a href="/cookies">Cookie Policy</a></li>
+        <li><a href="mailto:hello@julay.org">Contact</a></li>
+      </ul>
+      <p class="footer-copy">&copy; 2026 Julay. All rights reserved.</p>
+    </div>
+  </footer>
+
+</body>
+</html>

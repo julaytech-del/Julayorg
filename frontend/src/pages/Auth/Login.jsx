@@ -147,9 +147,7 @@ export default function Login() {
       {/* Left Panel */}
       <Box sx={{ flex: 1, display: { xs: 'none', lg: 'flex' }, flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', px: 8, py: 6, position: 'relative', zIndex: 1, maxWidth: 520 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 5 }}>
-          <Box sx={{ width: 42, height: 42, borderRadius: 2.5, background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-            <Psychology sx={{ color: 'white', fontSize: 24 }} />
-          </Box>
+          <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 42, height: 42, objectFit: 'contain' }} />
           <Typography variant="h6" sx={{ color: 'white', fontWeight: 800, letterSpacing: '-0.02em' }}>Julay</Typography>
         </Box>
         <Typography variant="h2" sx={{ color: 'white', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, mb: 2 }}>
@@ -176,9 +174,7 @@ export default function Login() {
         <Box sx={{ width: '100%', maxWidth: 380 }}>
           {/* Mobile logo */}
           <Box sx={{ display: { xs: 'flex', lg: 'none' }, alignItems: 'center', gap: 1.5, mb: 4, justifyContent: 'center' }}>
-            <Box sx={{ width: 38, height: 38, borderRadius: 2, background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <Psychology sx={{ color: 'white', fontSize: 22 }} />
-            </Box>
+            <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 38, height: 38, objectFit: 'contain' }} />
             <Typography variant="h6" sx={{ color: 'white', fontWeight: 800 }}>Julay</Typography>
           </Box>
 

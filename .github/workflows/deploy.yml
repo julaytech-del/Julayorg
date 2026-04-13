@@ -25,7 +25,8 @@ jobs:
         working-directory: frontend
         env:
           VITE_GOOGLE_CLIENT_ID: 722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
-        run: npx vite build
+          VITE_PLAUSIBLE_DOMAIN: julay.org
+        run: npm run build
 
       - name: Setup SSH key
         run: |

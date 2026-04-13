@@ -13,6 +13,10 @@ import MainLayout from './components/Layout/MainLayout.jsx';
 import SnackbarAlert from './components/common/SnackbarAlert.jsx';
 import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
 import NotFound from './pages/NotFound.jsx';
+import CookieConsent from './components/common/CookieConsent.jsx';
+import Analytics from './components/common/Analytics.jsx';
+const Contact = React.lazy(() => import('./pages/Contact.jsx'));
+const Pricing  = React.lazy(() => import('./pages/Pricing.jsx'));
 
 // ─── Lazily loaded (only when user navigates to that route) ───────────────────
 const Dashboard           = React.lazy(() => import('./pages/Dashboard.jsx'));
@@ -92,11 +96,19 @@ export default function App() {
 
   return (
     <>
+      {/* Skip-to-main-content: first focusable element on every page (WCAG 2.4.1) */}
+      <a href="#main-content" className="skip-to-main">Skip to main content</a>
+
+      <main id="main-content">
       <Routes>
         {/* ── Public ── */}
         <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
+
+        {/* ── Info pages ── */}
+        <Route path="/contact" element={<Suspense fallback={<PageLoader />}><Contact /></Suspense>} />
+        <Route path="/pricing" element={<Suspense fallback={<PageLoader />}><Pricing /></Suspense>} />
 
         {/* ── Public form renderer (no auth) ── */}
         <Route path="/forms/:token" element={<FormViewRenderer />} />
@@ -181,7 +193,10 @@ export default function App() {
 
         <Route path="*" element={<NotFound />} />
       </Routes>
+      </main>
       <SnackbarAlert />
+      <CookieConsent />
+      <Analytics />
     </>
   );
 }
