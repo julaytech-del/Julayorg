@@ -15,7 +15,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
-import { settingsAPI, subscriptionAPI, usersAPI } from '../../services/api.js';
+import api, { settingsAPI, subscriptionAPI, usersAPI } from '../../services/api.js';
 
 // ── Profile Tab ────────────────────────────────────────────────────────────
 const TIMEZONES = ['UTC', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Paris', 'Asia/Dubai', 'Asia/Riyadh', 'Asia/Tokyo'];
@@ -108,7 +108,6 @@ function TeamTab({ currentUser }) {
     if (!inviteEmail) return;
     setInviting(true);
     try {
-      const { default: api } = await import('../../services/api.js');
       const res = await api.post('/auth/invite', { email: inviteEmail });
       setInviteLink(res.data.data.inviteLink);
       dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
