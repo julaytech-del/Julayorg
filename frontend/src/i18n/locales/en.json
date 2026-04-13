@@ -538,7 +538,7 @@
       "company": { "title": "Company", "links": ["About", "Blog", "Careers", "Contact"] },
       "legal": { "title": "Legal", "links": ["Privacy", "Terms", "Security", "Cookies"] },
       "copy": "© 2025 Julay. All rights reserved.",
-      "built": "Built with ❤️ · Powered by Claude AI"
+      "built": "Built by Julay.org"
     }
   }
 }
