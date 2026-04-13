@@ -61,17 +61,30 @@ function AIDemoCard() {
   }, [prompt]);
 
   useEffect(() => {
+    let timer;
     if (step === 0) {
       let i = 0;
-      const timer = setInterval(() => {
+      setTyped('');
+      timer = setInterval(() => {
         i++;
         setTyped(prompt.slice(0, i));
-        if (i >= prompt.length) { clearInterval(timer); setTimeout(() => setStep(1), 800); }
-      }, 55);
-      return () => clearInterval(timer);
+        if (i >= prompt.length) {
+          clearInterval(timer);
+          timer = setTimeout(() => setStep(1), 800);
+        }
+      }, 50);
     }
-    if (step === 1) { setTimeout(() => setStep(2), 1200); }
+    if (step === 1) {
+      timer = setTimeout(() => setStep(2), 1200);
+    }
+    if (step === 2) {
+      // Loop: after showing results for 4s, restart
+      timer = setTimeout(() => { setStep(0); setTyped(''); }, 4000);
+    }
+    return () => { clearInterval(timer); clearTimeout(timer); };
   }, [step, prompt]);
+
+  const restart = () => { setStep(0); setTyped(''); };
 
   return (
     <Box sx={{ background: '#0F172A', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', width: '100%', maxWidth: 560, mx: 'auto', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
@@ -86,10 +99,13 @@ function AIDemoCard() {
           <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', mb: 1, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.demo.label')}</Typography>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid rgba(99,102,241,0.5)', background: 'rgba(99,102,241,0.06)' }}>
             <Typography sx={{ color: '#E2E8F0', fontSize: '0.88rem', flex: 1 }}>{typed}{step < 1 && <Box component="span" sx={{ display: 'inline-block', width: 2, height: '1em', background: '#818CF8', ml: '2px', animation: 'blink 1s steps(1) infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } } }} />}</Typography>
-            {step >= 1 && <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.6, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', cursor: 'pointer' }}>
-              <AutoAwesome sx={{ fontSize: 13, color: 'white' }} />
-              <Typography sx={{ color: 'white', fontSize: '0.75rem', fontWeight: 700 }}>{t('landing.demo.generate')}</Typography>
-            </Box>}
+            {step >= 1 && (
+              <Box onClick={step === 1 ? () => setStep(2) : restart}
+                sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.6, borderRadius: 1.5, background: step === 1 ? 'linear-gradient(135deg,#6366F1,#8B5CF6)' : 'rgba(99,102,241,0.3)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { opacity: 0.85, transform: 'scale(0.97)' } }}>
+                <AutoAwesome sx={{ fontSize: 13, color: 'white', animation: step === 1 ? 'spin 1s linear infinite' : 'none', '@keyframes spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } } }} />
+                <Typography sx={{ color: 'white', fontSize: '0.75rem', fontWeight: 700 }}>{step === 2 ? '↺' : t('landing.demo.generate')}</Typography>
+              </Box>
+            )}
           </Box>
         </Box>
         {/* Generated tasks */}
