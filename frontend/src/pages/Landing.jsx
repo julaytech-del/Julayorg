@@ -50,41 +50,20 @@ function FadeIn({ children, delay = 0 }) {
 /* ─── AI Demo animation ─── */
 function AIDemoCard() {
   const { t } = useTranslation();
-  const [step, setStep] = useState(0);
-  const [typed, setTyped] = useState('');
-  const prompt = t('landing.demo.prompt');
+  const [input, setInput] = useState('');
+  const [generated, setGenerated] = useState(false);
+  const [loading, setLoading] = useState(false);
   const tasks = t('landing.demo.tasks', { returnObjects: true });
 
-  useEffect(() => {
-    setStep(0);
-    setTyped('');
-  }, [prompt]);
+  const handleGenerate = () => {
+    if (!input.trim() || loading) return;
+    setLoading(true);
+    setGenerated(false);
+    // Simulate a brief loading then show mock tasks — no real API call
+    setTimeout(() => { setLoading(false); setGenerated(true); }, 1200);
+  };
 
-  useEffect(() => {
-    let timer;
-    if (step === 0) {
-      let i = 0;
-      setTyped('');
-      timer = setInterval(() => {
-        i++;
-        setTyped(prompt.slice(0, i));
-        if (i >= prompt.length) {
-          clearInterval(timer);
-          timer = setTimeout(() => setStep(1), 800);
-        }
-      }, 50);
-    }
-    if (step === 1) {
-      timer = setTimeout(() => setStep(2), 1200);
-    }
-    if (step === 2) {
-      // Loop: after showing results for 4s, restart
-      timer = setTimeout(() => { setStep(0); setTyped(''); }, 4000);
-    }
-    return () => { clearInterval(timer); clearTimeout(timer); };
-  }, [step, prompt]);
-
-  const restart = () => { setStep(0); setTyped(''); };
+  const handleReset = () => { setGenerated(false); setInput(''); };
 
   return (
     <Box sx={{ background: '#0F172A', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', width: '100%', maxWidth: 560, mx: 'auto', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
@@ -97,27 +76,44 @@ function AIDemoCard() {
         {/* Input */}
         <Box sx={{ mb: 2.5 }}>
           <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', mb: 1, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.demo.label')}</Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid rgba(99,102,241,0.5)', background: 'rgba(99,102,241,0.06)' }}>
-            <Typography sx={{ color: '#E2E8F0', fontSize: '0.88rem', flex: 1 }}>{typed}{step < 1 && <Box component="span" sx={{ display: 'inline-block', width: 2, height: '1em', background: '#818CF8', ml: '2px', animation: 'blink 1s steps(1) infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0 } } }} />}</Typography>
-            {step >= 1 && (
-              <Box onClick={step === 1 ? () => setStep(2) : restart}
-                sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.6, borderRadius: 1.5, background: step === 1 ? 'linear-gradient(135deg,#6366F1,#8B5CF6)' : 'rgba(99,102,241,0.3)', cursor: 'pointer', transition: 'all 0.2s', '&:hover': { opacity: 0.85, transform: 'scale(0.97)' } }}>
-                <AutoAwesome sx={{ fontSize: 13, color: 'white', animation: step === 1 ? 'spin 1s linear infinite' : 'none', '@keyframes spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } } }} />
-                <Typography sx={{ color: 'white', fontSize: '0.75rem', fontWeight: 700 }}>{step === 2 ? '↺' : t('landing.demo.generate')}</Typography>
-              </Box>
-            )}
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: `1.5px solid ${input.trim() ? 'rgba(99,102,241,0.6)' : 'rgba(255,255,255,0.1)'}`, background: 'rgba(99,102,241,0.04)', transition: 'border-color 0.2s' }}>
+            <Box
+              component="input"
+              value={input}
+              onChange={e => { setInput(e.target.value); setGenerated(false); }}
+              onKeyDown={e => e.key === 'Enter' && handleGenerate()}
+              placeholder={t('landing.demo.prompt')}
+              sx={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#E2E8F0', fontSize: '0.88rem', fontFamily: 'inherit', '&::placeholder': { color: 'rgba(255,255,255,0.25)' } }}
+            />
+            <Box
+              onClick={generated ? handleReset : handleGenerate}
+              sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.6, borderRadius: 1.5, background: input.trim() ? 'linear-gradient(135deg,#6366F1,#8B5CF6)' : 'rgba(255,255,255,0.06)', cursor: input.trim() ? 'pointer' : 'default', transition: 'all 0.2s', flexShrink: 0, '&:hover': input.trim() ? { opacity: 0.85 } : {} }}
+            >
+              <AutoAwesome sx={{ fontSize: 13, color: input.trim() ? 'white' : 'rgba(255,255,255,0.3)', animation: loading ? 'spin 1s linear infinite' : 'none', '@keyframes spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } } }} />
+              <Typography sx={{ color: input.trim() ? 'white' : 'rgba(255,255,255,0.3)', fontSize: '0.75rem', fontWeight: 700 }}>
+                {generated ? '↺' : t('landing.demo.generate')}
+              </Typography>
+            </Box>
           </Box>
         </Box>
+
+        {/* Loading shimmer */}
+        {loading && (
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {[1,2,3].map(i => <Box key={i} sx={{ height: 42, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', animation: 'shimmer 1s infinite', '@keyframes shimmer': { '0%,100%': { opacity: 0.3 }, '50%': { opacity: 0.7 } } }} />)}
+          </Box>
+        )}
+
         {/* Generated tasks */}
-        {step >= 2 && (
+        {generated && !loading && (
           <Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
               <Typography sx={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 600 }}>{t('landing.demo.generated')}</Typography>
             </Box>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {tasks.map((task, i) => (
-                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', animation: `slideIn 0.3s ease ${i * 100}ms both`, '@keyframes slideIn': { from: { opacity: 0, transform: 'translateX(-10px)' }, to: { opacity: 1, transform: 'translateX(0)' } } }}>
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', animation: `slideIn 0.3s ease ${i * 80}ms both`, '@keyframes slideIn': { from: { opacity: 0, transform: 'translateY(6px)' }, to: { opacity: 1, transform: 'translateY(0)' } } }}>
                   <Box sx={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: task.status === 'done' ? '#10B981' : task.status === 'in_progress' ? '#6366F1' : '#475569' }} />
                   <Typography sx={{ color: '#E2E8F0', fontSize: '0.8rem', flex: 1 }} noWrap>{task.title}</Typography>
                   <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>{task.assignee[0]}</Avatar>
@@ -127,9 +123,11 @@ function AIDemoCard() {
             </Box>
           </Box>
         )}
-        {step < 2 && (
+
+        {/* Empty state */}
+        {!generated && !loading && (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {[1,2,3].map(i => <Box key={i} sx={{ height: 42, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', animation: 'shimmer 1.5s infinite', '@keyframes shimmer': { '0%,100%': { opacity: 0.4 }, '50%': { opacity: 0.8 } } }} />)}
+            {[1,2,3].map(i => <Box key={i} sx={{ height: 42, borderRadius: 1.5, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.06)' }} />)}
           </Box>
         )}
       </Box>
