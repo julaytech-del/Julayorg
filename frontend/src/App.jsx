@@ -8,6 +8,7 @@ import { fetchCurrentUser } from './store/slices/authSlice.js';
 import Landing from './pages/Landing.jsx';
 import Login from './pages/Auth/Login.jsx';
 import Register from './pages/Auth/Register.jsx';
+import AcceptInvitePage from './pages/Auth/AcceptInvitePage.jsx';
 import MainLayout from './components/Layout/MainLayout.jsx';
 import SnackbarAlert from './components/common/SnackbarAlert.jsx';
 import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
@@ -37,6 +38,7 @@ const SprintBoard         = React.lazy(() => import('./pages/Sprint/SprintBoard.
 const PortfolioView       = React.lazy(() => import('./pages/Portfolio/PortfolioView.jsx'));
 const ActivityLogPage     = React.lazy(() => import('./pages/Activity/ActivityLogPage.jsx'));
 const SettingsPage        = React.lazy(() => import('./pages/Settings/SettingsPage.jsx'));
+const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTrackingPage.jsx'));
 
 // ─── Page loading fallback ────────────────────────────────────────────────────
 function PageLoader() {
@@ -98,6 +100,8 @@ export default function App() {
 
         {/* ── Public form renderer (no auth) ── */}
         <Route path="/forms/:token" element={<FormViewRenderer />} />
+        {/* ── Accept team invite (no auth required) ── */}
+        <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
 
         {/* ── Protected dashboard ── */}
         <Route path="/dashboard" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
@@ -169,6 +173,9 @@ export default function App() {
           } />
           <Route path="settings" element={
             <Suspense fallback={<PageLoader />}><SettingsPage /></Suspense>
+          } />
+          <Route path="time-tracking" element={
+            <Suspense fallback={<PageLoader />}><TimeTrackingPage /></Suspense>
           } />
         </Route>
 

@@ -1,8 +1,10 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import User from '../models/User.js';
 import Organization from '../models/Organization.js';
 import Role from '../models/Role.js';
 import Department from '../models/Department.js';
+import Invite from '../models/Invite.js';
 
 const signToken = (id) => jwt.sign({ id }, process.env.JWT_SECRET || 'fallback-secret', {
   expiresIn: process.env.JWT_EXPIRES_IN || '7d'
@@ -69,6 +71,91 @@ export const getMe = async (req, res, next) => {
   try {
     const user = await User.findById(req.user._id).populate('role').populate('department').populate('organization');
     res.json({ success: true, data: user });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const createInvite = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+
+    const existing = await User.findOne({ email });
+    if (existing) return res.status(409).json({ success: false, message: 'User with this email already exists' });
+
+    // Invalidate any previous unused invite for same email in this org
+    await Invite.deleteMany({ email, organization: req.user.organization, used: false });
+
+    const token = crypto.randomBytes(32).toString('hex');
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
+
+    await Invite.create({
+      email,
+      organization: req.user.organization,
+      createdBy: req.user._id,
+      token,
+      expiresAt,
+    });
+
+    const baseUrl = process.env.FRONTEND_URL || 'https://julay.org';
+    const inviteLink = `${baseUrl}/accept-invite/${token}`;
+
+    res.status(201).json({ success: true, data: { inviteLink, email, expiresAt } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getInviteInfo = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const invite = await Invite.findOne({ token, used: false }).populate('organization', 'name industry');
+    if (!invite) return res.status(404).json({ success: false, message: 'Invite link is invalid or has expired' });
+    if (invite.expiresAt < new Date()) return res.status(410).json({ success: false, message: 'Invite link has expired' });
+
+    res.json({ success: true, data: { email: invite.email, organization: invite.organization } });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const acceptInvite = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { name, password } = req.body;
+    if (!name || !password) return res.status(400).json({ success: false, message: 'Name and password are required' });
+    if (password.length < 6) return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+
+    const invite = await Invite.findOne({ token, used: false }).populate('organization');
+    if (!invite) return res.status(404).json({ success: false, message: 'Invite link is invalid or has expired' });
+    if (invite.expiresAt < new Date()) return res.status(410).json({ success: false, message: 'Invite link has expired' });
+
+    const existing = await User.findOne({ email: invite.email });
+    if (existing) return res.status(409).json({ success: false, message: 'An account with this email already exists' });
+
+    // Get member role for this org
+    const memberRole = await Role.findOne({ organization: invite.organization._id, level: 'member' });
+    const defaultDept = await Department.findOne({ organization: invite.organization._id });
+
+    const user = await User.create({
+      name,
+      email: invite.email,
+      password,
+      organization: invite.organization._id,
+      role: memberRole?._id,
+      department: defaultDept?._id,
+      jobTitle: 'Team Member',
+    });
+
+    invite.used = true;
+    invite.usedAt = new Date();
+    await invite.save();
+
+    const jwtToken = signToken(user._id);
+    const userData = await User.findById(user._id).populate('role').populate('department').populate('organization');
+
+    res.status(201).json({ success: true, data: { token: jwtToken, user: userData } });
   } catch (err) {
     next(err);
   }

@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Psychology, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Psychology, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 
 const SIDEBAR_WIDTH = 268;
@@ -31,6 +31,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     ]},
     { title: 'Personal', items: [
       { label: 'My Tasks', icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
+      { label: 'Time Tracking', icon: Timer, path: '/dashboard/time-tracking' },
       { label: 'Activity', icon: History, path: '/dashboard/activity' },
     ]},
     { title: t('nav.sections.intelligence'), items: [

@@ -348,6 +348,51 @@ export default function Landing() {
         </Container>
       </Box>
 
+      {/* ─── LANGUAGES ─── */}
+      <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: { xs: 8, md: 12 } }}>
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 7 }}>
+              <Chip label="GLOBAL REACH" sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', border: '1px solid rgba(99,102,241,0.3)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '1.9rem', md: '2.8rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
+                Built for teams{' '}
+                <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>around the world</Box>
+              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '1rem', maxWidth: 480, mx: 'auto' }}>
+                Julay speaks your language. Full UI translation in 10 languages — including right-to-left support for Arabic.
+              </Typography>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2,1fr)', sm: 'repeat(3,1fr)', md: 'repeat(5,1fr)' }, gap: 2 }}>
+            {[
+              { flag: '🇺🇸', en: 'English',    native: 'English',    rtl: false },
+              { flag: '🇸🇦', en: 'Arabic',     native: 'العربية',    rtl: true  },
+              { flag: '🇫🇷', en: 'French',     native: 'Français',   rtl: false },
+              { flag: '🇩🇪', en: 'German',     native: 'Deutsch',    rtl: false },
+              { flag: '🇪🇸', en: 'Spanish',    native: 'Español',    rtl: false },
+              { flag: '🇧🇷', en: 'Portuguese', native: 'Português',  rtl: false },
+              { flag: '🇮🇳', en: 'Hindi',      native: 'हिन्दी',      rtl: false },
+              { flag: '🇷🇺', en: 'Russian',    native: 'Русский',    rtl: false },
+              { flag: '🇯🇵', en: 'Japanese',   native: '日本語',      rtl: false },
+              { flag: '🇨🇳', en: 'Chinese',    native: '中文',        rtl: false },
+            ].map((lang, i) => (
+              <FadeIn key={lang.en} delay={i * 50}>
+                <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1, p: 2.5, borderRadius: 2.5, border: '1px solid rgba(255,255,255,0.07)', background: 'rgba(255,255,255,0.03)', transition: 'all 0.2s', cursor: 'default', '&:hover': { border: '1px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.08)', transform: 'translateY(-3px)' } }}>
+                  <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{lang.flag}</Typography>
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.9rem', direction: lang.rtl ? 'rtl' : 'ltr' }}>{lang.native}</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem' }}>{lang.en}</Typography>
+                  {lang.rtl && (
+                    <Box sx={{ px: 1, py: 0.2, borderRadius: 1, background: 'rgba(139,92,246,0.25)', border: '1px solid rgba(139,92,246,0.4)' }}>
+                      <Typography sx={{ color: '#C084FC', fontSize: '0.6rem', fontWeight: 700, letterSpacing: '0.04em' }}>RTL</Typography>
+                    </Box>
+                  )}
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+        </Container>
+      </Box>
+
       {/* ─── PROBLEM ─── */}
       <Box sx={{ background: '#09090B', py: { xs: 8, md: 14 } }}>
         <Container maxWidth="md">

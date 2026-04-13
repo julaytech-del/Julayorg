@@ -10,7 +10,7 @@ import {
 import {
   Person, Group, CreditCard, Security, Notifications, Extension,
   Lock, Email, GitHub, Webhook, FlashOn, VideoCall, Edit, CheckCircle,
-  Cancel, LockOutlined, Add, Visibility, VisibilityOff,
+  Cancel, LockOutlined, Add, Visibility, VisibilityOff, ContentCopy, LinkOutlined,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -87,11 +87,13 @@ function ProfileTab({ user }) {
 // ── Team Tab ───────────────────────────────────────────────────────────────
 function TeamTab({ currentUser }) {
   const dispatch = useDispatch();
-  const [members, setMembers]   = useState([]);
-  const [loading, setLoading]   = useState(true);
+  const [members, setMembers]     = useState([]);
+  const [loading, setLoading]     = useState(true);
   const [inviteOpen, setInviteOpen] = useState(false);
   const [inviteEmail, setInviteEmail] = useState('');
-  const [inviting, setInviting] = useState(false);
+  const [inviting, setInviting]   = useState(false);
+  const [inviteLink, setInviteLink] = useState('');
+  const [copied, setCopied]       = useState(false);
 
   useEffect(() => {
     settingsAPI.getOrgMembers()
@@ -106,26 +108,41 @@ function TeamTab({ currentUser }) {
     if (!inviteEmail) return;
     setInviting(true);
     try {
-      // Simulated invite — backend endpoint TBD
-      await new Promise(r => setTimeout(r, 800));
-      dispatch(showSnackbar({ message: `Invitation sent to ${inviteEmail}`, severity: 'success' }));
-      setInviteOpen(false);
-      setInviteEmail('');
-    } catch {
-      dispatch(showSnackbar({ message: 'Failed to send invitation', severity: 'error' }));
+      const { default: api } = await import('../../services/api.js');
+      const res = await api.post('/auth/invite', { email: inviteEmail });
+      setInviteLink(res.data.data.inviteLink);
+      dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
+    } catch (e) {
+      dispatch(showSnackbar({ message: e.response?.data?.message || 'Failed to generate invite link', severity: 'error' }));
     } finally {
       setInviting(false);
     }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    dispatch(showSnackbar({ message: 'Invite link copied to clipboard', severity: 'success' }));
+  };
+
+  const handleClose = () => {
+    setInviteOpen(false);
+    setInviteEmail('');
+    setInviteLink('');
+    setCopied(false);
   };
 
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
         <Typography variant="h6" fontWeight={700}>Team Members</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => setInviteOpen(true)}
-          sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
-          Invite Member
-        </Button>
+        {isAdmin && (
+          <Button variant="contained" startIcon={<Add />} onClick={() => setInviteOpen(true)}
+            sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
+            Invite Member
+          </Button>
+        )}
       </Box>
 
       {loading ? <CircularProgress /> : (
@@ -150,21 +167,58 @@ function TeamTab({ currentUser }) {
         </List>
       )}
 
-      <Dialog open={inviteOpen} onClose={() => setInviteOpen(false)} maxWidth="xs" fullWidth>
-        <DialogTitle fontWeight={700}>Invite Team Member</DialogTitle>
+      <Dialog open={inviteOpen} onClose={handleClose} maxWidth="sm" fullWidth>
+        <DialogTitle fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <LinkOutlined sx={{ color: '#6366F1' }} /> Invite Team Member
+        </DialogTitle>
         <DialogContent>
-          <TextField
-            label="Email Address" type="email" fullWidth autoFocus
-            value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
-            sx={{ mt: 1 }}
-          />
+          {!inviteLink ? (
+            <>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                Enter the email address of the person you'd like to invite. They'll receive a unique link to create their account.
+              </Typography>
+              <TextField
+                label="Email Address" type="email" fullWidth autoFocus
+                value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleInvite()}
+                sx={{ mt: 1 }}
+              />
+            </>
+          ) : (
+            <Box>
+              <Alert severity="success" sx={{ mb: 2 }}>
+                Invite link generated! Share it with <strong>{inviteEmail}</strong> via WhatsApp, email, or any messaging app.
+              </Alert>
+              <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+                Invite link (valid for 7 days):
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid', borderColor: 'divider', background: 'action.hover' }}>
+                <Typography variant="body2" sx={{ flex: 1, wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.78rem' }}>
+                  {inviteLink}
+                </Typography>
+                <Tooltip title={copied ? 'Copied!' : 'Copy link'}>
+                  <IconButton size="small" onClick={handleCopy} color={copied ? 'success' : 'default'}>
+                    {copied ? <CheckCircle fontSize="small" /> : <ContentCopy fontSize="small" />}
+                  </IconButton>
+                </Tooltip>
+              </Box>
+            </Box>
+          )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setInviteOpen(false)}>Cancel</Button>
-          <Button variant="contained" onClick={handleInvite} disabled={!inviteEmail || inviting}
-            sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
-            {inviting ? 'Sending…' : 'Send Invite'}
-          </Button>
+          <Button onClick={handleClose}>{inviteLink ? 'Done' : 'Cancel'}</Button>
+          {!inviteLink && (
+            <Button variant="contained" onClick={handleInvite} disabled={!inviteEmail || inviting}
+              sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
+              {inviting ? <CircularProgress size={18} sx={{ color: 'white' }} /> : 'Generate Invite Link'}
+            </Button>
+          )}
+          {inviteLink && (
+            <Button variant="contained" onClick={handleCopy} startIcon={copied ? <CheckCircle /> : <ContentCopy />}
+              sx={{ background: copied ? 'success.main' : 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
+              {copied ? 'Copied!' : 'Copy Link'}
+            </Button>
+          )}
         </DialogActions>
       </Dialog>
     </Box>
