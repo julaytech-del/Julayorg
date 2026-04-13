@@ -404,5 +404,128 @@
     "timeout": "The request took too long. Please try again.",
     "loginFailed": "Login failed. Please check your credentials.",
     "generic": "Something went wrong. Please try again."
+  },
+  "landing": {
+    "nav": { "features": "Features", "compare": "Compare", "pricing": "Pricing", "faq": "FAQ", "login": "Log in", "start": "Start Free →" },
+    "hero": {
+      "badge": "Powered by Claude AI · Now live",
+      "h1a": "We don't manage tasks.",
+      "h1b": "We build execution systems.",
+      "sub": "Julay uses AI to plan, break down, and execute your work — automatically. Describe your goal. Get a full project in seconds.",
+      "cta1": "Start Free — No credit card",
+      "cta2": "See how it works",
+      "tagline": "Free plan forever · No credit card · Setup in 60 seconds"
+    },
+    "badges": ["12 AI-powered features", "10 languages supported", "Kanban · Gantt · Sprints", "Free plan forever", "No per-seat pricing"],
+    "stats": [
+      { "label": "AI-powered features" },
+      { "label": "Views & tools included" },
+      { "label": "Languages supported" },
+      { "label": "To generate a full project" }
+    ],
+    "problem": {
+      "chip": "THE PROBLEM",
+      "title": "Your current PM tool is just a",
+      "strike": "fancy to-do list",
+      "sub": "Monday, Asana, and Notion help you track work — but they don't think. You still need to plan, assign, schedule, and risk-check everything manually.",
+      "pains": [
+        "You spend Monday planning your whole week",
+        "Tasks get assigned based on guesswork",
+        "Nobody sees the deadline risk until it's too late",
+        "Standups replace actual visibility",
+        "AI tools require you to write perfect prompts",
+        "Reporting takes hours every week"
+      ]
+    },
+    "features": {
+      "chip": "FEATURES",
+      "title": "Everything your team needs.",
+      "titleGrad": "Nothing they don't.",
+      "sub": "12 core features. All AI-connected. All designed to actually reduce your team's workload.",
+      "items": [
+        { "icon": "🧠", "title": "AI Project Planning", "desc": "Describe your goal in plain language. Julay AI generates a full project breakdown — tasks, timelines, and team assignments — in seconds." },
+        { "icon": "⚡", "title": "Smart Auto-Assignment", "desc": "AI analyzes team skills, workload, and availability to assign tasks to the right person automatically." },
+        { "icon": "📊", "title": "Critical Path (CPM)", "desc": "Automatically identifies which tasks can delay your entire project. Visual warnings keep you ahead of schedule." },
+        { "icon": "🎯", "title": "Workload Balancer", "desc": "Real-time heatmap shows who is overloaded. One click AI rebalancing reassigns tasks intelligently across your team." },
+        { "icon": "📅", "title": "Deadline Optimizer", "desc": "AI analyzes assignee workload and suggests the best due dates — with confidence scores and risk warnings." },
+        { "icon": "🔔", "title": "Smart Notifications", "desc": "Get alerted before things go wrong. AI monitors your projects 24/7 and surfaces what matters, when it matters." },
+        { "icon": "⚙️", "title": "Automation Engine", "desc": "Build powerful if-this-then-that rules. Trigger notifications, status changes, subtask creation — all automatically." },
+        { "icon": "📋", "title": "Public Form Builder", "desc": "Create shareable intake forms that auto-create and assign tasks when submitted. No dev required." },
+        { "icon": "📈", "title": "AI Executive Reports", "desc": "One click generates a 2-paragraph executive summary of your project status, written by Claude AI." },
+        { "icon": "🔗", "title": "Webhook System", "desc": "Send real-time events to Slack, Zapier, or any endpoint. HMAC-signed payloads for enterprise security." },
+        { "icon": "🏃", "title": "Sprint / Agile Board", "desc": "Full Scrum support. Plan sprints, track velocity, view burndown charts. Switch between Agile and waterfall in one click." },
+        { "icon": "🌐", "title": "Portfolio View", "desc": "See every project's health in one executive dashboard. On Track, At Risk, Off Track — at a glance." }
+      ]
+    },
+    "compare": {
+      "chip": "COMPARISON",
+      "title": "How Julay stacks up",
+      "sub": "Spoiler: the AI column changes everything.",
+      "featureNames": [
+        "AI Project Planning", "Auto Task Breakdown", "Smart Team Assignment",
+        "AI Deadline Optimizer", "Workload AI Rebalancer", "Critical Path (CPM)",
+        "Automation Rules", "Gantt Timeline", "Calendar View", "Custom Dashboards",
+        "Sprint / Agile Board", "Time Tracking", "Public Form Builder",
+        "Webhook System", "Starting Price", "AI Included in Base Plan"
+      ],
+      "startingPrice": { "julay": "$9/mo", "monday": "$9/seat", "asana": "$13/seat", "notion": "$10/seat" }
+    },
+    "earlyAccess": {
+      "badge": "NOW IN EARLY ACCESS",
+      "title": "Be among the first teams to use Julay",
+      "sub": "We're launching Julay with a small group of early users. Create your account now — get full access for free and help shape the product.",
+      "cta": "Get Early Access — Free",
+      "perks": ["No credit card", "Cancel anytime", "Full feature access"]
+    },
+    "pricing": {
+      "chip": "PRICING",
+      "title": "Start free. Scale as you grow.",
+      "sub": "No surprises. No per-seat traps. Cancel anytime.",
+      "monthly": "Monthly",
+      "yearly": "Yearly",
+      "free": "Free",
+      "perMo": "/mo",
+      "saveYear": "Save ${{amount}}/year",
+      "mostPopular": "MOST POPULAR",
+      "enterprise": {
+        "title": "Enterprise",
+        "sub": "Unlimited AI · SSO/SAML · White-label · Custom SLA · Dedicated support · On-premise option",
+        "cta": "Contact Sales"
+      },
+      "plans": [
+        { "id": "free", "name": "Free", "price": 0, "yearlyPrice": 0, "ctaVariant": "outlined", "highlight": false, "description": "Perfect to get started", "features": ["3 projects", "3 team members", "5 AI requests/month", "Kanban & List views", "1 GB storage"], "cta": "Start for Free" },
+        { "id": "starter", "name": "Starter", "price": 9, "yearlyPrice": 7, "ctaVariant": "outlined", "highlight": false, "description": "For solo professionals", "features": ["10 projects", "10 team members", "100 AI requests/month", "All views (Calendar, Gantt)", "10 GB storage", "Email support"], "cta": "Start Free Trial" },
+        { "id": "professional", "name": "Professional", "price": 29, "yearlyPrice": 23, "ctaVariant": "contained", "highlight": true, "popular": true, "description": "For growing teams", "features": ["Unlimited projects", "25 team members", "500 AI requests/month", "Automations & Webhooks", "Reports & Forms", "Time Tracking + Custom Fields", "50 GB storage", "Priority support"], "cta": "Start Free Trial" },
+        { "id": "business", "name": "Business", "price": 79, "yearlyPrice": 63, "ctaVariant": "outlined", "highlight": false, "description": "For scaling companies", "features": ["Everything in Professional", "Unlimited team members", "2,000 AI requests/month", "API access", "Custom analytics", "200 GB storage", "Dedicated support"], "cta": "Start Free Trial" }
+      ]
+    },
+    "faq": {
+      "chip": "FAQ",
+      "title": "Questions? We've got answers.",
+      "items": [
+        { "q": "How is Julay different from Monday.com or Asana?", "a": "Julay is the only project management tool built AI-first. Monday and Asana have AI bolt-ons. Julay's AI plans your project, assigns your team, balances workload, and warns you about risks — all automatically. It's not a feature, it's the engine." },
+        { "q": "Do I need to know how to use AI?", "a": "Not at all. You write your goal in plain English (or Arabic). Julay does the rest. No prompts, no templates — just describe what you need to achieve." },
+        { "q": "Is there a free plan?", "a": "Yes — free forever. 3 projects, 3 team members, 5 AI requests per month. No credit card required. Upgrade when you need more." },
+        { "q": "How secure is my data?", "a": "All data is encrypted at rest and in transit. We use HMAC-signed webhooks, JWT authentication, and role-based access control. Your data is never used to train AI models." },
+        { "q": "Can I migrate from Monday or Asana?", "a": "Yes. You can recreate your project structure in Julay in minutes using AI generation. Describe your existing project and Julay will build the full task breakdown automatically. Business and Enterprise plans include onboarding assistance." },
+        { "q": "What AI model powers Julay?", "a": "Julay is powered by Anthropic's Claude — one of the most capable AI models available for structured planning, risk analysis, and executive reporting." }
+      ]
+    },
+    "finalCta": {
+      "eyebrow": "Stop planning. Start executing.",
+      "title": "Your next project starts",
+      "titleGrad": "right now.",
+      "sub": "Replace planning meetings with Julay AI. Describe your goal, get a full project in 60 seconds. Free forever. No credit card.",
+      "cta": "Build your first project free",
+      "perks": ["Free forever plan", "No credit card", "Setup in 60 seconds", "Cancel anytime"]
+    },
+    "footer": {
+      "tagline": "AI-powered project management for modern teams. Plan smarter. Execute faster.",
+      "product": { "title": "Product", "links": ["Features", "Pricing", "Compare", "Changelog"] },
+      "company": { "title": "Company", "links": ["About", "Blog", "Careers", "Contact"] },
+      "legal": { "title": "Legal", "links": ["Privacy", "Terms", "Security", "Cookies"] },
+      "copy": "© 2025 Julay. All rights reserved.",
+      "built": "Built with ❤️ · Powered by Claude AI"
+    }
   }
 }

@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow, Menu as MenuIcon } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx';
 
 /* ─── Gradient orb ─── */
@@ -120,91 +121,77 @@ function AIDemoCard() {
   );
 }
 
-/* ─── Comparison data ─── */
-const COMPARE = [
-  { feature: 'AI Project Planning', julay: true, monday: false, asana: false, notion: false },
-  { feature: 'Auto Task Breakdown', julay: true, monday: false, asana: false, notion: false },
-  { feature: 'Smart Team Assignment', julay: true, monday: false, asana: false, notion: false },
-  { feature: 'AI Deadline Optimizer', julay: true, monday: false, asana: false, notion: false },
-  { feature: 'Workload AI Rebalancer', julay: true, monday: false, asana: false, notion: false },
-  { feature: 'Critical Path (CPM)', julay: true, monday: true, asana: false, notion: false },
-  { feature: 'Automation Rules', julay: true, monday: true, asana: true, notion: false },
-  { feature: 'Gantt Timeline', julay: true, monday: true, asana: true, notion: false },
-  { feature: 'Calendar View', julay: true, monday: true, asana: true, notion: false },
-  { feature: 'Custom Dashboards', julay: true, monday: true, asana: false, notion: false },
-  { feature: 'Sprint / Agile Board', julay: true, monday: true, asana: true, notion: false },
-  { feature: 'Time Tracking', julay: true, monday: true, asana: true, notion: false },
-  { feature: 'Public Form Builder', julay: true, monday: true, asana: false, notion: false },
-  { feature: 'Webhook System', julay: true, monday: true, asana: false, notion: false },
-  { feature: 'Starting Price', julay: '$9/mo', monday: '$9/seat', asana: '$13/seat', notion: '$10/seat' },
-  { feature: 'AI Included in Base Plan', julay: true, monday: false, asana: false, notion: false },
+/* ─── Static comparison matrix (values only, names come from translations) ─── */
+const COMPARE_MATRIX = [
+  { julay: true,     monday: false, asana: false, notion: false },
+  { julay: true,     monday: false, asana: false, notion: false },
+  { julay: true,     monday: false, asana: false, notion: false },
+  { julay: true,     monday: false, asana: false, notion: false },
+  { julay: true,     monday: false, asana: false, notion: false },
+  { julay: true,     monday: true,  asana: false, notion: false },
+  { julay: true,     monday: true,  asana: true,  notion: false },
+  { julay: true,     monday: true,  asana: true,  notion: false },
+  { julay: true,     monday: true,  asana: true,  notion: false },
+  { julay: true,     monday: true,  asana: false, notion: false },
+  { julay: true,     monday: true,  asana: true,  notion: false },
+  { julay: true,     monday: true,  asana: true,  notion: false },
+  { julay: true,     monday: true,  asana: false, notion: false },
+  { julay: true,     monday: true,  asana: false, notion: false },
+  { julay: 'price',  monday: 'price', asana: 'price', notion: 'price' },
+  { julay: true,     monday: false, asana: false, notion: false },
 ];
 
+const LOGOS = ['NovaTech', 'Tamatem', 'BuildStack', 'Fintech.io', 'ZeroGravity', 'Shift Media', 'Launchpad', 'CoreSystems'];
 const TOOLS = ['Monday', 'Asana', 'Notion'];
 
-/* ─── Testimonials ─── */
-const TESTIMONIALS = [
-  { name: 'Sarah Chen', title: 'CTO, NovaTech', avatar: 'S', stars: 5, text: 'Julay replaced our entire project stack. The AI planning feature alone saves us 8 hours per sprint. It just thinks ahead — assigning tasks, spotting risks, optimizing deadlines before I even notice the problem.' },
-  { name: 'Ahmed Al-Rashid', title: 'Product Lead, Tamatem Games', avatar: 'A', stars: 5, text: 'We were on Monday for 3 years. Switched to Julay in a week and never looked back. The AI breaks down projects in seconds — what used to take a planning session now happens instantly.' },
-  { name: 'Marcus Weber', title: 'Founder, BuildStack', avatar: 'M', stars: 5, text: 'The workload AI is insane. It tells me who is overloaded before they burn out. My team\'s delivery rate went from 62% to 91% in 6 weeks. This is what project management should have always been.' },
-  { name: 'Layla Karimi', title: 'Engineering Manager, Fintech.io', avatar: 'L', stars: 5, text: 'Every feature feels intentional. The Critical Path analysis, the Gantt with AI risks — it\'s like having a senior PM always watching your project. The pricing is unreal for what you get.' },
+const STATS_NUMS = [
+  { num: 12, suffix: '' },
+  { num: 20, suffix: '+' },
+  { num: 10, suffix: '' },
+  { num: 60, suffix: 's' },
 ];
-
-/* ─── Company logos (placeholder) ─── */
-const LOGOS = ['NovaTech', 'Tamatem', 'BuildStack', 'Fintech.io', 'ZeroGravity', 'Shift Media', 'Launchpad', 'CoreSystems'];
-
-/* ─── Pricing plans ─── */
-const PLANS = [
-  { id: 'free', name: 'Free', price: 0, yearlyPrice: 0, description: 'Perfect to get started', features: ['3 projects', '3 team members', '5 AI requests/month', 'Kanban & List views', '1 GB storage'], cta: 'Start for Free', ctaVariant: 'outlined', highlight: false },
-  { id: 'starter', name: 'Starter', price: 9, yearlyPrice: 7, description: 'For solo professionals', features: ['10 projects', '10 team members', '100 AI requests/month', 'All views (Calendar, Gantt)', '10 GB storage', 'Email support'], cta: 'Start Free Trial', ctaVariant: 'outlined', highlight: false },
-  { id: 'professional', name: 'Professional', price: 29, yearlyPrice: 23, description: 'For growing teams', popular: true, features: ['Unlimited projects', '25 team members', '500 AI requests/month', 'Automations & Webhooks', 'Reports & Forms', 'Time Tracking + Custom Fields', '50 GB storage', 'Priority support'], cta: 'Start Free Trial', ctaVariant: 'contained', highlight: true },
-  { id: 'business', name: 'Business', price: 79, yearlyPrice: 63, description: 'For scaling companies', features: ['Everything in Professional', 'Unlimited team members', '2,000 AI requests/month', 'API access', 'Custom analytics', '200 GB storage', 'Dedicated support'], cta: 'Start Free Trial', ctaVariant: 'outlined', highlight: false },
-];
-
-/* ─── Feature grid ─── */
-const FEATURES = [
-  { icon: '🧠', title: 'AI Project Planning', desc: 'Describe your goal in plain language. Julay AI generates a full project breakdown — tasks, timelines, and team assignments — in seconds.' },
-  { icon: '⚡', title: 'Smart Auto-Assignment', desc: 'AI analyzes team skills, workload, and availability to assign tasks to the right person automatically.' },
-  { icon: '📊', title: 'Critical Path (CPM)', desc: 'Automatically identifies which tasks can delay your entire project. Visual warnings keep you ahead of schedule.' },
-  { icon: '🎯', title: 'Workload Balancer', desc: 'Real-time heatmap shows who is overloaded. One click AI rebalancing reassigns tasks intelligently across your team.' },
-  { icon: '📅', title: 'Deadline Optimizer', desc: 'AI analyzes assignee workload and suggests the best due dates — with confidence scores and risk warnings.' },
-  { icon: '🔔', title: 'Smart Notifications', desc: 'Get alerted before things go wrong. AI monitors your projects 24/7 and surfaces what matters, when it matters.' },
-  { icon: '⚙️', title: 'Automation Engine', desc: 'Build powerful if-this-then-that rules. Trigger notifications, status changes, subtask creation — all automatically.' },
-  { icon: '📋', title: 'Public Form Builder', desc: 'Create shareable intake forms that auto-create and assign tasks when submitted. No dev required.' },
-  { icon: '📈', title: 'AI Executive Reports', desc: 'One click generates a 2-paragraph executive summary of your project status, written by Claude AI.' },
-  { icon: '🔗', title: 'Webhook System', desc: 'Send real-time events to Slack, Zapier, or any endpoint. HMAC-signed payloads for enterprise security.' },
-  { icon: '🏃', title: 'Sprint / Agile Board', desc: 'Full Scrum support. Plan sprints, track velocity, view burndown charts. Switch between Agile and waterfall in one click.' },
-  { icon: '🌐', title: 'Portfolio View', desc: 'See every project\'s health in one executive dashboard. On Track, At Risk, Off Track — at a glance.' },
-];
-
-/* ─── FAQ ─── */
-const FAQS = [
-  { q: 'How is Julay different from Monday.com or Asana?', a: 'Julay is the only project management tool built AI-first. Monday and Asana have AI bolt-ons. Julay\'s AI plans your project, assigns your team, balances workload, and warns you about risks — all automatically. It\'s not a feature, it\'s the engine.' },
-  { q: 'Do I need to know how to use AI?', a: 'Not at all. You write your goal in plain English (or Arabic). Julay does the rest. No prompts, no templates — just describe what you need to achieve.' },
-  { q: 'Is there a free plan?', a: 'Yes — free forever. 3 projects, 3 team members, 5 AI requests per month. No credit card required. Upgrade when you need more.' },
-  { q: 'How secure is my data?', a: 'All data is encrypted at rest and in transit. We use HMAC-signed webhooks, JWT authentication, and role-based access control. Your data is never used to train AI models.' },
-  { q: 'Can I migrate from Monday or Asana?', a: 'Yes. You can recreate your project structure in Julay in minutes using AI generation. Describe your existing project and Julay will build the full task breakdown automatically. Business and Enterprise plans include onboarding assistance.' },
-  { q: 'What AI model powers Julay?', a: 'Julay is powered by Anthropic\'s Claude — one of the most capable AI models available for structured planning, risk analysis, and executive reporting.' },
-];
-
-const NAV_LINKS = ['Features', 'Compare', 'Pricing', 'FAQ'];
 
 export default function Landing() {
   const navigate = useNavigate();
+  const { t, i18n } = useTranslation();
+  const isRTL = i18n.language === 'ar';
   const [billing, setBilling] = useState('monthly');
   const [openFaq, setOpenFaq] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const demoRef = useRef(null);
+
+  const FEATURES = t('landing.features.items', { returnObjects: true });
+  const PLANS = t('landing.pricing.plans', { returnObjects: true });
+  const FAQS = t('landing.faq.items', { returnObjects: true });
+  const BADGES = t('landing.badges', { returnObjects: true });
+  const STATS = t('landing.stats', { returnObjects: true });
+  const PAINS = t('landing.problem.pains', { returnObjects: true });
+  const FEATURE_NAMES = t('landing.compare.featureNames', { returnObjects: true });
+  const PRICE_ROW = t('landing.compare.startingPrice', { returnObjects: true });
+  const NAV_LINKS = [
+    { key: 'features', label: t('landing.nav.features') },
+    { key: 'compare', label: t('landing.nav.compare') },
+    { key: 'pricing', label: t('landing.nav.pricing') },
+    { key: 'faq', label: t('landing.nav.faq') },
+  ];
+
+  const COMPARE = COMPARE_MATRIX.map((row, i) => ({
+    feature: FEATURE_NAMES[i] || '',
+    julay: row.julay === 'price' ? PRICE_ROW.julay : row.julay,
+    monday: row.monday === 'price' ? PRICE_ROW.monday : row.monday,
+    asana: row.asana === 'price' ? PRICE_ROW.asana : row.asana,
+    notion: row.notion === 'price' ? PRICE_ROW.notion : row.notion,
+  }));
 
   const scrollToDemo = () => {
     demoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
   };
 
   return (
-    <Box sx={{ fontFamily: '"Inter", sans-serif', overflowX: 'hidden' }}>
+    <Box sx={{ fontFamily: '"Inter", sans-serif', overflowX: 'hidden' }} dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* ─── MOBILE DRAWER ─── */}
-      <Drawer anchor="right" open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}
+      <Drawer anchor={isRTL ? 'left' : 'right'} open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}
         PaperProps={{ sx: { width: 260, background: '#09090B', borderLeft: '1px solid rgba(255,255,255,0.08)' } }}>
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end' }}>
           <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: 'rgba(255,255,255,0.6)' }}>
@@ -213,9 +200,9 @@ export default function Landing() {
         </Box>
         <List>
           {NAV_LINKS.map(l => (
-            <ListItemButton key={l} component="a" href={`#${l.toLowerCase()}`} onClick={() => setMobileMenuOpen(false)}
+            <ListItemButton key={l.key} component="a" href={`#${l.key}`} onClick={() => setMobileMenuOpen(false)}
               sx={{ px: 3, py: 1.5, '&:hover': { background: 'rgba(255,255,255,0.06)' } }}>
-              <ListItemText primary={l} primaryTypographyProps={{ sx: { color: 'rgba(255,255,255,0.75)', fontWeight: 600, fontSize: '1rem' } }} />
+              <ListItemText primary={l.label} primaryTypographyProps={{ sx: { color: 'rgba(255,255,255,0.75)', fontWeight: 600, fontSize: '1rem' } }} />
             </ListItemButton>
           ))}
         </List>
@@ -225,11 +212,11 @@ export default function Landing() {
           </Box>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/login'); }} variant="outlined"
             sx={{ borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, py: 1.25, borderRadius: 2 }}>
-            Log in
+            {t('landing.nav.login')}
           </Button>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/register'); }} variant="contained"
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, py: 1.25, borderRadius: 2 }}>
-            Start Free →
+            {t('landing.nav.start')}
           </Button>
         </Box>
       </Drawer>
@@ -247,16 +234,16 @@ export default function Landing() {
           {/* Desktop nav links */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
             {NAV_LINKS.map(l => (
-              <Typography key={l} component="a" href={`#${l.toLowerCase()}`} sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', textDecoration: 'none', cursor: 'pointer', transition: 'color 0.15s', '&:hover': { color: 'white' } }}>{l}</Typography>
+              <Typography key={l.key} component="a" href={`#${l.key}`} sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', textDecoration: 'none', cursor: 'pointer', transition: 'color 0.15s', '&:hover': { color: 'white' } }}>{l.label}</Typography>
             ))}
           </Box>
 
           {/* Desktop buttons */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1.5, alignItems: 'center' }}>
             <LanguageSwitcher dark />
-            <Button onClick={() => navigate('/login')} variant="text" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.06)' } }}>Log in</Button>
+            <Button onClick={() => navigate('/login')} variant="text" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.06)' } }}>{t('landing.nav.login')}</Button>
             <Button onClick={() => navigate('/register')} variant="contained" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 2.5, py: 0.9, borderRadius: 2, fontSize: '0.88rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9, boxShadow: '0 0 30px rgba(99,102,241,0.5)' } }}>
-              Start Free →
+              {t('landing.nav.start')}
             </Button>
           </Box>
 
@@ -278,32 +265,31 @@ export default function Landing() {
             {/* Badge */}
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, border: '1px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.1)', mb: 4 }}>
               <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1, transform: 'scale(1)' }, '50%': { opacity: 0.5, transform: 'scale(0.8)' } } }} />
-              <Typography sx={{ color: '#A5B4FC', fontSize: '0.8rem', fontWeight: 600 }}>Powered by Claude AI · Now live</Typography>
+              <Typography sx={{ color: '#A5B4FC', fontSize: '0.8rem', fontWeight: 600 }}>{t('landing.hero.badge')}</Typography>
             </Box>
 
             {/* H1 */}
             <Typography variant="h1" sx={{ color: 'white', fontSize: { xs: '2.8rem', md: '4.5rem', lg: '5.2rem' }, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.04em', mb: 3 }}>
-              We don't manage tasks.{' '}
+              {t('landing.hero.h1a')}{' '}
               <Box component="span" sx={{ background: 'linear-gradient(135deg, #818CF8, #C084FC, #38BDF8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                We build execution systems.
+                {t('landing.hero.h1b')}
               </Box>
             </Typography>
 
             <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: { xs: '1.05rem', md: '1.25rem' }, lineHeight: 1.65, mb: 5, maxWidth: 600, mx: 'auto' }}>
-              Julay uses AI to plan, break down, and execute your work — automatically.
-              Describe your goal. Get a full project in seconds.
+              {t('landing.hero.sub')}
             </Typography>
 
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', mb: 3 }}>
               <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
-                Start Free — No credit card
+                {t('landing.hero.cta1')}
               </Button>
               <Button onClick={scrollToDemo} variant="outlined" size="large" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, px: 3.5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' } }}>
-                <PlayArrow sx={{ fontSize: 18, mr: 0.75 }} /> See how it works
+                <PlayArrow sx={{ fontSize: 18, mr: 0.75 }} /> {t('landing.hero.cta2')}
               </Button>
             </Box>
             <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
-              Free plan forever · No credit card · Setup in 60 seconds
+              {t('landing.hero.tagline')}
             </Typography>
           </Box>
 
@@ -320,8 +306,8 @@ export default function Landing() {
       <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: 4 }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: { xs: 2, md: 5 } }}>
-            {['12 AI-powered features', '10 languages supported', 'Kanban · Gantt · Sprints', 'Free plan forever', 'No per-seat pricing'].map(badge => (
-              <Box key={badge} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+            {BADGES.map((badge, i) => (
+              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                 <CheckCircleOutline sx={{ color: '#6366F1', fontSize: 14 }} />
                 <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.83rem', fontWeight: 500 }}>{badge}</Typography>
               </Box>
@@ -334,18 +320,13 @@ export default function Landing() {
       <Box sx={{ background: '#09090B', borderBottom: '1px solid rgba(255,255,255,0.06)', py: 8 }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 3 }}>
-            {[
-              { num: 12, suffix: '', label: 'AI-powered features' },
-              { num: 20, suffix: '+', label: 'Views & tools included' },
-              { num: 10, suffix: '', label: 'Languages supported' },
-              { num: 60, suffix: 's', label: 'To generate a full project' },
-            ].map((s, i) => (
+            {STATS_NUMS.map((s, i) => (
               <FadeIn key={i} delay={i * 100}>
                 <Box sx={{ textAlign: 'center', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
                   <Typography sx={{ color: 'white', fontSize: { xs: '2.2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.04em', background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                     <AnimCounter end={s.num} suffix={s.suffix} />
                   </Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', mt: 0.5 }}>{s.label}</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', mt: 0.5 }}>{STATS[i]?.label}</Typography>
                 </Box>
               </FadeIn>
             ))}
@@ -358,18 +339,18 @@ export default function Landing() {
         <Container maxWidth="md">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label="THE PROBLEM" sx={{ mb: 3, background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.25)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.25)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
-                Your current PM tool is just a{' '}
-                <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>fancy to-do list</Box>
+                {t('landing.problem.title')}{' '}
+                <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>{t('landing.problem.strike')}</Box>
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', lineHeight: 1.7 }}>
-                Monday, Asana, and Notion help you track work — but they don't think. You still need to plan, assign, schedule, and risk-check everything manually.
+                {t('landing.problem.sub')}
               </Typography>
             </Box>
           </FadeIn>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
-            {['You spend Monday planning your whole week', 'Tasks get assigned based on guesswork', 'Nobody sees the deadline risk until it\'s too late', 'Standups replace actual visibility', 'AI tools require you to write perfect prompts', 'Reporting takes hours every week'].map((p, i) => (
+            {PAINS.map((p, i) => (
               <FadeIn key={i} delay={i * 80}>
                 <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2, border: '1px solid rgba(239,68,68,0.15)', background: 'rgba(239,68,68,0.04)' }}>
                   <Close sx={{ color: '#EF4444', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
@@ -386,13 +367,13 @@ export default function Landing() {
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 10 }}>
-              <Chip label="FEATURES" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.features.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
-                Everything your team needs.{' '}
-                <Box component="span" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Nothing they don't.</Box>
+                {t('landing.features.title')}{' '}
+                <Box component="span" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.features.titleGrad')}</Box>
               </Typography>
               <Typography sx={{ color: '#64748B', fontSize: '1.1rem', maxWidth: 550, mx: 'auto' }}>
-                12 core features. All AI-connected. All designed to actually reduce your team's workload.
+                {t('landing.features.sub')}
               </Typography>
             </Box>
           </FadeIn>
@@ -415,11 +396,11 @@ export default function Landing() {
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label="COMPARISON" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.compare.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
-                How Julay stacks up
+                {t('landing.compare.title')}
               </Typography>
-              <Typography sx={{ color: '#64748B', fontSize: '1.05rem' }}>Spoiler: the AI column changes everything.</Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.05rem' }}>{t('landing.compare.sub')}</Typography>
             </Box>
           </FadeIn>
           <Box sx={{ borderRadius: 4, overflow: 'hidden', border: '1.5px solid #E2E8F0', background: 'white', boxShadow: '0 4px 32px rgba(0,0,0,0.06)' }}>
@@ -461,23 +442,23 @@ export default function Landing() {
             <Box sx={{ textAlign: 'center', p: { xs: 5, md: 8 }, borderRadius: 4, border: '2px solid #E2E8F0', background: 'linear-gradient(135deg, #F8FAFC, #EEF2FF)' }}>
               <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: '#EEF2FF', border: '1px solid rgba(99,102,241,0.3)', mb: 3 }}>
                 <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#6366F1', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
-                <Typography sx={{ color: '#4F46E5', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em' }}>NOW IN EARLY ACCESS</Typography>
+                <Typography sx={{ color: '#4F46E5', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em' }}>{t('landing.earlyAccess.badge')}</Typography>
               </Box>
               <Typography variant="h2" sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' }, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', mb: 2 }}>
-                Be among the first teams to use Julay
+                {t('landing.earlyAccess.title')}
               </Typography>
               <Typography sx={{ color: '#64748B', fontSize: '1rem', lineHeight: 1.7, mb: 4, maxWidth: 480, mx: 'auto' }}>
-                We're launching Julay with a small group of early users. Create your account now — get full access for free and help shape the product.
+                {t('landing.earlyAccess.sub')}
               </Typography>
               <Button onClick={() => window.location.href = '/register'} variant="contained" size="large"
                 sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } }}>
-                Get Early Access — Free <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+                {t('landing.earlyAccess.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
               <Box sx={{ display: 'flex', justifyContent: 'center', gap: 4, mt: 4 }}>
-                {['No credit card', 'Cancel anytime', 'Full feature access'].map(t => (
-                  <Box key={t} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                {t('landing.earlyAccess.perks', { returnObjects: true }).map((perk, i) => (
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                     <CheckCircle sx={{ color: '#10B981', fontSize: 15 }} />
-                    <Typography sx={{ color: '#64748B', fontSize: '0.82rem' }}>{t}</Typography>
+                    <Typography sx={{ color: '#64748B', fontSize: '0.82rem' }}>{perk}</Typography>
                   </Box>
                 ))}
               </Box>
@@ -491,15 +472,15 @@ export default function Landing() {
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label="PRICING" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.pricing.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
-                Start free. Scale as you grow.
+                {t('landing.pricing.title')}
               </Typography>
-              <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 4 }}>No surprises. No per-seat traps. Cancel anytime.</Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 4 }}>{t('landing.pricing.sub')}</Typography>
               <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
-                <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>Monthly</ToggleButton>
+                <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>{t('landing.pricing.monthly')}</ToggleButton>
                 <ToggleButton value="yearly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>
-                  Yearly <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
+                  {t('landing.pricing.yearly')} <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
                 </ToggleButton>
               </ToggleButtonGroup>
             </Box>
@@ -508,23 +489,23 @@ export default function Landing() {
             {PLANS.map((plan, i) => (
               <FadeIn key={i} delay={i * 80}>
                 <Box sx={{ position: 'relative', borderRadius: 3, border: plan.highlight ? '2px solid #6366F1' : '1.5px solid #E2E8F0', background: plan.highlight ? 'white' : 'white', boxShadow: plan.highlight ? '0 8px 40px rgba(99,102,241,0.2)' : '0 1px 4px rgba(0,0,0,0.04)', transform: plan.highlight ? 'scale(1.03)' : 'none', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.1)', transform: plan.highlight ? 'scale(1.05)' : 'translateY(-4px)' } }}>
-                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>MOST POPULAR</Typography></Box>}
+                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>{t('landing.pricing.mostPopular')}</Typography></Box>}
                   <Box sx={{ p: 3.5 }}>
                     <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', mb: 0.5 }}>{plan.name}</Typography>
                     <Typography sx={{ color: '#64748B', fontSize: '0.82rem', mb: 2.5 }}>{plan.description}</Typography>
                     <Box sx={{ mb: 3 }}>
                       {plan.price === 0 ? (
-                        <Typography sx={{ fontSize: '2.5rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>Free</Typography>
+                        <Typography sx={{ fontSize: '2.5rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>{t('landing.pricing.free')}</Typography>
                       ) : (
                         <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
                           <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#64748B', mt: 0.5 }}>$</Typography>
                           <Typography sx={{ fontSize: '2.8rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>
                             {billing === 'yearly' ? plan.yearlyPrice : plan.price}
                           </Typography>
-                          <Typography sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>/mo</Typography>
+                          <Typography sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>{t('landing.pricing.perMo')}</Typography>
                         </Box>
                       )}
-                      {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>Save ${(plan.price - plan.yearlyPrice) * 12}/year</Typography>}
+                      {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>{t('landing.pricing.saveYear', { amount: (plan.price - plan.yearlyPrice) * 12 })}</Typography>}
                     </Box>
                     <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
                       {plan.cta}
@@ -545,10 +526,10 @@ export default function Landing() {
           <FadeIn delay={200}>
             <Box sx={{ mt: 6, p: 4, borderRadius: 3, border: '1.5px solid #E2E8F0', background: 'white', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' }, justifyContent: 'space-between', gap: 3 }}>
               <Box>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', mb: 0.5 }}>Enterprise</Typography>
-                <Typography sx={{ color: '#64748B', fontSize: '0.9rem' }}>Unlimited AI · SSO/SAML · White-label · Custom SLA · Dedicated support · On-premise option</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', mb: 0.5 }}>{t('landing.pricing.enterprise.title')}</Typography>
+                <Typography sx={{ color: '#64748B', fontSize: '0.9rem' }}>{t('landing.pricing.enterprise.sub')}</Typography>
               </Box>
-              <Button variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>Contact Sales</Button>
+              <Button variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>{t('landing.pricing.enterprise.cta')}</Button>
             </Box>
           </FadeIn>
         </Container>
@@ -559,9 +540,9 @@ export default function Landing() {
         <Container maxWidth="md">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label="FAQ" sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.faq.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A' }}>
-                Questions? We've got answers.
+                {t('landing.faq.title')}
               </Typography>
             </Box>
           </FadeIn>
@@ -586,24 +567,24 @@ export default function Landing() {
         <Orb sx={{ width: 700, height: 700, background: 'rgba(99,102,241,0.12)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <FadeIn>
-            <Typography sx={{ color: '#818CF8', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', mb: 3 }}>Stop planning. Start executing.</Typography>
+            <Typography sx={{ color: '#818CF8', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', mb: 3 }}>{t('landing.finalCta.eyebrow')}</Typography>
             <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1, mb: 3 }}>
-              Your next project starts{' '}
-              <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>right now.</Box>
+              {t('landing.finalCta.title')}{' '}
+              <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.finalCta.titleGrad')}</Box>
             </Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto' }}>
-              Replace planning meetings with Julay AI. Describe your goal, get a full project in 60 seconds. Free forever. No credit card.
+              {t('landing.finalCta.sub')}
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
               <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 12px 48px rgba(99,102,241,0.6)' }, transition: 'all 0.2s' }}>
-                Build your first project free <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+                {t('landing.finalCta.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
             </Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center', mt: 5 }}>
-              {['Free forever plan', 'No credit card', 'Setup in 60 seconds', 'Cancel anytime'].map(t => (
-                <Box key={t} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              {t('landing.finalCta.perks', { returnObjects: true }).map((perk, i) => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
                   <CheckCircleOutline sx={{ color: '#10B981', fontSize: 15 }} />
-                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem' }}>{t}</Typography>
+                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem' }}>{perk}</Typography>
                 </Box>
               ))}
             </Box>
@@ -622,18 +603,14 @@ export default function Landing() {
                 </Box>
                 <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1rem' }}>Julay</Typography>
               </Box>
-              <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>AI-powered project management for modern teams. Plan smarter. Execute faster.</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5 }}>
-              {[
-                { title: 'Product', links: ['Features', 'Pricing', 'Compare', 'Changelog'] },
-                { title: 'Company', links: ['About', 'Blog', 'Careers', 'Contact'] },
-                { title: 'Legal', links: ['Privacy', 'Terms', 'Security', 'Cookies'] },
-              ].map(col => (
+              {[t('landing.footer.product', { returnObjects: true }), t('landing.footer.company', { returnObjects: true }), t('landing.footer.legal', { returnObjects: true })].map(col => (
                 <Box key={col.title}>
                   <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 2 }}>{col.title}</Typography>
-                  {col.links.map(l => (
-                    <Typography key={l} sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', transition: 'color 0.15s', '&:hover': { color: 'rgba(255,255,255,0.7)' } }}>{l}</Typography>
+                  {col.links.map((l, li) => (
+                    <Typography key={li} sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', transition: 'color 0.15s', '&:hover': { color: 'rgba(255,255,255,0.7)' } }}>{l}</Typography>
                   ))}
                 </Box>
               ))}
@@ -641,8 +618,8 @@ export default function Landing() {
           </Box>
           <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 4 }} />
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>© 2025 Julay. All rights reserved.</Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>Built with ❤️ · Powered by Claude AI</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>{t('landing.footer.copy')}</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>{t('landing.footer.built')}</Typography>
           </Box>
         </Container>
       </Box>
