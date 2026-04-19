@@ -238,16 +238,15 @@ export default function Landing() {
       {/* ─── NAV ─── */}
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ overflow: 'hidden', height: 40, display: 'flex', alignItems: 'flex-start' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <Box
               component="img"
               src="/logo-full.png"
               alt="Julay"
               sx={{
-                height: 48,
+                height: 42,
                 width: 'auto',
-                mixBlendMode: 'screen',
-                filter: 'saturate(1.25) brightness(1.05) drop-shadow(0 0 8px rgba(99,102,241,0.5))',
+                filter: 'drop-shadow(0 0 10px rgba(99,102,241,0.45))',
               }}
             />
           </Box>
@@ -694,17 +693,12 @@ export default function Landing() {
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
-              <Box sx={{ overflow: 'hidden', height: 34, display: 'flex', alignItems: 'flex-start', mb: 2 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
                 <Box
                   component="img"
                   src="/logo-full.png"
                   alt="Julay"
-                  sx={{
-                    height: 40,
-                    width: 'auto',
-                    mixBlendMode: 'screen',
-                    filter: 'saturate(1.2) brightness(1.0)',
-                  }}
+                  sx={{ height: 34, width: 'auto' }}
                 />
               </Box>
               <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
