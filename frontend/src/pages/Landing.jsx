@@ -185,7 +185,6 @@ export default function Landing() {
   const PRICE_ROW = t('landing.compare.startingPrice', { returnObjects: true });
   const NAV_LINKS = [
     { key: 'features', label: t('landing.nav.features') },
-    { key: 'compare', label: t('landing.nav.compare') },
     { key: 'pricing', label: t('landing.nav.pricing') },
     { key: 'faq', label: t('landing.nav.faq') },
   ];
@@ -404,7 +403,7 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ─── COMPARE ─── */}
+      {/* ─── COMPARE ─── (hidden for now)
       <Box id="compare" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
         <Container maxWidth="lg">
           <FadeIn>
@@ -452,6 +451,7 @@ export default function Landing() {
           </Box>
         </Container>
       </Box>
+      */}
 
       {/* ─── EARLY ADOPTERS CTA ─── */}
       <Box sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
