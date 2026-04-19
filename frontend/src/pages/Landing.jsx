@@ -240,10 +240,6 @@ export default function Landing() {
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 152, width: 152, objectFit: 'contain' }} />
-            <svg width="200" height="152" viewBox="0 0 200 152" fill="none" aria-label="Julay">
-              <text x="0" y="98" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
-                    fontWeight="700" fontSize="80" letterSpacing="-2" fill="white">Julay</text>
-            </svg>
           </Box>
 
           {/* Desktop nav links */}
