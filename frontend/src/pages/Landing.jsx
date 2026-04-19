@@ -238,9 +238,8 @@ export default function Landing() {
       {/* ─── NAV ─── */}
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 152, width: 152, objectFit: 'contain' }} />
-          </Box>
+          {/* Spacer — actual icon is fixed-positioned below straddling the nav border */}
+          <Box sx={{ width: 64, flexShrink: 0 }} />
 
           {/* Desktop nav links */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
@@ -264,6 +263,23 @@ export default function Landing() {
           </IconButton>
         </Box>
       </Box>
+
+      {/* Split logo — top half in navbar, bottom half in hero */}
+      <Box
+        component="img"
+        src="/logo-icon.png"
+        alt="Julay"
+        sx={{
+          position: 'fixed',
+          top: 29,
+          left: { xs: 16, md: 32 },
+          height: 72,
+          width: 72,
+          objectFit: 'contain',
+          zIndex: 101,
+          pointerEvents: 'none',
+        }}
+      />
 
       {/* ─── HERO ─── */}
       <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
