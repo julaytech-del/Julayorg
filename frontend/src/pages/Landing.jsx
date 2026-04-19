@@ -284,7 +284,7 @@ export default function Landing() {
         />
         <Typography sx={{
           fontSize: '2.6rem',
-          ml: '-12px',
+          ml: '-55px',
           fontWeight: 800,
           letterSpacing: '-0.04em',
           lineHeight: 1,
