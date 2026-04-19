@@ -239,10 +239,10 @@ export default function Landing() {
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 38, width: 38, objectFit: 'contain' }} />
-            <svg width="72" height="38" viewBox="0 0 72 38" fill="none" aria-label="Julay">
-              <text x="0" y="26.5" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
-                    fontWeight="700" fontSize="20" letterSpacing="-0.5" fill="white">Julay</text>
+            <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 152, width: 152, objectFit: 'contain' }} />
+            <svg width="200" height="152" viewBox="0 0 200 152" fill="none" aria-label="Julay">
+              <text x="0" y="98" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
+                    fontWeight="700" fontSize="80" letterSpacing="-2" fill="white">Julay</text>
             </svg>
           </Box>
 
