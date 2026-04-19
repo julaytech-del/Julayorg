@@ -403,8 +403,8 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ─── COMPARE ─── (hidden for now)
-      <Box id="compare" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
+      {/* ─── COMPARE ─── hidden temporarily */}
+      {false && <Box id="compare" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
@@ -421,7 +421,6 @@ export default function Landing() {
             </Box>
           </FadeIn>
           <Box sx={{ borderRadius: 4, overflow: 'hidden', border: '1.5px solid #E2E8F0', background: 'white', boxShadow: '0 4px 32px rgba(0,0,0,0.06)' }}>
-            {/* Header */}
             <Box sx={{ display: 'grid', gridTemplateColumns: '2fr repeat(4,1fr)', background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0' }}>
               <Box sx={{ p: 2.5 }} />
               {['Julay', ...TOOLS].map((t, i) => (
@@ -450,8 +449,7 @@ export default function Landing() {
             ))}
           </Box>
         </Container>
-      </Box>
-      */}
+      </Box>}
 
       {/* ─── EARLY ADOPTERS CTA ─── */}
       <Box sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
