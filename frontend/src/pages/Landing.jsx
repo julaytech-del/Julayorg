@@ -282,24 +282,6 @@ export default function Landing() {
           alt=""
           sx={{ height: 216, width: 216, objectFit: 'contain', flexShrink: 0 }}
         />
-        <Typography sx={{
-          fontSize: '2.4rem',
-          ml: '-50px',
-          fontWeight: 700,
-          letterSpacing: '-0.02em',
-          lineHeight: 1,
-          background: 'linear-gradient(135deg, #C7D2FE 0%, #A5B4FC 40%, #818CF8 100%)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          backgroundClip: 'text',
-          fontFamily: '"Space Grotesk", "Inter", ui-sans-serif, sans-serif',
-          userSelect: 'none',
-          display: { xs: 'none', md: 'block' },
-          alignSelf: 'center',
-          mt: '4px',
-        }}>
-          Julay
-        </Typography>
       </Box>
 
       {/* ─── HERO ─── */}
