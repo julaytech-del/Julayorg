@@ -239,7 +239,7 @@ export default function Landing() {
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Spacer — actual icon is fixed-positioned below straddling the nav border */}
-          <Box sx={{ width: 64, flexShrink: 0 }} />
+          <Box sx={{ width: 200, flexShrink: 0 }} />
 
           {/* Desktop nav links */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
@@ -271,10 +271,10 @@ export default function Landing() {
         alt="Julay"
         sx={{
           position: 'fixed',
-          top: 29,
+          top: -42,
           left: { xs: 16, md: 32 },
-          height: 72,
-          width: 72,
+          height: 216,
+          width: 216,
           objectFit: 'contain',
           zIndex: 101,
           pointerEvents: 'none',
