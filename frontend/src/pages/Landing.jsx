@@ -352,7 +352,7 @@ export default function Landing() {
         <Container maxWidth="md">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: 'rgba(239,68,68,0.15)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.25)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: 'rgba(239,68,68,0.08)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.18)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
                 {t('landing.problem.title')}{' '}
                 <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>{t('landing.problem.strike')}</Box>
@@ -365,8 +365,8 @@ export default function Landing() {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             {PAINS.map((p, i) => (
               <FadeIn key={i} delay={i * 80}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2, border: '1px solid rgba(239,68,68,0.15)', background: 'rgba(239,68,68,0.04)' }}>
-                  <Close sx={{ color: '#EF4444', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2, border: '1px solid rgba(239,68,68,0.1)', background: 'rgba(239,68,68,0.03)' }}>
+                  <Close sx={{ color: '#F87171', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
                   <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', lineHeight: 1.5 }}>{p}</Typography>
                 </Box>
               </FadeIn>
@@ -414,6 +414,11 @@ export default function Landing() {
                 {t('landing.compare.title')}
               </Typography>
               <Typography sx={{ color: '#64748B', fontSize: '1.05rem' }}>{t('landing.compare.sub')}</Typography>
+              <Box sx={{ display: 'inline-block', mt: 2, px: 3, py: 1, borderRadius: 99, background: 'linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.08))', border: '1px solid rgba(99,102,241,0.25)' }}>
+                <Typography sx={{ color: '#6366F1', fontSize: '0.92rem', fontWeight: 700, fontStyle: 'italic' }}>
+                  Others help you manage work. Julay does it for you.
+                </Typography>
+              </Box>
             </Box>
           </FadeIn>
           <Box sx={{ borderRadius: 4, overflow: 'hidden', border: '1.5px solid #E2E8F0', background: 'white', boxShadow: '0 4px 32px rgba(0,0,0,0.06)' }}>
@@ -421,7 +426,7 @@ export default function Landing() {
             <Box sx={{ display: 'grid', gridTemplateColumns: '2fr repeat(4,1fr)', background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0' }}>
               <Box sx={{ p: 2.5 }} />
               {['Julay', ...TOOLS].map((t, i) => (
-                <Box key={i} sx={{ p: 2.5, textAlign: 'center', borderLeft: '1px solid #E2E8F0', background: t === 'Julay' ? 'linear-gradient(135deg,rgba(99,102,241,0.08),rgba(139,92,246,0.06))' : 'transparent' }}>
+                <Box key={i} sx={{ p: 2.5, textAlign: 'center', borderLeft: '1px solid #E2E8F0', background: t === 'Julay' ? 'linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.08))' : 'transparent', boxShadow: t === 'Julay' ? 'inset 0 -2px 12px rgba(99,102,241,0.15)' : 'none' }}>
                   <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: t === 'Julay' ? '#4F46E5' : '#475569' }}>{t}</Typography>
                   {t === 'Julay' && <Box sx={{ width: 40, height: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', mx: 'auto', mt: 0.5, borderRadius: 1 }} />}
                 </Box>
@@ -475,6 +480,78 @@ export default function Landing() {
                   </Box>
                 ))}
               </Box>
+            </Box>
+          </FadeIn>
+        </Container>
+      </Box>
+
+      {/* ─── PRICING ─── */}
+      <Box id="pricing" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
+        <Container maxWidth="lg">
+          <FadeIn>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip label={t('landing.pricing.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
+                {t('landing.pricing.title')}
+              </Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 2 }}>{t('landing.pricing.sub')}</Typography>
+              <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.2)', mb: 4 }}>
+                <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+                <Typography sx={{ color: '#EF4444', fontSize: '0.78rem', fontWeight: 700 }}>🔥 Founding member pricing — limited spots at this rate</Typography>
+              </Box>
+              <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
+                <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>{t('landing.pricing.monthly')}</ToggleButton>
+                <ToggleButton value="yearly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>
+                  {t('landing.pricing.yearly')} <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
+                </ToggleButton>
+              </ToggleButtonGroup>
+            </Box>
+          </FadeIn>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4,1fr)' }, gap: 2.5, alignItems: 'start' }}>
+            {PLANS.map((plan, i) => (
+              <FadeIn key={i} delay={i * 80}>
+                <Box sx={{ position: 'relative', borderRadius: 3, border: plan.highlight ? '2px solid #6366F1' : '1.5px solid #E2E8F0', background: plan.highlight ? 'white' : 'white', boxShadow: plan.highlight ? '0 8px 40px rgba(99,102,241,0.2)' : '0 1px 4px rgba(0,0,0,0.04)', transform: plan.highlight ? 'scale(1.03)' : 'none', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.1)', transform: plan.highlight ? 'scale(1.05)' : 'translateY(-4px)' } }}>
+                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>{t('landing.pricing.mostPopular')}</Typography></Box>}
+                  <Box sx={{ p: 3.5 }}>
+                    <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', mb: 0.5 }}>{plan.name}</Typography>
+                    <Typography sx={{ color: '#64748B', fontSize: '0.82rem', mb: 2.5 }}>{plan.description}</Typography>
+                    <Box sx={{ mb: 3 }}>
+                      {plan.price === 0 ? (
+                        <Typography sx={{ fontSize: '2.5rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>{t('landing.pricing.free')}</Typography>
+                      ) : (
+                        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
+                          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#64748B', mt: 0.5 }}>$</Typography>
+                          <Typography sx={{ fontSize: '2.8rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>
+                            {billing === 'yearly' ? plan.yearlyPrice : plan.price}
+                          </Typography>
+                          <Typography sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>{t('landing.pricing.perMo')}</Typography>
+                        </Box>
+                      )}
+                      {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>{t('landing.pricing.saveYear', { amount: (plan.price - plan.yearlyPrice) * 12 })}</Typography>}
+                    </Box>
+                    <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
+                      {plan.cta}
+                    </Button>
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
+                      {plan.features.map((f, fi) => (
+                        <Box key={fi} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                          <CheckCircle sx={{ color: plan.highlight ? '#6366F1' : '#10B981', fontSize: 16, flexShrink: 0, mt: 0.2 }} />
+                          <Typography sx={{ color: '#475569', fontSize: '0.83rem', lineHeight: 1.4 }}>{f}</Typography>
+                        </Box>
+                      ))}
+                    </Box>
+                  </Box>
+                </Box>
+              </FadeIn>
+            ))}
+          </Box>
+          <FadeIn delay={200}>
+            <Box sx={{ mt: 6, p: 4, borderRadius: 3, border: '1.5px solid #E2E8F0', background: 'white', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' }, justifyContent: 'space-between', gap: 3 }}>
+              <Box>
+                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', mb: 0.5 }}>{t('landing.pricing.enterprise.title')}</Typography>
+                <Typography sx={{ color: '#64748B', fontSize: '0.9rem' }}>{t('landing.pricing.enterprise.sub')}</Typography>
+              </Box>
+              <Button variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>{t('landing.pricing.enterprise.cta')}</Button>
             </Box>
           </FadeIn>
         </Container>
@@ -544,74 +621,6 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ─── PRICING ─── */}
-      <Box id="pricing" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
-        <Container maxWidth="lg">
-          <FadeIn>
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label={t('landing.pricing.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
-                {t('landing.pricing.title')}
-              </Typography>
-              <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 4 }}>{t('landing.pricing.sub')}</Typography>
-              <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
-                <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>{t('landing.pricing.monthly')}</ToggleButton>
-                <ToggleButton value="yearly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>
-                  {t('landing.pricing.yearly')} <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
-                </ToggleButton>
-              </ToggleButtonGroup>
-            </Box>
-          </FadeIn>
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4,1fr)' }, gap: 2.5, alignItems: 'start' }}>
-            {PLANS.map((plan, i) => (
-              <FadeIn key={i} delay={i * 80}>
-                <Box sx={{ position: 'relative', borderRadius: 3, border: plan.highlight ? '2px solid #6366F1' : '1.5px solid #E2E8F0', background: plan.highlight ? 'white' : 'white', boxShadow: plan.highlight ? '0 8px 40px rgba(99,102,241,0.2)' : '0 1px 4px rgba(0,0,0,0.04)', transform: plan.highlight ? 'scale(1.03)' : 'none', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.1)', transform: plan.highlight ? 'scale(1.05)' : 'translateY(-4px)' } }}>
-                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>{t('landing.pricing.mostPopular')}</Typography></Box>}
-                  <Box sx={{ p: 3.5 }}>
-                    <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', mb: 0.5 }}>{plan.name}</Typography>
-                    <Typography sx={{ color: '#64748B', fontSize: '0.82rem', mb: 2.5 }}>{plan.description}</Typography>
-                    <Box sx={{ mb: 3 }}>
-                      {plan.price === 0 ? (
-                        <Typography sx={{ fontSize: '2.5rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>{t('landing.pricing.free')}</Typography>
-                      ) : (
-                        <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 0.5 }}>
-                          <Typography sx={{ fontSize: '1.1rem', fontWeight: 600, color: '#64748B', mt: 0.5 }}>$</Typography>
-                          <Typography sx={{ fontSize: '2.8rem', fontWeight: 800, color: '#0F172A', letterSpacing: '-0.04em', lineHeight: 1 }}>
-                            {billing === 'yearly' ? plan.yearlyPrice : plan.price}
-                          </Typography>
-                          <Typography sx={{ color: '#94A3B8', fontSize: '0.85rem' }}>{t('landing.pricing.perMo')}</Typography>
-                        </Box>
-                      )}
-                      {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>{t('landing.pricing.saveYear', { amount: (plan.price - plan.yearlyPrice) * 12 })}</Typography>}
-                    </Box>
-                    <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
-                      {plan.cta}
-                    </Button>
-                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
-                      {plan.features.map((f, fi) => (
-                        <Box key={fi} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
-                          <CheckCircle sx={{ color: plan.highlight ? '#6366F1' : '#10B981', fontSize: 16, flexShrink: 0, mt: 0.2 }} />
-                          <Typography sx={{ color: '#475569', fontSize: '0.83rem', lineHeight: 1.4 }}>{f}</Typography>
-                        </Box>
-                      ))}
-                    </Box>
-                  </Box>
-                </Box>
-              </FadeIn>
-            ))}
-          </Box>
-          <FadeIn delay={200}>
-            <Box sx={{ mt: 6, p: 4, borderRadius: 3, border: '1.5px solid #E2E8F0', background: 'white', display: 'flex', flexDirection: { xs: 'column', md: 'row' }, alignItems: { md: 'center' }, justifyContent: 'space-between', gap: 3 }}>
-              <Box>
-                <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', mb: 0.5 }}>{t('landing.pricing.enterprise.title')}</Typography>
-                <Typography sx={{ color: '#64748B', fontSize: '0.9rem' }}>{t('landing.pricing.enterprise.sub')}</Typography>
-              </Box>
-              <Button variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>{t('landing.pricing.enterprise.cta')}</Button>
-            </Box>
-          </FadeIn>
-        </Container>
-      </Box>
-
       {/* ─── FAQ ─── */}
       <Box id="faq" sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
         <Container maxWidth="md">
@@ -644,6 +653,10 @@ export default function Landing() {
         <Orb sx={{ width: 700, height: 700, background: 'rgba(99,102,241,0.12)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <FadeIn>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2.5, py: 0.75, borderRadius: 99, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', mb: 4 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+              <Typography sx={{ color: '#FCA5A5', fontSize: '0.78rem', fontWeight: 700 }}>500+ teams already on the waitlist — don't miss your spot</Typography>
+            </Box>
             <Typography sx={{ color: '#818CF8', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', mb: 3 }}>{t('landing.finalCta.eyebrow')}</Typography>
             <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1, mb: 3 }}>
               {t('landing.finalCta.title')}{' '}
