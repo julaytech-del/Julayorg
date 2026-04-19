@@ -238,17 +238,10 @@ export default function Landing() {
       {/* ─── NAV ─── */}
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <svg width="118" height="38" viewBox="0 0 118 38" fill="none" aria-label="Julay">
-              <defs>
-                <linearGradient id="nav-ig" x1="4" y1="4" x2="26" y2="34" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#818CF8"/>
-                  <stop offset="1" stopColor="#A78BFA"/>
-                </linearGradient>
-              </defs>
-              <path d="M13 7 L21 7 L21 24 Q21 31 14.5 31 Q8 31 8 24"
-                    stroke="url(#nav-ig)" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"/>
-              <text x="34" y="26.5" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 38, width: 38, objectFit: 'contain' }} />
+            <svg width="72" height="38" viewBox="0 0 72 38" fill="none" aria-label="Julay">
+              <text x="0" y="26.5" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
                     fontWeight="700" fontSize="20" letterSpacing="-0.5" fill="white">Julay</text>
             </svg>
           </Box>
@@ -695,17 +688,10 @@ export default function Landing() {
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <svg width="98" height="32" viewBox="0 0 98 32" fill="none" aria-label="Julay">
-                  <defs>
-                    <linearGradient id="ft-ig" x1="3" y1="3" x2="21" y2="29" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#818CF8"/>
-                      <stop offset="1" stopColor="#A78BFA"/>
-                    </linearGradient>
-                  </defs>
-                  <path d="M11 6 L18 6 L18 20 Q18 26 12 26 Q6 26 6 20"
-                        stroke="url(#ft-ig)" strokeWidth="2.6" strokeLinecap="round" strokeLinejoin="round"/>
-                  <text x="28" y="22" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 2 }}>
+                <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 30, width: 30, objectFit: 'contain' }} />
+                <svg width="60" height="30" viewBox="0 0 60 30" fill="none" aria-label="Julay">
+                  <text x="0" y="21" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
                         fontWeight="700" fontSize="17" letterSpacing="-0.4" fill="rgba(255,255,255,0.6)">Julay</text>
                 </svg>
               </Box>
