@@ -272,7 +272,7 @@ export default function Landing() {
         height: 216,
         display: 'flex',
         alignItems: 'center',
-        gap: 2,
+        gap: 0.5,
         zIndex: 101,
         pointerEvents: 'none',
       }}>
@@ -283,7 +283,7 @@ export default function Landing() {
           sx={{ height: 216, width: 216, objectFit: 'contain', flexShrink: 0 }}
         />
         <Typography sx={{
-          fontSize: '3rem',
+          fontSize: '2.6rem',
           fontWeight: 800,
           letterSpacing: '-0.04em',
           lineHeight: 1,
