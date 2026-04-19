@@ -244,7 +244,7 @@ export default function Landing() {
               src="/logo-full.png"
               alt="Julay"
               sx={{
-                height: 42,
+                height: 46,
                 width: 'auto',
                 filter: 'drop-shadow(0 0 10px rgba(99,102,241,0.45))',
               }}
