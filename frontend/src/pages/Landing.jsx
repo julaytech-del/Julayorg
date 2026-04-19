@@ -272,7 +272,7 @@ export default function Landing() {
         height: 216,
         display: 'flex',
         alignItems: 'center',
-        gap: 0.5,
+        gap: 0,
         zIndex: 101,
         pointerEvents: 'none',
       }}>
@@ -284,6 +284,7 @@ export default function Landing() {
         />
         <Typography sx={{
           fontSize: '2.6rem',
+          ml: '-12px',
           fontWeight: 800,
           letterSpacing: '-0.04em',
           lineHeight: 1,
