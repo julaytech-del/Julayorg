@@ -265,21 +265,39 @@ export default function Landing() {
       </Box>
 
       {/* Split logo — top half in navbar, bottom half in hero */}
-      <Box
-        component="img"
-        src="/logo-icon.png"
-        alt="Julay"
-        sx={{
-          position: 'fixed',
-          top: -42,
-          left: { xs: 16, md: 32 },
-          height: 216,
-          width: 216,
-          objectFit: 'contain',
-          zIndex: 101,
-          pointerEvents: 'none',
-        }}
-      />
+      <Box sx={{
+        position: 'fixed',
+        top: -42,
+        left: { xs: 16, md: 32 },
+        height: 216,
+        display: 'flex',
+        alignItems: 'center',
+        gap: 2,
+        zIndex: 101,
+        pointerEvents: 'none',
+      }}>
+        <Box
+          component="img"
+          src="/logo-icon.png"
+          alt=""
+          sx={{ height: 216, width: 216, objectFit: 'contain', flexShrink: 0 }}
+        />
+        <Typography sx={{
+          fontSize: '9rem',
+          fontWeight: 800,
+          letterSpacing: '-0.04em',
+          lineHeight: 1,
+          background: 'linear-gradient(135deg, #818CF8 0%, #C084FC 50%, #38BDF8 100%)',
+          WebkitBackgroundClip: 'text',
+          WebkitTextFillColor: 'transparent',
+          backgroundClip: 'text',
+          fontFamily: '"Inter", ui-sans-serif, system-ui, sans-serif',
+          userSelect: 'none',
+          display: { xs: 'none', md: 'block' },
+        }}>
+          Julay
+        </Typography>
+      </Box>
 
       {/* ─── HERO ─── */}
       <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
