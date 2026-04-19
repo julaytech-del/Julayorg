@@ -239,7 +239,7 @@ export default function Landing() {
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            <Box component="img" src="/logo-full.png" alt="Julay" sx={{ height: 44, width: 'auto', objectFit: 'contain' }} />
+            <Box component="img" src="/logo-main.svg" alt="Julay" sx={{ height: 36, width: 'auto' }} />
           </Box>
 
           {/* Desktop nav links */}
@@ -685,7 +685,7 @@ export default function Landing() {
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
               <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <Box component="img" src="/logo-full.png" alt="Julay" sx={{ height: 36, width: 'auto', objectFit: 'contain' }} />
+                <Box component="img" src="/logo-main.svg" alt="Julay" sx={{ height: 30, width: 'auto' }} />
               </Box>
               <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>

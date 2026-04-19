@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 36" fill="none">
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="36" y2="36" gradientUnits="userSpaceOnUse">
+      <stop offset="0%" stop-color="#818CF8"/>
+      <stop offset="55%" stop-color="#C084FC"/>
+      <stop offset="100%" stop-color="#38BDF8"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Icon: flat, no glow -->
+  <path d="M18 5 Q31 5 31 18" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.5"/>
+  <path d="M31 18 Q31 31 18 31" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.5"/>
+  <path d="M18 31 Q5 31 5 18" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.5"/>
+  <path d="M5 18 Q5 5 18 5" stroke="url(#g)" stroke-width="1.2" fill="none" opacity="0.5"/>
+  <circle cx="18" cy="5"  r="2.5" fill="url(#g)"/>
+  <circle cx="31" cy="18" r="2.5" fill="url(#g)"/>
+  <circle cx="18" cy="31" r="2.5" fill="url(#g)"/>
+  <circle cx="5"  cy="18" r="2.5" fill="url(#g)"/>
+  <circle cx="18" cy="18" r="4"   fill="url(#g)"/>
+
+  <!-- Wordmark: white, no glow -->
+  <text
+    x="46" y="24.5"
+    font-family="Inter, ui-sans-serif, system-ui, -apple-system, sans-serif"
+    font-weight="700" font-size="21" letter-spacing="-0.8"
+    fill="white"
+  >Julay</text>
+</svg>
