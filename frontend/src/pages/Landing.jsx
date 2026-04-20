@@ -280,7 +280,7 @@ export default function Landing() {
           component="img"
           src="/logo-icon.png"
           alt=""
-          sx={{ height: 216, width: 216, objectFit: 'contain', flexShrink: 0 }}
+          sx={{ height: 216, width: 'auto', objectFit: 'contain', flexShrink: 0 }}
         />
       </Box>
 
