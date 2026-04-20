@@ -321,7 +321,7 @@ export default function Landing() {
           position: 'absolute', inset: 0,
           backgroundImage: "url('/hero-bg.png')",
           backgroundSize: 'cover',
-          backgroundPosition: 'center 64px',
+          backgroundPosition: 'center top',
           backgroundRepeat: 'no-repeat',
         }} />
 
