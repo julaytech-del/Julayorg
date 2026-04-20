@@ -306,65 +306,58 @@ export default function Landing() {
         </Container>
       </Box>}
 
-      {/* ─── HERO v2 (Circuit Board) ─── */}
+      {/* ─── HERO v2 (Circuit Board photo) ─── */}
       <Box sx={{
         position: 'relative',
         background: '#0C0E1A',
         minHeight: '100vh',
         display: 'flex',
         flexDirection: 'column',
-        justifyContent: 'center',
+        justifyContent: 'flex-end',
         overflow: 'hidden',
-        pt: 8,
       }}>
-        {/* Real PCB circuit board background */}
-        <Box sx={{ position: 'absolute', inset: 0, backgroundImage: "url('/circuit-bg.svg')", backgroundSize: 'cover', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', pointerEvents: 'none' }} />
-        {/* Center glow behind JULAY logo */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 55% 45% at 50% 38%, rgba(80,60,160,0.45) 0%, rgba(40,30,100,0.2) 50%, transparent 75%)', pointerEvents: 'none' }} />
-        {/* Top & bottom edge darkening so text reads well */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(12,14,26,0.55) 0%, transparent 25%, transparent 60%, rgba(12,14,26,0.75) 100%)', pointerEvents: 'none' }} />
+        {/* Full-bleed circuit board + JULAY letters photo */}
+        <Box sx={{
+          position: 'absolute', inset: 0,
+          backgroundImage: "url('/hero-bg.png')",
+          backgroundSize: 'cover',
+          backgroundPosition: 'center top',
+          backgroundRepeat: 'no-repeat',
+        }} />
 
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pt: { xs: 4, md: 2 }, pb: { xs: 6, md: 8 } }}>
-          {/* Giant JULAY logo — fills the upper frame */}
-          <Box
-            component="img"
-            src="/logo-icon.png"
-            alt="JULAY"
-            sx={{
-              width: { xs: '92%', sm: '78%', md: '72%' },
-              maxWidth: 820,
-              mb: { xs: 3, md: 3.5 },
-              display: 'block',
-              mx: 'auto',
-              filter: 'drop-shadow(0 0 60px rgba(100,80,220,0.8)) drop-shadow(0 0 25px rgba(60,100,220,0.6)) drop-shadow(0 2px 8px rgba(0,0,0,0.9))',
-            }}
-          />
+        {/* Navbar overlap: thin dark strip at top so nav bar stays readable */}
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 72, background: 'linear-gradient(to bottom, rgba(12,14,26,0.72) 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-          {/* Tagline — bold, tight, right below the logo */}
+        {/* Lower-half gradient so text is readable over the image */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 38%, rgba(10,10,18,0.55) 58%, rgba(8,8,14,0.85) 78%, rgba(8,8,14,0.97) 100%)', pointerEvents: 'none' }} />
+
+        {/* Text content — anchored to bottom half */}
+        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pb: { xs: 8, md: 10 }, pt: 0 }}>
+          {/* Tagline */}
           <Typography sx={{
             color: 'white',
             fontWeight: 800,
-            fontSize: { xs: '1.45rem', sm: '1.85rem', md: '2.25rem' },
+            fontSize: { xs: '1.6rem', sm: '2rem', md: '2.6rem' },
             lineHeight: 1.15,
             letterSpacing: '-0.025em',
             mb: 2,
-            textShadow: '0 2px 20px rgba(0,0,0,0.8)',
+            textShadow: '0 2px 24px rgba(0,0,0,0.9)',
           }}>
             We don't manage tasks.{' '}
-            <Box component="span" sx={{ background: 'linear-gradient(135deg, #818CF8, #C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+            <Box component="span" sx={{ background: 'linear-gradient(90deg, #818CF8 0%, #C084FC 60%, #38BDF8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
               We design systems.
             </Box>
           </Typography>
 
           {/* Subtitle */}
           <Typography sx={{
-            color: 'rgba(255,255,255,0.55)',
-            fontSize: { xs: '0.92rem', md: '1rem' },
+            color: 'rgba(255,255,255,0.62)',
+            fontSize: { xs: '0.95rem', md: '1.05rem' },
             lineHeight: 1.7,
             mb: 4.5,
-            maxWidth: 480,
+            maxWidth: 500,
             mx: 'auto',
-            textShadow: '0 1px 12px rgba(0,0,0,0.7)',
+            textShadow: '0 1px 12px rgba(0,0,0,0.8)',
           }}>
             {t('landing.hero.sub')}
           </Typography>
@@ -374,7 +367,7 @@ export default function Landing() {
             onClick={() => { trackEvent('cta_clicked', { location: 'hero_v2' }); navigate('/register'); }}
             variant="contained"
             size="large"
-            sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 1.6, borderRadius: 99, fontSize: '1rem', boxShadow: '0 4px 28px rgba(99,102,241,0.6)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.7)' }, transition: 'all 0.2s' }}
+            sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5.5, py: 1.6, borderRadius: 99, fontSize: '1.05rem', boxShadow: '0 4px 28px rgba(99,102,241,0.65)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.75)' }, transition: 'all 0.2s' }}
           >
             Start Free
           </Button>
