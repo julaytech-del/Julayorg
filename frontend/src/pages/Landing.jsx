@@ -316,7 +316,7 @@ export default function Landing() {
         justifyContent: 'flex-end',
         overflow: 'hidden',
       }}>
-        {/* Full-bleed circuit board + JULAY letters photo */}
+        {/* Clean JULAY circuit board photo */}
         <Box sx={{
           position: 'absolute', inset: 0,
           backgroundImage: "url('/hero-bg.png')",
@@ -325,13 +325,11 @@ export default function Landing() {
           backgroundRepeat: 'no-repeat',
         }} />
 
-        {/* Solid black strip covering the top — wipes any remaining fake navbar sliver */}
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 68, background: '#0C0E1A', pointerEvents: 'none' }} />
-        {/* Soft fade from that strip into the image */}
-        <Box sx={{ position: 'absolute', top: 68, left: 0, right: 0, height: 40, background: 'linear-gradient(to bottom, #0C0E1A, transparent)', pointerEvents: 'none' }} />
+        {/* Top fade: blends with navbar */}
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to bottom, rgba(8,8,14,0.65) 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* Wipe baked-in ghost text — goes fully solid well before text appears */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, transparent 36%, rgba(8,8,14,0.5) 44%, rgba(8,8,14,0.95) 52%, rgba(8,8,14,1) 58%)', pointerEvents: 'none' }} />
+        {/* Bottom fade: transition to dark for text readability */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 45%, rgba(8,8,14,0.7) 62%, rgba(8,8,14,1) 75%)', pointerEvents: 'none' }} />
 
         {/* Text content — anchored to bottom half */}
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pb: { xs: 8, md: 10 }, pt: 0 }}>
