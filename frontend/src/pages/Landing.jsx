@@ -239,7 +239,7 @@ export default function Landing() {
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
-          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', gap: 1.25, textDecoration: 'none', flexShrink: 0 }}>
+          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', gap: 1.75, textDecoration: 'none', flexShrink: 0 }}>
             <svg width="36" height="42" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="navjg" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
@@ -256,7 +256,17 @@ export default function Landing() {
               <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#navjg)"/>
               <path d="M47 57 Q47 65 38 65" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
             </svg>
-            <Typography sx={{ fontFamily: '"Inter", sans-serif', fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.5px', color: 'white', lineHeight: 1 }}>Julay</Typography>
+            <Typography sx={{
+              fontFamily: '"Space Grotesk", sans-serif',
+              fontWeight: 700,
+              fontSize: '1.22rem',
+              letterSpacing: '0.02em',
+              lineHeight: 1,
+              background: 'linear-gradient(135deg, #ffffff 30%, #C4B5FD 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+            }}>Julay</Typography>
           </Box>
 
           {/* Desktop nav links */}
