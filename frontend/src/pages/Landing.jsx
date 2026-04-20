@@ -293,40 +293,93 @@ export default function Landing() {
         </Box>
       </Box>
 
-{/* ─── HERO ─── */}
-      <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
+{/* ─── HERO v1 (hidden) ─── */}
+      {false && <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
         <Orb sx={{ width: 600, height: 600, background: 'rgba(99,102,241,0.15)', top: -200, left: -200 }} />
         <Orb sx={{ width: 500, height: 500, background: 'rgba(139,92,246,0.12)', top: 100, right: -150 }} />
         <Orb sx={{ width: 300, height: 300, background: 'rgba(6,182,212,0.08)', bottom: 50, left: '40%' }} />
-
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: { xs: 8, md: 12 } }}>
           <Box sx={{ textAlign: 'center', maxWidth: 800, mx: 'auto', mb: 8 }}>
-            {/* Badge */}
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, border: '1px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.1)', mb: 4 }}>
               <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1, transform: 'scale(1)' }, '50%': { opacity: 0.5, transform: 'scale(0.8)' } } }} />
               <Typography sx={{ color: '#A5B4FC', fontSize: '0.8rem', fontWeight: 600 }}>{t('landing.hero.badge')}</Typography>
             </Box>
-
-            {/* H1 */}
             <Typography variant="h1" sx={{ color: 'white', fontSize: { xs: '2.8rem', md: '4.5rem', lg: '5.2rem' }, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.04em', mb: 3 }}>
               {t('landing.hero.h1a')}{' '}
               <Box component="span" sx={{ background: 'linear-gradient(135deg, #818CF8, #C084FC, #38BDF8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {t('landing.hero.h1b')}
               </Box>
             </Typography>
-
-            <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: { xs: '1.05rem', md: '1.25rem' }, lineHeight: 1.65, mb: 5, maxWidth: 600, mx: 'auto' }}>
-              {t('landing.hero.sub')}
-            </Typography>
-
+            <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: { xs: '1.05rem', md: '1.25rem' }, lineHeight: 1.65, mb: 5, maxWidth: 600, mx: 'auto' }}>{t('landing.hero.sub')}</Typography>
             <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-              <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large" aria-label="Start for free — no credit card required" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
-                {t('landing.hero.cta1')}
-              </Button>
+              <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>{t('landing.hero.cta1')}</Button>
             </Box>
           </Box>
+        </Container>
+      </Box>}
 
-          {false && <Box ref={demoRef}><AIDemoCard /></Box>}
+      {/* ─── HERO v2 (Circuit Board) ─── */}
+      <Box sx={{
+        position: 'relative',
+        background: '#0B0C15',
+        minHeight: '100vh',
+        display: 'flex',
+        alignItems: 'center',
+        overflow: 'hidden',
+        pt: 10,
+      }}>
+        {/* Circuit board grid lines */}
+        <Box sx={{ position: 'absolute', inset: 0, backgroundImage: 'linear-gradient(rgba(99,102,241,0.07) 1px, transparent 1px), linear-gradient(90deg, rgba(99,102,241,0.07) 1px, transparent 1px)', backgroundSize: '38px 38px', pointerEvents: 'none' }} />
+        {/* Dot nodes at intersections */}
+        <Box sx={{ position: 'absolute', inset: 0, backgroundImage: 'radial-gradient(circle, rgba(99,102,241,0.25) 1.5px, transparent 1.5px)', backgroundSize: '38px 38px', backgroundPosition: '-1px -1px', pointerEvents: 'none' }} />
+        {/* Radial glow from center */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 70% 60% at 50% 40%, rgba(99,102,241,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
+        {/* Edge vignette */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse 120% 100% at 50% 50%, transparent 40%, rgba(11,12,21,0.85) 100%)', pointerEvents: 'none' }} />
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', py: { xs: 8, md: 8 } }}>
+          {/* Giant JULAY image */}
+          <Box
+            component="img"
+            src="/logo-icon.png"
+            alt="JULAY"
+            sx={{
+              width: { xs: '88%', sm: '70%', md: '58%' },
+              maxWidth: 720,
+              mb: { xs: 4, md: 5 },
+              filter: 'drop-shadow(0 0 80px rgba(99,102,241,0.65)) drop-shadow(0 0 30px rgba(139,92,246,0.45))',
+            }}
+          />
+
+          {/* Tagline */}
+          <Typography sx={{
+            color: 'white',
+            fontWeight: 800,
+            fontSize: { xs: '1.5rem', sm: '1.9rem', md: '2.4rem' },
+            lineHeight: 1.2,
+            letterSpacing: '-0.02em',
+            mb: 2.5,
+          }}>
+            We don't manage tasks.{' '}
+            <Box component="span" sx={{ background: 'linear-gradient(135deg, #818CF8, #C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+              We design systems.
+            </Box>
+          </Typography>
+
+          {/* Subtitle */}
+          <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: { xs: '0.95rem', md: '1.1rem' }, lineHeight: 1.7, mb: 5, maxWidth: 520, mx: 'auto' }}>
+            {t('landing.hero.sub')}
+          </Typography>
+
+          {/* CTA */}
+          <Button
+            onClick={() => { trackEvent('cta_clicked', { location: 'hero_v2' }); navigate('/register'); }}
+            variant="contained"
+            size="large"
+            sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 1.75, borderRadius: 99, fontSize: '1.05rem', boxShadow: '0 4px 28px rgba(99,102,241,0.55)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.65)' }, transition: 'all 0.2s' }}
+          >
+            Start Free
+          </Button>
         </Container>
       </Box>
 
