@@ -325,8 +325,10 @@ export default function Landing() {
           backgroundRepeat: 'no-repeat',
         }} />
 
-        {/* Navbar: thin dark strip at very top */}
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to bottom, rgba(8,8,14,0.7) 0%, transparent 100%)', pointerEvents: 'none' }} />
+        {/* Solid black strip covering the top — wipes any remaining fake navbar sliver */}
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 68, background: '#0C0E1A', pointerEvents: 'none' }} />
+        {/* Soft fade from that strip into the image */}
+        <Box sx={{ position: 'absolute', top: 68, left: 0, right: 0, height: 40, background: 'linear-gradient(to bottom, #0C0E1A, transparent)', pointerEvents: 'none' }} />
 
         {/* Wipe out the baked-in image text (bottom ~38%) and fade nicely */}
         <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, transparent 44%, rgba(8,8,14,0.6) 54%, rgba(8,8,14,0.92) 62%, rgba(8,8,14,1) 70%)', pointerEvents: 'none' }} />
