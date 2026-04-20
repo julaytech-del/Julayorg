@@ -316,20 +316,20 @@ export default function Landing() {
         justifyContent: 'flex-end',
         overflow: 'hidden',
       }}>
-        {/* Clean JULAY circuit board photo */}
+        {/* Original Gemini circuit board photo — offset down to push fake navbar above viewport */}
         <Box sx={{
           position: 'absolute', inset: 0,
           backgroundImage: "url('/hero-bg.png')",
           backgroundSize: 'cover',
-          backgroundPosition: 'center top',
+          backgroundPosition: 'center -62px',
           backgroundRepeat: 'no-repeat',
         }} />
 
-        {/* Top fade: blends with navbar */}
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to bottom, rgba(8,8,14,0.65) 0%, transparent 100%)', pointerEvents: 'none' }} />
+        {/* Solid strip matching navbar bg — completely hides fake navbar peeking at top */}
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 64, background: '#0C0E1A', pointerEvents: 'none' }} />
 
-        {/* Bottom fade: transition to dark for text readability */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 45%, rgba(8,8,14,0.7) 62%, rgba(8,8,14,1) 75%)', pointerEvents: 'none' }} />
+        {/* Bottom fade — hides ghost text from image, transitions to solid for our text */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 42%, rgba(8,8,14,0.55) 52%, rgba(8,8,14,0.95) 60%, rgba(8,8,14,1) 66%)', pointerEvents: 'none' }} />
 
         {/* Text content — anchored to bottom half */}
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pb: { xs: 8, md: 10 }, pt: 0 }}>
