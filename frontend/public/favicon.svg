@@ -1,11 +1,18 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="none">
   <defs>
-    <linearGradient id="g" x1="4" y1="4" x2="24" y2="30" gradientUnits="userSpaceOnUse">
-      <stop stop-color="#818CF8"/>
-      <stop offset="1" stop-color="#A78BFA"/>
+    <linearGradient id="fg" x1="16" y1="2" x2="16" y2="30" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#8B5CF6"/>
+      <stop offset="0.55" stop-color="#6366F1"/>
+      <stop offset="1" stop-color="#38BDF8"/>
     </linearGradient>
   </defs>
   <rect width="32" height="32" rx="7" fill="#09090B"/>
-  <path d="M10 6 L20 6 L20 22 Q20 28 14 28 Q8 28 8 22"
-        stroke="url(#g)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Scaled Jj icon inside 32x32 -->
+  <rect x="4" y="5" width="13" height="3.5" rx="1.75" fill="url(#fg)"/>
+  <rect x="12" y="8.5" width="3.5" height="18" rx="1.75" fill="url(#fg)"/>
+  <path d="M13.75 26.5 Q14 31 8.5 31 Q5.5 31 4.5 28.5" stroke="url(#fg)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
+  <circle cx="4.5" cy="28" r="1.75" fill="url(#fg)"/>
+  <circle cx="22.5" cy="10.5" r="2.5" fill="url(#fg)"/>
+  <rect x="20.75" y="13.5" width="3.5" height="14.5" rx="1.75" fill="url(#fg)"/>
+  <path d="M22.5 28 Q22.5 31 19 31" stroke="url(#fg)" stroke-width="3.5" stroke-linecap="round" fill="none"/>
 </svg>

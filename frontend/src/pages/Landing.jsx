@@ -238,8 +238,26 @@ export default function Landing() {
       {/* ─── NAV ─── */}
       <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
-          {/* Spacer — actual icon is fixed-positioned below straddling the nav border */}
-          <Box sx={{ width: 200, flexShrink: 0 }} />
+          {/* Logo */}
+          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', gap: 1.25, textDecoration: 'none', flexShrink: 0 }}>
+            <svg width="36" height="42" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="navjg" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#8B5CF6"/>
+                  <stop offset="0.55" stopColor="#6366F1"/>
+                  <stop offset="1" stopColor="#38BDF8"/>
+                </linearGradient>
+              </defs>
+              <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#navjg)"/>
+              <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#navjg)"/>
+              <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+              <circle cx="7" cy="59" r="3.5" fill="url(#navjg)"/>
+              <circle cx="47" cy="21" r="5" fill="url(#navjg)"/>
+              <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#navjg)"/>
+              <path d="M47 57 Q47 65 38 65" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            </svg>
+            <Typography sx={{ fontFamily: '"Inter", sans-serif', fontWeight: 700, fontSize: '1.25rem', letterSpacing: '-0.5px', color: 'white', lineHeight: 1 }}>Julay</Typography>
+          </Box>
 
           {/* Desktop nav links */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
@@ -264,27 +282,7 @@ export default function Landing() {
         </Box>
       </Box>
 
-      {/* Split logo — top half in navbar, bottom half in hero */}
-      <Box sx={{
-        position: 'fixed',
-        top: -42,
-        left: { xs: 16, md: 32 },
-        height: 216,
-        display: 'flex',
-        alignItems: 'center',
-        gap: 0,
-        zIndex: 101,
-        pointerEvents: 'none',
-      }}>
-        <Box
-          component="img"
-          src="/logo-icon.png"
-          alt=""
-          sx={{ height: 216, width: 'auto', objectFit: 'contain', flexShrink: 0 }}
-        />
-      </Box>
-
-      {/* ─── HERO ─── */}
+{/* ─── HERO ─── */}
       <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
         <Orb sx={{ width: 600, height: 600, background: 'rgba(99,102,241,0.15)', top: -200, left: -200 }} />
         <Orb sx={{ width: 500, height: 500, background: 'rgba(139,92,246,0.12)', top: 100, right: -150 }} />
@@ -703,12 +701,22 @@ export default function Landing() {
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 2 }}>
-                <Box component="img" src="/logo-icon.png" alt="" sx={{ height: 30, width: 30, objectFit: 'contain' }} />
-                <svg width="60" height="30" viewBox="0 0 60 30" fill="none" aria-label="Julay">
-                  <text x="0" y="21" fontFamily="Inter,ui-sans-serif,system-ui,sans-serif"
-                        fontWeight="700" fontSize="17" letterSpacing="-0.4" fill="rgba(255,255,255,0.6)">Julay</text>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                <svg width="24" height="28" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <defs>
+                    <linearGradient id="ftjg" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
+                      <stop stopColor="#8B5CF6"/><stop offset="0.55" stopColor="#6366F1"/><stop offset="1" stopColor="#38BDF8"/>
+                    </linearGradient>
+                  </defs>
+                  <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#ftjg)"/>
+                  <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#ftjg)"/>
+                  <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#ftjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                  <circle cx="7" cy="59" r="3.5" fill="url(#ftjg)"/>
+                  <circle cx="47" cy="21" r="5" fill="url(#ftjg)"/>
+                  <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#ftjg)"/>
+                  <path d="M47 57 Q47 65 38 65" stroke="url(#ftjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
                 </svg>
+                <Typography sx={{ fontFamily: '"Inter", sans-serif', fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.6)', letterSpacing: '-0.3px' }}>Julay</Typography>
               </Box>
               <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
