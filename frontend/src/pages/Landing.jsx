@@ -257,15 +257,16 @@ export default function Landing() {
               <path d="M47 57 Q47 65 38 65" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
             </svg>
             <Typography sx={{
-              fontFamily: '"Space Grotesk", sans-serif',
+              fontFamily: '"Syne", sans-serif',
               fontWeight: 800,
-              fontSize: '1.22rem',
-              letterSpacing: '-0.03em',
+              fontSize: '1.3rem',
+              letterSpacing: '-0.04em',
               lineHeight: 1,
-              background: 'linear-gradient(160deg, #ffffff 0%, #E0D9FF 55%, #A78BFA 100%)',
+              background: 'linear-gradient(150deg, #ffffff 0%, #DDD6FE 60%, #A78BFA 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
+              userSelect: 'none',
             }}>Julay</Typography>
           </Box>
 
