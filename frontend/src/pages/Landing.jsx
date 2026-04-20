@@ -325,11 +325,11 @@ export default function Landing() {
           backgroundRepeat: 'no-repeat',
         }} />
 
-        {/* Navbar overlap: thin dark strip at top so nav bar stays readable */}
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 72, background: 'linear-gradient(to bottom, rgba(12,14,26,0.72) 0%, transparent 100%)', pointerEvents: 'none' }} />
+        {/* Navbar: thin dark strip at very top */}
+        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to bottom, rgba(8,8,14,0.7) 0%, transparent 100%)', pointerEvents: 'none' }} />
 
-        {/* Lower-half gradient so text is readable over the image */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 38%, rgba(10,10,18,0.55) 58%, rgba(8,8,14,0.85) 78%, rgba(8,8,14,0.97) 100%)', pointerEvents: 'none' }} />
+        {/* Wipe out the baked-in image text (bottom ~38%) and fade nicely */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, transparent 44%, rgba(8,8,14,0.6) 54%, rgba(8,8,14,0.92) 62%, rgba(8,8,14,1) 70%)', pointerEvents: 'none' }} />
 
         {/* Text content — anchored to bottom half */}
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pb: { xs: 8, md: 10 }, pt: 0 }}>
