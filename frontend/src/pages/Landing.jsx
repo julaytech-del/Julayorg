@@ -258,11 +258,11 @@ export default function Landing() {
             </svg>
             <Typography sx={{
               fontFamily: '"Space Grotesk", sans-serif',
-              fontWeight: 700,
+              fontWeight: 800,
               fontSize: '1.22rem',
-              letterSpacing: '0.02em',
+              letterSpacing: '-0.03em',
               lineHeight: 1,
-              background: 'linear-gradient(135deg, #ffffff 30%, #C4B5FD 100%)',
+              background: 'linear-gradient(160deg, #ffffff 0%, #E0D9FF 55%, #A78BFA 100%)',
               WebkitBackgroundClip: 'text',
               WebkitTextFillColor: 'transparent',
               backgroundClip: 'text',
