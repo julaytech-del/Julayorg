@@ -330,8 +330,8 @@ export default function Landing() {
         {/* Soft fade from that strip into the image */}
         <Box sx={{ position: 'absolute', top: 68, left: 0, right: 0, height: 40, background: 'linear-gradient(to bottom, #0C0E1A, transparent)', pointerEvents: 'none' }} />
 
-        {/* Wipe out the baked-in image text (bottom ~38%) and fade nicely */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, transparent 44%, rgba(8,8,14,0.6) 54%, rgba(8,8,14,0.92) 62%, rgba(8,8,14,1) 70%)', pointerEvents: 'none' }} />
+        {/* Wipe baked-in ghost text — goes fully solid well before text appears */}
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 0%, transparent 36%, rgba(8,8,14,0.5) 44%, rgba(8,8,14,0.95) 52%, rgba(8,8,14,1) 58%)', pointerEvents: 'none' }} />
 
         {/* Text content — anchored to bottom half */}
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pb: { xs: 8, md: 10 }, pt: 0 }}>
