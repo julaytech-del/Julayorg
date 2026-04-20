@@ -319,25 +319,14 @@ export default function Landing() {
               {t('landing.hero.sub')}
             </Typography>
 
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', mb: 3 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
               <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large" aria-label="Start for free — no credit card required" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>
                 {t('landing.hero.cta1')}
               </Button>
-              <Button onClick={scrollToDemo} variant="outlined" size="large" sx={{ borderColor: 'rgba(255,255,255,0.15)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, px: 3.5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', '&:hover': { borderColor: 'rgba(255,255,255,0.4)', background: 'rgba(255,255,255,0.05)' } }}>
-                <PlayArrow sx={{ fontSize: 18, mr: 0.75 }} /> {t('landing.hero.cta2')}
-              </Button>
             </Box>
-            <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>
-              {t('landing.hero.tagline')}
-            </Typography>
           </Box>
 
-          {/* AI Demo */}
-          <FadeIn delay={300}>
-            <Box ref={demoRef}>
-              <AIDemoCard />
-            </Box>
-          </FadeIn>
+          {false && <Box ref={demoRef}><AIDemoCard /></Box>}
         </Container>
       </Box>
 
