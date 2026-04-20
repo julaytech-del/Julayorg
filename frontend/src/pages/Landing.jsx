@@ -319,7 +319,7 @@ export default function Landing() {
         {/* Clean JULAY circuit board — no fake elements */}
         <Box sx={{
           position: 'absolute', inset: 0,
-          backgroundImage: "url('/hero-bg.png')",
+          backgroundImage: "url('/hero-bg.jpg')",
           backgroundSize: 'cover',
           backgroundPosition: 'center center',
           backgroundRepeat: 'no-repeat',
