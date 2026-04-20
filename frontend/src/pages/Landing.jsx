@@ -256,18 +256,6 @@ export default function Landing() {
               <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#navjg)"/>
               <path d="M47 57 Q47 65 38 65" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
             </svg>
-            <Typography sx={{
-              fontFamily: '"Syne", sans-serif',
-              fontWeight: 800,
-              fontSize: '1.3rem',
-              letterSpacing: '-0.04em',
-              lineHeight: 1,
-              background: 'linear-gradient(150deg, #ffffff 0%, #DDD6FE 60%, #A78BFA 100%)',
-              WebkitBackgroundClip: 'text',
-              WebkitTextFillColor: 'transparent',
-              backgroundClip: 'text',
-              userSelect: 'none',
-            }}>Julay</Typography>
           </Box>
 
           {/* Desktop nav links */}
