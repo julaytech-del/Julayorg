@@ -369,7 +369,7 @@ export default function Landing() {
             size="large"
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5.5, py: 1.6, borderRadius: 99, fontSize: '1.05rem', boxShadow: '0 4px 28px rgba(99,102,241,0.65)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.75)' }, transition: 'all 0.2s' }}
           >
-            Start Free
+            {t('landing.hero.cta1')}
           </Button>
         </Container>
       </Box>
@@ -622,25 +622,21 @@ export default function Landing() {
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
-              <Chip label="REFER A FRIEND" sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em', border: '1px solid rgba(99,102,241,0.3)' }} />
+              <Chip label={t('landing.referral.chip')} sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em', border: '1px solid rgba(99,102,241,0.3)' }} />
               <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, color: 'white', letterSpacing: '-0.03em', mb: 2 }}>
-                Share Julay.{' '}
+                {t('landing.referral.title')}{' '}
                 <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  Earn rewards.
+                  {t('landing.referral.titleGrad')}
                 </Box>
               </Typography>
               <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>
-                Invite friends to Julay. When they sign up, you both win — they get a free account, you get a free month.
+                {t('landing.referral.sub')}
               </Typography>
             </Box>
 
             {/* How it works */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3,1fr)' }, gap: 3, mb: 8 }}>
-              {[
-                { step: '01', icon: '🔗', title: 'Get your link', desc: 'Sign up and find your unique referral link in Settings → Invite a Friend.' },
-                { step: '02', icon: '📤', title: 'Share it', desc: 'Send it via WhatsApp, email, or any messaging app. One click, done.' },
-                { step: '03', icon: '🎁', title: 'Both win', desc: 'Your friend gets a free Julay account. You get 1 month free on any paid plan.' },
-              ].map((item) => (
+              {(t('landing.referral.steps', { returnObjects: true })).map((item) => (
                 <Box key={item.step} sx={{ position: 'relative', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)' }}>
                   <Typography sx={{ position: 'absolute', top: 16, right: 20, fontSize: '0.72rem', fontWeight: 800, color: 'rgba(99,102,241,0.5)', letterSpacing: '0.1em' }}>{item.step}</Typography>
                   <Typography sx={{ fontSize: '2.2rem', mb: 2 }}>{item.icon}</Typography>
@@ -652,27 +648,26 @@ export default function Landing() {
 
             {/* Perks banner */}
             <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2, mb: 8 }}>
-              {[
-                { icon: '♾️', label: 'Unlimited referrals' },
-                { icon: '🆓', label: 'Friend gets free account' },
-                { icon: '📅', label: '1 free month per referral' },
-                { icon: '⚡', label: 'Instant rewards' },
-              ].map((p) => (
+              {(['♾️','🆓','📅','⚡']).map((icon, i) => {
+                const labels = t('landing.referral.perks', { returnObjects: true });
+                const p = { icon, label: labels[i] };
+                return (
                 <Box key={p.label} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1, borderRadius: 99, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
                   <Typography sx={{ fontSize: '1rem' }}>{p.icon}</Typography>
                   <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem', fontWeight: 600 }}>{p.label}</Typography>
                 </Box>
-              ))}
+                );
+              })}
             </Box>
 
             {/* CTA */}
             <Box sx={{ textAlign: 'center' }}>
               <Button onClick={() => window.location.href = '/register'} variant="contained" size="large"
                 sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9 } }}>
-                Sign up & get your referral link <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+                {t('landing.referral.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
               <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', mt: 2 }}>
-                Already have an account? Go to Settings → Invite a Friend
+                {t('landing.referral.existing')}
               </Typography>
             </Box>
           </FadeIn>
@@ -713,7 +708,7 @@ export default function Landing() {
           <FadeIn>
             <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2.5, py: 0.75, borderRadius: 99, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', mb: 4 }}>
               <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
-              <Typography sx={{ color: '#FCA5A5', fontSize: '0.78rem', fontWeight: 700 }}>500+ teams already on the waitlist — don't miss your spot</Typography>
+              <Typography sx={{ color: '#FCA5A5', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.waitlistBadge')}</Typography>
             </Box>
             <Typography sx={{ color: '#818CF8', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', mb: 3 }}>{t('landing.finalCta.eyebrow')}</Typography>
             <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1, mb: 3 }}>

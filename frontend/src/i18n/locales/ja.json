@@ -20,11 +20,26 @@
     "settings": "設定",
     "signOut": "サインアウト",
     "pages": {
-      "/": { "title": "ダッシュボード", "subtitle": "ワークスペースの概要" },
-      "/projects": { "title": "プロジェクト", "subtitle": "すべてのプロジェクトを管理・追跡" },
-      "/team": { "title": "チーム", "subtitle": "メンバーとパフォーマンス" },
-      "/departments": { "title": "部署", "subtitle": "組織構造" },
-      "/ai": { "title": "AIスタジオ", "subtitle": "インテリジェントなプロジェクト自動化" }
+      "/": {
+        "title": "ダッシュボード",
+        "subtitle": "ワークスペースの概要"
+      },
+      "/projects": {
+        "title": "プロジェクト",
+        "subtitle": "すべてのプロジェクトを管理・追跡"
+      },
+      "/team": {
+        "title": "チーム",
+        "subtitle": "メンバーとパフォーマンス"
+      },
+      "/departments": {
+        "title": "部署",
+        "subtitle": "組織構造"
+      },
+      "/ai": {
+        "title": "AIスタジオ",
+        "subtitle": "インテリジェントなプロジェクト自動化"
+      }
     }
   },
   "auth": {
@@ -270,7 +285,11 @@
       "performance": "パフォーマンス",
       "skills": "スキル",
       "viewProfile": "プロフィールを表示",
-      "status": { "active": "アクティブ", "away": "離席中", "offline": "オフライン" }
+      "status": {
+        "active": "アクティブ",
+        "away": "離席中",
+        "offline": "オフライン"
+      }
     }
   },
   "departments": {
@@ -408,14 +427,46 @@
       "generate": "生成",
       "generated": "AIが5つのタスクを生成 · チーム割り当て完了 · 推定100時間",
       "tasks": [
-        { "title": "市場調査と競合分析", "assignee": "Sara", "hours": 12, "status": "done" },
-        { "title": "デザインシステムとUIコンポーネント", "assignee": "Alex", "hours": 24, "status": "in_progress" },
-        { "title": "バックエンドAPIのリファクタリング", "assignee": "Mohammed", "hours": 40, "status": "in_progress" },
-        { "title": "QAテストとバグ修正", "assignee": "Dana", "hours": 16, "status": "todo" },
-        { "title": "DevOpsとデプロイパイプライン", "assignee": "Karim", "hours": 8, "status": "todo" }
+        {
+          "title": "市場調査と競合分析",
+          "assignee": "Sara",
+          "hours": 12,
+          "status": "done"
+        },
+        {
+          "title": "デザインシステムとUIコンポーネント",
+          "assignee": "Alex",
+          "hours": 24,
+          "status": "in_progress"
+        },
+        {
+          "title": "バックエンドAPIのリファクタリング",
+          "assignee": "Mohammed",
+          "hours": 40,
+          "status": "in_progress"
+        },
+        {
+          "title": "QAテストとバグ修正",
+          "assignee": "Dana",
+          "hours": 16,
+          "status": "todo"
+        },
+        {
+          "title": "DevOpsとデプロイパイプライン",
+          "assignee": "Karim",
+          "hours": 8,
+          "status": "todo"
+        }
       ]
     },
-    "nav": { "features": "機能", "compare": "比較", "pricing": "料金", "faq": "FAQ", "login": "ログイン", "start": "無料で始める →" },
+    "nav": {
+      "features": "機能",
+      "compare": "比較",
+      "pricing": "料金",
+      "faq": "FAQ",
+      "login": "ログイン",
+      "start": "無料で始める →"
+    },
     "hero": {
       "badge": "AI搭載 · 公開中",
       "h1a": "タスクを管理するのではなく、",
@@ -425,12 +476,26 @@
       "cta2": "使い方を見る",
       "tagline": "無料プランは永久無料 · クレジットカード不要 · 60秒でセットアップ"
     },
-    "badges": ["12のAI搭載機能", "10言語対応", "かんばん · ガント · スプリント", "永久無料プラン", "席数課金なし"],
+    "badges": [
+      "12のAI搭載機能",
+      "10言語対応",
+      "かんばん · ガント · スプリント",
+      "永久無料プラン",
+      "席数課金なし"
+    ],
     "stats": [
-      { "label": "AI搭載機能" },
-      { "label": "ビューとツール" },
-      { "label": "対応言語数" },
-      { "label": "プロジェクト生成時間" }
+      {
+        "label": "AI搭載機能"
+      },
+      {
+        "label": "ビューとツール"
+      },
+      {
+        "label": "対応言語数"
+      },
+      {
+        "label": "プロジェクト生成時間"
+      }
     ],
     "problem": {
       "chip": "問題点",
@@ -452,18 +517,66 @@
       "titleGrad": "不要なものは一切なし。",
       "sub": "12のコア機能。すべてAI連携。すべてチームの作業負荷を実際に減らすために設計。",
       "items": [
-        { "icon": "🧠", "title": "AIプロジェクト計画", "desc": "目標を自然言語で説明するだけ。Julay AIが数秒でタスク、スケジュール、チーム割り当てを含む完全なプロジェクト構造を生成します。" },
-        { "icon": "⚡", "title": "スマート自動割り当て", "desc": "AIがチームのスキル、作業量、可用性を分析して最適な担当者に自動でタスクを割り当てます。" },
-        { "icon": "📊", "title": "クリティカルパス（CPM）", "desc": "プロジェクト全体を遅らせる可能性のあるタスクを自動識別。視覚的な警告でスケジュールを先取りします。" },
-        { "icon": "🎯", "title": "ワークロードバランサー", "desc": "リアルタイムのヒートマップで過負荷を表示。ワンクリックのAI再バランシングでタスクをインテリジェントに再割り当て。" },
-        { "icon": "📅", "title": "締め切り最適化", "desc": "AIが担当者の作業量を分析し、信頼スコアとリスク警告付きで最適な期限を提案します。" },
-        { "icon": "🔔", "title": "スマート通知", "desc": "問題が起きる前にアラート。AIが24時間プロジェクトを監視し、必要な時に重要情報を通知します。" },
-        { "icon": "⚙️", "title": "自動化エンジン", "desc": "強力なif-this-then-thatルールを作成。通知、ステータス変更、サブタスク作成をすべて自動化。" },
-        { "icon": "📋", "title": "公開フォームビルダー", "desc": "送信時にタスクを自動作成・割り当てする共有可能な受付フォームを作成。開発不要。" },
-        { "icon": "📈", "title": "AI エグゼクティブレポート", "desc": "ワンクリックでClaude AIが書いたプロジェクト状況の2段落エグゼクティブサマリーを生成。" },
-        { "icon": "🔗", "title": "Webhookシステム", "desc": "Slack、Zapier、任意のエンドポイントにリアルタイムイベントを送信。エンタープライズセキュリティ向けHMAC署名。" },
-        { "icon": "🏃", "title": "スプリント / アジャイルボード", "desc": "完全なスクラム対応。スプリント計画、ベロシティ追跡、バーンダウンチャート。ワンクリックでアジャイルとウォーターフォールを切り替え。" },
-        { "icon": "🌐", "title": "ポートフォリオビュー", "desc": "1つのエグゼクティブダッシュボードですべてのプロジェクトの健全性を確認。順調・要注意・遅延を一目で把握。" }
+        {
+          "icon": "🧠",
+          "title": "AIプロジェクト計画",
+          "desc": "目標を自然言語で説明するだけ。Julay AIが数秒でタスク、スケジュール、チーム割り当てを含む完全なプロジェクト構造を生成します。"
+        },
+        {
+          "icon": "⚡",
+          "title": "スマート自動割り当て",
+          "desc": "AIがチームのスキル、作業量、可用性を分析して最適な担当者に自動でタスクを割り当てます。"
+        },
+        {
+          "icon": "📊",
+          "title": "クリティカルパス（CPM）",
+          "desc": "プロジェクト全体を遅らせる可能性のあるタスクを自動識別。視覚的な警告でスケジュールを先取りします。"
+        },
+        {
+          "icon": "🎯",
+          "title": "ワークロードバランサー",
+          "desc": "リアルタイムのヒートマップで過負荷を表示。ワンクリックのAI再バランシングでタスクをインテリジェントに再割り当て。"
+        },
+        {
+          "icon": "📅",
+          "title": "締め切り最適化",
+          "desc": "AIが担当者の作業量を分析し、信頼スコアとリスク警告付きで最適な期限を提案します。"
+        },
+        {
+          "icon": "🔔",
+          "title": "スマート通知",
+          "desc": "問題が起きる前にアラート。AIが24時間プロジェクトを監視し、必要な時に重要情報を通知します。"
+        },
+        {
+          "icon": "⚙️",
+          "title": "自動化エンジン",
+          "desc": "強力なif-this-then-thatルールを作成。通知、ステータス変更、サブタスク作成をすべて自動化。"
+        },
+        {
+          "icon": "📋",
+          "title": "公開フォームビルダー",
+          "desc": "送信時にタスクを自動作成・割り当てする共有可能な受付フォームを作成。開発不要。"
+        },
+        {
+          "icon": "📈",
+          "title": "AI エグゼクティブレポート",
+          "desc": "ワンクリックでClaude AIが書いたプロジェクト状況の2段落エグゼクティブサマリーを生成。"
+        },
+        {
+          "icon": "🔗",
+          "title": "Webhookシステム",
+          "desc": "Slack、Zapier、任意のエンドポイントにリアルタイムイベントを送信。エンタープライズセキュリティ向けHMAC署名。"
+        },
+        {
+          "icon": "🏃",
+          "title": "スプリント / アジャイルボード",
+          "desc": "完全なスクラム対応。スプリント計画、ベロシティ追跡、バーンダウンチャート。ワンクリックでアジャイルとウォーターフォールを切り替え。"
+        },
+        {
+          "icon": "🌐",
+          "title": "ポートフォリオビュー",
+          "desc": "1つのエグゼクティブダッシュボードですべてのプロジェクトの健全性を確認。順調・要注意・遅延を一目で把握。"
+        }
       ]
     },
     "compare": {
@@ -471,20 +584,40 @@
       "title": "Julayとの比較",
       "sub": "ネタバレ：AI列がすべてを変えます。",
       "featureNames": [
-        "AIプロジェクト計画", "タスク自動分解", "スマートチーム割り当て",
-        "AI締め切り最適化", "ワークロードAI再バランス", "クリティカルパス（CPM）",
-        "自動化ルール", "ガントタイムライン", "カレンダービュー", "カスタムダッシュボード",
-        "スプリント / アジャイルボード", "時間追跡", "公開フォームビルダー",
-        "Webhookシステム", "開始価格", "ベースプランにAI含む"
+        "AIプロジェクト計画",
+        "タスク自動分解",
+        "スマートチーム割り当て",
+        "AI締め切り最適化",
+        "ワークロードAI再バランス",
+        "クリティカルパス（CPM）",
+        "自動化ルール",
+        "ガントタイムライン",
+        "カレンダービュー",
+        "カスタムダッシュボード",
+        "スプリント / アジャイルボード",
+        "時間追跡",
+        "公開フォームビルダー",
+        "Webhookシステム",
+        "開始価格",
+        "ベースプランにAI含む"
       ],
-      "startingPrice": { "julay": "$9/月", "monday": "$9/席", "asana": "$13/席", "notion": "$10/席" }
+      "startingPrice": {
+        "julay": "$9/月",
+        "monday": "$9/席",
+        "asana": "$13/席",
+        "notion": "$10/席"
+      }
     },
     "earlyAccess": {
       "badge": "早期アクセス受付中",
       "title": "Julayを最初に使うチームになろう",
       "sub": "少数の早期ユーザーとともにJulayをローンチします。今すぐアカウントを作成 — 完全無料でアクセスし、製品づくりに参加してください。",
       "cta": "早期アクセスを取得 — 無料",
-      "perks": ["クレジットカード不要", "いつでもキャンセル", "全機能アクセス"]
+      "perks": [
+        "クレジットカード不要",
+        "いつでもキャンセル",
+        "全機能アクセス"
+      ]
     },
     "pricing": {
       "chip": "料金",
@@ -502,22 +635,111 @@
         "cta": "営業に問い合わせ"
       },
       "plans": [
-        { "id": "free", "name": "無料", "price": 0, "yearlyPrice": 0, "ctaVariant": "outlined", "highlight": false, "description": "始めるのに最適", "features": ["3プロジェクト", "チームメンバー3名", "AIリクエスト5回/月", "かんばん・リストビュー", "ストレージ1GB"], "cta": "無料で始める" },
-        { "id": "starter", "name": "スターター", "price": 9, "yearlyPrice": 7, "ctaVariant": "outlined", "highlight": false, "description": "個人プロ向け", "features": ["10プロジェクト", "チームメンバー10名", "AIリクエスト100回/月", "全ビュー（カレンダー、ガント）", "ストレージ10GB", "メールサポート"], "cta": "無料トライアル開始" },
-        { "id": "professional", "name": "プロフェッショナル", "price": 29, "yearlyPrice": 23, "ctaVariant": "contained", "highlight": true, "popular": true, "description": "成長チーム向け", "features": ["無制限プロジェクト", "チームメンバー25名", "AIリクエスト500回/月", "自動化・Webhook", "レポート・フォーム", "時間追跡・カスタムフィールド", "ストレージ50GB", "優先サポート"], "cta": "無料トライアル開始" },
-        { "id": "business", "name": "ビジネス", "price": 79, "yearlyPrice": 63, "ctaVariant": "outlined", "highlight": false, "description": "スケーリング企業向け", "features": ["プロフェッショナルのすべて", "無制限チームメンバー", "AIリクエスト2,000回/月", "APIアクセス", "カスタム分析", "ストレージ200GB", "専任サポート"], "cta": "無料トライアル開始" }
+        {
+          "id": "free",
+          "name": "無料",
+          "price": 0,
+          "yearlyPrice": 0,
+          "ctaVariant": "outlined",
+          "highlight": false,
+          "description": "始めるのに最適",
+          "features": [
+            "3プロジェクト",
+            "チームメンバー3名",
+            "AIリクエスト5回/月",
+            "かんばん・リストビュー",
+            "ストレージ1GB"
+          ],
+          "cta": "無料で始める"
+        },
+        {
+          "id": "starter",
+          "name": "スターター",
+          "price": 9,
+          "yearlyPrice": 7,
+          "ctaVariant": "outlined",
+          "highlight": false,
+          "description": "個人プロ向け",
+          "features": [
+            "10プロジェクト",
+            "チームメンバー10名",
+            "AIリクエスト100回/月",
+            "全ビュー（カレンダー、ガント）",
+            "ストレージ10GB",
+            "メールサポート"
+          ],
+          "cta": "無料トライアル開始"
+        },
+        {
+          "id": "professional",
+          "name": "プロフェッショナル",
+          "price": 29,
+          "yearlyPrice": 23,
+          "ctaVariant": "contained",
+          "highlight": true,
+          "popular": true,
+          "description": "成長チーム向け",
+          "features": [
+            "無制限プロジェクト",
+            "チームメンバー25名",
+            "AIリクエスト500回/月",
+            "自動化・Webhook",
+            "レポート・フォーム",
+            "時間追跡・カスタムフィールド",
+            "ストレージ50GB",
+            "優先サポート"
+          ],
+          "cta": "無料トライアル開始"
+        },
+        {
+          "id": "business",
+          "name": "ビジネス",
+          "price": 79,
+          "yearlyPrice": 63,
+          "ctaVariant": "outlined",
+          "highlight": false,
+          "description": "スケーリング企業向け",
+          "features": [
+            "プロフェッショナルのすべて",
+            "無制限チームメンバー",
+            "AIリクエスト2,000回/月",
+            "APIアクセス",
+            "カスタム分析",
+            "ストレージ200GB",
+            "専任サポート"
+          ],
+          "cta": "無料トライアル開始"
+        }
       ]
     },
     "faq": {
       "chip": "FAQ",
       "title": "ご質問にお答えします。",
       "items": [
-        { "q": "JulayはMonday.comやAsanaとどう違いますか？", "a": "JulayはAIファーストで構築された唯一のプロジェクト管理ツールです。MondayやAsanaはAIを後付けしていますが、JulayのAIはプロジェクトを計画し、チームを割り当て、作業負荷を調整し、リスクを警告します — すべて自動的に。機能ではなく、エンジンです。" },
-        { "q": "AIの使い方を知る必要がありますか？", "a": "まったく不要です。日本語（または英語・アラビア語など）で目標を書くだけ。Julayが残りをすべて処理します。プロンプトもテンプレートも不要 — 達成したいことを説明するだけです。" },
-        { "q": "無料プランはありますか？", "a": "はい — 永久無料です。3プロジェクト、チームメンバー3名、AIリクエスト月5回。クレジットカード不要。もっと必要になったらアップグレードしてください。" },
-        { "q": "データのセキュリティは大丈夫ですか？", "a": "すべてのデータは保存時と転送時に暗号化されています。HMAC署名Webhook、JWT認証、ロールベースアクセス制御を使用しています。お客様のデータがAIモデルのトレーニングに使用されることはありません。" },
-        { "q": "MondayやAsanaから移行できますか？", "a": "できます。AI生成を使えば数分でJulayにプロジェクト構造を再現できます。既存プロジェクトを説明するとJulayが完全なタスク構造を自動構築します。ビジネス・エンタープライズプランにはオンボーディングサポートが含まれます。" },
-        { "q": "JulayはどのAIモデルを使用していますか？", "a": "JulayはAnthropicのClaude — 構造化計画、リスク分析、エグゼクティブレポートに最も有能なAIモデルの一つ — によって動いています。" }
+        {
+          "q": "JulayはMonday.comやAsanaとどう違いますか？",
+          "a": "JulayはAIファーストで構築された唯一のプロジェクト管理ツールです。MondayやAsanaはAIを後付けしていますが、JulayのAIはプロジェクトを計画し、チームを割り当て、作業負荷を調整し、リスクを警告します — すべて自動的に。機能ではなく、エンジンです。"
+        },
+        {
+          "q": "AIの使い方を知る必要がありますか？",
+          "a": "まったく不要です。日本語（または英語・アラビア語など）で目標を書くだけ。Julayが残りをすべて処理します。プロンプトもテンプレートも不要 — 達成したいことを説明するだけです。"
+        },
+        {
+          "q": "無料プランはありますか？",
+          "a": "はい — 永久無料です。3プロジェクト、チームメンバー3名、AIリクエスト月5回。クレジットカード不要。もっと必要になったらアップグレードしてください。"
+        },
+        {
+          "q": "データのセキュリティは大丈夫ですか？",
+          "a": "すべてのデータは保存時と転送時に暗号化されています。HMAC署名Webhook、JWT認証、ロールベースアクセス制御を使用しています。お客様のデータがAIモデルのトレーニングに使用されることはありません。"
+        },
+        {
+          "q": "MondayやAsanaから移行できますか？",
+          "a": "できます。AI生成を使えば数分でJulayにプロジェクト構造を再現できます。既存プロジェクトを説明するとJulayが完全なタスク構造を自動構築します。ビジネス・エンタープライズプランにはオンボーディングサポートが含まれます。"
+        },
+        {
+          "q": "JulayはどのAIモデルを使用していますか？",
+          "a": "JulayはAnthropicのClaude — 構造化計画、リスク分析、エグゼクティブレポートに最も有能なAIモデルの一つ — によって動いています。"
+        }
       ]
     },
     "finalCta": {
@@ -526,15 +748,79 @@
       "titleGrad": "今すぐ始まります。",
       "sub": "計画会議をJulay AIに置き換えましょう。目標を説明するだけで60秒で完全なプロジェクトが完成。永久無料。クレジットカード不要。",
       "cta": "最初のプロジェクトを無料で始める",
-      "perks": ["永久無料プラン", "クレジットカード不要", "60秒でセットアップ", "いつでもキャンセル"]
+      "perks": [
+        "永久無料プラン",
+        "クレジットカード不要",
+        "60秒でセットアップ",
+        "いつでもキャンセル"
+      ]
     },
     "footer": {
       "tagline": "現代のチームのためのAI搭載プロジェクト管理。よりスマートに計画し、より速く実行。",
-      "product": { "title": "製品", "links": ["機能", "料金", "比較", "変更履歴"] },
-      "company": { "title": "会社", "links": ["会社概要", "ブログ", "採用情報", "お問い合わせ"] },
-      "legal": { "title": "法的情報", "links": ["プライバシー", "利用規約", "セキュリティ", "Cookie"] },
+      "product": {
+        "title": "製品",
+        "links": [
+          "機能",
+          "料金",
+          "比較",
+          "変更履歴"
+        ]
+      },
+      "company": {
+        "title": "会社",
+        "links": [
+          "会社概要",
+          "ブログ",
+          "採用情報",
+          "お問い合わせ"
+        ]
+      },
+      "legal": {
+        "title": "法的情報",
+        "links": [
+          "プライバシー",
+          "利用規約",
+          "セキュリティ",
+          "Cookie"
+        ]
+      },
       "copy": "© 2025 Julay. All rights reserved.",
       "built": "Julay.org制作"
-    }
+    },
+    "referral": {
+      "chip": "REFER A FRIEND",
+      "title": "Share Julay.",
+      "titleGrad": "Earn rewards.",
+      "sub": "Invite friends to Julay. When they sign up, you both win — they get a free account, you get a free month.",
+      "steps": [
+        {
+          "step": "01",
+          "icon": "🔗",
+          "title": "Get your link",
+          "desc": "Sign up and find your unique referral link in Settings → Invite a Friend."
+        },
+        {
+          "step": "02",
+          "icon": "📤",
+          "title": "Share it",
+          "desc": "Send it via WhatsApp, email, or any messaging app. One click, done."
+        },
+        {
+          "step": "03",
+          "icon": "🎁",
+          "title": "Both win",
+          "desc": "Your friend gets a free Julay account. You get 1 month free on any paid plan."
+        }
+      ],
+      "perks": [
+        "Unlimited referrals",
+        "Friend gets free account",
+        "1 free month per referral",
+        "Instant rewards"
+      ],
+      "cta": "Sign up & get your referral link",
+      "existing": "Already have an account? Go to Settings → Invite a Friend"
+    },
+    "waitlistBadge": "500+ teams already on the waitlist — don't miss your spot"
   }
 }

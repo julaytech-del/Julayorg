@@ -20,11 +20,26 @@
     "settings": "Einstellungen",
     "signOut": "Abmelden",
     "pages": {
-      "/": { "title": "Dashboard", "subtitle": "Übersicht Ihres Arbeitsbereichs" },
-      "/projects": { "title": "Projekte", "subtitle": "Alle Projekte verwalten und verfolgen" },
-      "/team": { "title": "Team", "subtitle": "Mitglieder und Leistung" },
-      "/departments": { "title": "Abteilungen", "subtitle": "Organisationsstruktur" },
-      "/ai": { "title": "KI-Studio", "subtitle": "Intelligente Projektautomatisierung" }
+      "/": {
+        "title": "Dashboard",
+        "subtitle": "Übersicht Ihres Arbeitsbereichs"
+      },
+      "/projects": {
+        "title": "Projekte",
+        "subtitle": "Alle Projekte verwalten und verfolgen"
+      },
+      "/team": {
+        "title": "Team",
+        "subtitle": "Mitglieder und Leistung"
+      },
+      "/departments": {
+        "title": "Abteilungen",
+        "subtitle": "Organisationsstruktur"
+      },
+      "/ai": {
+        "title": "KI-Studio",
+        "subtitle": "Intelligente Projektautomatisierung"
+      }
     }
   },
   "auth": {
@@ -270,7 +285,11 @@
       "performance": "Leistung",
       "skills": "Fähigkeiten",
       "viewProfile": "Profil anzeigen",
-      "status": { "active": "Aktiv", "away": "Abwesend", "offline": "Offline" }
+      "status": {
+        "active": "Aktiv",
+        "away": "Abwesend",
+        "offline": "Offline"
+      }
     }
   },
   "departments": {
@@ -408,14 +427,46 @@
       "generate": "Generieren",
       "generated": "KI hat 5 Aufgaben erstellt · Team zugewiesen · Schätzung 100h",
       "tasks": [
-        { "title": "Marktforschung & Wettbewerbsanalyse", "assignee": "Sara", "hours": 12, "status": "done" },
-        { "title": "Design-System & UI-Komponenten", "assignee": "Alex", "hours": 24, "status": "in_progress" },
-        { "title": "Backend API Refaktorierung", "assignee": "Mohammed", "hours": 40, "status": "in_progress" },
-        { "title": "QA-Tests & Fehlerbehebung", "assignee": "Dana", "hours": 16, "status": "todo" },
-        { "title": "DevOps & Deployment-Pipeline", "assignee": "Karim", "hours": 8, "status": "todo" }
+        {
+          "title": "Marktforschung & Wettbewerbsanalyse",
+          "assignee": "Sara",
+          "hours": 12,
+          "status": "done"
+        },
+        {
+          "title": "Design-System & UI-Komponenten",
+          "assignee": "Alex",
+          "hours": 24,
+          "status": "in_progress"
+        },
+        {
+          "title": "Backend API Refaktorierung",
+          "assignee": "Mohammed",
+          "hours": 40,
+          "status": "in_progress"
+        },
+        {
+          "title": "QA-Tests & Fehlerbehebung",
+          "assignee": "Dana",
+          "hours": 16,
+          "status": "todo"
+        },
+        {
+          "title": "DevOps & Deployment-Pipeline",
+          "assignee": "Karim",
+          "hours": 8,
+          "status": "todo"
+        }
       ]
     },
-    "nav": { "features": "Funktionen", "compare": "Vergleich", "pricing": "Preise", "faq": "FAQ", "login": "Anmelden", "start": "Kostenlos starten →" },
+    "nav": {
+      "features": "Funktionen",
+      "compare": "Vergleich",
+      "pricing": "Preise",
+      "faq": "FAQ",
+      "login": "Anmelden",
+      "start": "Kostenlos starten →"
+    },
     "hero": {
       "badge": "KI-gestützt · Jetzt live",
       "h1a": "Wir verwalten keine Aufgaben.",
@@ -425,12 +476,26 @@
       "cta2": "So funktioniert es",
       "tagline": "Kostenloser Plan für immer · Keine Kreditkarte · Einrichtung in 60 Sekunden"
     },
-    "badges": ["12 KI-gestützte Funktionen", "10 unterstützte Sprachen", "Kanban · Gantt · Sprints", "Kostenloser Plan für immer", "Keine Preise pro Sitz"],
+    "badges": [
+      "12 KI-gestützte Funktionen",
+      "10 unterstützte Sprachen",
+      "Kanban · Gantt · Sprints",
+      "Kostenloser Plan für immer",
+      "Keine Preise pro Sitz"
+    ],
     "stats": [
-      { "label": "KI-gestützte Funktionen" },
-      { "label": "Ansichten & Tools enthalten" },
-      { "label": "Unterstützte Sprachen" },
-      { "label": "Um ein vollständiges Projekt zu generieren" }
+      {
+        "label": "KI-gestützte Funktionen"
+      },
+      {
+        "label": "Ansichten & Tools enthalten"
+      },
+      {
+        "label": "Unterstützte Sprachen"
+      },
+      {
+        "label": "Um ein vollständiges Projekt zu generieren"
+      }
     ],
     "problem": {
       "chip": "DAS PROBLEM",
@@ -452,18 +517,66 @@
       "titleGrad": "Nichts überflüssiges.",
       "sub": "12 Kernfunktionen. Alle KI-verbunden. Alle darauf ausgelegt, die Arbeitslast Ihres Teams zu reduzieren.",
       "items": [
-        { "icon": "🧠", "title": "KI-Projektplanung", "desc": "Beschreiben Sie Ihr Ziel in einfacher Sprache. Julay KI generiert einen vollständigen Projektplan — Aufgaben, Zeitpläne, Zuweisungen — in Sekunden." },
-        { "icon": "⚡", "title": "Intelligente Auto-Zuweisung", "desc": "KI analysiert Fähigkeiten, Arbeitslast und Verfügbarkeit, um Aufgaben automatisch der richtigen Person zuzuweisen." },
-        { "icon": "📊", "title": "Kritischer Pfad (CPM)", "desc": "Identifiziert automatisch Aufgaben, die Ihr Projekt verzögern könnten. Visuelle Warnungen halten Sie im Zeitplan." },
-        { "icon": "🎯", "title": "Arbeitslastausgleich", "desc": "Eine Echtzeit-Heatmap zeigt, wer überlastet ist. Ein Klick KI-Neuverteilung weist Aufgaben intelligent neu zu." },
-        { "icon": "📅", "title": "Terminoptimierung", "desc": "KI analysiert die Arbeitslast und schlägt die besten Fälligkeitsdaten vor — mit Konfidenzwerten und Risikowarnungen." },
-        { "icon": "🔔", "title": "Intelligente Benachrichtigungen", "desc": "Werden Sie gewarnt, bevor Probleme auftreten. KI überwacht Ihre Projekte 24/7." },
-        { "icon": "⚙️", "title": "Automatisierungsmotor", "desc": "Erstellen Sie leistungsstarke Wenn-Dann-Regeln. Lösen Sie Benachrichtigungen und Statusänderungen automatisch aus." },
-        { "icon": "📋", "title": "Formular-Builder", "desc": "Erstellen Sie teilbare Formulare, die bei Einreichung automatisch Aufgaben erstellen. Kein Dev erforderlich." },
-        { "icon": "📈", "title": "KI-Führungsberichte", "desc": "Ein Klick generiert eine 2-Absatz-Zusammenfassung Ihres Projektstatus." },
-        { "icon": "🔗", "title": "Webhook-System", "desc": "Senden Sie Echtzeitereignisse an Slack, Zapier oder jeden Endpunkt. HMAC-signierte Payloads." },
-        { "icon": "🏃", "title": "Sprint / Agile Board", "desc": "Vollständige Scrum-Unterstützung. Sprints planen, Velocity verfolgen, Burndown-Charts anzeigen." },
-        { "icon": "🌐", "title": "Portfolio-Ansicht", "desc": "Sehen Sie die Gesundheit jedes Projekts in einem einzigen Dashboard. Im Plan, gefährdet, außer Plan — auf einen Blick." }
+        {
+          "icon": "🧠",
+          "title": "KI-Projektplanung",
+          "desc": "Beschreiben Sie Ihr Ziel in einfacher Sprache. Julay KI generiert einen vollständigen Projektplan — Aufgaben, Zeitpläne, Zuweisungen — in Sekunden."
+        },
+        {
+          "icon": "⚡",
+          "title": "Intelligente Auto-Zuweisung",
+          "desc": "KI analysiert Fähigkeiten, Arbeitslast und Verfügbarkeit, um Aufgaben automatisch der richtigen Person zuzuweisen."
+        },
+        {
+          "icon": "📊",
+          "title": "Kritischer Pfad (CPM)",
+          "desc": "Identifiziert automatisch Aufgaben, die Ihr Projekt verzögern könnten. Visuelle Warnungen halten Sie im Zeitplan."
+        },
+        {
+          "icon": "🎯",
+          "title": "Arbeitslastausgleich",
+          "desc": "Eine Echtzeit-Heatmap zeigt, wer überlastet ist. Ein Klick KI-Neuverteilung weist Aufgaben intelligent neu zu."
+        },
+        {
+          "icon": "📅",
+          "title": "Terminoptimierung",
+          "desc": "KI analysiert die Arbeitslast und schlägt die besten Fälligkeitsdaten vor — mit Konfidenzwerten und Risikowarnungen."
+        },
+        {
+          "icon": "🔔",
+          "title": "Intelligente Benachrichtigungen",
+          "desc": "Werden Sie gewarnt, bevor Probleme auftreten. KI überwacht Ihre Projekte 24/7."
+        },
+        {
+          "icon": "⚙️",
+          "title": "Automatisierungsmotor",
+          "desc": "Erstellen Sie leistungsstarke Wenn-Dann-Regeln. Lösen Sie Benachrichtigungen und Statusänderungen automatisch aus."
+        },
+        {
+          "icon": "📋",
+          "title": "Formular-Builder",
+          "desc": "Erstellen Sie teilbare Formulare, die bei Einreichung automatisch Aufgaben erstellen. Kein Dev erforderlich."
+        },
+        {
+          "icon": "📈",
+          "title": "KI-Führungsberichte",
+          "desc": "Ein Klick generiert eine 2-Absatz-Zusammenfassung Ihres Projektstatus."
+        },
+        {
+          "icon": "🔗",
+          "title": "Webhook-System",
+          "desc": "Senden Sie Echtzeitereignisse an Slack, Zapier oder jeden Endpunkt. HMAC-signierte Payloads."
+        },
+        {
+          "icon": "🏃",
+          "title": "Sprint / Agile Board",
+          "desc": "Vollständige Scrum-Unterstützung. Sprints planen, Velocity verfolgen, Burndown-Charts anzeigen."
+        },
+        {
+          "icon": "🌐",
+          "title": "Portfolio-Ansicht",
+          "desc": "Sehen Sie die Gesundheit jedes Projekts in einem einzigen Dashboard. Im Plan, gefährdet, außer Plan — auf einen Blick."
+        }
       ]
     },
     "compare": {
@@ -471,20 +584,40 @@
       "title": "Wie Julay abschneidet",
       "sub": "Spoiler: Die KI-Spalte verändert alles.",
       "featureNames": [
-        "KI-Projektplanung", "Auto-Aufgabenzerlegung", "Intelligente Team-Zuweisung",
-        "KI-Terminoptimierung", "KI-Arbeitslastausgleich", "Kritischer Pfad (CPM)",
-        "Automatisierungsregeln", "Gantt-Timeline", "Kalenderansicht", "Benutzerdefinierte Dashboards",
-        "Sprint / Agile Board", "Zeiterfassung", "Formular-Builder",
-        "Webhook-System", "Startpreis", "KI im Basisplan enthalten"
+        "KI-Projektplanung",
+        "Auto-Aufgabenzerlegung",
+        "Intelligente Team-Zuweisung",
+        "KI-Terminoptimierung",
+        "KI-Arbeitslastausgleich",
+        "Kritischer Pfad (CPM)",
+        "Automatisierungsregeln",
+        "Gantt-Timeline",
+        "Kalenderansicht",
+        "Benutzerdefinierte Dashboards",
+        "Sprint / Agile Board",
+        "Zeiterfassung",
+        "Formular-Builder",
+        "Webhook-System",
+        "Startpreis",
+        "KI im Basisplan enthalten"
       ],
-      "startingPrice": { "julay": "9$/Mo.", "monday": "9$/Sitz", "asana": "13$/Sitz", "notion": "10$/Sitz" }
+      "startingPrice": {
+        "julay": "9$/Mo.",
+        "monday": "9$/Sitz",
+        "asana": "13$/Sitz",
+        "notion": "10$/Sitz"
+      }
     },
     "earlyAccess": {
       "badge": "JETZT IN DER FRÜHEN ZUGRIFFSPHASE",
       "title": "Gehören Sie zu den ersten Teams, die Julay nutzen",
       "sub": "Wir starten Julay mit einer kleinen Gruppe früher Nutzer. Erstellen Sie jetzt Ihr Konto — vollständiger Zugang kostenlos.",
       "cta": "Frühen Zugang erhalten — Kostenlos",
-      "perks": ["Keine Kreditkarte", "Jederzeit kündigen", "Vollständiger Funktionszugang"]
+      "perks": [
+        "Keine Kreditkarte",
+        "Jederzeit kündigen",
+        "Vollständiger Funktionszugang"
+      ]
     },
     "pricing": {
       "chip": "PREISE",
@@ -502,22 +635,111 @@
         "cta": "Vertrieb kontaktieren"
       },
       "plans": [
-        { "id": "free", "name": "Kostenlos", "price": 0, "yearlyPrice": 0, "ctaVariant": "outlined", "highlight": false, "description": "Perfekt zum Einstieg", "features": ["3 Projekte", "3 Teammitglieder", "5 KI-Anfragen/Monat", "Kanban & Listenansichten", "1 GB Speicher"], "cta": "Kostenlos starten" },
-        { "id": "starter", "name": "Starter", "price": 9, "yearlyPrice": 7, "ctaVariant": "outlined", "highlight": false, "description": "Für Solo-Profis", "features": ["10 Projekte", "10 Teammitglieder", "100 KI-Anfragen/Monat", "Alle Ansichten", "10 GB", "E-Mail-Support"], "cta": "Kostenlose Testversion starten" },
-        { "id": "professional", "name": "Professionell", "price": 29, "yearlyPrice": 23, "ctaVariant": "contained", "highlight": true, "popular": true, "description": "Für wachsende Teams", "features": ["Unbegrenzte Projekte", "25 Teammitglieder", "500 KI-Anfragen/Monat", "Automatisierungen & Webhooks", "Berichte & Formulare", "Zeiterfassung + Benutzerdefinierte Felder", "50 GB", "Prioritätssupport"], "cta": "Kostenlose Testversion starten" },
-        { "id": "business", "name": "Business", "price": 79, "yearlyPrice": 63, "ctaVariant": "outlined", "highlight": false, "description": "Für wachsende Unternehmen", "features": ["Alles aus Professionell", "Unbegrenzte Teammitglieder", "2.000 KI-Anfragen/Monat", "API-Zugang", "Benutzerdefinierte Analysen", "200 GB", "Dedizierter Support"], "cta": "Kostenlose Testversion starten" }
+        {
+          "id": "free",
+          "name": "Kostenlos",
+          "price": 0,
+          "yearlyPrice": 0,
+          "ctaVariant": "outlined",
+          "highlight": false,
+          "description": "Perfekt zum Einstieg",
+          "features": [
+            "3 Projekte",
+            "3 Teammitglieder",
+            "5 KI-Anfragen/Monat",
+            "Kanban & Listenansichten",
+            "1 GB Speicher"
+          ],
+          "cta": "Kostenlos starten"
+        },
+        {
+          "id": "starter",
+          "name": "Starter",
+          "price": 9,
+          "yearlyPrice": 7,
+          "ctaVariant": "outlined",
+          "highlight": false,
+          "description": "Für Solo-Profis",
+          "features": [
+            "10 Projekte",
+            "10 Teammitglieder",
+            "100 KI-Anfragen/Monat",
+            "Alle Ansichten",
+            "10 GB",
+            "E-Mail-Support"
+          ],
+          "cta": "Kostenlose Testversion starten"
+        },
+        {
+          "id": "professional",
+          "name": "Professionell",
+          "price": 29,
+          "yearlyPrice": 23,
+          "ctaVariant": "contained",
+          "highlight": true,
+          "popular": true,
+          "description": "Für wachsende Teams",
+          "features": [
+            "Unbegrenzte Projekte",
+            "25 Teammitglieder",
+            "500 KI-Anfragen/Monat",
+            "Automatisierungen & Webhooks",
+            "Berichte & Formulare",
+            "Zeiterfassung + Benutzerdefinierte Felder",
+            "50 GB",
+            "Prioritätssupport"
+          ],
+          "cta": "Kostenlose Testversion starten"
+        },
+        {
+          "id": "business",
+          "name": "Business",
+          "price": 79,
+          "yearlyPrice": 63,
+          "ctaVariant": "outlined",
+          "highlight": false,
+          "description": "Für wachsende Unternehmen",
+          "features": [
+            "Alles aus Professionell",
+            "Unbegrenzte Teammitglieder",
+            "2.000 KI-Anfragen/Monat",
+            "API-Zugang",
+            "Benutzerdefinierte Analysen",
+            "200 GB",
+            "Dedizierter Support"
+          ],
+          "cta": "Kostenlose Testversion starten"
+        }
       ]
     },
     "faq": {
       "chip": "FAQ",
       "title": "Fragen? Wir haben Antworten.",
       "items": [
-        { "q": "Wie unterscheidet sich Julay von Monday.com oder Asana?", "a": "Julay ist das einzige Projektmanagement-Tool, das KI-first entwickelt wurde. Die KI plant Ihr Projekt, weist Ihr Team zu, balanciert die Arbeitslast und warnt vor Risiken — automatisch." },
-        { "q": "Muss ich wissen, wie man KI verwendet?", "a": "Überhaupt nicht. Schreiben Sie Ihr Ziel auf Deutsch. Julay erledigt den Rest. Keine Prompts, keine Vorlagen." },
-        { "q": "Gibt es einen kostenlosen Plan?", "a": "Ja — für immer kostenlos. 3 Projekte, 3 Teammitglieder, 5 KI-Anfragen pro Monat. Keine Kreditkarte erforderlich." },
-        { "q": "Wie sicher sind meine Daten?", "a": "Alle Daten sind verschlüsselt. Wir verwenden HMAC-signierte Webhooks, JWT-Authentifizierung und rollenbasierte Zugriffskontrolle." },
-        { "q": "Kann ich von Monday oder Asana migrieren?", "a": "Ja. Beschreiben Sie Ihr Projekt und Julay erstellt automatisch die vollständige Aufgabenstruktur." },
-        { "q": "Welches KI-Modell betreibt Julay?", "a": "Julay wird von modernster KI betrieben — eines der leistungsfähigsten Modelle für strukturierte Planung und Führungsberichte." }
+        {
+          "q": "Wie unterscheidet sich Julay von Monday.com oder Asana?",
+          "a": "Julay ist das einzige Projektmanagement-Tool, das KI-first entwickelt wurde. Die KI plant Ihr Projekt, weist Ihr Team zu, balanciert die Arbeitslast und warnt vor Risiken — automatisch."
+        },
+        {
+          "q": "Muss ich wissen, wie man KI verwendet?",
+          "a": "Überhaupt nicht. Schreiben Sie Ihr Ziel auf Deutsch. Julay erledigt den Rest. Keine Prompts, keine Vorlagen."
+        },
+        {
+          "q": "Gibt es einen kostenlosen Plan?",
+          "a": "Ja — für immer kostenlos. 3 Projekte, 3 Teammitglieder, 5 KI-Anfragen pro Monat. Keine Kreditkarte erforderlich."
+        },
+        {
+          "q": "Wie sicher sind meine Daten?",
+          "a": "Alle Daten sind verschlüsselt. Wir verwenden HMAC-signierte Webhooks, JWT-Authentifizierung und rollenbasierte Zugriffskontrolle."
+        },
+        {
+          "q": "Kann ich von Monday oder Asana migrieren?",
+          "a": "Ja. Beschreiben Sie Ihr Projekt und Julay erstellt automatisch die vollständige Aufgabenstruktur."
+        },
+        {
+          "q": "Welches KI-Modell betreibt Julay?",
+          "a": "Julay wird von modernster KI betrieben — eines der leistungsfähigsten Modelle für strukturierte Planung und Führungsberichte."
+        }
       ]
     },
     "finalCta": {
@@ -526,15 +748,79 @@
       "titleGrad": "jetzt.",
       "sub": "Ersetzen Sie Planungsmeetings durch Julay KI. Beschreiben Sie Ihr Ziel, erhalten Sie ein vollständiges Projekt in 60 Sekunden. Kostenlos für immer.",
       "cta": "Erstes Projekt kostenlos erstellen",
-      "perks": ["Kostenloser Plan für immer", "Keine Kreditkarte", "Einrichtung in 60 Sekunden", "Jederzeit kündigen"]
+      "perks": [
+        "Kostenloser Plan für immer",
+        "Keine Kreditkarte",
+        "Einrichtung in 60 Sekunden",
+        "Jederzeit kündigen"
+      ]
     },
     "footer": {
       "tagline": "KI-gestütztes Projektmanagement für moderne Teams. Klüger planen. Schneller umsetzen.",
-      "product": { "title": "Produkt", "links": ["Funktionen", "Preise", "Vergleich", "Changelog"] },
-      "company": { "title": "Unternehmen", "links": ["Über uns", "Blog", "Karriere", "Kontakt"] },
-      "legal": { "title": "Rechtliches", "links": ["Datenschutz", "AGB", "Sicherheit", "Cookies"] },
+      "product": {
+        "title": "Produkt",
+        "links": [
+          "Funktionen",
+          "Preise",
+          "Vergleich",
+          "Changelog"
+        ]
+      },
+      "company": {
+        "title": "Unternehmen",
+        "links": [
+          "Über uns",
+          "Blog",
+          "Karriere",
+          "Kontakt"
+        ]
+      },
+      "legal": {
+        "title": "Rechtliches",
+        "links": [
+          "Datenschutz",
+          "AGB",
+          "Sicherheit",
+          "Cookies"
+        ]
+      },
       "copy": "© 2025 Julay. Alle Rechte vorbehalten.",
       "built": "Entwickelt von Julay.org"
-    }
+    },
+    "referral": {
+      "chip": "REFER A FRIEND",
+      "title": "Share Julay.",
+      "titleGrad": "Earn rewards.",
+      "sub": "Invite friends to Julay. When they sign up, you both win — they get a free account, you get a free month.",
+      "steps": [
+        {
+          "step": "01",
+          "icon": "🔗",
+          "title": "Get your link",
+          "desc": "Sign up and find your unique referral link in Settings → Invite a Friend."
+        },
+        {
+          "step": "02",
+          "icon": "📤",
+          "title": "Share it",
+          "desc": "Send it via WhatsApp, email, or any messaging app. One click, done."
+        },
+        {
+          "step": "03",
+          "icon": "🎁",
+          "title": "Both win",
+          "desc": "Your friend gets a free Julay account. You get 1 month free on any paid plan."
+        }
+      ],
+      "perks": [
+        "Unlimited referrals",
+        "Friend gets free account",
+        "1 free month per referral",
+        "Instant rewards"
+      ],
+      "cta": "Sign up & get your referral link",
+      "existing": "Already have an account? Go to Settings → Invite a Friend"
+    },
+    "waitlistBadge": "500+ teams already on the waitlist — don't miss your spot"
   }
 }

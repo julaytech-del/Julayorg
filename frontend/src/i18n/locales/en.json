@@ -524,6 +524,21 @@
         { "q": "What AI model powers Julay?", "a": "Julay is powered by Anthropic's Claude — one of the most capable AI models available for structured planning, risk analysis, and executive reporting." }
       ]
     },
+    "referral": {
+      "chip": "REFER A FRIEND",
+      "title": "Share Julay.",
+      "titleGrad": "Earn rewards.",
+      "sub": "Invite friends to Julay. When they sign up, you both win — they get a free account, you get a free month.",
+      "steps": [
+        { "step": "01", "icon": "🔗", "title": "Get your link", "desc": "Sign up and find your unique referral link in Settings → Invite a Friend." },
+        { "step": "02", "icon": "📤", "title": "Share it", "desc": "Send it via WhatsApp, email, or any messaging app. One click, done." },
+        { "step": "03", "icon": "🎁", "title": "Both win", "desc": "Your friend gets a free Julay account. You get 1 month free on any paid plan." }
+      ],
+      "perks": ["Unlimited referrals", "Friend gets free account", "1 free month per referral", "Instant rewards"],
+      "cta": "Sign up & get your referral link",
+      "existing": "Already have an account? Go to Settings → Invite a Friend"
+    },
+    "waitlistBadge": "500+ teams already on the waitlist — don't miss your spot",
     "finalCta": {
       "eyebrow": "Stop planning. Start executing.",
       "title": "Your next project starts",
