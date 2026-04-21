@@ -501,7 +501,7 @@
       "chip": "LE PROBLÈME",
       "title": "Votre outil PM actuel n'est qu'une",
       "strike": "liste de tâches sophistiquée",
-      "sub": "Monday, Asana et Notion vous aident à suivre le travail — mais ils ne pensent pas. Vous devez encore planifier, assigner, programmer et vérifier les risques manuellement.",
+      "sub": "Notion, ClickUp et Trello vous aident à suivre le travail — mais ils ne pensent pas. Vous devez encore planifier, assigner, programmer et vérifier les risques manuellement.",
       "pains": [
         "Vous passez le lundi à planifier toute votre semaine",
         "Les tâches sont assignées au hasard",
@@ -718,8 +718,8 @@
       "title": "Des questions ? Nous avons des réponses.",
       "items": [
         {
-          "q": "En quoi Julay est-il différent de Monday.com ou Asana ?",
-          "a": "Julay est le seul outil conçu IA en premier. L'IA planifie votre projet, assigne votre équipe, équilibre la charge et avertit des risques — automatiquement."
+          "q": "En quoi Julay est-il différent de Notion ou ClickUp ?",
+          "a": "Julay est le seul outil de gestion de projet conçu avec l'IA en priorité. Notion et ClickUp ont des add-ons IA. L'IA de Julay planifie votre projet, assigne votre équipe, équilibre la charge de travail et vous avertit des risques — tout automatiquement."
         },
         {
           "q": "Dois-je savoir utiliser l'IA ?",
@@ -734,7 +734,7 @@
           "a": "Toutes les données sont chiffrées. Nous utilisons des webhooks signés HMAC, JWT et contrôle d'accès par rôles."
         },
         {
-          "q": "Puis-je migrer depuis Monday ou Asana ?",
+          "q": "Puis-je migrer depuis Notion ou ClickUp ?",
           "a": "Oui. Décrivez votre projet et Julay reconstruit la structure complète automatiquement."
         },
         {

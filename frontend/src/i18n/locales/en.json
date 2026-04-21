@@ -501,7 +501,7 @@
       "chip": "THE PROBLEM",
       "title": "Your current PM tool is just a",
       "strike": "fancy to-do list",
-      "sub": "Monday, Asana, and Notion help you track work — but they don't think. You still need to plan, assign, schedule, and risk-check everything manually.",
+      "sub": "Notion, ClickUp, and Trello help you track work — but they don't think. You still need to plan, assign, schedule, and risk-check everything manually.",
       "pains": [
         "You spend Monday planning your whole week",
         "Tasks get assigned based on guesswork",
@@ -718,8 +718,8 @@
       "title": "Questions? We've got answers.",
       "items": [
         {
-          "q": "How is Julay different from Monday.com or Asana?",
-          "a": "Julay is the only project management tool built AI-first. Monday and Asana have AI bolt-ons. Julay's AI plans your project, assigns your team, balances workload, and warns you about risks — all automatically. It's not a feature, it's the engine."
+          "q": "How is Julay different from Notion or ClickUp?",
+          "a": "Julay is the only project management tool built AI-first. Notion and ClickUp have AI bolt-ons. Julay's AI plans your project, assigns your team, balances workload, and warns you about risks — all automatically. It's not a feature, it's the engine."
         },
         {
           "q": "Do I need to know how to use AI?",
@@ -734,7 +734,7 @@
           "a": "All data is encrypted at rest and in transit. We use HMAC-signed webhooks, JWT authentication, and role-based access control. Your data is never used to train AI models."
         },
         {
-          "q": "Can I migrate from Monday or Asana?",
+          "q": "Can I migrate from Notion or ClickUp?",
           "a": "Yes. You can recreate your project structure in Julay in minutes using AI generation. Describe your existing project and Julay will build the full task breakdown automatically. Business and Enterprise plans include onboarding assistance."
         },
         {

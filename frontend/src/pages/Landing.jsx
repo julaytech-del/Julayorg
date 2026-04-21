@@ -157,7 +157,7 @@ const COMPARE_MATRIX = [
 ];
 
 const LOGOS = ['NovaTech', 'Tamatem', 'BuildStack', 'Fintech.io', 'ZeroGravity', 'Shift Media', 'Launchpad', 'CoreSystems'];
-const TOOLS = ['Monday', 'Asana', 'Notion'];
+const TOOLS = ['Notion', 'ClickUp', 'Trello'];
 
 const STATS_NUMS = [
   { num: 12, suffix: '' },

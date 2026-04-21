@@ -501,7 +501,7 @@
       "chip": "DAS PROBLEM",
       "title": "Ihr aktuelles PM-Tool ist nur eine",
       "strike": "ausgefallene To-do-Liste",
-      "sub": "Monday, Asana und Notion helfen Ihnen, Arbeit zu verfolgen — aber sie denken nicht. Sie müssen immer noch manuell planen, zuweisen, terminieren und Risiken prüfen.",
+      "sub": "Notion, ClickUp und Trello helfen Ihnen, Arbeit zu verfolgen — aber sie denken nicht. Sie müssen immer noch manuell planen, zuweisen, terminieren und Risiken prüfen.",
       "pains": [
         "Sie verbringen den Montag damit, Ihre ganze Woche zu planen",
         "Aufgaben werden nach Bauchgefühl zugewiesen",
@@ -718,8 +718,8 @@
       "title": "Fragen? Wir haben Antworten.",
       "items": [
         {
-          "q": "Wie unterscheidet sich Julay von Monday.com oder Asana?",
-          "a": "Julay ist das einzige Projektmanagement-Tool, das KI-first entwickelt wurde. Die KI plant Ihr Projekt, weist Ihr Team zu, balanciert die Arbeitslast und warnt vor Risiken — automatisch."
+          "q": "Wie unterscheidet sich Julay von Notion oder ClickUp?",
+          "a": "Julay ist das einzige Projektmanagement-Tool, das KI-first entwickelt wurde. Notion und ClickUp haben KI-Ergänzungen. Julays KI plant Ihr Projekt, weist Ihr Team zu, balanciert die Arbeitslast und warnt Sie vor Risiken — alles automatisch."
         },
         {
           "q": "Muss ich wissen, wie man KI verwendet?",
@@ -734,7 +734,7 @@
           "a": "Alle Daten sind verschlüsselt. Wir verwenden HMAC-signierte Webhooks, JWT-Authentifizierung und rollenbasierte Zugriffskontrolle."
         },
         {
-          "q": "Kann ich von Monday oder Asana migrieren?",
+          "q": "Kann ich von Notion oder ClickUp migrieren?",
           "a": "Ja. Beschreiben Sie Ihr Projekt und Julay erstellt automatisch die vollständige Aufgabenstruktur."
         },
         {

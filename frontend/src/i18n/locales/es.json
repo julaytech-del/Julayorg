@@ -501,7 +501,7 @@
       "chip": "EL PROBLEMA",
       "title": "Tu herramienta PM actual es solo una",
       "strike": "lista de tareas elegante",
-      "sub": "Monday, Asana y Notion te ayudan a rastrear el trabajo — pero no piensan. Aún necesitas planificar, asignar, programar y verificar riesgos manualmente.",
+      "sub": "Notion, ClickUp y Trello te ayudan a rastrear el trabajo — pero no piensan. Aún necesitas planificar, asignar, programar y verificar riesgos manualmente.",
       "pains": [
         "Pasas el lunes planificando toda tu semana",
         "Las tareas se asignan por intuición",
@@ -734,7 +734,7 @@
           "a": "Todos los datos están cifrados. Usamos webhooks firmados HMAC, autenticación JWT y control de acceso por roles."
         },
         {
-          "q": "¿Puedo migrar desde Monday o Asana?",
+          "q": "¿Puedo migrar desde Notion o ClickUp?",
           "a": "Sí. Describe tu proyecto y Julay reconstruirá la estructura completa automáticamente."
         },
         {
