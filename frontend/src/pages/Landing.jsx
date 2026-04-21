@@ -177,7 +177,7 @@ export default function Landing() {
 
   const FEATURES = t('landing.features.items', { returnObjects: true });
   const PLANS = t('landing.pricing.plans', { returnObjects: true });
-  const FAQS = t('landing.faq.items', { returnObjects: true });
+  const FAQS = t('landing.faq.items', { returnObjects: true }).filter(f => !/(Notion|ClickUp)/i.test(f.q));
   const BADGES = t('landing.badges', { returnObjects: true });
   const STATS = t('landing.stats', { returnObjects: true });
   const PAINS = t('landing.problem.pains', { returnObjects: true });
