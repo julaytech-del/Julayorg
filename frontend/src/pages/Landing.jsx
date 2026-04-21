@@ -555,7 +555,7 @@ export default function Landing() {
               <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 2 }}>{t('landing.pricing.sub')}</Typography>
               <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.2)', mb: 4 }}>
                 <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
-                <Typography sx={{ color: '#EF4444', fontSize: '0.78rem', fontWeight: 700 }}>🔥 Founding member pricing — limited spots at this rate</Typography>
+                <Typography sx={{ color: '#EF4444', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.pricing.foundingBadge')}</Typography>
               </Box>
               <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
                 <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>{t('landing.pricing.monthly')}</ToggleButton>

@@ -710,7 +710,8 @@
           ],
           "cta": "Démarrer l'essai gratuit"
         }
-      ]
+      ],
+      "foundingBadge": "🔥 Tarif membre fondateur — places limitées à ce tarif"
     },
     "faq": {
       "chip": "FAQ",
