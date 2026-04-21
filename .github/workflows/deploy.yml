@@ -36,21 +36,18 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to server
+      - name: Sync frontend files
         run: |
           rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
             frontend/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/julay/frontend/dist/
 
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash -s << 'ENDSSH'
-            set -e
-            cd /home/ubuntu/Julayorg
-            git pull origin main
-            cd backend
-            npm install --production
-            pm2 restart julay-backend 2>/dev/null || pm2 start src/app.js --name julay-backend
-
-            # Ensure frontend dir exists and is writable
-            mkdir -p /var/www/julay/frontend/dist
-
+      - name: Deploy backend
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            cd /home/ubuntu/Julayorg &&
+            git pull origin main &&
+            cd backend &&
+            npm install --production &&
+            pm2 restart julay-backend 2>/dev/null || pm2 start src/app.js --name julay-backend &&
             echo 'Deploy complete!'
-ENDSSH
+          "
