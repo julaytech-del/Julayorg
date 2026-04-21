@@ -74,7 +74,13 @@
       "industry": "Отрасль",
       "submit": "Создать пространство",
       "hasAccount": "Уже есть аккаунт?",
-      "signIn": "Войти"
+      "signIn": "Войти",
+      "tabPassword": "Пароль",
+      "tabEmail": "Email-код",
+      "agreePrefix": "Я согласен с",
+      "agreeAnd": "и",
+      "terms": "Условиями использования",
+      "privacy": "Политикой конфиденциальности"
     }
   },
   "dashboard": {

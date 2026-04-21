@@ -74,7 +74,13 @@
       "industry": "उद्योग",
       "submit": "कार्यक्षेत्र बनाएं",
       "hasAccount": "पहले से खाता है?",
-      "signIn": "साइन इन करें"
+      "signIn": "साइन इन करें",
+      "tabPassword": "पासवर्ड",
+      "tabEmail": "ईमेल कोड",
+      "agreePrefix": "मैं सहमत हूं",
+      "agreeAnd": "और",
+      "terms": "सेवा की शर्तें",
+      "privacy": "गोपनीयता नीति"
     }
   },
   "dashboard": {

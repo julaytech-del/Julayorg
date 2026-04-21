@@ -74,7 +74,13 @@
       "industry": "Secteur",
       "submit": "Créer l'espace",
       "hasAccount": "Vous avez déjà un compte ?",
-      "signIn": "Se connecter"
+      "signIn": "Se connecter",
+      "tabPassword": "Mot de passe",
+      "tabEmail": "Code email",
+      "agreePrefix": "J'accepte les",
+      "agreeAnd": "et la",
+      "terms": "Conditions d'utilisation",
+      "privacy": "Politique de confidentialité"
     }
   },
   "dashboard": {

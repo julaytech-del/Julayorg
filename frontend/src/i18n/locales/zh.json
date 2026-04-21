@@ -74,7 +74,13 @@
       "industry": "行业",
       "submit": "创建工作空间",
       "hasAccount": "已有账户？",
-      "signIn": "登录"
+      "signIn": "登录",
+      "tabPassword": "密码",
+      "tabEmail": "邮箱验证码",
+      "agreePrefix": "我同意",
+      "agreeAnd": "和",
+      "terms": "服务条款",
+      "privacy": "隐私政策"
     }
   },
   "dashboard": {

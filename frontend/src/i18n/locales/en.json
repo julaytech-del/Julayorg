@@ -74,7 +74,13 @@
       "industry": "Industry",
       "submit": "Create Workspace",
       "hasAccount": "Already have an account?",
-      "signIn": "Sign in"
+      "signIn": "Sign in",
+      "tabPassword": "Password",
+      "tabEmail": "Email code",
+      "agreePrefix": "I agree to the",
+      "agreeAnd": "and",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
     }
   },
   "dashboard": {

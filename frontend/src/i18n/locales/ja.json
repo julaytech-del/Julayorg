@@ -74,7 +74,13 @@
       "industry": "業界",
       "submit": "ワークスペースを作成",
       "hasAccount": "すでにアカウントをお持ちですか？",
-      "signIn": "サインイン"
+      "signIn": "サインイン",
+      "tabPassword": "パスワード",
+      "tabEmail": "メールコード",
+      "agreePrefix": "同意します",
+      "agreeAnd": "および",
+      "terms": "利用規約",
+      "privacy": "プライバシーポリシー"
     }
   },
   "dashboard": {

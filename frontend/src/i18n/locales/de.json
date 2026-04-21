@@ -74,7 +74,13 @@
       "industry": "Branche",
       "submit": "Arbeitsbereich erstellen",
       "hasAccount": "Bereits ein Konto?",
-      "signIn": "Anmelden"
+      "signIn": "Anmelden",
+      "tabPassword": "Passwort",
+      "tabEmail": "E-Mail-Code",
+      "agreePrefix": "Ich stimme den",
+      "agreeAnd": "und der",
+      "terms": "Nutzungsbedingungen",
+      "privacy": "Datenschutzrichtlinie"
     }
   },
   "dashboard": {

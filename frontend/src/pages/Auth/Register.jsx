@@ -186,10 +186,10 @@ function PasswordRegister() {
         }
         label={
           <Typography sx={{ fontSize: '0.8rem' }}>
-            I agree to the{' '}
-            <Link component={RouterLink} to="/terms" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>Terms of Service</Link>
-            {' '}and{' '}
-            <Link component={RouterLink} to="/privacy" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>Privacy Policy</Link>
+            {t('auth.register.agreePrefix')}{' '}
+            <Link component={RouterLink} to="/terms" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>{t('auth.register.terms')}</Link>
+            {' '}{t('auth.register.agreeAnd')}{' '}
+            <Link component={RouterLink} to="/privacy" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>{t('auth.register.privacy')}</Link>
           </Typography>
         }
         sx={{ mb: fieldErrors.agreed ? 0.5 : 2, alignItems: 'flex-start', '& .MuiFormControlLabel-label': { pt: 0.5 } }}
@@ -307,10 +307,10 @@ function OTPRegister() {
         control={<Checkbox checked={agreed} onChange={e => setAgreed(e.target.checked)} sx={{ '&.Mui-checked': { color: '#6366F1' } }} />}
         label={
           <Typography sx={{ fontSize: '0.8rem' }}>
-            I agree to the{' '}
-            <Link component={RouterLink} to="/terms" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>Terms of Service</Link>
-            {' '}and{' '}
-            <Link component={RouterLink} to="/privacy" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>Privacy Policy</Link>
+            {t('auth.register.agreePrefix')}{' '}
+            <Link component={RouterLink} to="/terms" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>{t('auth.register.terms')}</Link>
+            {' '}{t('auth.register.agreeAnd')}{' '}
+            <Link component={RouterLink} to="/privacy" target="_blank" rel="noopener" sx={{ color: '#6366F1', fontWeight: 600 }}>{t('auth.register.privacy')}</Link>
           </Typography>
         }
         sx={{ mb: 3, alignItems: 'flex-start', '& .MuiFormControlLabel-label': { pt: 0.5 } }}
@@ -337,7 +337,22 @@ export default function Register() {
             <LanguageSwitcher />
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 3 }}>
-            <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 44, height: 44, objectFit: 'contain' }} />
+            <svg width="36" height="42" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="regjg" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
+                  <stop stopColor="#8B5CF6"/>
+                  <stop offset="0.55" stopColor="#6366F1"/>
+                  <stop offset="1" stopColor="#38BDF8"/>
+                </linearGradient>
+              </defs>
+              <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#regjg)"/>
+              <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#regjg)"/>
+              <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#regjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+              <circle cx="7" cy="59" r="3.5" fill="url(#regjg)"/>
+              <circle cx="47" cy="21" r="5" fill="url(#regjg)"/>
+              <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#regjg)"/>
+              <path d="M47 57 Q47 65 38 65" stroke="url(#regjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            </svg>
             <Typography variant="h5" fontWeight={700}>{t('auth.register.title')}</Typography>
           </Box>
 
@@ -345,8 +360,8 @@ export default function Register() {
             value={authTab} onChange={(_, v) => setAuthTab(v)} variant="fullWidth"
             sx={{ mb: 3, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.85rem' }, '& .Mui-selected': { color: '#6366F1' }, '& .MuiTabs-indicator': { backgroundColor: '#6366F1' } }}
           >
-            <Tab value="password" label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}><LockOutlined sx={{ fontSize: 15 }} /> Password</Box>} />
-            <Tab value="otp" label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}><Email sx={{ fontSize: 15 }} /> Email code</Box>} />
+            <Tab value="password" label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}><LockOutlined sx={{ fontSize: 15 }} /> {t('auth.register.tabPassword')}</Box>} />
+            <Tab value="otp" label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}><Email sx={{ fontSize: 15 }} /> {t('auth.register.tabEmail')}</Box>} />
           </Tabs>
 
           {authTab === 'password' ? <PasswordRegister /> : <OTPRegister />}

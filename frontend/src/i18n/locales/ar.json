@@ -74,7 +74,13 @@
       "industry": "القطاع",
       "submit": "إنشاء مساحة العمل",
       "hasAccount": "لديك حساب بالفعل؟",
-      "signIn": "تسجيل الدخول"
+      "signIn": "تسجيل الدخول",
+      "tabPassword": "كلمة المرور",
+      "tabEmail": "رمز البريد",
+      "agreePrefix": "أوافق على",
+      "agreeAnd": "و",
+      "terms": "شروط الخدمة",
+      "privacy": "سياسة الخصوصية"
     }
   },
   "dashboard": {
