@@ -343,9 +343,9 @@ export default function Landing() {
             mb: 2,
             textShadow: '0 2px 24px rgba(0,0,0,0.9)',
           }}>
-            We don't manage tasks.{' '}
+            {t('landing.hero.h1a')}{' '}
             <Box component="span" sx={{ background: 'linear-gradient(90deg, #818CF8 0%, #C084FC 60%, #38BDF8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              We design systems.
+              {t('landing.hero.h1b')}
             </Box>
           </Typography>
 
