@@ -147,7 +147,16 @@ export default function Login() {
       {/* Left Panel */}
       <Box sx={{ flex: 1, display: { xs: 'none', lg: 'flex' }, flexDirection: 'column', justifyContent: 'center', alignItems: 'flex-start', px: 8, py: 6, position: 'relative', zIndex: 1, maxWidth: 520 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 5 }}>
-          <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 42, height: 42, objectFit: 'contain' }} />
+          <svg width="36" height="42" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <defs><linearGradient id="loginjg1" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse"><stop stopColor="#8B5CF6"/><stop offset="0.55" stopColor="#6366F1"/><stop offset="1" stopColor="#38BDF8"/></linearGradient></defs>
+            <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#loginjg1)"/>
+            <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#loginjg1)"/>
+            <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#loginjg1)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            <circle cx="7" cy="59" r="3.5" fill="url(#loginjg1)"/>
+            <circle cx="47" cy="21" r="5" fill="url(#loginjg1)"/>
+            <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#loginjg1)"/>
+            <path d="M47 57 Q47 65 38 65" stroke="url(#loginjg1)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+          </svg>
           <Typography variant="h6" sx={{ color: 'white', fontWeight: 800, letterSpacing: '-0.02em' }}>Julay</Typography>
         </Box>
         <Typography variant="h2" sx={{ color: 'white', fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.1, mb: 2 }}>
@@ -174,7 +183,16 @@ export default function Login() {
         <Box sx={{ width: '100%', maxWidth: 380 }}>
           {/* Mobile logo */}
           <Box sx={{ display: { xs: 'flex', lg: 'none' }, alignItems: 'center', gap: 1.5, mb: 4, justifyContent: 'center' }}>
-            <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 38, height: 38, objectFit: 'contain' }} />
+            <svg width="32" height="38" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs><linearGradient id="loginjg2" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse"><stop stopColor="#8B5CF6"/><stop offset="0.55" stopColor="#6366F1"/><stop offset="1" stopColor="#38BDF8"/></linearGradient></defs>
+              <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#loginjg2)"/>
+              <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#loginjg2)"/>
+              <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#loginjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+              <circle cx="7" cy="59" r="3.5" fill="url(#loginjg2)"/>
+              <circle cx="47" cy="21" r="5" fill="url(#loginjg2)"/>
+              <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#loginjg2)"/>
+              <path d="M47 57 Q47 65 38 65" stroke="url(#loginjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+            </svg>
             <Typography variant="h6" sx={{ color: 'white', fontWeight: 800 }}>Julay</Typography>
           </Box>
 
