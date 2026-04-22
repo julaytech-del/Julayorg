@@ -43,17 +43,9 @@ jobs:
             git fetch origin main &&
             git reset --hard origin/main &&
             git clean -fd &&
-            # Ensure required secrets are in backend .env
-            upsert_env() {
-              local key=$1 val=$2 file=/home/ubuntu/Julayorg/backend/.env
-              if grep -q "^${key}=" "$file" 2>/dev/null; then
-                sed -i "s|^${key}=.*|${key}=${val}|" "$file"
-              else
-                echo "${key}=${val}" >> "$file"
-              fi
-            }
-            upsert_env GOOGLE_CLIENT_SECRET '${{ secrets.GOOGLE_CLIENT_SECRET }}'
-            upsert_env JWT_SECRET '${{ secrets.JWT_SECRET }}'
+            touch /home/ubuntu/Julayorg/backend/.env
+            grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
             cd backend &&
             npm install --production &&
             pm2 restart julay-backend --update-env 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend -f
