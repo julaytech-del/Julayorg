@@ -6,14 +6,11 @@ initSentry();
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
-import { GoogleOAuthProvider } from '@react-oauth/google';
 import App from './App.jsx';
 import store from './store/index.js';
 import './i18n/index.js';
 import './styles/accessibility.css';
 import ThemeWrapper from './ThemeWrapper.jsx';
-
-const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
 
 // Capacitor mobile init
 async function initMobile() {
@@ -40,16 +37,14 @@ const rootElement = document.getElementById('root');
 
 const app = (
   <React.StrictMode>
-    <GoogleOAuthProvider clientId={GOOGLE_CLIENT_ID}>
-      <Provider store={store}>
-        <BrowserRouter>
-          <ThemeWrapper>
-            <CssBaseline />
-            <App />
-          </ThemeWrapper>
-        </BrowserRouter>
-      </Provider>
-    </GoogleOAuthProvider>
+    <Provider store={store}>
+      <BrowserRouter>
+        <ThemeWrapper>
+          <CssBaseline />
+          <App />
+        </ThemeWrapper>
+      </BrowserRouter>
+    </Provider>
   </React.StrictMode>
 );
 

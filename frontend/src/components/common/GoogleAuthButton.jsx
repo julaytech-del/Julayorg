@@ -1,11 +1,13 @@
 import React, { useState } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
-import { useGoogleLogin } from '@react-oauth/google';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { setCredentials } from '../../store/slices/authSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import api from '../../services/api.js';
+
+const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
+const REDIRECT_URI = 'https://julay.org';
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -21,39 +23,76 @@ export default function GoogleAuthButton({ dark = false }) {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
-  const login = useGoogleLogin({
-    onSuccess: async (tokenResponse) => {
-      setLoading(true);
-      try {
-        // Get user info from Google
-        const userInfo = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
-          headers: { Authorization: `Bearer ${tokenResponse.access_token}` },
-        }).then(r => r.json());
+  const handleLogin = () => {
+    if (loading) return;
 
-        // Get ID token via credential
-        // We use the access token approach: send to backend for verification
-        const res = await api.post('/auth/google-token', {
-          access_token: tokenResponse.access_token,
-          email: userInfo.email,
-          name: userInfo.name,
-          picture: userInfo.picture,
-        });
-        dispatch(setCredentials(res.data.data));
-        navigate('/');
-      } catch (err) {
-        dispatch(showSnackbar({ message: err.response?.data?.message || 'Google sign-in failed', severity: 'error' }));
-      } finally {
-        setLoading(false);
+    const params = new URLSearchParams({
+      client_id: GOOGLE_CLIENT_ID,
+      redirect_uri: REDIRECT_URI,
+      response_type: 'token',
+      scope: 'openid email profile',
+      include_granted_scopes: 'true',
+    });
+
+    const popup = window.open(
+      `https://accounts.google.com/o/oauth2/v2/auth?${params}`,
+      'google_oauth',
+      'width=500,height=620,left=200,top=80,scrollbars=yes,resizable=yes'
+    );
+
+    if (!popup || popup.closed) {
+      dispatch(showSnackbar({ message: 'Please allow popups for Google sign-in and try again.', severity: 'warning' }));
+      return;
+    }
+
+    setLoading(true);
+
+    const pollTimer = setInterval(async () => {
+      try {
+        if (popup.closed) {
+          clearInterval(pollTimer);
+          setLoading(false);
+          return;
+        }
+        const url = popup.location.href;
+        if (url && url.includes('julay.org')) {
+          clearInterval(pollTimer);
+          const hash = new URLSearchParams(popup.location.hash.replace('#', ''));
+          const accessToken = hash.get('access_token');
+          const error = hash.get('error') || new URLSearchParams(popup.location.search).get('error');
+          popup.close();
+
+          if (error) {
+            setLoading(false);
+            dispatch(showSnackbar({ message: `Google sign-in failed: ${error}`, severity: 'error' }));
+            return;
+          }
+
+          if (!accessToken) {
+            setLoading(false);
+            dispatch(showSnackbar({ message: 'Google sign-in cancelled.', severity: 'warning' }));
+            return;
+          }
+
+          try {
+            const res = await api.post('/auth/google-token', { access_token: accessToken });
+            dispatch(setCredentials(res.data.data));
+            navigate('/');
+          } catch (err) {
+            dispatch(showSnackbar({ message: err.response?.data?.message || 'Google sign-in failed', severity: 'error' }));
+          } finally {
+            setLoading(false);
+          }
+        }
+      } catch {
+        // Cross-origin — still on Google's domain, keep polling
       }
-    },
-    onError: () => {
-      dispatch(showSnackbar({ message: 'Google sign-in was cancelled', severity: 'warning' }));
-    },
-  });
+    }, 300);
+  };
 
   return (
     <Box
-      onClick={() => !loading && login()}
+      onClick={handleLogin}
       sx={{
         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5,
         py: 1.3, px: 2, borderRadius: 2, cursor: loading ? 'default' : 'pointer',

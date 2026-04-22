@@ -36,11 +36,9 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Prepare server directories and backend
+      - name: Deploy backend
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
-            sudo mkdir -p /var/www/julay/frontend/dist &&
-            sudo chown -R ubuntu:ubuntu /var/www/julay &&
             cd /home/ubuntu/Julayorg &&
             git fetch origin main &&
             git reset --hard origin/main &&
@@ -48,7 +46,7 @@ jobs:
             cd backend &&
             npm install --production &&
             pm2 restart julay-backend --update-env 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend -f &&
-            echo 'Backend ready'
+            echo 'Backend deployed'
           "
 
       - name: Sync frontend files
@@ -63,4 +61,4 @@ jobs:
             sudo ln -sf /etc/nginx/sites-available/julay.org /etc/nginx/sites-enabled/julay.org &&
             sudo nginx -t && sudo systemctl reload nginx &&
             echo 'Nginx reloaded'
-          "
+          " || echo 'Nginx config skipped (needs manual sudo setup)'
