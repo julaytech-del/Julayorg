@@ -17,7 +17,7 @@ export const registerUser = createAsyncThunk('auth/register', async (data, { rej
   } catch (err) { return rejectWithValue(err.message || err.error || 'Registration failed'); }
 });
 
-export const fetchCurrentUser = createAsyncThunk('auth/fetchMe', async (_, { rejectWithValue }) => {
+export const fetchCurrentUser = createAsyncThunk('auth/fetchMe', async (tokenToVerify, { rejectWithValue }) => {
   try {
     const res = await authAPI.getMe();
     return res.data;
@@ -55,7 +55,16 @@ const authSlice = createSlice({
       .addCase(registerUser.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
       .addCase(fetchCurrentUser.pending, s => { s.loading = true; })
       .addCase(fetchCurrentUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload; s.initialized = true; })
-      .addCase(fetchCurrentUser.rejected, s => { s.loading = false; s.token = null; s.initialized = true; localStorage.removeItem('julay_token'); });
+      .addCase(fetchCurrentUser.rejected, (s, a) => {
+        s.loading = false;
+        s.initialized = true;
+        // Only clear credentials if the token hasn't been replaced by a fresh login/register
+        // (a.meta.arg is the token that was being verified when the fetch started)
+        if (s.token === a.meta.arg) {
+          s.token = null;
+          localStorage.removeItem('julay_token');
+        }
+      });
   }
 });
 

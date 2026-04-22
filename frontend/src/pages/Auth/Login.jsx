@@ -73,7 +73,7 @@ function OTPForm() {
       await api.post('/auth/otp/send', { email });
       setStep('code'); setSent(true);
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send code. Try again.');
+      setError(err.message || 'Failed to send code. Try again.');
     } finally { setLoading(false); }
   };
 

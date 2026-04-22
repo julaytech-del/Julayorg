@@ -110,10 +110,10 @@ function TeamTab({ currentUser }) {
     setInviting(true);
     try {
       const res = await api.post('/auth/invite', { email: inviteEmail });
-      setInviteLink(res.data.data.inviteLink);
+      setInviteLink(res.data.inviteLink);
       dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
     } catch (e) {
-      dispatch(showSnackbar({ message: e.response?.data?.message || 'Failed to generate invite link', severity: 'error' }));
+      dispatch(showSnackbar({ message: e.message || 'Failed to generate invite link', severity: 'error' }));
     } finally {
       setInviting(false);
     }

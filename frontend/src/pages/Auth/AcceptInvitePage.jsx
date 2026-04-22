@@ -26,9 +26,9 @@ export default function AcceptInvitePage() {
     const load = async () => {
       try {
         const res = await api.get(`/auth/invite/${token}`);
-        setInviteInfo(res.data.data);
+        setInviteInfo(res.data);
       } catch (e) {
-        setInfoError(e.response?.data?.message || 'This invite link is invalid or has expired.');
+        setInfoError(e.message || 'This invite link is invalid or has expired.');
       } finally {
         setLoadingInfo(false);
       }
@@ -45,12 +45,12 @@ export default function AcceptInvitePage() {
     setSubmitting(true);
     try {
       const res = await api.post(`/auth/accept-invite/${token}`, { name, password });
-      const { token: jwt, user } = res.data.data;
+      const { token: jwt, user } = res.data;
       dispatch(setCredentials({ token: jwt, user }));
       setDone(true);
       setTimeout(() => navigate('/dashboard'), 1500);
     } catch (e) {
-      setError(e.response?.data?.message || 'Something went wrong. Please try again.');
+      setError(e.message || 'Something went wrong. Please try again.');
     } finally {
       setSubmitting(false);
     }

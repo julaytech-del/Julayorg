@@ -16,8 +16,17 @@ api.interceptors.response.use(
       return Promise.reject({ success: false, message: err.code === 'ECONNABORTED' ? 'Request timed out. Please try again.' : 'Unable to connect to the server. Please check your connection.' });
     }
     if (err.response.status === 401) {
-      localStorage.removeItem('julay_token');
-      if (window.location.pathname !== '/login') window.location.href = '/login';
+      // Only clear localStorage token if the request used the same token
+      // (prevents clearing a fresh token when a stale-token request races with registration)
+      const failedToken = err.config?.headers?.Authorization?.replace('Bearer ', '');
+      const currentToken = localStorage.getItem('julay_token');
+      if (!failedToken || failedToken === currentToken) {
+        localStorage.removeItem('julay_token');
+        const currentPath = window.location.pathname;
+        if (currentPath !== '/login' && currentPath !== '/register') {
+          window.location.href = '/login';
+        }
+      }
     }
     return Promise.reject(err.response.data || { success: false, message: err.message });
   }

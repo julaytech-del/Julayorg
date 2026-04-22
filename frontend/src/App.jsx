@@ -54,8 +54,9 @@ function PageLoader() {
 }
 
 function ProtectedRoute({ children }) {
-  const { token, initialized, loading } = useSelector(s => s.auth);
-  if (!initialized && loading) {
+  const { token, initialized } = useSelector(s => s.auth);
+  // Show spinner while verifying a stored token (only on protected routes)
+  if (!initialized) {
     return (
       <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 2 }}>
         <Box sx={{ width: 40, height: 40, borderRadius: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
@@ -65,12 +66,14 @@ function ProtectedRoute({ children }) {
       </Box>
     );
   }
-  if (!token) return <Navigate to="/" replace />;
+  if (!token) return <Navigate to="/login" replace />;
   return children;
 }
 
 function PublicRoute({ children }) {
-  const { token } = useSelector(s => s.auth);
+  const { token, initialized } = useSelector(s => s.auth);
+  // Don't redirect while we're still verifying a stored token
+  if (!initialized) return children;
   if (token) return <Navigate to="/dashboard" replace />;
   return children;
 }
@@ -80,19 +83,8 @@ export default function App() {
   const { token, initialized } = useSelector(s => s.auth);
 
   useEffect(() => {
-    if (token && !initialized) dispatch(fetchCurrentUser());
-  }, []);
-
-  if (token && !initialized) {
-    return (
-      <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', flexDirection: 'column', gap: 2 }}>
-        <Box sx={{ width: 44, height: 44, borderRadius: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <span style={{ color: 'white', fontWeight: 800, fontSize: '1.4rem' }}>J</span>
-        </Box>
-        <CircularProgress size={24} sx={{ color: '#6366F1' }} />
-      </Box>
-    );
-  }
+    if (token && !initialized) dispatch(fetchCurrentUser(token));
+  }, [dispatch]);
 
   return (
     <>

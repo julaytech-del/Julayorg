@@ -48,7 +48,7 @@ jobs:
             grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
             cd backend &&
             npm install --production &&
-            pm2 restart julay-backend --update-env 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend -f
+            pm2 delete julay-backend 2>/dev/null; pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
             echo 'NGINX_ROOT_START'
             sudo nginx -T 2>/dev/null | grep -E '^\s*root ' | head -5 || cat /etc/nginx/sites-enabled/julay.org 2>/dev/null | grep -E '^\s*root ' | head -5
             echo 'NGINX_ROOT_END'

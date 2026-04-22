@@ -88,9 +88,9 @@ export default function OnboardingWizard() {
           filled.map(async (email) => {
             try {
               const res = await api.post('/auth/invite', { email: email.trim() });
-              return { email: email.trim(), link: res.data.data.inviteLink, ok: true };
+              return { email: email.trim(), link: res.data.inviteLink, ok: true };
             } catch (e) {
-              return { email: email.trim(), error: e.response?.data?.message || 'Failed', ok: false };
+              return { email: email.trim(), error: e.message || 'Failed', ok: false };
             }
           })
         );

@@ -234,7 +234,7 @@ function OTPRegister() {
       await api.post('/auth/otp/send', { email: form.email });
       setStep('code');
     } catch (err) {
-      setError(err.response?.data?.message || 'Failed to send code. Try again.');
+      setError(err.message || 'Failed to send code. Try again.');
     } finally { setLoading(false); }
   };
 
@@ -254,7 +254,7 @@ function OTPRegister() {
       dispatch(setCredentials(res.data));
       navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid or expired code.');
+      setError(err.message || 'Invalid or expired code.');
     } finally { setLoading(false); }
   };
 
