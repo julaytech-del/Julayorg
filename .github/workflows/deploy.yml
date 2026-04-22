@@ -43,6 +43,12 @@ jobs:
             git fetch origin main &&
             git reset --hard origin/main &&
             git clean -fd &&
+            # Ensure GOOGLE_CLIENT_SECRET is in backend .env
+            if grep -q 'GOOGLE_CLIENT_SECRET' /home/ubuntu/Julayorg/backend/.env 2>/dev/null; then
+              sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env
+            else
+              echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            fi
             cd backend &&
             npm install --production &&
             pm2 restart julay-backend --update-env 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend -f
