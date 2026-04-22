@@ -36,9 +36,9 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy backend and detect nginx root
+      - name: Deploy backend
         run: |
-          NGINX_ROOT=$(ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
             cd /home/ubuntu/Julayorg &&
             git fetch origin main &&
             git reset --hard origin/main &&
@@ -49,24 +49,13 @@ jobs:
             cd backend &&
             npm install --production &&
             pm2 delete julay-backend 2>/dev/null; pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
-            echo 'NGINX_ROOT_START'
-            sudo nginx -T 2>/dev/null | grep -E '^\s*root ' | head -5 || cat /etc/nginx/sites-enabled/julay.org 2>/dev/null | grep -E '^\s*root ' | head -5
-            echo 'NGINX_ROOT_END'
-          ")
-          echo "$NGINX_ROOT"
-          DETECTED=$(echo "$NGINX_ROOT" | grep -A1 'NGINX_ROOT_START' | grep 'root' | awk '{print $2}' | tr -d ';' | head -1)
-          echo "Detected nginx root: $DETECTED"
-          echo "NGINX_ROOT_PATH=$DETECTED" >> $GITHUB_ENV
+            mkdir -p /var/www/julay/frontend/dist
+          "
 
       - name: Sync frontend files
         run: |
-          TARGET="/var/www/julay/frontend/dist/"
-          if [ -n "$NGINX_ROOT_PATH" ] && [ "$NGINX_ROOT_PATH" != "/var/www/julay/frontend/dist" ]; then
-            TARGET="$NGINX_ROOT_PATH/"
-            echo "Using detected nginx root: $TARGET"
-          fi
           rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
-            frontend/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:$TARGET
+            frontend/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/julay/frontend/dist/
 
       - name: Apply nginx config and fix CSP
         run: |

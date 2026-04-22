@@ -4,7 +4,6 @@ import { authAPI } from '../../services/api.js';
 export const loginUser = createAsyncThunk('auth/login', async ({ email, password }, { rejectWithValue }) => {
   try {
     const res = await authAPI.login(email, password);
-    localStorage.setItem('julay_token', res.data.token);
     return res.data;
   } catch (err) { return rejectWithValue(err.message || 'Login failed'); }
 });
@@ -12,7 +11,6 @@ export const loginUser = createAsyncThunk('auth/login', async ({ email, password
 export const registerUser = createAsyncThunk('auth/register', async (data, { rejectWithValue }) => {
   try {
     const res = await authAPI.register(data);
-    localStorage.setItem('julay_token', res.data.token);
     return res.data;
   } catch (err) { return rejectWithValue(err.message || err.error || 'Registration failed'); }
 });

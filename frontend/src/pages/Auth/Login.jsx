@@ -131,12 +131,8 @@ function OTPForm() {
 }
 
 export default function Login() {
-  const navigate = useNavigate();
-  const { token } = useSelector(s => s.auth);
   const { t } = useTranslation();
   const [authTab, setAuthTab] = useState('password');
-
-  useEffect(() => { if (token) navigate('/'); }, [token]);
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', background: '#0F172A', position: 'relative', overflow: 'hidden' }}>
