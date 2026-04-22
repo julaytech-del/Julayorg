@@ -118,7 +118,7 @@ function PasswordRegister() {
     const res = await dispatch(registerUser({ ...form, ...(refCode ? { referredBy: refCode } : {}) }));
     if (!res.error) {
       trackEvent('registration_completed', { method: 'password' });
-      navigate('/');
+      navigate('/dashboard');
     }
   };
 
@@ -251,8 +251,8 @@ function OTPRegister() {
         industry: form.industry,
         ...(refCode ? { referredBy: refCode } : {}),
       });
-      dispatch(setCredentials(res.data.data));
-      navigate('/');
+      dispatch(setCredentials(res.data));
+      navigate('/dashboard');
     } catch (err) {
       setError(err.response?.data?.message || 'Invalid or expired code.');
     } finally { setLoading(false); }

@@ -26,7 +26,7 @@ function PasswordForm() {
   const handleSubmit = async e => {
     e.preventDefault();
     const res = await dispatch(loginUser({ email, password }));
-    if (!res.error) navigate('/');
+    if (!res.error) navigate('/dashboard');
   };
 
   const fillDemo = () => { setEmail('admin@techcorp.com'); setPassword('password123'); };
@@ -83,10 +83,10 @@ function OTPForm() {
     setLoading(true); setError('');
     try {
       const res = await api.post('/auth/otp/verify-login', { email, code });
-      dispatch(setCredentials(res.data.data));
-      navigate('/');
+      dispatch(setCredentials(res.data));
+      navigate('/dashboard');
     } catch (err) {
-      setError(err.response?.data?.message || 'Invalid or expired code.');
+      setError(err.message || err.data?.message || 'Invalid or expired code.');
     } finally { setLoading(false); }
   };
 

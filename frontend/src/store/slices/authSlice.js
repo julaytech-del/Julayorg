@@ -44,10 +44,10 @@ const authSlice = createSlice({
   extraReducers: builder => {
     builder
       .addCase(loginUser.pending, s => { s.loading = true; s.error = null; })
-      .addCase(loginUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload.user; s.token = a.payload.token; })
+      .addCase(loginUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload.user; s.token = a.payload.token; s.initialized = true; localStorage.setItem('julay_token', a.payload.token); })
       .addCase(loginUser.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
       .addCase(registerUser.pending, s => { s.loading = true; s.error = null; })
-      .addCase(registerUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload.user; s.token = a.payload.token; })
+      .addCase(registerUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload.user; s.token = a.payload.token; s.initialized = true; localStorage.setItem('julay_token', a.payload.token); })
       .addCase(registerUser.rejected, (s, a) => { s.loading = false; s.error = a.payload; })
       .addCase(fetchCurrentUser.pending, s => { s.loading = true; })
       .addCase(fetchCurrentUser.fulfilled, (s, a) => { s.loading = false; s.user = a.payload; s.initialized = true; })

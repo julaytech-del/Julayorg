@@ -99,10 +99,10 @@ export default function GoogleAuthButton({ dark = false }) {
 
         try {
           const res = await api.post('/auth/google-code', { code, redirect_uri: REDIRECT_URI });
-          dispatch(setCredentials(res.data.data));
-          navigate('/');
+          dispatch(setCredentials(res.data));
+          navigate('/dashboard');
         } catch (err) {
-          const msg = err.response?.data?.message || 'Google sign-in failed. Please try again.';
+          const msg = err?.message || err?.data?.message || 'Google sign-in failed. Please try again.';
           dispatch(showSnackbar({ message: msg, severity: 'error' }));
         } finally {
           setLoading(false);
