@@ -42,10 +42,12 @@ jobs:
             sudo mkdir -p /var/www/julay/frontend/dist &&
             sudo chown -R ubuntu:ubuntu /var/www/julay &&
             cd /home/ubuntu/Julayorg &&
-            git pull origin main &&
+            git fetch origin main &&
+            git reset --hard origin/main &&
+            git clean -fd &&
             cd backend &&
             npm install --production &&
-            pm2 restart julay-backend 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend &&
+            pm2 restart julay-backend --update-env 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend -f &&
             echo 'Backend ready'
           "
 
