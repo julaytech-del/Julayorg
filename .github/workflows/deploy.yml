@@ -36,18 +36,29 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Sync frontend files
-        run: |
-          rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
-            frontend/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/home/ubuntu/Julayorg/frontend/dist/
-
-      - name: Deploy backend
+      - name: Prepare server directories and backend
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            sudo mkdir -p /var/www/julay/frontend/dist &&
+            sudo chown -R ubuntu:ubuntu /var/www/julay &&
             cd /home/ubuntu/Julayorg &&
             git pull origin main &&
             cd backend &&
             npm install --production &&
             pm2 restart julay-backend 2>/dev/null || pm2 start /home/ubuntu/Julayorg/backend/src/app.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend &&
-            echo 'Deploy complete!'
+            echo 'Backend ready'
+          "
+
+      - name: Sync frontend files
+        run: |
+          rsync -az --delete -e "ssh -i ~/.ssh/deploy_key" \
+            frontend/dist/ ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/julay/frontend/dist/
+
+      - name: Apply nginx config
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} "
+            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org &&
+            sudo ln -sf /etc/nginx/sites-available/julay.org /etc/nginx/sites-enabled/julay.org &&
+            sudo nginx -t && sudo systemctl reload nginx &&
+            echo 'Nginx reloaded'
           "
