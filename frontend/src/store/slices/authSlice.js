@@ -24,9 +24,13 @@ export const fetchCurrentUser = createAsyncThunk('auth/fetchMe', async (_, { rej
   } catch (err) { return rejectWithValue(err.message); }
 });
 
+const rawToken = localStorage.getItem('julay_token');
+const storedToken = (rawToken && rawToken !== 'undefined' && rawToken !== 'null') ? rawToken : null;
+if (!storedToken && rawToken) localStorage.removeItem('julay_token');
+
 const authSlice = createSlice({
   name: 'auth',
-  initialState: { user: null, token: localStorage.getItem('julay_token'), loading: false, error: null, initialized: !localStorage.getItem('julay_token') },
+  initialState: { user: null, token: storedToken, loading: false, error: null, initialized: !storedToken },
   reducers: {
     logout(state) {
       state.user = null;
