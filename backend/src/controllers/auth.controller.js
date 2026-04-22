@@ -254,6 +254,54 @@ export const verifyOTPRegister = async (req, res, next) => {
 
 // ── Google OAuth ─────────────────────────────────────────────────────────────
 
+export const googleCodeAuth = async (req, res, next) => {
+  try {
+    const { code, redirect_uri } = req.body;
+    if (!code) return res.status(400).json({ success: false, message: 'Authorization code is required' });
+
+    const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: new URLSearchParams({
+        code,
+        client_id: process.env.GOOGLE_CLIENT_ID,
+        client_secret: process.env.GOOGLE_CLIENT_SECRET,
+        redirect_uri: redirect_uri || '',
+        grant_type: 'authorization_code',
+      }),
+    });
+    const tokenData = await tokenRes.json();
+    if (!tokenRes.ok || !tokenData.access_token) {
+      return res.status(401).json({ success: false, message: tokenData.error_description || 'Failed to exchange Google code' });
+    }
+
+    const gRes = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: { Authorization: `Bearer ${tokenData.access_token}` },
+    });
+    if (!gRes.ok) return res.status(401).json({ success: false, message: 'Failed to get Google user info' });
+    const { email, name, picture } = await gRes.json();
+    if (!email) return res.status(401).json({ success: false, message: 'Could not get email from Google' });
+
+    let user = await User.findOne({ email }).populate('role').populate('department').populate('organization');
+    if (user) {
+      await User.findByIdAndUpdate(user._id, { lastActive: new Date(), ...(picture && !user.avatar ? { avatar: picture } : {}) });
+      const token = signToken(user._id);
+      return res.json({ success: true, data: { token, user: user.toJSON() } });
+    }
+
+    const org = await Organization.create({ name: `${name}'s Organization`, industry: 'technology' });
+    const roles = await createDefaultRoles(org._id);
+    const adminRole = roles.find(r => r.level === 'admin');
+    const dept = await Department.create({ name: 'General', organization: org._id, description: 'Default department', color: '#6366F1' });
+    const randomPass = crypto.randomBytes(20).toString('hex');
+    user = await User.create({ name, email, password: randomPass, avatar: picture || '', organization: org._id, role: adminRole._id, department: dept._id, isAdmin: true, jobTitle: 'Administrator' });
+
+    const token = signToken(user._id);
+    const userData = await User.findById(user._id).populate('role').populate('department');
+    res.status(201).json({ success: true, data: { token, user: userData } });
+  } catch (err) { next(err); }
+};
+
 export const googleAuth = async (req, res, next) => {
   try {
     const { access_token } = req.body;
