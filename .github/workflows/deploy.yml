@@ -9,33 +9,6 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install frontend dependencies
-        working-directory: frontend
-        run: npm ci
-
-      - name: Build frontend
-        working-directory: frontend
-        env:
-          VITE_GOOGLE_CLIENT_ID: 722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
-          VITE_PLAUSIBLE_DOMAIN: julay.org
-          VITE_SENTRY_DSN: https://f89dc5462cfea4330b27e4357384cbdb@o4511212808175616.ingest.us.sentry.io/4511212814401536
-        run: npm run build
-
-      - name: Verify build output
-        run: |
-          echo "=== Build output ==="
-          ls -la frontend/dist/
-          echo "=== Assets ==="
-          ls frontend/dist/assets/ | head -20
-
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
@@ -43,63 +16,59 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy backend
+      - name: Deploy everything on server
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash -s << 'ENDSSH'
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
             set -e
-            echo "--- Pulling latest code ---"
+
+            echo "=== Pulling latest code ==="
             cd /home/ubuntu/Julayorg
             git fetch origin main
             git reset --hard origin/main
             git clean -fd
 
-            echo "--- Updating .env ---"
-            touch /home/ubuntu/Julayorg/backend/.env
-            grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
-              && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=PLACEHOLDER_GOOGLE|' /home/ubuntu/Julayorg/backend/.env \
-              || echo 'GOOGLE_CLIENT_SECRET=PLACEHOLDER_GOOGLE' >> /home/ubuntu/Julayorg/backend/.env
-            grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
-              && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=PLACEHOLDER_JWT|' /home/ubuntu/Julayorg/backend/.env \
-              || echo 'JWT_SECRET=PLACEHOLDER_JWT' >> /home/ubuntu/Julayorg/backend/.env
+            echo "=== Setup .env ==="
+            touch backend/.env
 
-            echo "--- Installing backend deps ---"
+            echo "=== Install & restart backend ==="
             cd backend
             npm install --production
-
-            echo "--- Restarting backend ---"
             pm2 delete julay-backend 2>/dev/null || true
             pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
+            cd ..
 
-            echo "--- Preparing frontend dir ---"
+            echo "=== Build frontend on server ==="
+            cd frontend
+            export VITE_GOOGLE_CLIENT_ID=722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
+            export VITE_PLAUSIBLE_DOMAIN=julay.org
+            export VITE_SENTRY_DSN=https://f89dc5462cfea4330b27e4357384cbdb@o4511212808175616.ingest.us.sentry.io/4511212814401536
+            npm ci
+            npm run build
+            cd ..
+
+            echo "=== Copy dist to nginx root ==="
             sudo mkdir -p /var/www/julay/frontend/dist
             sudo chown -R ubuntu:ubuntu /var/www/julay
-            echo "Backend deploy done"
+            rsync -a --delete frontend/dist/ /var/www/julay/frontend/dist/
+            echo "Files in dist:"
+            ls /var/www/julay/frontend/dist/
+
+            echo "=== Apply nginx config ==="
+            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
+            sudo nginx -t && sudo systemctl reload nginx
+
+            echo "=== DONE ==="
           ENDSSH
 
       - name: Inject secrets into .env
         run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash -s << ENDSSH
-            sed -i 's|PLACEHOLDER_GOOGLE|${{ secrets.GOOGLE_CLIENT_SECRET }}|g' /home/ubuntu/Julayorg/backend/.env
-            sed -i 's|PLACEHOLDER_JWT|${{ secrets.JWT_SECRET }}|g' /home/ubuntu/Julayorg/backend/.env
-            echo ".env secrets injected"
-          ENDSSH
-
-      - name: Sync frontend files
-        run: |
-          echo "=== Starting rsync ==="
-          rsync -az --delete --verbose \
-            -e "ssh -i ~/.ssh/deploy_key" \
-            frontend/dist/ \
-            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/julay/frontend/dist/
-          echo "=== rsync complete ==="
-
-      - name: Verify deployment & reload nginx
-        run: |
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash -s << 'ENDSSH'
-            echo "=== Files in dist ==="
-            ls -la /var/www/julay/frontend/dist/
-            echo "=== Applying nginx config ==="
-            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
-            sudo nginx -t && sudo systemctl reload nginx
-            echo "=== Deployment verified ==="
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << ENDSSH
+            grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            pm2 restart julay-backend
+            echo "Secrets injected and backend restarted"
           ENDSSH
