@@ -61,7 +61,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: '#0F172A', borderRight: '1px solid rgba(255,255,255,0.06)' }}>
       <Box sx={{ p: 2.5, pb: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: 2, backgroundColor: 'rgba(255,255,255,0.05)', border: '1px solid rgba(255,255,255,0.08)' }}>
-          <Box component="img" src="/logo.png" alt="Julay" sx={{ width: 34, height: 34, objectFit: 'contain', flexShrink: 0 }} />
+          <Box component="img" src="/favicon.svg" alt="Julay" sx={{ width: 34, height: 34, objectFit: 'contain', flexShrink: 0 }} />
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '0.85rem', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
               {typeof org === 'object' ? org?.name : 'Julay'}
