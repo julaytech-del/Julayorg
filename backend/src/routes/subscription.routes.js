@@ -87,15 +87,42 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         'subscription.expiresAt': expiresAt,
         'subscription.stripeSessionId': session.id,
         'subscription.stripeCustomerId': session.customer,
+        'subscription.stripeSubscriptionId': session.subscription,
         'subscription.billingPeriodStart': new Date(),
+        'subscription.aiUsedThisMonth': 0,
       });
     }
   }
 
+  if (event.type === 'customer.subscription.updated') {
+    const sub = event.data.object;
+    const orgId = sub.metadata?.orgId;
+    if (orgId && sub.status === 'active') {
+      const expiresAt = new Date(sub.current_period_end * 1000);
+      await Organization.findByIdAndUpdate(orgId, {
+        'subscription.expiresAt': expiresAt,
+        'subscription.stripeSubscriptionId': sub.id,
+      });
+    }
+  }
+
+  if (event.type === 'invoice.payment_failed') {
+    const invoice = event.data.object;
+    const customerId = invoice.customer;
+    if (customerId) {
+      await Organization.findOneAndUpdate(
+        { 'subscription.stripeCustomerId': customerId },
+        { 'subscription.plan': 'free' }
+      );
+    }
+  }
+
   if (event.type === 'customer.subscription.deleted') {
-    const session = event.data.object;
-    const orgId = session.metadata?.orgId;
-    if (orgId) await Organization.findByIdAndUpdate(orgId, { 'subscription.plan': 'free' });
+    const sub = event.data.object;
+    const orgId = sub.metadata?.orgId;
+    const customerId = sub.customer;
+    const filter = orgId ? { _id: orgId } : { 'subscription.stripeCustomerId': customerId };
+    await Organization.findOneAndUpdate(filter, { 'subscription.plan': 'free', 'subscription.stripeSubscriptionId': null });
   }
 
   res.json({ received: true });
@@ -117,9 +144,36 @@ router.post('/admin/set', protect, async (req, res) => {
 router.get('/status', protect, async (req, res) => {
   const orgId = req.user.organization?._id || req.user.organization;
   const org = await Organization.findById(orgId);
-  const { plan, expiresAt } = org?.subscription || {};
-  const active = plan === 'pro' && (!expiresAt || new Date() < new Date(expiresAt));
-  res.json({ success: true, plan: plan || 'free', active, expiresAt });
+  const sub = org?.subscription || {};
+  const paid = ['starter', 'professional', 'business', 'enterprise'];
+  const active = paid.includes(sub.plan) && (!sub.expiresAt || new Date() < new Date(sub.expiresAt));
+  const aiLimits = { free: 5, starter: 100, professional: 500, business: 2000, enterprise: -1 };
+  res.json({
+    success: true,
+    plan: sub.plan || 'free',
+    active,
+    expiresAt: sub.expiresAt,
+    aiUsedThisMonth: sub.aiUsedThisMonth || 0,
+    aiLimit: aiLimits[sub.plan || 'free'] ?? 5,
+  });
+});
+
+// Customer Portal — let user manage/cancel subscription
+router.post('/portal', protect, async (req, res) => {
+  try {
+    const stripe = getStripe();
+    const orgId = req.user.organization?._id || req.user.organization;
+    const org = await Organization.findById(orgId);
+    const customerId = org?.subscription?.stripeCustomerId;
+    if (!customerId) return res.status(400).json({ success: false, message: 'No active subscription found' });
+    const session = await stripe.billingPortal.sessions.create({
+      customer: customerId,
+      return_url: `${process.env.FRONTEND_URL || 'https://julay.org'}/dashboard/settings?tab=billing`,
+    });
+    res.json({ success: true, url: session.url });
+  } catch (err) {
+    res.status(500).json({ success: false, message: err.message });
+  }
 });
 
 export default router;

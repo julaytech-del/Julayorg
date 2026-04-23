@@ -234,39 +234,71 @@ const PLANS = [
 ];
 
 function BillingTab() {
-  const [sub, setSub]     = useState(null);
+  const [sub, setSub] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [upgrading, setUpgrading] = useState('');
+  const [portalLoading, setPortalLoading] = useState(false);
 
   useEffect(() => {
     subscriptionAPI.status()
       .then(res => setSub(res?.data || res))
-      .catch(() => setSub({ plan: 'free', aiUsedThisMonth: 0, aiLimit: 10 }))
+      .catch(() => setSub({ plan: 'free', aiUsedThisMonth: 0, aiLimit: 5 }))
       .finally(() => setLoading(false));
   }, []);
 
   const currentPlan = sub?.plan || 'free';
-  const aiUsed      = sub?.aiUsedThisMonth || 0;
-  const aiLimit     = sub?.aiLimit || 10;
-  const aiPct       = aiLimit > 0 ? Math.min(100, Math.round((aiUsed / aiLimit) * 100)) : 0;
+  const aiUsed = sub?.aiUsedThisMonth || 0;
+  const aiLimit = sub?.aiLimit ?? 5;
+  const aiPct = aiLimit > 0 ? Math.min(100, Math.round((aiUsed / aiLimit) * 100)) : 0;
 
-  const handleUpgrade = (planId) => {
-    window.location.href = `/api/subscription/checkout?plan=${planId}`;
+  const handleUpgrade = async (planId) => {
+    setUpgrading(planId);
+    try {
+      const res = await subscriptionAPI.checkout(planId);
+      const url = res?.data?.url || res?.url;
+      if (url) window.location.href = url;
+    } catch (err) {
+      alert('Failed to start checkout. Please try again.');
+    } finally {
+      setUpgrading('');
+    }
+  };
+
+  const handlePortal = async () => {
+    setPortalLoading(true);
+    try {
+      const res = await subscriptionAPI.portal();
+      const url = res?.data?.url || res?.url;
+      if (url) window.location.href = url;
+    } catch {
+      alert('Could not open billing portal.');
+    } finally {
+      setPortalLoading(false);
+    }
   };
 
   return (
     <Box>
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Billing & Subscription</Typography>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+        <Typography variant="h6" fontWeight={700}>Billing & Subscription</Typography>
+        {currentPlan !== 'free' && (
+          <Button size="small" variant="outlined" onClick={handlePortal} disabled={portalLoading}
+            sx={{ borderColor: '#6366F1', color: '#6366F1', textTransform: 'none' }}>
+            {portalLoading ? 'Opening…' : 'Manage Subscription'}
+          </Button>
+        )}
+      </Box>
 
       {/* AI usage */}
       <Card elevation={0} sx={{ mb: 3, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
         <CardContent>
           <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>AI Usage This Month</Typography>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.75 }}>
-            <Typography variant="body2" color="text.secondary">{aiUsed} / {aiLimit} requests</Typography>
-            <Typography variant="body2" fontWeight={700} sx={{ color: aiPct > 80 ? '#EF4444' : '#6366F1' }}>{aiPct}%</Typography>
+            <Typography variant="body2" color="text.secondary">{aiUsed} / {aiLimit < 0 ? '∞' : aiLimit} requests</Typography>
+            <Typography variant="body2" fontWeight={700} sx={{ color: aiPct > 80 ? '#EF4444' : '#6366F1' }}>{aiLimit < 0 ? '∞' : `${aiPct}%`}</Typography>
           </Box>
-          <LinearProgress variant="determinate" value={aiPct} sx={{ height: 8, borderRadius: 4, backgroundColor: '#E2E8F0', '& .MuiLinearProgress-bar': { background: aiPct > 80 ? 'linear-gradient(90deg, #F59E0B, #EF4444)' : 'linear-gradient(90deg, #6366F1, #8B5CF6)', borderRadius: 4 } }} />
-          {aiPct > 80 && <Alert severity="warning" sx={{ mt: 1, py: 0 }}>You're approaching your AI limit. Consider upgrading.</Alert>}
+          {aiLimit > 0 && <LinearProgress variant="determinate" value={aiPct} sx={{ height: 8, borderRadius: 4, backgroundColor: '#E2E8F0', '& .MuiLinearProgress-bar': { background: aiPct > 80 ? 'linear-gradient(90deg, #F59E0B, #EF4444)' : 'linear-gradient(90deg, #6366F1, #8B5CF6)', borderRadius: 4 } }} />}
+          {aiPct > 80 && aiLimit > 0 && <Alert severity="warning" sx={{ mt: 1, py: 0 }}>You're approaching your AI limit. Consider upgrading.</Alert>}
         </CardContent>
       </Card>
 
@@ -289,9 +321,17 @@ function BillingTab() {
                       </Box>
                     ))}
                   </Box>
-                  {!isCurrent && (
-                    <Button fullWidth variant="outlined" onClick={() => handleUpgrade(plan.id)} sx={{ borderColor: '#6366F1', color: '#6366F1' }}>
-                      Upgrade to {plan.name}
+                  {!isCurrent && plan.id !== 'enterprise' && (
+                    <Button fullWidth variant="outlined" disabled={upgrading === plan.id}
+                      onClick={() => handleUpgrade(plan.id)}
+                      sx={{ borderColor: '#6366F1', color: '#6366F1', textTransform: 'none' }}>
+                      {upgrading === plan.id ? 'Redirecting…' : `Upgrade to ${plan.name}`}
+                    </Button>
+                  )}
+                  {plan.id === 'enterprise' && !isCurrent && (
+                    <Button fullWidth variant="outlined" href="mailto:hello@julay.org"
+                      sx={{ borderColor: '#6366F1', color: '#6366F1', textTransform: 'none' }}>
+                      Contact Sales
                     </Button>
                   )}
                 </CardContent>

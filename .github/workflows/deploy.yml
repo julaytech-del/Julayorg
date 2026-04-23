@@ -79,6 +79,12 @@ jobs:
             grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^STRIPE_SECRET_KEY=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^STRIPE_SECRET_KEY=.*|STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'STRIPE_SECRET_KEY=${{ secrets.STRIPE_SECRET_KEY }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^STRIPE_WEBHOOK_SECRET=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^STRIPE_WEBHOOK_SECRET=.*|STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
             pm2 restart julay-backend
           ENDSSH
 

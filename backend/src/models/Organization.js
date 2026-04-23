@@ -24,6 +24,7 @@ const organizationSchema = new mongoose.Schema({
     expiresAt: { type: Date },
     stripeSessionId: { type: String },
     stripeCustomerId: { type: String },
+    stripeSubscriptionId: { type: String },
     aiUsedThisMonth: { type: Number, default: 0 },
     billingPeriodStart: { type: Date, default: Date.now }
   }

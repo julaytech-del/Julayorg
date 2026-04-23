@@ -151,8 +151,9 @@ export const contextAPI = {
 
 // Subscription
 export const subscriptionAPI = {
-  checkout: () => api.post('/subscription/checkout'),
-  status: () => api.get('/subscription/status')
+  checkout: (plan) => api.post('/subscription/checkout', { plan }),
+  status: () => api.get('/subscription/status'),
+  portal: () => api.post('/subscription/portal'),
 };
 
 export default api;
