@@ -93,17 +93,27 @@ jobs:
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
             "ls /var/www/julay/frontend/dist && echo OK"
 
-      - name: Reload nginx
+      - name: Reload nginx & diagnose
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
-            echo "=== Files deployed ==="
-            ls /var/www/julay/frontend/dist/
-            echo "=== Applying nginx config ==="
+            echo "=== DISK SPACE ==="
+            df -h /
+
+            echo "=== FILES IN DIST ==="
+            ls -la /var/www/julay/frontend/dist/ 2>&1 || echo "DIST DIR NOT FOUND"
+
+            echo "=== INDEX.HTML BUNDLE REF ==="
+            grep -o 'index-[^"]*\.js' /var/www/julay/frontend/dist/index.html 2>&1 || echo "NO INDEX.HTML"
+
+            echo "=== NGINX SITES-ENABLED ==="
+            ls -la /etc/nginx/sites-enabled/ 2>&1
+
+            echo "=== NGINX ROOT CONFIG ==="
+            grep -r "root " /etc/nginx/sites-enabled/ 2>&1 || echo "NO ROOT DIRECTIVE"
+
+            echo "=== APPLYING NGINX CONFIG ==="
             sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
             sudo ln -sf /etc/nginx/sites-available/julay.org /etc/nginx/sites-enabled/julay.org
             sudo rm -f /etc/nginx/sites-enabled/default
-            echo "=== nginx sites-enabled ==="
-            ls -la /etc/nginx/sites-enabled/
-            sudo nginx -t && sudo systemctl reload nginx
-            echo "=== Deployment complete ==="
+            sudo nginx -t && sudo systemctl reload nginx && echo "NGINX RELOADED OK"
           ENDSSH
