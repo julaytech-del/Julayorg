@@ -82,16 +82,16 @@ jobs:
             pm2 restart julay-backend
           ENDSSH
 
-      - name: Sync frontend dist to server
+      - name: Upload frontend dist via tar+SSH
         run: |
-          echo "=== Files to sync ==="
-          ls frontend/dist/
-          echo "=== Starting rsync ==="
-          rsync -az --delete \
-            -e "ssh -i ~/.ssh/deploy_key" \
-            frontend/dist/ \
-            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/julay/frontend/dist/
-          echo "=== rsync done ==="
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "rm -rf /var/www/julay/frontend/dist && mkdir -p /var/www/julay/frontend/dist"
+          tar -czf - -C frontend/dist . | \
+            ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "tar -xzf - -C /var/www/julay/frontend/dist"
+          echo "Upload complete, verifying..."
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            "ls /var/www/julay/frontend/dist && echo OK"
 
       - name: Reload nginx
         run: |
