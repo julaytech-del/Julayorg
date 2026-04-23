@@ -43,13 +43,14 @@ jobs:
             git fetch origin main &&
             git reset --hard origin/main &&
             git clean -fd &&
-            touch /home/ubuntu/Julayorg/backend/.env
-            grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
-            grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            touch /home/ubuntu/Julayorg/backend/.env &&
+            grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env &&
+            grep -q '^JWT_SECRET=' /home/ubuntu/Julayorg/backend/.env && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env &&
             cd backend &&
             npm install --production &&
-            pm2 delete julay-backend 2>/dev/null; pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
-            mkdir -p /var/www/julay/frontend/dist
+            pm2 delete julay-backend 2>/dev/null; pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend &&
+            sudo mkdir -p /var/www/julay/frontend/dist &&
+            sudo chown -R ubuntu:ubuntu /var/www/julay
           "
 
       - name: Sync frontend files
