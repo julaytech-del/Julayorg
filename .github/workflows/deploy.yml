@@ -85,13 +85,23 @@ jobs:
       - name: Upload frontend dist via tar+SSH
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
-            "rm -rf /var/www/julay/frontend/dist && mkdir -p /var/www/julay/frontend/dist"
-          tar -czf - -C frontend/dist . | \
-            ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
-            "tar -xzf - -C /var/www/julay/frontend/dist"
-          echo "Upload complete, verifying..."
-          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
-            "ls /var/www/julay/frontend/dist && echo OK"
+            "sudo mkdir -p /var/www/julay/frontend/dist /var/www/html && sudo chown -R ubuntu:ubuntu /var/www/julay /var/www/html"
+          tar -czf /tmp/frontend.tar.gz -C frontend/dist .
+          scp -i ~/.ssh/deploy_key /tmp/frontend.tar.gz ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/frontend.tar.gz
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
+            set -e
+            echo "Extracting to /var/www/julay/frontend/dist ..."
+            rm -rf /var/www/julay/frontend/dist/*
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/julay/frontend/dist/
+            echo "Extracting to /var/www/html ..."
+            rm -rf /var/www/html/*
+            tar -xzf /tmp/frontend.tar.gz -C /var/www/html/
+            rm /tmp/frontend.tar.gz
+            echo "=== VERIFY: /var/www/julay/frontend/dist/ ==="
+            ls /var/www/julay/frontend/dist/
+            echo "=== VERIFY: /var/www/html/ ==="
+            ls /var/www/html/
+          ENDSSH
 
       - name: Reload nginx & diagnose
         run: |
