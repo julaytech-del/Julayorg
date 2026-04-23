@@ -258,6 +258,9 @@ export const googleCodeAuth = async (req, res, next) => {
   try {
     const { code, redirect_uri } = req.body;
     if (!code) return res.status(400).json({ success: false, message: 'Authorization code is required' });
+    if (!process.env.GOOGLE_CLIENT_SECRET) {
+      return res.status(500).json({ success: false, message: 'Google sign-in is not configured on this server.' });
+    }
 
     const tokenRes = await fetch('https://oauth2.googleapis.com/token', {
       method: 'POST',
