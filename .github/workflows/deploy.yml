@@ -9,6 +9,29 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Install frontend dependencies
+        working-directory: frontend
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        run: npm ci
+
+      - name: Build frontend
+        working-directory: frontend
+        env:
+          VITE_GOOGLE_CLIENT_ID: 722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
+          VITE_PLAUSIBLE_DOMAIN: julay.org
+          VITE_SENTRY_DSN: https://f89dc5462cfea4330b27e4357384cbdb@o4511212808175616.ingest.us.sentry.io/4511212814401536
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        run: npm run build
+
       - name: Setup SSH key
         run: |
           mkdir -p ~/.ssh
@@ -16,10 +39,18 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy everything on server
+      - name: Free disk space & update server code
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
-            set -e
+            echo "=== Disk before cleanup ==="
+            df -h /
+
+            echo "=== Freeing space: removing frontend node_modules ==="
+            rm -rf /home/ubuntu/Julayorg/frontend/node_modules
+            rm -rf /home/ubuntu/Julayorg/frontend/.vite
+
+            echo "=== Disk after cleanup ==="
+            df -h /
 
             echo "=== Pulling latest code ==="
             cd /home/ubuntu/Julayorg
@@ -27,42 +58,21 @@ jobs:
             git reset --hard origin/main
             git clean -fd
 
-            echo "=== Setup .env ==="
-            touch backend/.env
+            echo "=== Prepare nginx dist dir ==="
+            sudo mkdir -p /var/www/julay/frontend/dist
+            sudo chown -R ubuntu:ubuntu /var/www/julay
 
             echo "=== Install & restart backend ==="
             cd backend
             npm install --production
             pm2 delete julay-backend 2>/dev/null || true
             pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
-            cd ..
-
-            echo "=== Build frontend on server ==="
-            cd frontend
-            export VITE_GOOGLE_CLIENT_ID=722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
-            export VITE_PLAUSIBLE_DOMAIN=julay.org
-            export VITE_SENTRY_DSN=https://f89dc5462cfea4330b27e4357384cbdb@o4511212808175616.ingest.us.sentry.io/4511212814401536
-            npm ci
-            npm run build
-            cd ..
-
-            echo "=== Copy dist to nginx root ==="
-            sudo mkdir -p /var/www/julay/frontend/dist
-            sudo chown -R ubuntu:ubuntu /var/www/julay
-            rsync -a --delete frontend/dist/ /var/www/julay/frontend/dist/
-            echo "Files in dist:"
-            ls /var/www/julay/frontend/dist/
-
-            echo "=== Apply nginx config ==="
-            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
-            sudo nginx -t && sudo systemctl reload nginx
-
-            echo "=== DONE ==="
           ENDSSH
 
       - name: Inject secrets into .env
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << ENDSSH
+            touch /home/ubuntu/Julayorg/backend/.env
             grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
@@ -70,5 +80,26 @@ jobs:
               && sed -i 's|^JWT_SECRET=.*|JWT_SECRET=${{ secrets.JWT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'JWT_SECRET=${{ secrets.JWT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
             pm2 restart julay-backend
-            echo "Secrets injected and backend restarted"
+          ENDSSH
+
+      - name: Sync frontend dist to server
+        run: |
+          echo "=== Files to sync ==="
+          ls frontend/dist/
+          echo "=== Starting rsync ==="
+          rsync -az --delete \
+            -e "ssh -i ~/.ssh/deploy_key" \
+            frontend/dist/ \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/var/www/julay/frontend/dist/
+          echo "=== rsync done ==="
+
+      - name: Reload nginx
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
+            echo "=== Files deployed ==="
+            ls /var/www/julay/frontend/dist/
+            echo "=== Applying nginx config ==="
+            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
+            sudo nginx -t && sudo systemctl reload nginx
+            echo "=== Deployment complete ==="
           ENDSSH
