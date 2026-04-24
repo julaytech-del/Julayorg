@@ -1,17 +1,24 @@
-const PRIORITY_EMOJI = { critical: '🔴', high: '🟠', medium: '🟡', low: '🟢' };
-const STATUS_EMOJI = { done: '✅', in_progress: '🔄', blocked: '🚫', review: '👀', planned: '📋' };
+import https from 'https';
+import http from 'http';
 
-const send = async (webhookUrl, payload) => {
-  if (!webhookUrl) return;
-  try {
-    await fetch(webhookUrl, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload),
-    });
-  } catch (err) {
-    console.error('[Slack]', err.message);
-  }
+const PRIORITY_EMOJI = { critical: '🔴', high: '🟠', medium: '🟡', low: '🟢' };
+
+const send = (webhookUrl, payload) => {
+  if (!webhookUrl) return Promise.resolve();
+  return new Promise((resolve) => {
+    try {
+      const body = JSON.stringify(payload);
+      const url = new URL(webhookUrl);
+      const lib = url.protocol === 'https:' ? https : http;
+      const req = lib.request({ hostname: url.hostname, path: url.pathname + url.search, method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } }, resolve);
+      req.on('error', (e) => { console.error('[Slack]', e.message); resolve(); });
+      req.write(body);
+      req.end();
+    } catch (err) {
+      console.error('[Slack]', err.message);
+      resolve();
+    }
+  });
 };
 
 export const notifyTaskCreated = async (webhookUrl, task, projectName, creatorName) => {

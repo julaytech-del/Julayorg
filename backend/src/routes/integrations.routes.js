@@ -1,3 +1,5 @@
+import https from 'https';
+import http from 'http';
 import { Router } from 'express';
 import { protect } from '../middleware/auth.middleware.js';
 import Organization from '../models/Organization.js';
@@ -37,12 +39,16 @@ router.post('/slack/test', async (req, res) => {
     const org = await Organization.findById(orgId);
     const url = org?.integrations?.slackWebhookUrl;
     if (!url) return res.status(400).json({ success: false, message: 'No Slack webhook configured' });
-    const r = await fetch(url, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text: '✅ Julay is connected to your Slack workspace!' }),
+      const body = JSON.stringify({ text: '✅ Julay is connected to your Slack workspace!' });
+    const parsed = new URL(url);
+    const lib = parsed.protocol === 'https:' ? https : http;
+    await new Promise((resolve, reject) => {
+      const req = lib.request({ hostname: parsed.hostname, path: parsed.pathname + parsed.search, method: 'POST', headers: { 'Content-Type': 'application/json', 'Content-Length': Buffer.byteLength(body) } }, resolve);
+      req.on('error', reject);
+      req.write(body);
+      req.end();
     });
-    res.json({ success: r.ok });
+    res.json({ success: true });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
