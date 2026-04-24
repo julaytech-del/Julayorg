@@ -227,10 +227,11 @@ function TeamTab({ currentUser }) {
 
 // ── Billing Tab ────────────────────────────────────────────────────────────
 const PLANS = [
-  { id: 'free',       name: 'Free',       price: '$0',   features: ['5 projects', '3 members', 'Basic AI (10 req/mo)'] },
-  { id: 'pro',        name: 'Pro',        price: '$29',  features: ['Unlimited projects', '25 members', 'AI (500 req/mo)'] },
-  { id: 'business',   name: 'Business',   price: '$79',  features: ['Unlimited everything', '100 members', 'AI (2000 req/mo)'] },
-  { id: 'enterprise', name: 'Enterprise', price: 'Custom', features: ['White-label', 'Dedicated AI', 'SLA'] },
+  { id: 'free',         name: 'Free',         price: '$0',    features: ['3 projects', '3 members', 'Basic AI (5 req/mo)'] },
+  { id: 'starter',      name: 'Starter',      price: '$9',    features: ['10 projects', '10 members', 'AI (100 req/mo)'] },
+  { id: 'professional', name: 'Professional', price: '$29',   features: ['Unlimited projects', '25 members', 'AI (500 req/mo)'] },
+  { id: 'business',     name: 'Business',     price: '$79',   features: ['Unlimited everything', 'Unlimited members', 'AI (2000 req/mo)'] },
+  { id: 'enterprise',   name: 'Enterprise',   price: 'Custom', features: ['White-label', 'Dedicated AI', 'SLA'] },
 ];
 
 function BillingTab() {
