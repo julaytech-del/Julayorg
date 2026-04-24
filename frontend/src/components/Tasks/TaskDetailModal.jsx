@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { Drawer, Box, Typography, TextField, MenuItem, Chip, Button, Avatar, IconButton, Checkbox, LinearProgress, Divider, AvatarGroup } from '@mui/material';
-import { Close, Delete, Add, AutoAwesome, OpenInNew, Send } from '@mui/icons-material';
+import { Drawer, Box, Typography, TextField, MenuItem, Chip, Button, Avatar, IconButton, Checkbox, LinearProgress, Divider, AvatarGroup, Switch, FormControlLabel, Autocomplete } from '@mui/material';
+import { Close, Delete, Add, AutoAwesome, OpenInNew, Send, Repeat, AccountTree } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { updateTask, deleteTask, addComment } from '../../store/slices/taskSlice.js';
@@ -22,10 +22,16 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const [comment, setComment] = useState('');
   const [saving, setSaving] = useState(false);
   const [users, setUsers] = useState([]);
+  const [newSubtask, setNewSubtask] = useState('');
+  const [allTasks, setAllTasks] = useState([]);
 
   useEffect(() => {
     setLocalTask(task);
     usersAPI.getAll().then(res => setUsers(res.data || [])).catch(() => {});
+    if (task?.project?._id || task?.project) {
+      const projectId = task.project?._id || task.project;
+      tasksAPI.getAll({ projectId }).then(res => setAllTasks((res.data || []).filter(t => t._id !== task._id))).catch(() => {});
+    }
   }, [task]);
 
   const updateField = async (field, value) => {
@@ -54,6 +60,15 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     await tasksAPI.updateSubtask(task._id, subtaskId, { status: done ? 'done' : 'pending' });
     const updated = localTask.subtasks.map(s => s._id === subtaskId ? { ...s, status: done ? 'done' : 'pending' } : s);
     setLocalTask(p => ({ ...p, subtasks: updated }));
+  };
+
+  const handleAddSubtask = async () => {
+    if (!newSubtask.trim()) return;
+    try {
+      const res = await tasksAPI.addSubtask(task._id, { title: newSubtask });
+      setLocalTask(p => ({ ...p, subtasks: [...(p.subtasks || []), res.data] }));
+      setNewSubtask('');
+    } catch {}
   };
 
   const completedSubtasks = (localTask.subtasks || []).filter(s => s.status === 'done').length;
@@ -142,6 +157,68 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
             ))}
             {(localTask.subtasks || []).length === 0 && (
               <Typography variant="caption" color="text.secondary">{t('task.detail.noSubtasks')}</Typography>
+            )}
+            <Box sx={{ display: 'flex', gap: 1, mt: 1 }}>
+              <TextField size="small" fullWidth placeholder="Add subtask..." value={newSubtask}
+                onChange={e => setNewSubtask(e.target.value)}
+                onKeyDown={e => e.key === 'Enter' && handleAddSubtask()} />
+              <IconButton size="small" onClick={handleAddSubtask} disabled={!newSubtask.trim()}
+                sx={{ bgcolor: '#6366F1', color: 'white', '&:hover': { bgcolor: '#4F46E5' }, '&:disabled': { bgcolor: 'grey.200' } }}>
+                <Add fontSize="small" />
+              </IconButton>
+            </Box>
+          </Box>
+
+          {/* Dependencies */}
+          <Box sx={{ mb: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
+              <AccountTree sx={{ fontSize: 14, color: 'text.secondary' }} />
+              <Typography variant="caption" color="text.secondary" fontWeight={600} textTransform="uppercase">Dependencies</Typography>
+            </Box>
+            <Autocomplete
+              multiple size="small"
+              options={allTasks}
+              getOptionLabel={o => o.title}
+              value={allTasks.filter(t => (localTask.dependencies || []).some(d => (d._id || d) === t._id))}
+              onChange={(_, val) => updateField('dependencies', val.map(v => v._id))}
+              renderInput={params => <TextField {...params} placeholder="Add dependency..." />}
+              renderTags={(val, getTagProps) => val.map((t, i) => (
+                <Chip key={t._id} label={t.title} size="small" {...getTagProps({ index: i })} />
+              ))}
+            />
+          </Box>
+
+          {/* Recurring */}
+          <Box sx={{ mb: 2, p: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                <Repeat sx={{ fontSize: 16, color: 'text.secondary' }} />
+                <Typography variant="caption" fontWeight={600} textTransform="uppercase" color="text.secondary">Recurring Task</Typography>
+              </Box>
+              <Switch size="small" checked={localTask.recurring?.enabled || false}
+                onChange={e => {
+                  const val = e.target.checked;
+                  setLocalTask(p => ({ ...p, recurring: { ...p.recurring, enabled: val } }));
+                  updateField('recurring', { ...(localTask.recurring || {}), enabled: val });
+                }} />
+            </Box>
+            {localTask.recurring?.enabled && (
+              <Box sx={{ display: 'flex', gap: 1, mt: 1.5, flexWrap: 'wrap' }}>
+                <TextField select size="small" label="Frequency" value={localTask.recurring?.frequency || 'weekly'}
+                  onChange={e => { setLocalTask(p => ({ ...p, recurring: { ...p.recurring, frequency: e.target.value } })); updateField('recurring', { ...(localTask.recurring || {}), frequency: e.target.value }); }}
+                  sx={{ minWidth: 110 }}>
+                  <MenuItem value="daily">Daily</MenuItem>
+                  <MenuItem value="weekly">Weekly</MenuItem>
+                  <MenuItem value="monthly">Monthly</MenuItem>
+                </TextField>
+                <TextField size="small" label="Every" type="number" value={localTask.recurring?.interval || 1}
+                  onChange={e => { setLocalTask(p => ({ ...p, recurring: { ...p.recurring, interval: parseInt(e.target.value) || 1 } })); updateField('recurring', { ...(localTask.recurring || {}), interval: parseInt(e.target.value) || 1 }); }}
+                  sx={{ width: 70 }} />
+                <TextField size="small" label="End Date" type="date" InputLabelProps={{ shrink: true }}
+                  value={localTask.recurring?.endDate ? format(new Date(localTask.recurring.endDate), 'yyyy-MM-dd') : ''}
+                  onChange={e => { setLocalTask(p => ({ ...p, recurring: { ...p.recurring, endDate: e.target.value } })); updateField('recurring', { ...(localTask.recurring || {}), endDate: e.target.value }); }}
+                  sx={{ flex: 1 }} />
+              </Box>
             )}
           </Box>
 

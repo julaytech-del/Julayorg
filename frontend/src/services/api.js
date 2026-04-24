@@ -156,6 +156,19 @@ export const subscriptionAPI = {
   portal: () => api.post('/subscription/portal'),
 };
 
+export const twoFactorAPI = {
+  setup: () => api.post('/2fa/setup'),
+  enable: (token) => api.post('/2fa/enable', { token }),
+  disable: (token) => api.post('/2fa/disable', { token }),
+};
+
+export const integrationsAPI = {
+  get: () => api.get('/integrations'),
+  updateSlack: (webhookUrl, notifyOn) => api.put('/integrations/slack', { webhookUrl, notifyOn }),
+  testSlack: () => api.post('/integrations/slack/test'),
+  updateEmail: (enabled) => api.put('/integrations/email', { enabled }),
+};
+
 export default api;
 
 // Calendar

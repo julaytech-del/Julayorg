@@ -26,6 +26,8 @@ import activityLogRoutes from './routes/activityLog.routes.js';
 import searchRoutes from './routes/search.routes.js';
 import myTasksRoutes from './routes/myTasks.routes.js';
 import portfolioRoutes from './routes/portfolio.routes.js';
+import twoFactorRoutes from './routes/twoFactor.routes.js';
+import integrationsRoutes from './routes/integrations.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -65,6 +67,8 @@ app.use('/api/activity', activityLogRoutes);
 app.use('/api/search', searchRoutes);
 app.use('/api/my-tasks', myTasksRoutes);
 app.use('/api/portfolio', portfolioRoutes);
+app.use('/api/2fa', twoFactorRoutes);
+app.use('/api/integrations', integrationsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

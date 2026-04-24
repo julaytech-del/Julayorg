@@ -28,6 +28,10 @@ const userSchema = new mongoose.Schema({
   },
   lastActive: { type: Date, default: Date.now },
   isAdmin: { type: Boolean, default: false },
+  twoFactor: {
+    enabled: { type: Boolean, default: false },
+    secret: { type: String },
+  },
   subscription: {
     plan: { type: String, enum: ['free', 'pro'], default: 'free' },
     subscribedAt: { type: Date },

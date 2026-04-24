@@ -10,6 +10,15 @@ const organizationSchema = new mongoose.Schema({
   },
   description: { type: String, trim: true },
   logo: { type: String },
+  integrations: {
+    slackWebhookUrl: { type: String },
+    slackNotifyOn: {
+      taskCreated: { type: Boolean, default: true },
+      taskCompleted: { type: Boolean, default: true },
+      taskOverdue: { type: Boolean, default: true },
+    },
+    emailNotifications: { type: Boolean, default: true },
+  },
   settings: {
     timezone: { type: String, default: 'UTC' },
     currency: { type: String, default: 'USD' },

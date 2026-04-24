@@ -2,6 +2,20 @@ import Task from '../models/Task.js';
 import Project from '../models/Project.js';
 import Goal from '../models/Goal.js';
 import ActivityLog from '../models/ActivityLog.js';
+import Organization from '../models/Organization.js';
+import { notifyTaskCreated, notifyTaskCompleted } from '../services/slack.service.js';
+import { sendTaskAssigned } from '../services/email.service.js';
+
+const triggerSlack = async (orgId, type, task, projectName, userName) => {
+  try {
+    const org = await Organization.findById(orgId).select('integrations');
+    const url = org?.integrations?.slackWebhookUrl;
+    const notify = org?.integrations?.slackNotifyOn || {};
+    if (!url) return;
+    if (type === 'created' && notify.taskCreated) await notifyTaskCreated(url, task, projectName, userName);
+    if (type === 'completed' && notify.taskCompleted) await notifyTaskCompleted(url, task, projectName, userName);
+  } catch {}
+};
 
 const recalcProjectProgress = async (projectId) => {
   const tasks = await Task.find({ project: projectId });
@@ -54,6 +68,8 @@ export const createTask = async (req, res, next) => {
     if (task.goal) await recalcGoalProgress(task.goal);
     const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'created', entityType: 'task', entityId: task._id, entityName: task.title });
+    const project = await Project.findById(task.project).select('name');
+    triggerSlack(orgId, 'created', task, project?.name || '', req.user.name);
     res.status(201).json({ success: true, data: task });
   } catch (err) { next(err); }
 };
@@ -92,6 +108,10 @@ export const updateTask = async (req, res, next) => {
     const orgId = req.user.organization._id || req.user.organization;
     if (oldTask.status !== task.status) {
       await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'status_changed', entityType: 'task', entityId: task._id, entityName: task.title, changes: { before: { status: oldTask.status }, after: { status: task.status } } });
+      if (task.status === 'done') {
+        const project = await Project.findById(task.project).select('name');
+        triggerSlack(orgId, 'completed', task, project?.name || '', req.user.name);
+      }
     }
 
     res.json({ success: true, data: task });

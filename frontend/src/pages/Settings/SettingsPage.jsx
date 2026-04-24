@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
-import api, { settingsAPI, subscriptionAPI, usersAPI } from '../../services/api.js';
+import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI } from '../../services/api.js';
 
 // ── Profile Tab ────────────────────────────────────────────────────────────
 const TIMEZONES = ['UTC', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Paris', 'Asia/Dubai', 'Asia/Riyadh', 'Asia/Tokyo'];
@@ -408,20 +408,119 @@ function SecurityTab() {
         </CardContent>
       </Card>
 
-      {/* 2FA placeholder */}
-      <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, maxWidth: 480 }}>
-        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <Box sx={{ width: 48, height: 48, borderRadius: 2, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+      <TwoFactorCard />
+    </Box>
+  );
+}
+
+function TwoFactorCard() {
+  const dispatch = useDispatch();
+  const user = useSelector(s => s.auth.user);
+  const [enabled, setEnabled] = useState(user?.twoFactor?.enabled || false);
+  const [step, setStep] = useState('idle'); // idle | setup | verify | disable
+  const [qrCode, setQrCode] = useState('');
+  const [token, setToken] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSetup = async () => {
+    setLoading(true);
+    try {
+      const res = await twoFactorAPI.setup();
+      setQrCode(res.data.qrCode);
+      setStep('setup');
+    } catch { dispatch(showSnackbar({ message: 'Setup failed', severity: 'error' })); }
+    finally { setLoading(false); }
+  };
+
+  const handleEnable = async () => {
+    setLoading(true);
+    try {
+      await twoFactorAPI.enable(token);
+      setEnabled(true); setStep('idle'); setToken('');
+      dispatch(showSnackbar({ message: '2FA enabled successfully', severity: 'success' }));
+    } catch { dispatch(showSnackbar({ message: 'Invalid code', severity: 'error' })); }
+    finally { setLoading(false); }
+  };
+
+  const handleDisable = async () => {
+    setLoading(true);
+    try {
+      await twoFactorAPI.disable(token);
+      setEnabled(false); setStep('idle'); setToken('');
+      dispatch(showSnackbar({ message: '2FA disabled', severity: 'info' }));
+    } catch { dispatch(showSnackbar({ message: 'Invalid code', severity: 'error' })); }
+    finally { setLoading(false); }
+  };
+
+  return (
+    <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2, maxWidth: 480 }}>
+      <CardContent>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: step !== 'idle' ? 2 : 0 }}>
+          <Box sx={{ width: 48, height: 48, borderRadius: 2, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <LockOutlined sx={{ color: 'white', fontSize: 24 }} />
           </Box>
           <Box sx={{ flex: 1 }}>
             <Typography fontWeight={700}>Two-Factor Authentication</Typography>
-            <Typography variant="body2" color="text.secondary">Add an extra layer of security to your account.</Typography>
+            <Typography variant="body2" color="text.secondary">Add an extra layer of security with an authenticator app.</Typography>
           </Box>
-          <Chip label="Coming Soon" size="small" sx={{ backgroundColor: '#E0E7FF', color: '#6366F1', fontWeight: 600 }} />
-        </CardContent>
-      </Card>
-    </Box>
+          <Chip label={enabled ? 'Enabled' : 'Disabled'} size="small"
+            sx={{ backgroundColor: enabled ? '#D1FAE5' : '#FEE2E2', color: enabled ? '#065F46' : '#991B1B', fontWeight: 600 }} />
+        </Box>
+
+        {step === 'setup' && (
+          <Box>
+            <Typography variant="body2" color="text.secondary" sx={{ mb: 1.5 }}>
+              Scan this QR code with Google Authenticator or Authy, then enter the 6-digit code.
+            </Typography>
+            <Box sx={{ textAlign: 'center', mb: 2 }}>
+              <img src={qrCode} alt="QR Code" style={{ width: 180, height: 180, borderRadius: 8, border: '1px solid #E2E8F0' }} />
+            </Box>
+            <TextField fullWidth size="small" label="6-digit code" value={token}
+              onChange={e => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              inputProps={{ inputMode: 'numeric', style: { letterSpacing: '0.4em', textAlign: 'center' } }}
+              sx={{ mb: 1.5 }} />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button variant="contained" onClick={handleEnable} disabled={loading || token.length !== 6}
+                sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', flex: 1 }}>
+                {loading ? 'Verifying…' : 'Enable 2FA'}
+              </Button>
+              <Button onClick={() => { setStep('idle'); setToken(''); }}>Cancel</Button>
+            </Box>
+          </Box>
+        )}
+
+        {step === 'disable' && (
+          <Box>
+            <TextField fullWidth size="small" label="Enter 6-digit code to disable" value={token}
+              onChange={e => setToken(e.target.value.replace(/\D/g, '').slice(0, 6))}
+              inputProps={{ inputMode: 'numeric', style: { letterSpacing: '0.4em', textAlign: 'center' } }}
+              sx={{ mb: 1.5 }} />
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button variant="contained" color="error" onClick={handleDisable} disabled={loading || token.length !== 6} sx={{ flex: 1 }}>
+                {loading ? 'Disabling…' : 'Disable 2FA'}
+              </Button>
+              <Button onClick={() => { setStep('idle'); setToken(''); }}>Cancel</Button>
+            </Box>
+          </Box>
+        )}
+
+        {step === 'idle' && (
+          <Box sx={{ mt: 2 }}>
+            {!enabled ? (
+              <Button variant="outlined" onClick={handleSetup} disabled={loading}
+                sx={{ borderColor: '#6366F1', color: '#6366F1', textTransform: 'none' }}>
+                {loading ? 'Setting up…' : 'Set up 2FA'}
+              </Button>
+            ) : (
+              <Button variant="outlined" color="error" onClick={() => setStep('disable')}
+                sx={{ textTransform: 'none' }}>
+                Disable 2FA
+              </Button>
+            )}
+          </Box>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
@@ -498,47 +597,113 @@ function NotificationsTab() {
 }
 
 // ── Integrations Tab ───────────────────────────────────────────────────────
-const INTEGRATIONS = [
-  { id: 'slack',    name: 'Slack',             icon: '💬', desc: 'Team messaging and notifications',    comingSoon: true  },
-  { id: 'gcal',     name: 'Google Calendar',   icon: '📅', desc: 'Sync task due dates with your calendar', comingSoon: false },
-  { id: 'github',   name: 'GitHub',            icon: '🐙', desc: 'Link PRs and issues to tasks',        comingSoon: true  },
-  { id: 'jira',     name: 'Jira',              icon: '🔵', desc: 'Import and sync Jira issues',         comingSoon: false },
-  { id: 'zapier',   name: 'Zapier',            icon: '⚡', desc: 'Connect with 5000+ apps',             comingSoon: false },
-  { id: 'msteams',  name: 'Microsoft Teams',   icon: '🟣', desc: 'Get notifications in Teams channels', comingSoon: false },
-];
-
 function IntegrationsTab() {
-  const [enabled, setEnabled] = useState({});
+  const dispatch = useDispatch();
+  const [config, setConfig] = useState({});
+  const [slackUrl, setSlackUrl] = useState('');
+  const [notifyOn, setNotifyOn] = useState({ taskCreated: true, taskCompleted: true, taskOverdue: true });
+  const [testing, setTesting] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [emailEnabled, setEmailEnabled] = useState(true);
+
+  useEffect(() => {
+    integrationsAPI.get().then(res => {
+      const d = res.data || res;
+      setConfig(d);
+      setSlackUrl(d.slackWebhookUrl || '');
+      setNotifyOn(d.slackNotifyOn || { taskCreated: true, taskCompleted: true, taskOverdue: true });
+      setEmailEnabled(d.emailNotifications !== false);
+    }).catch(() => {});
+  }, []);
+
+  const handleSaveSlack = async () => {
+    setSaving(true);
+    try {
+      await integrationsAPI.updateSlack(slackUrl, notifyOn);
+      dispatch(showSnackbar({ message: 'Slack integration saved', severity: 'success' }));
+    } catch { dispatch(showSnackbar({ message: 'Failed to save', severity: 'error' })); }
+    finally { setSaving(false); }
+  };
+
+  const handleTestSlack = async () => {
+    setTesting(true);
+    try {
+      await integrationsAPI.testSlack();
+      dispatch(showSnackbar({ message: 'Test message sent to Slack!', severity: 'success' }));
+    } catch { dispatch(showSnackbar({ message: 'Test failed — check webhook URL', severity: 'error' })); }
+    finally { setTesting(false); }
+  };
+
+  const handleEmailToggle = async (val) => {
+    setEmailEnabled(val);
+    await integrationsAPI.updateEmail(val);
+  };
 
   return (
     <Box>
-      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Integrations</Typography>
-      <Grid container spacing={2}>
-        {INTEGRATIONS.map(intg => (
-          <Grid item xs={12} sm={6} key={intg.id}>
-            <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
-              <CardContent sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
-                <Typography sx={{ fontSize: '2rem', lineHeight: 1 }}>{intg.icon}</Typography>
-                <Box sx={{ flex: 1 }}>
-                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                    <Typography fontWeight={700}>{intg.name}</Typography>
-                    {intg.comingSoon ? (
-                      <Chip label="Coming Soon" size="small" sx={{ backgroundColor: '#E0E7FF', color: '#6366F1', fontSize: '0.65rem' }} />
-                    ) : (
-                      <Switch
-                        size="small"
-                        checked={!!enabled[intg.id]}
-                        onChange={() => setEnabled(p => ({ ...p, [intg.id]: !p[intg.id] }))}
-                      />
-                    )}
-                  </Box>
-                  <Typography variant="body2" color="text.secondary" sx={{ mt: 0.25 }}>{intg.desc}</Typography>
-                </Box>
-              </CardContent>
-            </Card>
-          </Grid>
-        ))}
-      </Grid>
+      <Typography variant="h6" fontWeight={700} sx={{ mb: 3 }}>Integrations</Typography>
+
+      {/* Slack */}
+      <Card elevation={0} sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <CardContent>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+            <Typography sx={{ fontSize: '1.8rem', lineHeight: 1 }}>💬</Typography>
+            <Box>
+              <Typography fontWeight={700}>Slack</Typography>
+              <Typography variant="body2" color="text.secondary">Get notifications in your Slack workspace</Typography>
+            </Box>
+          </Box>
+          <TextField fullWidth size="small" label="Slack Webhook URL" placeholder="https://hooks.slack.com/services/..."
+            value={slackUrl} onChange={e => setSlackUrl(e.target.value)} sx={{ mb: 2 }}
+            helperText="Get this from Slack → Apps → Incoming Webhooks" />
+          <Typography variant="caption" fontWeight={600} color="text.secondary" display="block" mb={1}>Notify me when:</Typography>
+          {[['taskCreated', 'Task created'], ['taskCompleted', 'Task completed'], ['taskOverdue', 'Task overdue']].map(([key, label]) => (
+            <FormControlLabel key={key} control={<Switch size="small" checked={notifyOn[key] || false}
+              onChange={e => setNotifyOn(p => ({ ...p, [key]: e.target.checked }))} />} label={label} />
+          ))}
+          <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
+            <Button variant="contained" onClick={handleSaveSlack} disabled={saving}
+              sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', textTransform: 'none' }}>
+              {saving ? 'Saving…' : 'Save'}
+            </Button>
+            {slackUrl && <Button variant="outlined" onClick={handleTestSlack} disabled={testing}
+              sx={{ borderColor: '#6366F1', color: '#6366F1', textTransform: 'none' }}>
+              {testing ? 'Sending…' : 'Test Connection'}
+            </Button>}
+          </Box>
+        </CardContent>
+      </Card>
+
+      {/* Email Notifications */}
+      <Card elevation={0} sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
+        <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography sx={{ fontSize: '1.8rem', lineHeight: 1 }}>📧</Typography>
+          <Box sx={{ flex: 1 }}>
+            <Typography fontWeight={700}>Email Notifications</Typography>
+            <Typography variant="body2" color="text.secondary">Receive task assignments, overdue alerts, and due-soon reminders by email</Typography>
+          </Box>
+          <Switch checked={emailEnabled} onChange={e => handleEmailToggle(e.target.checked)} />
+        </CardContent>
+      </Card>
+
+      {/* Coming Soon */}
+      {[
+        { icon: '📅', name: 'Google Calendar', desc: 'Sync task due dates with your calendar' },
+        { icon: '🐙', name: 'GitHub', desc: 'Link PRs and issues to tasks' },
+        { icon: '⚡', name: 'Zapier', desc: 'Connect with 5000+ apps' },
+        { icon: '🟣', name: 'Microsoft Teams', desc: 'Get notifications in Teams channels' },
+      ].map(intg => (
+        <Card key={intg.name} elevation={0} sx={{ mb: 1.5, border: '1px solid', borderColor: 'divider', borderRadius: 2, opacity: 0.7 }}>
+          <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2, py: '12px !important' }}>
+            <Typography sx={{ fontSize: '1.5rem', lineHeight: 1 }}>{intg.icon}</Typography>
+            <Box sx={{ flex: 1 }}>
+              <Typography fontWeight={700} fontSize="0.9rem">{intg.name}</Typography>
+              <Typography variant="body2" color="text.secondary" fontSize="0.8rem">{intg.desc}</Typography>
+            </Box>
+            <Chip label="Coming Soon" size="small" sx={{ backgroundColor: '#E0E7FF', color: '#6366F1', fontSize: '0.65rem' }} />
+          </CardContent>
+        </Card>
+      ))}
     </Box>
   );
 }

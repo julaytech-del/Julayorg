@@ -59,6 +59,13 @@ const taskSchema = new mongoose.Schema({
     skillsRequired: [String],
     toolSuggestions: [String]
   },
+  recurring: {
+    enabled: { type: Boolean, default: false },
+    frequency: { type: String, enum: ['daily', 'weekly', 'monthly'], default: 'weekly' },
+    interval: { type: Number, default: 1 },
+    endDate: { type: Date },
+    lastCreated: { type: Date },
+  },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
 }, { timestamps: true });
 
