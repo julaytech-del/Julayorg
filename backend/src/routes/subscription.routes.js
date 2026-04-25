@@ -12,9 +12,9 @@ const getStripe = () => {
 };
 
 const PLAN_PRICES = {
-  starter: { amount: 900, name: 'Julay Starter', description: 'Up to 10 projects, 100 AI requests/month' },
-  professional: { amount: 2900, name: 'Julay Professional', description: 'Unlimited projects, 500 AI requests/month' },
-  business: { amount: 7900, name: 'Julay Business', description: 'Unlimited everything, 2000 AI requests/month' },
+  starter: { amount: 1900, name: 'Julay Starter', description: 'Up to 10 projects, 30 AI requests/month' },
+  professional: { amount: 5900, name: 'Julay Professional', description: 'Unlimited projects, 500 AI requests/month' },
+  business: { amount: 9900, name: 'Julay Business', description: 'Unlimited everything, 2000 AI requests/month' },
 };
 
 // GET /subscription/plans — public, no auth required
@@ -147,7 +147,7 @@ router.get('/status', protect, async (req, res) => {
   const sub = org?.subscription || {};
   const paid = ['starter', 'professional', 'business', 'enterprise'];
   const active = paid.includes(sub.plan) && (!sub.expiresAt || new Date() < new Date(sub.expiresAt));
-  const aiLimits = { free: 0, starter: 100, professional: 500, business: 2000, enterprise: -1 };
+  const aiLimits = { free: 0, starter: 30, professional: 500, business: 2000, enterprise: -1 };
   res.json({
     success: true,
     plan: sub.plan || 'free',
