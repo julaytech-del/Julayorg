@@ -59,7 +59,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/register',
     popular: false,
-    highlights: ['3 projects', '5 team members', '2 GB storage', 'Kanban board', 'Basic tasks'],
+    highlights: ['3 projects', '3 team members', '1 GB storage', 'Kanban & List views', 'No AI features'],
   },
   {
     id: 'starter',
@@ -73,7 +73,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/register?plan=starter',
     popular: false,
-    highlights: ['10 projects', '15 team members', '10 GB storage', 'Gantt / Timeline', 'Time tracking', 'Task priorities'],
+    highlights: ['10 projects', '10 team members', '10 GB storage', '100 AI requests/month', 'Gantt / Timeline', 'Time tracking', 'Calendar & Workload views'],
   },
   {
     id: 'professional',
@@ -107,21 +107,23 @@ const PLANS = [
 
 const FEATURE_ROWS = [
   { label: 'Projects',            free: '3',        starter: '10',        pro: 'Unlimited',  biz: 'Unlimited' },
-  { label: 'Team members',        free: '5',        starter: '15',        pro: '50',         biz: 'Unlimited' },
-  { label: 'Storage',             free: '2 GB',     starter: '10 GB',     pro: '50 GB',      biz: '500 GB'    },
+  { label: 'Team members',        free: '3',        starter: '10',        pro: '25',         biz: 'Unlimited' },
+  { label: 'Storage',             free: '1 GB',     starter: '10 GB',     pro: '50 GB',      biz: '200 GB'    },
+  { label: 'AI requests/month',   free: false,      starter: '100',       pro: '500',        biz: '2,000'     },
+  { label: 'AI project gen.',     free: false,      starter: true,        pro: true,         biz: true        },
+  { label: 'AI task suggestions', free: false,      starter: true,        pro: true,         biz: true        },
   { label: 'Kanban board',        free: true,       starter: true,        pro: true,         biz: true        },
   { label: 'Gantt / Timeline',    free: false,      starter: true,        pro: true,         biz: true        },
   { label: 'Sprint board',        free: false,      starter: false,       pro: true,         biz: true        },
-  { label: 'AI project gen.',     free: false,      starter: false,       pro: true,         biz: true        },
   { label: 'Time tracking',       free: false,      starter: true,        pro: true,         biz: true        },
   { label: 'Automations',         free: false,      starter: false,       pro: true,         biz: true        },
   { label: 'Custom dashboards',   free: false,      starter: false,       pro: true,         biz: true        },
-  { label: 'Workload view',       free: false,      starter: false,       pro: true,         biz: true        },
+  { label: 'Workload view',       free: false,      starter: true,        pro: true,         biz: true        },
   { label: 'Reports & exports',   free: false,      starter: false,       pro: true,         biz: true        },
-  { label: 'Webhooks',            free: false,      starter: false,       pro: false,        biz: true        },
+  { label: 'Webhooks',            free: false,      starter: false,       pro: true,         biz: true        },
   { label: 'API access',          free: false,      starter: false,       pro: false,        biz: true        },
   { label: 'SSO / SAML',          free: false,      starter: false,       pro: false,        biz: true        },
-  { label: 'Priority support',    free: false,      starter: false,       pro: 'Email',      biz: 'Dedicated' },
+  { label: 'Priority support',    free: false,      starter: 'Email',     pro: 'Priority',   biz: 'Dedicated' },
   { label: 'SLA guarantee',       free: false,      starter: false,       pro: false,        biz: '99.9%'     },
 ];
 

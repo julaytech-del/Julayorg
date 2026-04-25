@@ -147,7 +147,7 @@ router.get('/status', protect, async (req, res) => {
   const sub = org?.subscription || {};
   const paid = ['starter', 'professional', 'business', 'enterprise'];
   const active = paid.includes(sub.plan) && (!sub.expiresAt || new Date() < new Date(sub.expiresAt));
-  const aiLimits = { free: 5, starter: 100, professional: 500, business: 2000, enterprise: -1 };
+  const aiLimits = { free: 0, starter: 100, professional: 500, business: 2000, enterprise: -1 };
   res.json({
     success: true,
     plan: sub.plan || 'free',
