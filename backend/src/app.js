@@ -28,11 +28,12 @@ import myTasksRoutes from './routes/myTasks.routes.js';
 import portfolioRoutes from './routes/portfolio.routes.js';
 import twoFactorRoutes from './routes/twoFactor.routes.js';
 import integrationsRoutes from './routes/integrations.routes.js';
+import analyticsRoutes from './routes/analytics.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
 
-const allowedOrigins = ['https://julay.org', 'https://www.julay.org', 'http://localhost:3000', 'http://localhost:5173'];
+const allowedOrigins = ['https://julay.org', 'https://www.julay.org', 'https://analytics.julay.org', 'http://localhost:3000', 'http://localhost:5173'];
 app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(origin)) cb(null, true); else cb(new Error('Not allowed by CORS')); }, credentials: true }));
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
@@ -69,6 +70,7 @@ app.use('/api/my-tasks', myTasksRoutes);
 app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/2fa', twoFactorRoutes);
 app.use('/api/integrations', integrationsRoutes);
+app.use('/api/analytics', analyticsRoutes);
 
 app.use(notFound);
 app.use(errorHandler);

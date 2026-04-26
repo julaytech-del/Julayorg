@@ -35,6 +35,26 @@ initMobile();
 
 window.__APP_VERSION__ = '2026-04-26';
 
+// ── Analytics tracker ────────────────────────────────────────────────────────
+(function () {
+  const ENDPOINT = 'https://julay.org/api/analytics/track';
+  function sid() {
+    let id = sessionStorage.getItem('_asid');
+    if (!id) { id = Math.random().toString(36).slice(2) + Date.now().toString(36); sessionStorage.setItem('_asid', id); }
+    return id;
+  }
+  function send(url) {
+    try {
+      navigator.sendBeacon(ENDPOINT, JSON.stringify({ url, referrer: document.referrer, sessionId: sid() }));
+    } catch {}
+  }
+  send(location.pathname + location.search);
+  const orig = history.pushState.bind(history);
+  history.pushState = (...a) => { orig(...a); send(location.pathname + location.search); };
+  addEventListener('popstate', () => send(location.pathname + location.search));
+})();
+// ────────────────────────────────────────────────────────────────────────────
+
 const rootElement = document.getElementById('root');
 
 const app = (

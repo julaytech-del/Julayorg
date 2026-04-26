@@ -85,6 +85,9 @@ jobs:
             grep -q '^STRIPE_WEBHOOK_SECRET=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^STRIPE_WEBHOOK_SECRET=.*|STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'STRIPE_WEBHOOK_SECRET=${{ secrets.STRIPE_WEBHOOK_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^ANALYTICS_SECRET=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^ANALYTICS_SECRET=.*|ANALYTICS_SECRET=${{ secrets.ANALYTICS_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'ANALYTICS_SECRET=${{ secrets.ANALYTICS_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
             pm2 restart julay-backend
           ENDSSH
 
@@ -108,27 +111,30 @@ jobs:
             ls /home/ubuntu/Julayorg/frontend/dist/
           ENDSSH
 
-      - name: Reload nginx & diagnose
+      - name: Deploy analytics dashboard
+        run: |
+          scp -i ~/.ssh/deploy_key analytics/index.html ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/analytics_index.html
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
+            set -e
+            sudo mkdir -p /var/www/julay/analytics
+            sudo chown ubuntu:ubuntu /var/www/julay/analytics
+            cp /tmp/analytics_index.html /var/www/julay/analytics/index.html
+            rm /tmp/analytics_index.html
+          ENDSSH
+
+      - name: Reload nginx & setup analytics subdomain SSL
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
-            echo "=== DISK SPACE ==="
-            df -h /
-
-            echo "=== FILES IN DIST ==="
-            ls -la /var/www/julay/frontend/dist/ 2>&1 || echo "DIST DIR NOT FOUND"
-
-            echo "=== INDEX.HTML BUNDLE REF ==="
-            grep -o 'index-[^"]*\.js' /var/www/julay/frontend/dist/index.html 2>&1 || echo "NO INDEX.HTML"
-
-            echo "=== NGINX SITES-ENABLED ==="
-            ls -la /etc/nginx/sites-enabled/ 2>&1
-
-            echo "=== NGINX ROOT CONFIG ==="
-            grep -r "root " /etc/nginx/sites-enabled/ 2>&1 || echo "NO ROOT DIRECTIVE"
-
             echo "=== APPLYING NGINX CONFIG ==="
             sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
             sudo ln -sf /etc/nginx/sites-available/julay.org /etc/nginx/sites-enabled/julay.org
             sudo rm -f /etc/nginx/sites-enabled/default
+
+            echo "=== EXPAND SSL CERT FOR analytics.julay.org ==="
+            sudo certbot certonly --nginx --non-interactive --agree-tos \
+              --expand -d julay.org -d www.julay.org -d analytics.julay.org \
+              --email assimohammad489@gmail.com 2>&1 || echo "CERTBOT: cert already up to date or failed"
+
+            echo "=== RELOAD NGINX ==="
             sudo nginx -t && sudo systemctl reload nginx && echo "NGINX RELOADED OK"
           ENDSSH
