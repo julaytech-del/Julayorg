@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { initSentry } from './lib/sentry.js';
+// build: 2026-04-26
 
 initSentry();
 import { Provider } from 'react-redux';
