@@ -652,7 +652,7 @@
           "features": [
             "3 مشاريع",
             "3 أعضاء في الفريق",
-            "5 طلبات AI/شهر",
+            "بدون ذكاء اصطناعي",
             "عروض Kanban والقائمة",
             "1 جيجابايت تخزين"
           ],
@@ -661,15 +661,15 @@
         {
           "id": "starter",
           "name": "مبتدئ",
-          "price": 9,
-          "yearlyPrice": 7,
+          "price": 19,
+          "yearlyPrice": 15,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "للمحترفين المستقلين",
           "features": [
             "10 مشاريع",
             "10 أعضاء في الفريق",
-            "100 طلب AI/شهر",
+            "30 طلب AI/شهر",
             "جميع العروض (تقويم، جانت)",
             "10 جيجابايت تخزين",
             "دعم بالبريد الإلكتروني"
@@ -679,8 +679,8 @@
         {
           "id": "professional",
           "name": "احترافي",
-          "price": 29,
-          "yearlyPrice": 23,
+          "price": 59,
+          "yearlyPrice": 47,
           "ctaVariant": "contained",
           "highlight": true,
           "popular": true,
@@ -700,8 +700,8 @@
         {
           "id": "business",
           "name": "أعمال",
-          "price": 79,
-          "yearlyPrice": 63,
+          "price": 99,
+          "yearlyPrice": 79,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "للشركات المتوسعة",

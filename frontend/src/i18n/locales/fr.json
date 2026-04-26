@@ -661,8 +661,8 @@
         {
           "id": "starter",
           "name": "Starter",
-          "price": 9,
-          "yearlyPrice": 7,
+          "price": 19,
+          "yearlyPrice": 15,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "Pour les professionnels indépendants",
@@ -679,8 +679,8 @@
         {
           "id": "professional",
           "name": "Professionnel",
-          "price": 29,
-          "yearlyPrice": 23,
+          "price": 59,
+          "yearlyPrice": 47,
           "ctaVariant": "contained",
           "highlight": true,
           "popular": true,
@@ -700,8 +700,8 @@
         {
           "id": "business",
           "name": "Business",
-          "price": 79,
-          "yearlyPrice": 63,
+          "price": 99,
+          "yearlyPrice": 79,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "Pour les entreprises en expansion",
