@@ -11,11 +11,12 @@ on:
 jobs:
   build-apk:
     runs-on: ubuntu-latest
+
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: Setup Node.js 20
         uses: actions/setup-node@v4
         with:
           node-version: '20'
@@ -32,23 +33,32 @@ jobs:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
         run: npm ci
 
-      - name: Build web dist (needed for cap sync)
+      - name: Build web dist
         working-directory: frontend
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+          VITE_GOOGLE_CLIENT_ID: 722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com
         run: npm run build
 
-      - name: Sync Capacitor assets to Android
+      - name: Sync Capacitor
         working-directory: frontend
-        run: npx cap sync android
+        run: npx cap sync android --no-open
 
-      - name: Make Gradle executable
+      - name: Make Gradle wrapper executable
         working-directory: frontend/android
         run: chmod +x gradlew
 
       - name: Build Debug APK
         working-directory: frontend/android
-        run: ./gradlew assembleDebug --no-daemon
+        env:
+          ANDROID_HOME: /usr/local/lib/android/sdk
+          JAVA_HOME: ${{ env.JAVA_HOME }}
+        run: ./gradlew assembleDebug --no-daemon --stacktrace
+
+      - name: Rename APK
+        run: |
+          cp frontend/android/app/build/outputs/apk/debug/app-debug.apk /tmp/julay.apk
+          echo "APK size: $(du -sh /tmp/julay.apk | cut -f1)"
 
       - name: Setup SSH key
         run: |
@@ -57,21 +67,21 @@ jobs:
           chmod 600 ~/.ssh/deploy_key
           ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Upload APK to server
+      - name: Deploy APK to server
         run: |
-          scp -i ~/.ssh/deploy_key \
-            frontend/android/app/build/outputs/apk/debug/app-debug.apk \
+          scp -i ~/.ssh/deploy_key /tmp/julay.apk \
             ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/julay.apk
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
-            sudo mkdir -p /var/www/julay/frontend/dist
+            set -e
             sudo chown ubuntu:ubuntu /var/www/julay/frontend/dist
             mv /tmp/julay.apk /var/www/julay/frontend/dist/julay.apk
-            echo "APK deployed: $(ls -lh /var/www/julay/frontend/dist/julay.apk)"
+            chmod 644 /var/www/julay/frontend/dist/julay.apk
+            echo "Deployed: $(ls -lh /var/www/julay/frontend/dist/julay.apk)"
           ENDSSH
 
-      - name: Upload APK as artifact
+      - name: Upload APK as GitHub artifact
         uses: actions/upload-artifact@v4
         with:
-          name: julay-android-apk
-          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          name: julay-android-${{ github.run_number }}
+          path: /tmp/julay.apk
           retention-days: 30

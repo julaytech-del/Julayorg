@@ -1,4 +1,4 @@
-package com.eliteai.workos;
+package org.julay.app;
 
 import com.getcapacitor.BridgeActivity;
 
