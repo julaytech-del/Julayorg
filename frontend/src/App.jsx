@@ -103,6 +103,15 @@ export default function App() {
         <Route path="/contact" element={<Suspense fallback={<PageLoader />}><Contact /></Suspense>} />
         <Route path="/pricing" element={<Suspense fallback={<PageLoader />}><Pricing /></Suspense>} />
 
+        {/* ── Short redirects ── */}
+        <Route path="/ai"        element={<Navigate to="/dashboard/ai"       replace />} />
+        <Route path="/projects"  element={<Navigate to="/dashboard/projects" replace />} />
+        <Route path="/team"      element={<Navigate to="/dashboard/team"     replace />} />
+        <Route path="/kanban"    element={<Navigate to="/dashboard/kanban"   replace />} />
+        <Route path="/calendar"  element={<Navigate to="/dashboard/calendar" replace />} />
+        <Route path="/reports"   element={<Navigate to="/dashboard/reports"  replace />} />
+        <Route path="/settings"  element={<Navigate to="/dashboard/settings" replace />} />
+
         {/* ── Public form renderer (no auth) ── */}
         <Route path="/forms/:token" element={<FormViewRenderer />} />
         {/* ── Accept team invite (no auth required) ── */}
