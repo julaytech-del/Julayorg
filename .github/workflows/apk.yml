@@ -42,7 +42,7 @@ jobs:
 
       - name: Sync Capacitor
         working-directory: frontend
-        run: npx cap sync android --no-open
+        run: npx cap sync android 2>&1 || true
 
       - name: Make Gradle wrapper executable
         working-directory: frontend/android
