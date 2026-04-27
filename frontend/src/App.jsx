@@ -15,6 +15,7 @@ import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
 import NotFound from './pages/NotFound.jsx';
 import CookieConsent from './components/common/CookieConsent.jsx';
 import Analytics from './components/common/Analytics.jsx';
+import InstallApp from './components/common/InstallApp.jsx';
 const Contact = React.lazy(() => import('./pages/Contact.jsx'));
 const Pricing  = React.lazy(() => import('./pages/Pricing.jsx'));
 
@@ -188,6 +189,7 @@ export default function App() {
       </main>
       <SnackbarAlert />
       <CookieConsent />
+      <InstallApp />
       <Analytics />
     </>
   );

@@ -1,12 +1,13 @@
 import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
-  appId: 'com.eliteai.workos',
-  appName: 'WorkOS',
+  appId: 'org.julay.app',
+  appName: 'Julay',
   webDir: 'dist',
   server: {
+    url: 'https://julay.org',
     androidScheme: 'https',
-    cleartext: true
+    cleartext: false,
   },
   plugins: {
     SplashScreen: {

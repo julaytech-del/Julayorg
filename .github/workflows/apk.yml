@@ -1,0 +1,77 @@
+name: Build & Deploy Android APK
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - 'frontend/capacitor.config.ts'
+      - 'frontend/android/**'
+
+jobs:
+  build-apk:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Setup Java 17
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Install frontend deps
+        working-directory: frontend
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        run: npm ci
+
+      - name: Build web dist (needed for cap sync)
+        working-directory: frontend
+        env:
+          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: 'true'
+        run: npm run build
+
+      - name: Sync Capacitor assets to Android
+        working-directory: frontend
+        run: npx cap sync android
+
+      - name: Make Gradle executable
+        working-directory: frontend/android
+        run: chmod +x gradlew
+
+      - name: Build Debug APK
+        working-directory: frontend/android
+        run: ./gradlew assembleDebug --no-daemon
+
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Upload APK to server
+        run: |
+          scp -i ~/.ssh/deploy_key \
+            frontend/android/app/build/outputs/apk/debug/app-debug.apk \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/julay.apk
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
+            sudo mkdir -p /var/www/julay/frontend/dist
+            sudo chown ubuntu:ubuntu /var/www/julay/frontend/dist
+            mv /tmp/julay.apk /var/www/julay/frontend/dist/julay.apk
+            echo "APK deployed: $(ls -lh /var/www/julay/frontend/dist/julay.apk)"
+          ENDSSH
+
+      - name: Upload APK as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: julay-android-apk
+          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          retention-days: 30

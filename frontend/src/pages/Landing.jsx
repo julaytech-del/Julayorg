@@ -363,14 +363,27 @@ export default function Landing() {
           </Typography>
 
           {/* CTA */}
-          <Button
-            onClick={() => { trackEvent('cta_clicked', { location: 'hero_v2' }); navigate('/register'); }}
-            variant="contained"
-            size="large"
-            sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5.5, py: 1.6, borderRadius: 99, fontSize: '1.05rem', boxShadow: '0 4px 28px rgba(99,102,241,0.65)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.75)' }, transition: 'all 0.2s' }}
-          >
-            {t('landing.hero.cta1')}
-          </Button>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', alignItems: 'center' }}>
+            <Button
+              onClick={() => { trackEvent('cta_clicked', { location: 'hero_v2' }); navigate('/register'); }}
+              variant="contained"
+              size="large"
+              sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5.5, py: 1.6, borderRadius: 99, fontSize: '1.05rem', boxShadow: '0 4px 28px rgba(99,102,241,0.65)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.75)' }, transition: 'all 0.2s' }}
+            >
+              {t('landing.hero.cta1')}
+            </Button>
+            <Button
+              component="a"
+              href="/julay.apk"
+              download="julay.apk"
+              variant="outlined"
+              size="large"
+              startIcon={<span style={{fontSize:'1.1rem'}}>📱</span>}
+              sx={{ color: '#a5b4fc', borderColor: 'rgba(165,180,252,0.4)', borderRadius: 99, px: 3.5, py: 1.6, fontWeight: 600, fontSize: '0.95rem', '&:hover': { borderColor: '#6366f1', background: 'rgba(99,102,241,0.1)' }, transition: 'all 0.2s' }}
+            >
+              Android APK
+            </Button>
+          </Box>
         </Container>
       </Box>
 
