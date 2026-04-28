@@ -10,13 +10,18 @@
     body { background: #0f172a; color: #e2e8f0; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; }
     .card { background: #1e293b; border-radius: 14px; padding: 20px; border: 1px solid #334155; }
     .metric { font-size: 2.4rem; font-weight: 800; letter-spacing: -1px; }
+    .metric-sm { font-size: 1.6rem; font-weight: 800; letter-spacing: -0.5px; }
     .badge { display: inline-flex; align-items: center; gap: 6px; background: #052e16; color: #4ade80; border-radius: 99px; padding: 3px 10px; font-size: 0.75rem; font-weight: 600; }
     .badge::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: #4ade80; animation: pulse 1.5s infinite; }
     @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.5;transform:scale(1.3)} }
     .bar-bg { background: #0f172a; border-radius: 4px; height: 6px; overflow: hidden; }
     .bar-fill { height: 100%; border-radius: 4px; background: linear-gradient(90deg,#6366f1,#a855f7); transition: width .4s; }
+    .bar-fill-green { height: 100%; border-radius: 4px; background: linear-gradient(90deg,#10b981,#34d399); transition: width .4s; }
+    .bar-fill-orange { height: 100%; border-radius: 4px; background: linear-gradient(90deg,#f59e0b,#fbbf24); transition: width .4s; }
     .row-hover:hover { background: #263148; }
     #login-screen { position: fixed; inset: 0; display: flex; align-items: center; justify-content: center; background: #0f172a; z-index: 100; }
+    .funnel-bar { height: 28px; border-radius: 6px; background: linear-gradient(90deg,#6366f1,#a855f7); transition: width .5s; min-width: 4px; }
+    .tag { display: inline-block; background: #1e293b; border: 1px solid #334155; border-radius: 6px; padding: 2px 8px; font-size: 0.7rem; color: #94a3b8; }
   </style>
 </head>
 <body>
@@ -31,7 +36,8 @@
         <div class="text-slate-400 text-xs">Enter your analytics key</div>
       </div>
     </div>
-    <input id="key-input" type="password" placeholder="Analytics secret key" class="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 mb-3" />
+    <input id="key-input" type="password" placeholder="Analytics secret key"
+      class="w-full bg-slate-900 border border-slate-600 rounded-lg px-4 py-2.5 text-sm outline-none focus:border-indigo-500 mb-3" />
     <button onclick="login()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg py-2.5 font-semibold text-sm transition">Enter Dashboard</button>
     <div id="login-err" class="text-red-400 text-xs mt-2 text-center hidden">Invalid key</div>
   </div>
@@ -50,14 +56,14 @@
       </div>
     </div>
     <div class="flex items-center gap-3">
-      <span class="badge" id="live-badge">LIVE</span>
+      <span class="badge">LIVE</span>
       <button onclick="refresh()" class="text-slate-400 hover:text-white text-sm transition">↻ Refresh</button>
       <button onclick="logout()" class="text-slate-500 hover:text-white text-xs transition">Sign out</button>
     </div>
   </div>
 
-  <!-- Stat cards -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+  <!-- Row 1: main stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
     <div class="card">
       <div class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1">Active Now</div>
       <div class="metric" id="stat-active" style="color:#4ade80">—</div>
@@ -80,37 +86,73 @@
     </div>
   </div>
 
+  <!-- Row 2: secondary stats -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+    <div class="card">
+      <div class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1">Bounce Rate</div>
+      <div class="metric-sm" id="stat-bounce" style="color:#f59e0b">—</div>
+      <div class="text-slate-500 text-xs mt-1">single-page sessions</div>
+    </div>
+    <div class="card">
+      <div class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-1">Avg Session</div>
+      <div class="metric-sm" id="stat-duration" style="color:#6366f1">—</div>
+      <div class="text-slate-500 text-xs mt-1">seconds on site</div>
+    </div>
+    <div class="card col-span-2">
+      <div class="text-slate-400 text-xs font-semibold uppercase tracking-wide mb-3">Devices (7 days)</div>
+      <div id="device-breakdown" class="flex gap-4 items-center flex-wrap">
+        <div class="text-slate-500 text-sm">Loading…</div>
+      </div>
+    </div>
+  </div>
+
   <!-- Chart -->
   <div class="card mb-6">
     <div class="text-sm font-semibold text-slate-300 mb-4">Pageviews — last 7 days</div>
-    <canvas id="chart" height="80"></canvas>
+    <canvas id="chart" height="70"></canvas>
   </div>
 
-  <!-- Bottom row -->
-  <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+  <!-- Conversion Funnel -->
+  <div class="card mb-6">
+    <div class="text-sm font-semibold text-slate-300 mb-5">Conversion Funnel <span class="text-slate-500 font-normal text-xs">(7 days, unique sessions)</span></div>
+    <div id="funnel" class="space-y-3">
+      <div class="text-slate-500 text-sm">Loading…</div>
+    </div>
+  </div>
+
+  <!-- Bottom grid -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
 
     <!-- Top Pages -->
     <div class="card">
       <div class="text-sm font-semibold text-slate-300 mb-4">Top Pages <span class="text-slate-500 font-normal text-xs">(7 days)</span></div>
-      <div id="top-pages" class="space-y-2">
-        <div class="text-slate-500 text-sm">Loading…</div>
-      </div>
+      <div id="top-pages" class="space-y-2"><div class="text-slate-500 text-sm">Loading…</div></div>
     </div>
 
     <!-- Top Referrers -->
     <div class="card">
       <div class="text-sm font-semibold text-slate-300 mb-4">Top Referrers <span class="text-slate-500 font-normal text-xs">(7 days)</span></div>
-      <div id="top-referrers" class="space-y-2">
-        <div class="text-slate-500 text-sm">Loading…</div>
-      </div>
+      <div id="top-referrers" class="space-y-2"><div class="text-slate-500 text-sm">Loading…</div></div>
+    </div>
+
+    <!-- Top Clicks -->
+    <div class="card">
+      <div class="text-sm font-semibold text-slate-300 mb-4">Top Clicked Buttons <span class="text-slate-500 font-normal text-xs">(7 days)</span></div>
+      <div id="top-clicks" class="space-y-2"><div class="text-slate-500 text-sm">Loading…</div></div>
+    </div>
+
+    <!-- Top Languages -->
+    <div class="card">
+      <div class="text-sm font-semibold text-slate-300 mb-4">Languages <span class="text-slate-500 font-normal text-xs">(7 days)</span></div>
+      <div id="top-languages" class="space-y-2"><div class="text-slate-500 text-sm">Loading…</div></div>
     </div>
 
   </div>
 
   <!-- Live feed -->
-  <div class="card mt-4">
+  <div class="card">
     <div class="text-sm font-semibold text-slate-300 mb-3">Live Event Feed</div>
-    <div id="live-feed" class="font-mono text-xs space-y-1 text-slate-400 max-h-48 overflow-y-auto">
+    <div id="live-feed" class="font-mono text-xs space-y-1 text-slate-400 max-h-52 overflow-y-auto">
       <div class="text-slate-500">Waiting for events…</div>
     </div>
   </div>
@@ -142,14 +184,8 @@
     });
   }
 
-  function logout() {
-    localStorage.removeItem('_akey');
-    location.reload();
-  }
-
+  function logout() { localStorage.removeItem('_akey'); location.reload(); }
   document.getElementById('key-input').addEventListener('keydown', e => { if (e.key === 'Enter') login(); });
-
-  // Auto-login from localStorage
   const saved = localStorage.getItem('_akey');
   if (saved) { KEY = saved; document.getElementById('key-input').value = saved; login(); }
 
@@ -165,25 +201,30 @@
   }
 
   function refresh() { loadStats(); }
-
   function fmt(n) { return n >= 1000 ? (n / 1000).toFixed(1) + 'k' : String(n); }
+  function fmtSec(s) { return s >= 60 ? Math.floor(s/60) + 'm ' + (s%60) + 's' : s + 's'; }
 
   function renderStats(d) {
-    document.getElementById('stat-active').textContent = d.active ?? 0;
-    document.getElementById('stat-today').textContent = fmt(d.today ?? 0);
-    document.getElementById('stat-week').textContent = fmt(d.week ?? 0);
-    document.getElementById('stat-month').textContent = fmt(d.month ?? 0);
-    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    document.getElementById('stat-active').textContent   = d.active ?? 0;
+    document.getElementById('stat-today').textContent    = fmt(d.today ?? 0);
+    document.getElementById('stat-week').textContent     = fmt(d.week ?? 0);
+    document.getElementById('stat-month').textContent    = fmt(d.month ?? 0);
+    document.getElementById('stat-bounce').textContent   = (d.bounceRate ?? 0) + '%';
+    document.getElementById('stat-duration').textContent = fmtSec(d.avgDuration ?? 0);
+    document.getElementById('last-updated').textContent  = 'Updated ' + new Date().toLocaleTimeString();
 
     renderChart(d.daily || []);
-    renderTable('top-pages', d.topPages || [], 'page');
-    renderTable('top-referrers', d.topReferrers || [], 'referrer');
+    renderTable('top-pages',     d.topPages     || [], 'page',     'bar-fill');
+    renderTable('top-referrers', d.topReferrers || [], 'referrer', 'bar-fill');
+    renderClickTable(d.topClicks    || []);
+    renderLangTable(d.topLanguages  || []);
+    renderDevices(d.deviceBreakdown || []);
+    renderFunnel(d.funnel || {});
     renderFeed(d.recentEvents || []);
   }
 
   function renderChart(daily) {
-    const labels = [];
-    const views = [];
+    const labels = [], views = [];
     const today = new Date();
     for (let i = 6; i >= 0; i--) {
       const d = new Date(today);
@@ -193,49 +234,103 @@
       const found = daily.find(x => x._id === key);
       views.push(found ? found.views : 0);
     }
-
     const ctx = document.getElementById('chart').getContext('2d');
     if (chart) chart.destroy();
     chart = new Chart(ctx, {
       type: 'bar',
-      data: {
-        labels,
-        datasets: [{
-          label: 'Page views',
-          data: views,
-          backgroundColor: 'rgba(99,102,241,0.5)',
-          borderColor: '#6366f1',
-          borderWidth: 2,
-          borderRadius: 6,
-          hoverBackgroundColor: 'rgba(168,85,247,0.7)',
-        }],
-      },
-      options: {
-        responsive: true,
-        plugins: { legend: { display: false } },
-        scales: {
-          x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 } } },
-          y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 }, precision: 0 }, beginAtZero: true },
-        },
-      },
+      data: { labels, datasets: [{ label: 'Page views', data: views, backgroundColor: 'rgba(99,102,241,0.5)', borderColor: '#6366f1', borderWidth: 2, borderRadius: 6, hoverBackgroundColor: 'rgba(168,85,247,0.7)' }] },
+      options: { responsive: true, plugins: { legend: { display: false } }, scales: { x: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 } } }, y: { grid: { color: '#1e293b' }, ticks: { color: '#94a3b8', font: { size: 11 }, precision: 0 }, beginAtZero: true } } },
     });
   }
 
-  function renderTable(id, rows, key) {
+  function renderTable(id, rows, key, fillClass) {
     const el = document.getElementById(id);
     if (!rows.length) { el.innerHTML = '<div class="text-slate-500 text-sm">No data yet</div>'; return; }
     const max = rows[0].views;
     el.innerHTML = rows.map(r => {
-      const label = key === 'referrer'
-        ? (r[key] ? new URL(r[key]).hostname : 'Direct')
-        : r[key];
+      let label = r[key];
+      try { if (key === 'referrer' && r[key]) label = new URL(r[key]).hostname; } catch {}
+      if (!label) label = 'Direct';
       const pct = max ? Math.round((r.views / max) * 100) : 0;
       return `<div class="row-hover rounded-lg px-2 py-1.5 transition">
         <div class="flex justify-between text-sm mb-1">
           <span class="text-slate-200 truncate max-w-[70%]" title="${r[key]}">${label}</span>
           <span class="text-slate-400 font-mono">${r.views.toLocaleString()}</span>
         </div>
-        <div class="bar-bg"><div class="bar-fill" style="width:${pct}%"></div></div>
+        <div class="bar-bg"><div class="${fillClass}" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderClickTable(rows) {
+    const el = document.getElementById('top-clicks');
+    if (!rows.length) { el.innerHTML = '<div class="text-slate-500 text-sm">No click data yet</div>'; return; }
+    const max = rows[0].count;
+    el.innerHTML = rows.map(r => {
+      const pct = max ? Math.round((r.count / max) * 100) : 0;
+      return `<div class="row-hover rounded-lg px-2 py-1.5 transition">
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-slate-200 truncate max-w-[70%]" title="${r.element}">${r.element}</span>
+          <span class="text-slate-400 font-mono">${r.count}</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill-orange" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderLangTable(rows) {
+    const el = document.getElementById('top-languages');
+    if (!rows.length) { el.innerHTML = '<div class="text-slate-500 text-sm">No data yet</div>'; return; }
+    const max = rows[0].count;
+    el.innerHTML = rows.map(r => {
+      const pct = max ? Math.round((r.count / max) * 100) : 0;
+      return `<div class="row-hover rounded-lg px-2 py-1.5 transition">
+        <div class="flex justify-between text-sm mb-1">
+          <span class="text-slate-200">${r.language || 'Unknown'}</span>
+          <span class="text-slate-400 font-mono">${r.count}</span>
+        </div>
+        <div class="bar-bg"><div class="bar-fill-green" style="width:${pct}%"></div></div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderDevices(rows) {
+    const el = document.getElementById('device-breakdown');
+    if (!rows.length) { el.innerHTML = '<div class="text-slate-500 text-sm">No data yet</div>'; return; }
+    const total = rows.reduce((s, r) => s + r.count, 0);
+    const icons = { desktop: '🖥️', mobile: '📱', tablet: '📟', unknown: '❓' };
+    el.innerHTML = rows.map(r => {
+      const pct = total ? Math.round((r.count / total) * 100) : 0;
+      return `<div class="flex items-center gap-2">
+        <span class="text-lg">${icons[r.device] || '❓'}</span>
+        <div>
+          <div class="text-sm font-semibold text-white capitalize">${r.device}</div>
+          <div class="text-xs text-slate-400">${r.count} (${pct}%)</div>
+        </div>
+      </div>`;
+    }).join('');
+  }
+
+  function renderFunnel(f) {
+    const el = document.getElementById('funnel');
+    const steps = [
+      { label: '🏠 Homepage (/)',              key: 'home',      color: '#6366f1' },
+      { label: '💳 Pricing (/pricing)',         key: 'pricing',   color: '#a855f7' },
+      { label: '📝 Register / Login',           key: 'register',  color: '#10b981' },
+      { label: '✅ Dashboard (/dashboard/*)',   key: 'dashboard', color: '#f59e0b' },
+    ];
+    const max = f.home || 1;
+    el.innerHTML = steps.map((s, i) => {
+      const val = f[s.key] || 0;
+      const pct = Math.round((val / max) * 100);
+      const conv = i === 0 ? 100 : (f[steps[i-1].key] ? Math.round((val / f[steps[i-1].key]) * 100) : 0);
+      return `<div class="flex items-center gap-4">
+        <div class="text-slate-400 text-xs w-40 shrink-0">${s.label}</div>
+        <div class="flex-1 bg-slate-900 rounded-full h-7 overflow-hidden relative">
+          <div style="width:${pct}%;background:${s.color};height:100%;border-radius:6px;transition:width .5s;min-width:4px"></div>
+        </div>
+        <div class="text-sm font-bold w-10 text-right" style="color:${s.color}">${val}</div>
+        ${i > 0 ? `<div class="text-xs text-slate-500 w-16">↓ ${conv}% conv.</div>` : '<div class="w-16"></div>'}
       </div>`;
     }).join('');
   }
@@ -243,23 +338,27 @@
   function renderFeed(events) {
     const el = document.getElementById('live-feed');
     if (!events.length) { el.innerHTML = '<div class="text-slate-500">No events yet</div>'; return; }
+    const deviceIcon = { desktop: '🖥️', mobile: '📱', tablet: '📟' };
     el.innerHTML = events.map(e => {
-      const t = new Date(e.createdAt).toLocaleTimeString();
+      const t   = new Date(e.createdAt).toLocaleTimeString();
       const ref = e.referrer ? ` ← ${e.referrer}` : '';
-      return `<div class="flex gap-3"><span class="text-slate-600">${t}</span><span class="text-indigo-400">${e.url}</span><span class="text-slate-600">${ref}</span></div>`;
+      const dev = deviceIcon[e.device] || '';
+      const lng = e.language ? `<span class="tag">${e.language}</span>` : '';
+      return `<div class="flex gap-3 items-center flex-wrap">
+        <span class="text-slate-600">${t}</span>
+        <span class="text-indigo-400">${e.url}</span>
+        <span class="text-slate-600 text-xs">${ref}</span>
+        <span>${dev}</span>${lng}
+      </div>`;
     }).join('');
   }
 
-  // ── SSE for live active count ──
+  // ── SSE ──
   function startSSE() {
     if (sseSource) sseSource.close();
     sseSource = new EventSource(`${API}/realtime?key=${encodeURIComponent(KEY)}`);
-    sseSource.onmessage = e => {
-      document.getElementById('stat-active').textContent = e.data;
-    };
-    sseSource.onerror = () => {
-      setTimeout(startSSE, 5000);
-    };
+    sseSource.onmessage = e => { document.getElementById('stat-active').textContent = e.data; };
+    sseSource.onerror = () => { setTimeout(startSSE, 5000); };
   }
 </script>
 </body>
