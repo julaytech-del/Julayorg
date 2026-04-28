@@ -45,7 +45,7 @@ window.__APP_VERSION__ = '2026-04-26';
   }
   function send(url) {
     try {
-      navigator.sendBeacon(ENDPOINT, JSON.stringify({ url, referrer: document.referrer, sessionId: sid() }));
+      navigator.sendBeacon(ENDPOINT, new Blob([JSON.stringify({ url, referrer: document.referrer, sessionId: sid() })], { type: 'application/json' }));
     } catch {}
   }
   send(location.pathname + location.search);
