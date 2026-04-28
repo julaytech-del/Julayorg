@@ -5,7 +5,11 @@
   "scripts": {
     "start": "node server.js",
     "dev": "nodemon server.js",
-    "seed": "node src/seed/seed.js"
+    "seed": "node src/seed/seed.js",
+    "test": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --forceExit",
+    "test:coverage": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest --coverage --forceExit",
+    "test:unit": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest tests/unit --forceExit",
+    "test:integration": "NODE_ENV=test node --experimental-vm-modules node_modules/.bin/jest tests/integration --forceExit"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.39.0",
@@ -28,6 +32,10 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "nodemon": "^3.1.0"
+    "@jest/globals": "^30.3.0",
+    "jest": "^30.3.0",
+    "mongodb-memory-server": "^11.0.1",
+    "nodemon": "^3.1.0",
+    "supertest": "^7.2.2"
   }
 }

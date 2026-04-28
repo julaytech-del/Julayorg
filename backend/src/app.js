@@ -40,8 +40,9 @@ app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: 20, message: { success: false, message: 'Too many attempts, please try again later.' } });
-const aiLimiter = rateLimit({ windowMs: 60 * 1000, max: 20, message: { success: false, message: 'Too many AI requests, please slow down.' } });
+const isTest = process.env.NODE_ENV === 'test';
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 20, message: { success: false, message: 'Too many attempts, please try again later.' } });
+const aiLimiter   = rateLimit({ windowMs: 60 * 1000,      max: isTest ? 10000 : 20, message: { success: false, message: 'Too many AI requests, please slow down.' } });
 
 app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
