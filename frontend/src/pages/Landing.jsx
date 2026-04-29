@@ -482,10 +482,10 @@ export default function Landing() {
         <Container maxWidth="md">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', border: '1px solid #C7D2FE', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
               <Typography variant="h2" sx={{ color: '#0A0A14', fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
                 {t('landing.problem.title')}{' '}
-                <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>{t('landing.problem.strike')}</Box>
+                <Box component="span" sx={{ color: '#6366F1', textDecoration: 'line-through' }}>{t('landing.problem.strike')}</Box>
               </Typography>
               <Typography sx={{ color: '#6B7280', fontSize: '1.1rem', lineHeight: 1.7 }}>{t('landing.problem.sub')}</Typography>
             </Box>
@@ -493,8 +493,8 @@ export default function Landing() {
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             {PAINS.map((p, i) => (
               <FadeIn key={i} delay={i * 80}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2.5, border: '1.5px solid #FEE2E2', background: '#FFF8F8' }}>
-                  <Close sx={{ color: '#EF4444', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2.5, border: '1.5px solid #C7D2FE', background: '#F5F3FF' }}>
+                  <Close sx={{ color: '#6366F1', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
                   <Typography sx={{ color: '#374151', fontSize: '0.9rem', lineHeight: 1.5, fontWeight: 500 }}>{p}</Typography>
                 </Box>
               </FadeIn>
