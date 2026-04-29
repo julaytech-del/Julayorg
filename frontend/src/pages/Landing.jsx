@@ -296,10 +296,10 @@ export default function Landing() {
   const PRICE_ROW     = t('landing.compare.startingPrice',{ returnObjects: true });
 
   const NAV_LINKS = [
-    { label: 'Features',  href: '#features'  },
     { label: 'Why Julay', href: '#solutions' },
-    { label: 'FAQ',       href: '#faq'       },
+    { label: 'Features',  href: '#features'  },
     { label: 'Pricing',   href: '#pricing'   },
+    { label: 'FAQ',       href: '#faq'       },
   ];
 
   const COMPARE = COMPARE_MATRIX.map((row, i) => ({
