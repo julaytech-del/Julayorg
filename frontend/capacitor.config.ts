@@ -5,7 +5,6 @@ const config: CapacitorConfig = {
   appName: 'Julay', // v1.0
   webDir: 'dist',
   server: {
-    url: 'https://julay.org',
     androidScheme: 'https',
     cleartext: false,
   },

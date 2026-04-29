@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, Button, Switch, Divider, Collapse } from '@mui/material';
 import { Cookie, Close, Settings, CheckCircle } from '@mui/icons-material';
+import { Capacitor } from '@capacitor/core';
 
 const CONSENT_KEY = 'julay_consent_v1';
 const CONSENT_VERSION = 1;
@@ -40,6 +41,7 @@ export function useConsent() {
 }
 
 export default function CookieConsent() {
+  if (Capacitor.isNativePlatform()) return null;
   const [visible, setVisible] = useState(false);
   const [showPrefs, setShowPrefs] = useState(false);
   const [analytics, setAnalytics] = useState(false);

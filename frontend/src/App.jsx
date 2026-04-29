@@ -1,11 +1,13 @@
 import React, { Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, CircularProgress, LinearProgress } from '@mui/material';
 import { fetchCurrentUser } from './store/slices/authSlice.js';
 
 // ─── Eagerly loaded (needed immediately, before auth check) ───────────────────
 import Landing from './pages/Landing.jsx';
+import MobileWelcome from './pages/MobileWelcome.jsx';
 import Login from './pages/Auth/Login.jsx';
 import Register from './pages/Auth/Register.jsx';
 import AcceptInvitePage from './pages/Auth/AcceptInvitePage.jsx';
@@ -15,7 +17,6 @@ import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
 import NotFound from './pages/NotFound.jsx';
 import CookieConsent from './components/common/CookieConsent.jsx';
 import Analytics from './components/common/Analytics.jsx';
-import InstallApp from './components/common/InstallApp.jsx';
 const Contact = React.lazy(() => import('./pages/Contact.jsx'));
 const Pricing  = React.lazy(() => import('./pages/Pricing.jsx'));
 
@@ -95,7 +96,11 @@ export default function App() {
       <main id="main-content">
       <Routes>
         {/* ── Public ── */}
-        <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+        <Route path="/" element={
+          Capacitor.isNativePlatform()
+            ? <PublicRoute><MobileWelcome /></PublicRoute>
+            : <PublicRoute><Landing /></PublicRoute>
+        } />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 
@@ -198,7 +203,6 @@ export default function App() {
       </main>
       <SnackbarAlert />
       <CookieConsent />
-      <InstallApp />
       <Analytics />
     </>
   );
