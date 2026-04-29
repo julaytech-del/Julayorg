@@ -14,6 +14,7 @@ import {
   CardGiftcard, Share, WhatsApp,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
+import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI } from '../../services/api.js';
@@ -88,6 +89,7 @@ function ProfileTab({ user }) {
 // ── Team Tab ───────────────────────────────────────────────────────────────
 function TeamTab({ currentUser }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const [members, setMembers]     = useState([]);
   const [loading, setLoading]     = useState(true);
   const [inviteOpen, setInviteOpen] = useState(false);
@@ -95,6 +97,7 @@ function TeamTab({ currentUser }) {
   const [inviting, setInviting]   = useState(false);
   const [inviteLink, setInviteLink] = useState('');
   const [copied, setCopied]       = useState(false);
+  const [memberLimitOpen, setMemberLimitOpen] = useState({ open: false, message: '' });
 
   useEffect(() => {
     settingsAPI.getOrgMembers()
@@ -113,7 +116,11 @@ function TeamTab({ currentUser }) {
       setInviteLink(res.data.inviteLink);
       dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
     } catch (e) {
-      dispatch(showSnackbar({ message: e.message || 'Failed to generate invite link', severity: 'error' }));
+      if (e.code === 'MEMBER_LIMIT_REACHED') {
+        setMemberLimitOpen({ open: true, message: e.message });
+      } else {
+        dispatch(showSnackbar({ message: e.message || 'Failed to generate invite link', severity: 'error' }));
+      }
     } finally {
       setInviting(false);
     }
@@ -220,6 +227,27 @@ function TeamTab({ currentUser }) {
             </Button>
           )}
         </DialogActions>
+      </Dialog>
+
+      {/* Member Limit Upgrade Dialog */}
+      <Dialog open={memberLimitOpen.open} onClose={() => setMemberLimitOpen({ open: false, message: '' })} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 3, textAlign: 'center' } }}>
+        <DialogContent sx={{ pt: 4, pb: 2, px: 4 }}>
+          <Box sx={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #F59E0B, #EF4444)', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+            <Group sx={{ color: 'white', fontSize: 28 }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>Member Limit Reached</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>{memberLimitOpen.message}</Typography>
+          <Button
+            fullWidth variant="contained" size="large"
+            onClick={() => { setMemberLimitOpen({ open: false, message: '' }); navigate('/pricing'); }}
+            sx={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', fontWeight: 700, mb: 1.5 }}
+          >
+            View Plans & Upgrade
+          </Button>
+          <Button fullWidth onClick={() => setMemberLimitOpen({ open: false, message: '' })} sx={{ color: 'text.secondary' }}>
+            Not now
+          </Button>
+        </DialogContent>
       </Dialog>
     </Box>
   );

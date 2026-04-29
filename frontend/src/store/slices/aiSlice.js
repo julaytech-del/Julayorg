@@ -3,7 +3,7 @@ import { aiAPI } from '../../services/api.js';
 
 export const generatePlan = createAsyncThunk('ai/generatePlan', async (data, { rejectWithValue }) => {
   try { const res = await aiAPI.generatePlan(data); return res.data; }
-  catch (err) { return rejectWithValue(err.message || 'Failed to generate plan'); }
+  catch (err) { return rejectWithValue({ message: err.message || 'Failed to generate plan', code: err.code }); }
 });
 
 export const assignTeam = createAsyncThunk('ai/assignTeam', async (projectId, { rejectWithValue }) => {

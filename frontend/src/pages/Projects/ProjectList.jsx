@@ -29,6 +29,7 @@ const PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
 function CreateProjectDialog({ open, onClose, onCreated }) {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { t } = useTranslation();
   const user = useSelector(s => s.auth.user);
   const { loading: aiLoading } = useSelector(s => s.ai);
@@ -36,6 +37,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
   const [step, setStep] = useState(0);
   const [aiResult, setAiResult] = useState(null);
   const [users, setUsers] = useState([]);
+  const [limitDialog, setLimitDialog] = useState({ open: false, message: '' });
 
   const EXAMPLE_PROMPTS = [
     t('projects.aiCreate.steps.s1') ? 'Build a DevOps platform for cloud infrastructure management' : 'Build a DevOps platform for cloud infrastructure management',
@@ -94,8 +96,10 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
       dispatch(showSnackbar({ message: t('projects.snackbar.created') }));
       onCreated?.();
       handleClose();
+    } else if (res.payload?.code === 'PROJECT_LIMIT_REACHED') {
+      setLimitDialog({ open: true, message: res.payload.message });
     } else {
-      dispatch(showSnackbar({ message: res.error.message || t('projects.snackbar.aiFailed'), severity: 'error' }));
+      dispatch(showSnackbar({ message: res.payload?.message || t('projects.snackbar.aiFailed'), severity: 'error' }));
     }
   };
 
@@ -110,8 +114,10 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
       setAiResult(res.payload);
       dispatch(showSnackbar({ message: t('projects.snackbar.aiSuccess') }));
       onCreated?.();
+    } else if (res.payload?.code === 'AI_LIMIT_REACHED' || res.payload?.code === 'PROJECT_LIMIT_REACHED') {
+      setLimitDialog({ open: true, message: res.payload.message });
     } else {
-      dispatch(showSnackbar({ message: res.payload || t('projects.snackbar.aiFailed'), severity: 'error' }));
+      dispatch(showSnackbar({ message: res.payload?.message || t('projects.snackbar.aiFailed'), severity: 'error' }));
     }
   };
 
@@ -192,6 +198,27 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
           </DialogActions>
         </form>
       )}
+
+      {/* Upgrade Dialog */}
+      <Dialog open={limitDialog.open} onClose={() => setLimitDialog({ open: false, message: '' })} maxWidth="xs" fullWidth PaperProps={{ sx: { borderRadius: 3, textAlign: 'center' } }}>
+        <DialogContent sx={{ pt: 4, pb: 2, px: 4 }}>
+          <Box sx={{ width: 56, height: 56, borderRadius: '50%', background: 'linear-gradient(135deg, #F59E0B, #EF4444)', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+            <Rocket sx={{ color: 'white', fontSize: 28 }} />
+          </Box>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 1 }}>Plan Limit Reached</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>{limitDialog.message}</Typography>
+          <Button
+            fullWidth variant="contained" size="large"
+            onClick={() => { setLimitDialog({ open: false, message: '' }); onClose(); navigate('/pricing'); }}
+            sx={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', fontWeight: 700, mb: 1.5 }}
+          >
+            View Plans & Upgrade
+          </Button>
+          <Button fullWidth onClick={() => setLimitDialog({ open: false, message: '' })} sx={{ color: 'text.secondary' }}>
+            Not now
+          </Button>
+        </DialogContent>
+      </Dialog>
 
       {/* AI TAB */}
       {tab === 1 && (

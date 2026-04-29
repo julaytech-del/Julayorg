@@ -13,7 +13,7 @@ export const fetchProject = createAsyncThunk('projects/fetchOne', async (id, { r
 
 export const createProject = createAsyncThunk('projects/create', async (data, { rejectWithValue }) => {
   try { const res = await projectsAPI.create(data); return res.data; }
-  catch (err) { return rejectWithValue(err.message); }
+  catch (err) { return rejectWithValue({ message: err.message, code: err.code }); }
 });
 
 export const updateProject = createAsyncThunk('projects/update', async ({ id, data }, { rejectWithValue }) => {
