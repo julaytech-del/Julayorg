@@ -497,24 +497,24 @@ export default function Landing() {
       </Box>
 
       {/* ─── PROBLEM ─── */}
-      <Box sx={{ background: '#09090B', py: { xs: 8, md: 14 } }}>
+      <Box sx={{ background: '#FAFAFA', py: { xs: 8, md: 14 }, borderTop: '1px solid #F1F1F8' }}>
         <Container maxWidth="md">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: 'rgba(239,68,68,0.08)', color: '#FCA5A5', border: '1px solid rgba(239,68,68,0.18)', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
-              <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
+              <Chip label={t('landing.problem.chip')} sx={{ mb: 3, background: '#FEF2F2', color: '#DC2626', border: '1px solid #FECACA', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
+              <Typography variant="h2" sx={{ color: '#0A0A14', fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', lineHeight: 1.15, mb: 2 }}>
                 {t('landing.problem.title')}{' '}
                 <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>{t('landing.problem.strike')}</Box>
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', lineHeight: 1.7 }}>{t('landing.problem.sub')}</Typography>
+              <Typography sx={{ color: '#6B7280', fontSize: '1.1rem', lineHeight: 1.7 }}>{t('landing.problem.sub')}</Typography>
             </Box>
           </FadeIn>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
             {PAINS.map((p, i) => (
               <FadeIn key={i} delay={i * 80}>
-                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2, border: '1px solid rgba(239,68,68,0.1)', background: 'rgba(239,68,68,0.03)' }}>
-                  <Close sx={{ color: '#F87171', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
-                  <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.9rem', lineHeight: 1.5 }}>{p}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.5, p: 2.5, borderRadius: 2.5, border: '1.5px solid #FEE2E2', background: '#FFF8F8' }}>
+                  <Close sx={{ color: '#EF4444', fontSize: 18, mt: 0.2, flexShrink: 0 }} />
+                  <Typography sx={{ color: '#374151', fontSize: '0.9rem', lineHeight: 1.5, fontWeight: 500 }}>{p}</Typography>
                 </Box>
               </FadeIn>
             ))}
@@ -655,26 +655,26 @@ export default function Landing() {
       </Box>
 
       {/* ─── REFERRAL ─── */}
-      <Box sx={{ background: 'linear-gradient(135deg,#0F172A 0%,#1E1B4B 100%)', py: { xs: 8, md: 14 }, position: 'relative', overflow: 'hidden' }}>
-        <Box sx={{ position: 'absolute', top: '10%', right: '5%', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle,rgba(99,102,241,0.18) 0%,transparent 70%)', pointerEvents: 'none' }} />
-        <Box sx={{ position: 'absolute', bottom: '10%', left: '5%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.15) 0%,transparent 70%)', pointerEvents: 'none' }} />
+      <Box sx={{ background: '#F5F3FF', py: { xs: 8, md: 14 }, position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: '10%', right: '5%', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle,rgba(99,102,241,0.12) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <Box sx={{ position: 'absolute', bottom: '10%', left: '5%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.1) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
-              <Chip label={t('landing.referral.chip')} sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em', border: '1px solid rgba(99,102,241,0.3)' }} />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, color: 'white', letterSpacing: '-0.03em', mb: 2 }}>
+              <Chip label={t('landing.referral.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em', border: '1px solid #C7D2FE' }} />
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, color: '#0A0A14', letterSpacing: '-0.03em', mb: 2 }}>
                 {t('landing.referral.title')}{' '}
-                <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.referral.titleGrad')}</Box>
+                <Box component="span" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.referral.titleGrad')}</Box>
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>{t('landing.referral.sub')}</Typography>
+              <Typography sx={{ color: '#6B7280', fontSize: '1.05rem', maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>{t('landing.referral.sub')}</Typography>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3,1fr)' }, gap: 3, mb: 8 }}>
               {t('landing.referral.steps', { returnObjects: true }).map(item => (
-                <Box key={item.step} sx={{ position: 'relative', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
-                  <Typography sx={{ position: 'absolute', top: 16, right: 20, fontSize: '0.72rem', fontWeight: 800, color: 'rgba(99,102,241,0.5)', letterSpacing: '0.1em' }}>{item.step}</Typography>
+                <Box key={item.step} sx={{ position: 'relative', p: 3, borderRadius: 3, border: '1.5px solid #DDD6FE', background: 'white', boxShadow: '0 2px 12px rgba(99,102,241,0.08)' }}>
+                  <Typography sx={{ position: 'absolute', top: 16, right: 20, fontSize: '0.72rem', fontWeight: 800, color: '#C4B5FD', letterSpacing: '0.1em' }}>{item.step}</Typography>
                   <Typography sx={{ fontSize: '2.2rem', mb: 2 }}>{item.icon}</Typography>
-                  <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.05rem', mb: 1 }}>{item.title}</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.875rem', lineHeight: 1.65 }}>{item.desc}</Typography>
+                  <Typography sx={{ color: '#111827', fontWeight: 700, fontSize: '1.05rem', mb: 1 }}>{item.title}</Typography>
+                  <Typography sx={{ color: '#6B7280', fontSize: '0.875rem', lineHeight: 1.65 }}>{item.desc}</Typography>
                 </Box>
               ))}
             </Box>
@@ -682,19 +682,19 @@ export default function Landing() {
               {(['♾️','🆓','📅','⚡']).map((icon, i) => {
                 const labels = t('landing.referral.perks', { returnObjects: true });
                 return (
-                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1, borderRadius: 99, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1, borderRadius: 99, background: '#EEF2FF', border: '1px solid #C7D2FE' }}>
                     <Typography sx={{ fontSize: '1rem' }}>{icon}</Typography>
-                    <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem', fontWeight: 600 }}>{labels[i]}</Typography>
+                    <Typography sx={{ color: '#4F46E5', fontSize: '0.82rem', fontWeight: 600 }}>{labels[i]}</Typography>
                   </Box>
                 );
               })}
             </Box>
             <Box sx={{ textAlign: 'center' }}>
               <Button onClick={() => navigate('/register')} variant="contained" size="large"
-                sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9 } }}>
+                sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } }}>
                 {t('landing.referral.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
-              <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', mt: 2 }}>{t('landing.referral.existing')}</Typography>
+              <Typography sx={{ color: '#9CA3AF', fontSize: '0.8rem', mt: 2 }}>{t('landing.referral.existing')}</Typography>
             </Box>
           </FadeIn>
         </Container>
@@ -726,31 +726,35 @@ export default function Landing() {
       </Box>
 
       {/* ─── FINAL CTA ─── */}
-      <Box sx={{ background: '#09090B', py: { xs: 10, md: 18 }, position: 'relative', overflow: 'hidden' }}>
-        <Orb sx={{ width: 700, height: 700, background: 'rgba(99,102,241,0.12)', top: '50%', left: '50%', transform: 'translate(-50%,-50%)' }} />
+      <Box sx={{ background: 'linear-gradient(135deg, #4F46E5 0%, #7C3AED 60%, #6D28D9 100%)', py: { xs: 10, md: 16 }, position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 70% 50%, rgba(139,92,246,0.4) 0%, transparent 60%)', pointerEvents: 'none' }} />
+        <Box sx={{ position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 20% 80%, rgba(99,102,241,0.3) 0%, transparent 50%)', pointerEvents: 'none' }} />
         <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center' }}>
           <FadeIn>
-            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2.5, py: 0.75, borderRadius: 99, background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.25)', mb: 4 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
-              <Typography sx={{ color: '#FCA5A5', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.waitlistBadge')}</Typography>
+            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2.5, py: 0.75, borderRadius: 99, background: 'rgba(255,255,255,0.15)', border: '1px solid rgba(255,255,255,0.25)', mb: 4 }}>
+              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#FCD34D', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+              <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.waitlistBadge')}</Typography>
             </Box>
-            <Typography sx={{ color: '#818CF8', fontSize: '0.85rem', fontWeight: 700, letterSpacing: '0.1em', textTransform: 'uppercase', mb: 3 }}>{t('landing.finalCta.eyebrow')}</Typography>
             <Typography variant="h2" sx={{ color: 'white', fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, letterSpacing: '-0.04em', lineHeight: 1.1, mb: 3 }}>
               {t('landing.finalCta.title')}{' '}
-              <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.finalCta.titleGrad')}</Box>
+              <Box component="span" sx={{ color: '#FCD34D' }}>{t('landing.finalCta.titleGrad')}</Box>
             </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto' }}>{t('landing.finalCta.sub')}</Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>{t('landing.finalCta.sub')}</Typography>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
               <Button onClick={() => navigate('/register')} variant="contained" size="large"
-                sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
+                sx={{ background: 'white', color: '#4F46E5', fontWeight: 800, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(0,0,0,0.2)', '&:hover': { background: '#F5F5FF', transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
                 {t('landing.finalCta.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
+              </Button>
+              <Button onClick={() => navigate('/login')} variant="outlined" size="large"
+                sx={{ borderColor: 'rgba(255,255,255,0.4)', color: 'white', fontWeight: 700, px: 4, py: 2, borderRadius: 2.5, fontSize: '1.05rem', '&:hover': { borderColor: 'white', background: 'rgba(255,255,255,0.1)' } }}>
+                Log in
               </Button>
             </Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center', mt: 5 }}>
               {t('landing.finalCta.perks', { returnObjects: true }).map((perk, i) => (
                 <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                  <CheckCircleOutline sx={{ color: '#10B981', fontSize: 15 }} />
-                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.82rem' }}>{perk}</Typography>
+                  <CheckCircleOutline sx={{ color: '#A7F3D0', fontSize: 15 }} />
+                  <Typography sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.82rem' }}>{perk}</Typography>
                 </Box>
               ))}
             </Box>
@@ -759,7 +763,7 @@ export default function Landing() {
       </Box>
 
       {/* ─── FOOTER ─── */}
-      <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: 6 }}>
+      <Box sx={{ background: '#111827', borderTop: '1px solid #1F2937', py: 6 }}>
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
@@ -778,25 +782,25 @@ export default function Landing() {
                   <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#ftjg2)"/>
                   <path d="M47 57 Q47 65 38 65" stroke="url(#ftjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
                 </svg>
-                <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.6)' }}>Julay.org</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.8)' }}>Julay.org</Typography>
               </Box>
-              <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
+              <Typography sx={{ color: '#6B7280', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5 }}>
               {[t('landing.footer.product', { returnObjects: true }), t('landing.footer.company', { returnObjects: true }), t('landing.footer.legal', { returnObjects: true })].map(col => (
                 <Box key={col.title}>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 2 }}>{col.title}</Typography>
+                  <Typography sx={{ color: '#9CA3AF', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 2 }}>{col.title}</Typography>
                   {col.links.map((l, li) => (
-                    <Typography key={li} sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', transition: 'color 0.15s', '&:hover': { color: 'rgba(255,255,255,0.7)' } }}>{l}</Typography>
+                    <Typography key={li} sx={{ color: '#6B7280', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', transition: 'color 0.15s', '&:hover': { color: '#D1D5DB' } }}>{l}</Typography>
                   ))}
                 </Box>
               ))}
             </Box>
           </Box>
-          <Divider sx={{ borderColor: 'rgba(255,255,255,0.06)', mb: 4 }} />
+          <Divider sx={{ borderColor: '#1F2937', mb: 4 }} />
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, justifyContent: 'space-between', alignItems: 'center', gap: 2 }}>
-            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>{t('landing.footer.copy')}</Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.82rem' }}>{t('landing.footer.built')}</Typography>
+            <Typography sx={{ color: '#4B5563', fontSize: '0.82rem' }}>{t('landing.footer.copy')}</Typography>
+            <Typography sx={{ color: '#4B5563', fontSize: '0.82rem' }}>{t('landing.footer.built')}</Typography>
           </Box>
         </Container>
       </Box>
