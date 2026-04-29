@@ -296,9 +296,9 @@ export default function Landing() {
   const PRICE_ROW     = t('landing.compare.startingPrice',{ returnObjects: true });
 
   const NAV_LINKS = [
-    { label: 'Product',   href: '#features'  },
-    { label: 'Solutions', href: '#solutions' },
-    { label: 'Resources', href: '#faq'       },
+    { label: 'Features',  href: '#features'  },
+    { label: 'Why Julay', href: '#solutions' },
+    { label: 'FAQ',       href: '#faq'       },
     { label: 'Pricing',   href: '#pricing'   },
   ];
 
