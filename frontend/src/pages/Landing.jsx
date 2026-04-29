@@ -296,10 +296,10 @@ export default function Landing() {
   const PRICE_ROW     = t('landing.compare.startingPrice',{ returnObjects: true });
 
   const NAV_LINKS = [
-    { label: 'Product',   href: '#features' },
-    { label: 'Solutions', href: '#features' },
-    { label: 'Resources', href: '#faq'      },
-    { label: 'Pricing',   href: '#pricing'  },
+    { label: 'Product',   href: '#features'  },
+    { label: 'Solutions', href: '#solutions' },
+    { label: 'Resources', href: '#faq'       },
+    { label: 'Pricing',   href: '#pricing'   },
   ];
 
   const COMPARE = COMPARE_MATRIX.map((row, i) => ({
@@ -478,7 +478,7 @@ export default function Landing() {
       </Box>
 
       {/* ─── PROBLEM ─── */}
-      <Box sx={{ background: '#FAFAFA', py: { xs: 8, md: 14 }, borderTop: '1px solid #F1F1F8' }}>
+      <Box id="solutions" sx={{ background: '#FAFAFA', py: { xs: 8, md: 14 }, borderTop: '1px solid #F1F1F8' }}>
         <Container maxWidth="md">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
