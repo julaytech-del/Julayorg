@@ -273,7 +273,7 @@ const TRUSTED_BY = [
 
 const FEATURES_STRIP = [
   { icon: '⊞', grad: 'linear-gradient(135deg,#6366F1,#8B5CF6)', title: 'All-in-One Workspace',  desc: 'Manage projects, tasks, clients, and documents in one place.' },
-  { icon: '$',  grad: 'linear-gradient(135deg,#10B981,#059669)', title: 'Built-in Finance',       desc: 'Track income, expenses, invoices, and cash flow effortlessly.' },
+  { icon: '✨', grad: 'linear-gradient(135deg,#10B981,#059669)', title: 'AI-Powered Studio',      desc: 'Generate project plans, assign tasks, and get smart suggestions instantly.' },
   { icon: '⚡', grad: 'linear-gradient(135deg,#F59E0B,#EF4444)', title: 'Smart Automation',       desc: 'Automate workflows and save time on repetitive tasks.' },
   { icon: '📊', grad: 'linear-gradient(135deg,#3B82F6,#2563EB)', title: 'Real-Time Insights',     desc: 'Get powerful reports to make smarter business decisions.' },
   { icon: '👥', grad: 'linear-gradient(135deg,#EC4899,#8B5CF6)', title: 'Scalable for Everyone',  desc: 'Perfect for startups, agencies, and growing enterprises.' },
