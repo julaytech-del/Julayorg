@@ -374,17 +374,6 @@ export default function Landing() {
             >
               {t('landing.hero.cta1')}
             </Button>
-            <Button
-              component="a"
-              href="/julay.apk"
-              download="julay.apk"
-              variant="outlined"
-              size="large"
-              startIcon={<span style={{fontSize:'1.1rem'}}>📱</span>}
-              sx={{ color: '#a5b4fc', borderColor: 'rgba(165,180,252,0.4)', borderRadius: 99, px: 3.5, py: 1.6, fontWeight: 600, fontSize: '0.95rem', '&:hover': { borderColor: '#6366f1', background: 'rgba(99,102,241,0.1)' }, transition: 'all 0.2s' }}
-            >
-              Android APK
-            </Button>
           </Box>
         </Container>
       </Box>
