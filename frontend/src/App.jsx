@@ -1,5 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
-import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, CircularProgress, LinearProgress } from '@mui/material';
 import { fetchCurrentUser } from './store/slices/authSlice.js';
@@ -79,6 +79,11 @@ function PublicRoute({ children }) {
   return children;
 }
 
+function ProjectRedirect() {
+  const { id } = useParams();
+  return <Navigate to={`/dashboard/projects/${id}`} replace />;
+}
+
 export default function App() {
   const dispatch = useDispatch();
   const { token, initialized } = useSelector(s => s.auth);
@@ -105,13 +110,14 @@ export default function App() {
         <Route path="/pricing" element={<Suspense fallback={<PageLoader />}><Pricing /></Suspense>} />
 
         {/* ── Short redirects ── */}
-        <Route path="/ai"        element={<Navigate to="/dashboard/ai"       replace />} />
-        <Route path="/projects"  element={<Navigate to="/dashboard/projects" replace />} />
-        <Route path="/team"      element={<Navigate to="/dashboard/team"     replace />} />
-        <Route path="/kanban"    element={<Navigate to="/dashboard/kanban"   replace />} />
-        <Route path="/calendar"  element={<Navigate to="/dashboard/calendar" replace />} />
-        <Route path="/reports"   element={<Navigate to="/dashboard/reports"  replace />} />
-        <Route path="/settings"  element={<Navigate to="/dashboard/settings" replace />} />
+        <Route path="/ai"             element={<Navigate to="/dashboard/ai"       replace />} />
+        <Route path="/projects"       element={<Navigate to="/dashboard/projects" replace />} />
+        <Route path="/projects/:id"   element={<ProjectRedirect />} />
+        <Route path="/team"           element={<Navigate to="/dashboard/team"     replace />} />
+        <Route path="/kanban"         element={<Navigate to="/dashboard/kanban"   replace />} />
+        <Route path="/calendar"       element={<Navigate to="/dashboard/calendar" replace />} />
+        <Route path="/reports"        element={<Navigate to="/dashboard/reports"  replace />} />
+        <Route path="/settings"       element={<Navigate to="/dashboard/settings" replace />} />
 
         {/* ── Public form renderer (no auth) ── */}
         <Route path="/forms/:token" element={<FormViewRenderer />} />
