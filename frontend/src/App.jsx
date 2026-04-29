@@ -1,6 +1,5 @@
 import React, { Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { Capacitor } from '@capacitor/core';
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, CircularProgress, LinearProgress } from '@mui/material';
 import { fetchCurrentUser } from './store/slices/authSlice.js';
@@ -96,11 +95,8 @@ export default function App() {
       <main id="main-content">
       <Routes>
         {/* ── Public ── */}
-        <Route path="/" element={
-          Capacitor.isNativePlatform()
-            ? <PublicRoute><MobileWelcome /></PublicRoute>
-            : <PublicRoute><Landing /></PublicRoute>
-        } />
+        <Route path="/" element={<PublicRoute><Landing /></PublicRoute>} />
+        <Route path="/mobile-welcome" element={<PublicRoute><MobileWelcome /></PublicRoute>} />
         <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
         <Route path="/register" element={<PublicRoute><Register /></PublicRoute>} />
 

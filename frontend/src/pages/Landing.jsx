@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
 import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow, Menu as MenuIcon } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Navigate } from 'react-router-dom';
+import { Capacitor } from '@capacitor/core';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx';
 import { trackEvent } from '../components/common/Analytics.jsx';
@@ -167,6 +168,7 @@ const STATS_NUMS = [
 ];
 
 export default function Landing() {
+  if (Capacitor.isNativePlatform()) return <Navigate to="/mobile-welcome" replace />;
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
