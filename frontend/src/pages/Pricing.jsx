@@ -59,7 +59,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/register',
     popular: false,
-    highlights: ['3 projects', '3 team members', '1 GB storage', 'Kanban & List views', 'No AI features'],
+    highlights: ['3 projects', '5 team members', '1 GB storage', 'Kanban & List views', 'Basic task management', 'No AI features'],
   },
   {
     id: 'starter',
@@ -73,7 +73,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/register?plan=starter',
     popular: false,
-    highlights: ['10 projects', '10 team members', '10 GB storage', '30 AI requests/month', 'Gantt / Timeline', 'Time tracking', 'Calendar & Workload views'],
+    highlights: ['15 projects', '15 team members', '10 GB storage', 'Gantt / Timeline', 'Time tracking', 'Calendar & Workload views', 'Sprint boards', '10 AI requests/month'],
   },
   {
     id: 'professional',
@@ -87,7 +87,7 @@ const PLANS = [
     ctaVariant: 'contained',
     ctaHref: '/register?plan=professional',
     popular: true,
-    highlights: ['Unlimited projects', '50 team members', '50 GB storage', 'AI project generation', 'Automations', 'Custom dashboards', 'Sprints & Workload view', 'Reports & exports'],
+    highlights: ['Unlimited projects', '50 team members', '50 GB storage', 'Full AI project generation', 'AI Standup & Performance analysis', 'Automations & Webhooks', 'Custom dashboards', 'Reports & exports'],
   },
   {
     id: 'business',
@@ -101,7 +101,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/contact',
     popular: false,
-    highlights: ['Unlimited everything', 'Unlimited users', '500 GB storage', 'API access & Webhooks', 'SSO / SAML', 'Dedicated support', 'Custom integrations', '99.9% SLA'],
+    highlights: ['Unlimited everything', 'Unlimited users', '500 GB storage', 'Unlimited AI requests', 'API access & Custom integrations', 'SSO / SAML', 'Dedicated account manager', '99.9% SLA guarantee'],
   },
 ];
 
