@@ -1,13 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Box, Typography, Button, Container, Chip, Avatar, ToggleButtonGroup, ToggleButton, Divider, IconButton, Drawer, List, ListItemButton, ListItemText } from '@mui/material';
-import { ArrowForward, AutoAwesome, CheckCircle, CheckCircleOutline, Close, PlayArrow, Menu as MenuIcon } from '@mui/icons-material';
+import {
+  Box, Typography, Button, Container, Chip, ToggleButtonGroup, ToggleButton,
+  Divider, IconButton, Drawer, List, ListItemButton, ListItemText,
+} from '@mui/material';
+import {
+  ArrowForward, CheckCircle, CheckCircleOutline, Close, PlayArrow,
+  Menu as MenuIcon, Search, Notifications,
+} from '@mui/icons-material';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { Capacitor } from '@capacitor/core';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx';
 import { trackEvent } from '../components/common/Analytics.jsx';
 
-/* ─── Gradient orb ─── */
+/* ─── Gradient orb (used in lower sections) ─── */
 const Orb = ({ sx }) => <Box sx={{ position: 'absolute', borderRadius: '50%', filter: 'blur(100px)', pointerEvents: 'none', ...sx }} />;
 
 /* ─── Animated counter ─── */
@@ -49,117 +55,206 @@ function FadeIn({ children, delay = 0 }) {
   );
 }
 
-/* ─── AI Demo animation ─── */
-function AIDemoCard() {
-  const { t } = useTranslation();
-  const [input, setInput] = useState('');
-  const [generated, setGenerated] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const tasks = t('landing.demo.tasks', { returnObjects: true });
+/* ─── Dashboard Mockup ─── */
+function DashboardMockup() {
+  const SIDEBAR = [
+    { icon: '⊞', label: 'Home', active: true },
+    { icon: '📁', label: 'Projects' },
+    { icon: '✓',  label: 'Tasks' },
+    { icon: '👥', label: 'CRM' },
+    { icon: '$',  label: 'Finance' },
+    { icon: '📄', label: 'Invoicing' },
+    { icon: '⏱', label: 'Time Tracking' },
+    { icon: '📊', label: 'Reports' },
+    { icon: '⚡', label: 'Automation' },
+  ];
 
-  const handleGenerate = () => {
-    if (!input.trim() || loading) return;
-    setLoading(true);
-    setGenerated(false);
-    // Simulate a brief loading then show mock tasks — no real API call
-    setTimeout(() => { setLoading(false); setGenerated(true); }, 1200);
-  };
+  const STATS = [
+    { label: 'Total Earnings',        value: '$128,900', change: '↑ 12.5% from last month', color: '#6366F1' },
+    { label: 'Outstanding Invoices',  value: '$32,540',  change: '↑ 8.2% from last month',  color: '#10B981' },
+    { label: 'Total Projects',        value: '24',       change: '↑ 14% from last month',    color: '#F59E0B' },
+    { label: 'Tasks Completed',       value: '76%',      change: '↑ 9% from last month',     color: '#EF4444' },
+  ];
 
-  const handleReset = () => { setGenerated(false); setInput(''); };
+  const PROJECTS = [
+    { name: 'Website Redesign',      pct: 85, deadline: 'May 24, 2024', budget: '$6,500 / $8,000',   dot: '#10B981' },
+    { name: 'Mobile App Development',pct: 60, deadline: 'Jun 15, 2024', budget: '$12,000 / $18,000', dot: '#F59E0B' },
+    { name: 'Marketing Campaign',    pct: 40, deadline: 'May 30, 2024', budget: '$3,200 / $5,000',   dot: '#EF4444' },
+    { name: 'E-commerce Platform',   pct: 75, deadline: 'Jun 10, 2024', budget: '$9,500 / $14,000',  dot: '#10B981' },
+  ];
+
+  const barColor = p => p >= 75 ? '#10B981' : p >= 50 ? '#6366F1' : '#EF4444';
 
   return (
-    <Box sx={{ background: '#0F172A', borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', overflow: 'hidden', width: '100%', maxWidth: 560, mx: 'auto', boxShadow: '0 40px 80px rgba(0,0,0,0.5)' }}>
-      {/* Window chrome */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, px: 2, py: 1.5, borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.03)' }}>
-        {['#EF4444','#F59E0B','#10B981'].map(c => <Box key={c} sx={{ width: 10, height: 10, borderRadius: '50%', backgroundColor: c }} />)}
-        <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.72rem', ml: 1 }}>julay.org · AI Studio</Typography>
+    <Box sx={{
+      background: 'white',
+      borderRadius: '20px',
+      border: '1px solid #E5E7EB',
+      boxShadow: '0 32px 80px rgba(0,0,0,0.14)',
+      overflow: 'hidden',
+      display: 'flex',
+      width: '100%',
+      height: { lg: 500, xl: 530 },
+      userSelect: 'none',
+      position: 'relative',
+    }}>
+
+      {/* ── Sidebar ── */}
+      <Box sx={{ width: 165, borderRight: '1px solid #F3F4F6', background: '#FAFAFA', flexShrink: 0, pt: 2.5, pb: 6, display: 'flex', flexDirection: 'column', position: 'relative' }}>
+        <Box sx={{ px: 2, mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ width: 26, height: 26, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Typography sx={{ color: 'white', fontWeight: 900, fontSize: '0.62rem' }}>J</Typography>
+          </Box>
+          <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#111827' }}>Julay</Typography>
+        </Box>
+        <Box sx={{ flex: 1 }}>
+          {SIDEBAR.map(item => (
+            <Box key={item.label} sx={{ px: 1.5, py: 0.7, mx: 1, mb: 0.2, borderRadius: 1.5, display: 'flex', alignItems: 'center', gap: 1, background: item.active ? '#EEF2FF' : 'transparent' }}>
+              <Typography sx={{ fontSize: '0.72rem', width: 14, textAlign: 'center', color: item.active ? '#4F46E5' : '#9CA3AF' }}>{item.icon}</Typography>
+              <Typography sx={{ fontSize: '0.73rem', color: item.active ? '#4F46E5' : '#6B7280', fontWeight: item.active ? 600 : 400, whiteSpace: 'nowrap' }}>{item.label}</Typography>
+            </Box>
+          ))}
+        </Box>
+        <Box sx={{ position: 'absolute', bottom: 12, left: 0, width: '100%', px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ width: 26, height: 26, borderRadius: '50%', background: 'linear-gradient(135deg,#F59E0B,#EF4444)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Typography sx={{ color: 'white', fontSize: '0.55rem', fontWeight: 700 }}>OR</Typography>
+          </Box>
+          <Box sx={{ overflow: 'hidden' }}>
+            <Typography sx={{ fontSize: '0.68rem', fontWeight: 600, color: '#111827', lineHeight: 1.2 }} noWrap>Olivia Rhye</Typography>
+            <Typography sx={{ fontSize: '0.6rem', color: '#9CA3AF' }}>Admin</Typography>
+          </Box>
+        </Box>
       </Box>
-      <Box sx={{ p: 3 }}>
-        {/* Input */}
-        <Box sx={{ mb: 2.5 }}>
-          <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.7rem', mb: 1, textTransform: 'uppercase', letterSpacing: '0.08em' }}>{t('landing.demo.label')}</Typography>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: `1.5px solid ${input.trim() ? 'rgba(99,102,241,0.6)' : 'rgba(255,255,255,0.1)'}`, background: 'rgba(99,102,241,0.04)', transition: 'border-color 0.2s' }}>
-            <Box
-              component="input"
-              value={input}
-              onChange={e => { setInput(e.target.value); setGenerated(false); }}
-              onKeyDown={e => e.key === 'Enter' && handleGenerate()}
-              placeholder={t('landing.demo.prompt')}
-              sx={{ flex: 1, background: 'none', border: 'none', outline: 'none', color: '#E2E8F0', fontSize: '0.88rem', fontFamily: 'inherit', '&::placeholder': { color: 'rgba(255,255,255,0.25)' } }}
-            />
-            <Box
-              onClick={generated ? handleReset : handleGenerate}
-              sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1.5, py: 0.6, borderRadius: 1.5, background: input.trim() ? 'linear-gradient(135deg,#6366F1,#8B5CF6)' : 'rgba(255,255,255,0.06)', cursor: input.trim() ? 'pointer' : 'default', transition: 'all 0.2s', flexShrink: 0, '&:hover': input.trim() ? { opacity: 0.85 } : {} }}
-            >
-              <AutoAwesome sx={{ fontSize: 13, color: input.trim() ? 'white' : 'rgba(255,255,255,0.3)', animation: loading ? 'spin 1s linear infinite' : 'none', '@keyframes spin': { from: { transform: 'rotate(0deg)' }, to: { transform: 'rotate(360deg)' } } }} />
-              <Typography sx={{ color: input.trim() ? 'white' : 'rgba(255,255,255,0.3)', fontSize: '0.75rem', fontWeight: 700 }}>
-                {generated ? '↺' : t('landing.demo.generate')}
-              </Typography>
+
+      {/* ── Main ── */}
+      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', overflow: 'hidden', minWidth: 0 }}>
+        {/* Top bar */}
+        <Box sx={{ px: 2.5, py: 1.5, borderBottom: '1px solid #F3F4F6', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
+          <Box>
+            <Typography sx={{ fontWeight: 700, fontSize: '0.92rem', color: '#111827' }}>Good morning, Olivia 👋</Typography>
+            <Typography sx={{ fontSize: '0.65rem', color: '#9CA3AF', mt: 0.15 }}>Here's what's happening with your projects today.</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexShrink: 0 }}>
+            <Search sx={{ fontSize: 15, color: '#9CA3AF' }} />
+            <Notifications sx={{ fontSize: 15, color: '#9CA3AF' }} />
+            <Box sx={{ px: 1.25, py: 0.45, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>
+              <Typography sx={{ color: 'white', fontSize: '0.65rem', fontWeight: 700, whiteSpace: 'nowrap' }}>+ Add New</Typography>
             </Box>
           </Box>
         </Box>
 
-        {/* Loading shimmer */}
-        {loading && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {[1,2,3].map(i => <Box key={i} sx={{ height: 42, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', animation: 'shimmer 1s infinite', '@keyframes shimmer': { '0%,100%': { opacity: 0.3 }, '50%': { opacity: 0.7 } } }} />)}
+        {/* Content */}
+        <Box sx={{ flex: 1, p: 2, display: 'flex', flexDirection: 'column', gap: 1.5, overflow: 'hidden' }}>
+          {/* Stat cards */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: 1.5, flexShrink: 0 }}>
+            {STATS.map(s => (
+              <Box key={s.label} sx={{ p: 1.5, borderRadius: 1.5, border: '1px solid #F3F4F6' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.75 }}>
+                  <Typography sx={{ fontSize: '0.58rem', color: '#9CA3AF', fontWeight: 500, lineHeight: 1.3, pr: 0.5 }}>{s.label}</Typography>
+                  <Box sx={{ width: 20, height: 20, borderRadius: 1, background: `${s.color}20`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                    <Box sx={{ width: 7, height: 7, borderRadius: '50%', background: s.color }} />
+                  </Box>
+                </Box>
+                <Typography sx={{ fontSize: '1rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em', lineHeight: 1 }}>{s.value}</Typography>
+                <Typography sx={{ fontSize: '0.56rem', color: '#10B981', mt: 0.3, fontWeight: 600 }}>{s.change}</Typography>
+              </Box>
+            ))}
           </Box>
-        )}
 
-        {/* Generated tasks */}
-        {generated && !loading && (
-          <Box>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981' }} />
-              <Typography sx={{ color: '#10B981', fontSize: '0.75rem', fontWeight: 600 }}>{t('landing.demo.generated')}</Typography>
-            </Box>
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-              {tasks.map((task, i) => (
-                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 1.5, background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.06)', animation: `slideIn 0.3s ease ${i * 80}ms both`, '@keyframes slideIn': { from: { opacity: 0, transform: 'translateY(6px)' }, to: { opacity: 1, transform: 'translateY(0)' } } }}>
-                  <Box sx={{ width: 8, height: 8, borderRadius: '50%', flexShrink: 0, background: task.status === 'done' ? '#10B981' : task.status === 'in_progress' ? '#6366F1' : '#475569' }} />
-                  <Typography sx={{ color: '#E2E8F0', fontSize: '0.8rem', flex: 1 }} noWrap>{task.title}</Typography>
-                  <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>{task.assignee[0]}</Avatar>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.7rem', flexShrink: 0 }}>{task.hours}h</Typography>
+          {/* Project table + Cash flow */}
+          <Box sx={{ display: 'grid', gridTemplateColumns: '1.65fr 1fr', gap: 1.5, flex: 1, minHeight: 0 }}>
+            {/* Project Overview */}
+            <Box sx={{ p: 1.5, borderRadius: 1.5, border: '1px solid #F3F4F6', overflow: 'hidden' }}>
+              <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827', mb: 1 }}>Project Overview</Typography>
+              <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1.1fr 0.75fr 1fr 1.2fr', mb: 0.5 }}>
+                {['Project', 'Progress', 'Team', 'Deadline', 'Budget'].map(h => (
+                  <Typography key={h} sx={{ fontSize: '0.56rem', color: '#9CA3AF', fontWeight: 500 }}>{h}</Typography>
+                ))}
+              </Box>
+              {PROJECTS.map(p => (
+                <Box key={p.name} sx={{ display: 'grid', gridTemplateColumns: '2fr 1.1fr 0.75fr 1fr 1.2fr', alignItems: 'center', py: 0.7, borderTop: '1px solid #F9FAFB' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, pr: 0.5 }}>
+                    <Box sx={{ width: 13, height: 13, borderRadius: 0.5, background: `${p.dot}20`, border: `1px solid ${p.dot}`, flexShrink: 0 }} />
+                    <Typography sx={{ fontSize: '0.62rem', color: '#374151', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</Typography>
+                  </Box>
+                  <Box sx={{ pr: 1 }}>
+                    <Box sx={{ height: 3.5, borderRadius: 2, background: '#F3F4F6', overflow: 'hidden', mb: 0.3 }}>
+                      <Box sx={{ height: '100%', width: `${p.pct}%`, background: barColor(p.pct), borderRadius: 2 }} />
+                    </Box>
+                    <Typography sx={{ fontSize: '0.52rem', color: '#9CA3AF' }}>{p.pct}%</Typography>
+                  </Box>
+                  <Box sx={{ display: 'flex' }}>
+                    {['#6366F1','#F59E0B','#10B981'].map((c, i) => (
+                      <Box key={i} sx={{ width: 13, height: 13, borderRadius: '50%', background: c, border: '1.5px solid white', ml: i > 0 ? '-5px' : 0 }} />
+                    ))}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.56rem', color: '#6B7280' }}>{p.deadline}</Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    <Typography sx={{ fontSize: '0.56rem', color: '#6B7280' }}>{p.budget}</Typography>
+                    <Box sx={{ width: 5, height: 5, borderRadius: '50%', background: p.dot, flexShrink: 0 }} />
+                  </Box>
                 </Box>
               ))}
             </Box>
-          </Box>
-        )}
 
-        {/* Empty state */}
-        {!generated && !loading && (
-          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
-            {[1,2,3].map(i => <Box key={i} sx={{ height: 42, borderRadius: 1.5, background: 'rgba(255,255,255,0.03)', border: '1px dashed rgba(255,255,255,0.06)' }} />)}
+            {/* Cash Flow */}
+            <Box sx={{ p: 1.5, borderRadius: 1.5, border: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column' }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
+                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>Cash Flow</Typography>
+                <Typography sx={{ fontSize: '0.58rem', color: '#9CA3AF' }}>This Month ▾</Typography>
+              </Box>
+              <Typography sx={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em' }}>$24,350</Typography>
+              <Typography sx={{ fontSize: '0.58rem', color: '#10B981', fontWeight: 600, mb: 1 }}>↑ 15.3%</Typography>
+              <Box sx={{ flex: 1, minHeight: 0 }}>
+                <svg width="100%" height="100%" viewBox="0 0 180 80" preserveAspectRatio="none">
+                  <defs>
+                    <linearGradient id="cashGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#6366F1" stopOpacity="0.3" />
+                      <stop offset="100%" stopColor="#6366F1" stopOpacity="0" />
+                    </linearGradient>
+                  </defs>
+                  <path d="M0,72 C15,70 25,65 45,58 C65,50 80,44 105,32 C125,22 150,14 180,6"
+                    stroke="#6366F1" strokeWidth="2.5" fill="none" strokeLinecap="round" />
+                  <path d="M0,72 C15,70 25,65 45,58 C65,50 80,44 105,32 C125,22 150,14 180,6 L180,80 L0,80Z"
+                    fill="url(#cashGrad)" />
+                  {/* Y axis labels */}
+                  {['30k','20k','10k','0'].map((l, i) => (
+                    <text key={l} x="0" y={12 + i * 20} fill="#9CA3AF" fontSize="6" fontFamily="Inter, sans-serif">{l}</text>
+                  ))}
+                </svg>
+              </Box>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.5 }}>
+                {['May 1', 'May 15', 'May 31'].map(d => (
+                  <Typography key={d} sx={{ fontSize: '0.52rem', color: '#9CA3AF' }}>{d}</Typography>
+                ))}
+              </Box>
+            </Box>
           </Box>
-        )}
+        </Box>
       </Box>
     </Box>
   );
 }
 
-/* ─── Static comparison matrix (values only, names come from translations) ─── */
+/* ─── static data ─── */
 const COMPARE_MATRIX = [
-  { julay: true,     monday: false, asana: false, notion: false },
-  { julay: true,     monday: false, asana: false, notion: false },
-  { julay: true,     monday: false, asana: false, notion: false },
-  { julay: true,     monday: false, asana: false, notion: false },
-  { julay: true,     monday: false, asana: false, notion: false },
-  { julay: true,     monday: true,  asana: false, notion: false },
-  { julay: true,     monday: true,  asana: true,  notion: false },
-  { julay: true,     monday: true,  asana: true,  notion: false },
-  { julay: true,     monday: true,  asana: true,  notion: false },
-  { julay: true,     monday: true,  asana: false, notion: false },
-  { julay: true,     monday: true,  asana: true,  notion: false },
-  { julay: true,     monday: true,  asana: true,  notion: false },
-  { julay: true,     monday: true,  asana: false, notion: false },
-  { julay: true,     monday: true,  asana: false, notion: false },
-  { julay: 'price',  monday: 'price', asana: 'price', notion: 'price' },
-  { julay: true,     monday: false, asana: false, notion: false },
+  { julay: true,    monday: false, asana: false, notion: false },
+  { julay: true,    monday: false, asana: false, notion: false },
+  { julay: true,    monday: false, asana: false, notion: false },
+  { julay: true,    monday: false, asana: false, notion: false },
+  { julay: true,    monday: false, asana: false, notion: false },
+  { julay: true,    monday: true,  asana: false, notion: false },
+  { julay: true,    monday: true,  asana: true,  notion: false },
+  { julay: true,    monday: true,  asana: true,  notion: false },
+  { julay: true,    monday: true,  asana: true,  notion: false },
+  { julay: true,    monday: true,  asana: false, notion: false },
+  { julay: true,    monday: true,  asana: true,  notion: false },
+  { julay: true,    monday: true,  asana: true,  notion: false },
+  { julay: true,    monday: true,  asana: false, notion: false },
+  { julay: true,    monday: true,  asana: false, notion: false },
+  { julay: 'price', monday: 'price', asana: 'price', notion: 'price' },
+  { julay: true,    monday: false, asana: false, notion: false },
 ];
-
-const LOGOS = ['NovaTech', 'Tamatem', 'BuildStack', 'Fintech.io', 'ZeroGravity', 'Shift Media', 'Launchpad', 'CoreSystems'];
-const TOOLS = ['Notion', 'ClickUp', 'Trello'];
-
 const STATS_NUMS = [
   { num: 12, suffix: '' },
   { num: 20, suffix: '+' },
@@ -167,247 +262,238 @@ const STATS_NUMS = [
   { num: 60, suffix: 's' },
 ];
 
+const TRUSTED_BY = [
+  { name: 'Airbnb',     style: { fontFamily: 'Georgia, serif', letterSpacing: '-0.03em' } },
+  { name: 'HubSpot',    style: { fontWeight: 800, fontStyle: 'italic' } },
+  { name: 'Zoom',       style: { fontWeight: 700 } },
+  { name: 'Coca‑Cola',  style: { fontFamily: 'Georgia, serif', fontStyle: 'italic', fontWeight: 700 } },
+  { name: 'Shopify',    style: { fontWeight: 700 } },
+];
+
+const FEATURES_STRIP = [
+  { icon: '⊞', grad: 'linear-gradient(135deg,#6366F1,#8B5CF6)', title: 'All-in-One Workspace',  desc: 'Manage projects, tasks, clients, and documents in one place.' },
+  { icon: '$',  grad: 'linear-gradient(135deg,#10B981,#059669)', title: 'Built-in Finance',       desc: 'Track income, expenses, invoices, and cash flow effortlessly.' },
+  { icon: '⚡', grad: 'linear-gradient(135deg,#F59E0B,#EF4444)', title: 'Smart Automation',       desc: 'Automate workflows and save time on repetitive tasks.' },
+  { icon: '📊', grad: 'linear-gradient(135deg,#3B82F6,#2563EB)', title: 'Real-Time Insights',     desc: 'Get powerful reports to make smarter business decisions.' },
+  { icon: '👥', grad: 'linear-gradient(135deg,#EC4899,#8B5CF6)', title: 'Scalable for Everyone',  desc: 'Perfect for startups, agencies, and growing enterprises.' },
+];
+
+/* ═══════════════════════════════════════════════════════════ */
 export default function Landing() {
   if (Capacitor.isNativePlatform()) return <Navigate to="/mobile-welcome" replace />;
+
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const [billing, setBilling] = useState('monthly');
-  const [openFaq, setOpenFaq] = useState(null);
+  const [openFaq, setOpenFaq]  = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const demoRef = useRef(null);
 
-  const FEATURES = t('landing.features.items', { returnObjects: true });
-  const PLANS = t('landing.pricing.plans', { returnObjects: true });
-  const FAQS = t('landing.faq.items', { returnObjects: true }).filter(f => !/(Notion|ClickUp)/i.test(f.q));
-  const BADGES = t('landing.badges', { returnObjects: true });
-  const STATS = t('landing.stats', { returnObjects: true });
-  const PAINS = t('landing.problem.pains', { returnObjects: true });
+  const FEATURES   = t('landing.features.items',   { returnObjects: true });
+  const PLANS      = t('landing.pricing.plans',     { returnObjects: true });
+  const FAQS       = t('landing.faq.items',         { returnObjects: true }).filter(f => !/(Notion|ClickUp)/i.test(f.q));
+  const BADGES     = t('landing.badges',            { returnObjects: true });
+  const STATS      = t('landing.stats',             { returnObjects: true });
+  const PAINS      = t('landing.problem.pains',     { returnObjects: true });
   const FEATURE_NAMES = t('landing.compare.featureNames', { returnObjects: true });
-  const PRICE_ROW = t('landing.compare.startingPrice', { returnObjects: true });
+  const PRICE_ROW     = t('landing.compare.startingPrice',{ returnObjects: true });
+
   const NAV_LINKS = [
-    { key: 'features', label: t('landing.nav.features') },
-    { key: 'pricing', label: t('landing.nav.pricing') },
-    { key: 'faq', label: t('landing.nav.faq') },
+    { label: 'Product',   href: '#features' },
+    { label: 'Solutions', href: '#features' },
+    { label: 'Resources', href: '#faq'      },
+    { label: 'Pricing',   href: '#pricing'  },
   ];
 
   const COMPARE = COMPARE_MATRIX.map((row, i) => ({
     feature: FEATURE_NAMES[i] || '',
-    julay: row.julay === 'price' ? PRICE_ROW.julay : row.julay,
-    monday: row.monday === 'price' ? PRICE_ROW.monday : row.monday,
-    asana: row.asana === 'price' ? PRICE_ROW.asana : row.asana,
-    notion: row.notion === 'price' ? PRICE_ROW.notion : row.notion,
+    julay:   row.julay   === 'price' ? PRICE_ROW.julay   : row.julay,
+    monday:  row.monday  === 'price' ? PRICE_ROW.monday  : row.monday,
+    asana:   row.asana   === 'price' ? PRICE_ROW.asana   : row.asana,
+    notion:  row.notion  === 'price' ? PRICE_ROW.notion  : row.notion,
   }));
 
-  const scrollToDemo = () => {
-    demoRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  };
-
   return (
-    <Box sx={{ fontFamily: '"Inter", sans-serif', overflowX: 'hidden' }} dir={isRTL ? 'rtl' : 'ltr'}>
+    <Box sx={{ fontFamily: '"Inter", sans-serif', overflowX: 'hidden', background: 'white' }} dir={isRTL ? 'rtl' : 'ltr'}>
 
       {/* ─── MOBILE DRAWER ─── */}
       <Drawer anchor={isRTL ? 'left' : 'right'} open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)}
-        PaperProps={{ sx: { width: 260, background: '#09090B', borderLeft: '1px solid rgba(255,255,255,0.08)' } }}>
+        PaperProps={{ sx: { width: 260, background: 'white', borderLeft: '1px solid #E2E8F0' } }}>
         <Box sx={{ p: 2, display: 'flex', justifyContent: 'flex-end' }}>
-          <IconButton onClick={() => setMobileMenuOpen(false)} sx={{ color: 'rgba(255,255,255,0.6)' }}>
-            <Close />
-          </IconButton>
+          <IconButton onClick={() => setMobileMenuOpen(false)}><Close /></IconButton>
         </Box>
         <List>
           {NAV_LINKS.map(l => (
-            <ListItemButton key={l.key} component="a" href={`#${l.key}`} onClick={() => setMobileMenuOpen(false)}
-              sx={{ px: 3, py: 1.5, '&:hover': { background: 'rgba(255,255,255,0.06)' } }}>
-              <ListItemText primary={l.label} primaryTypographyProps={{ sx: { color: 'rgba(255,255,255,0.75)', fontWeight: 600, fontSize: '1rem' } }} />
+            <ListItemButton key={l.label} component="a" href={l.href} onClick={() => setMobileMenuOpen(false)} sx={{ px: 3, py: 1.5 }}>
+              <ListItemText primary={l.label} primaryTypographyProps={{ sx: { color: '#374151', fontWeight: 600 } }} />
             </ListItemButton>
           ))}
         </List>
         <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 1.5, mt: 2 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-            <LanguageSwitcher dark />
-          </Box>
+          <Box sx={{ display: 'flex', justifyContent: 'center' }}><LanguageSwitcher /></Box>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/login'); }} variant="outlined"
-            sx={{ borderColor: 'rgba(255,255,255,0.2)', color: 'rgba(255,255,255,0.8)', fontWeight: 600, py: 1.25, borderRadius: 2 }}>
-            {t('landing.nav.login')}
+            sx={{ fontWeight: 600, py: 1.25, borderRadius: 2, borderColor: '#D1D5DB', color: '#374151' }}>
+            Log in
           </Button>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/register'); }} variant="contained"
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, py: 1.25, borderRadius: 2 }}>
-            {t('landing.nav.start')}
+            Start Free Trial
           </Button>
         </Box>
       </Drawer>
 
       {/* ─── NAV ─── */}
-      <Box component="nav" aria-label="Main navigation" sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.06)', background: 'rgba(9,9,11,0.85)' }}>
-        <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.75, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+      <Box component="nav" sx={{
+        position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100,
+        background: 'white',
+        borderBottom: '1px solid #F1F5F9',
+        boxShadow: '0 1px 4px rgba(0,0,0,0.05)',
+      }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
-          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', gap: 1.75, textDecoration: 'none', flexShrink: 0 }}>
-            <svg width="36" height="42" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', gap: 1.25, textDecoration: 'none', flexShrink: 0 }}>
+            <svg width="30" height="35" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
               <defs>
-                <linearGradient id="navjg" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
+                <linearGradient id="navjg2" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
                   <stop stopColor="#8B5CF6"/>
                   <stop offset="0.55" stopColor="#6366F1"/>
                   <stop offset="1" stopColor="#38BDF8"/>
                 </linearGradient>
               </defs>
-              <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#navjg)"/>
-              <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#navjg)"/>
-              <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-              <circle cx="7" cy="59" r="3.5" fill="url(#navjg)"/>
-              <circle cx="47" cy="21" r="5" fill="url(#navjg)"/>
-              <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#navjg)"/>
-              <path d="M47 57 Q47 65 38 65" stroke="url(#navjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+              <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#navjg2)"/>
+              <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#navjg2)"/>
+              <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#navjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+              <circle cx="7" cy="59" r="3.5" fill="url(#navjg2)"/>
+              <circle cx="47" cy="21" r="5" fill="url(#navjg2)"/>
+              <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#navjg2)"/>
+              <path d="M47 57 Q47 65 38 65" stroke="url(#navjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
             </svg>
+            <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: '#111827', letterSpacing: '-0.02em' }}>Julay.org</Typography>
           </Box>
 
           {/* Desktop nav links */}
-          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3 }}>
+          <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 3.5 }}>
             {NAV_LINKS.map(l => (
-              <Typography key={l.key} component="a" href={`#${l.key}`} sx={{ color: 'rgba(255,255,255,0.6)', fontSize: '0.88rem', textDecoration: 'none', cursor: 'pointer', transition: 'color 0.15s', '&:hover': { color: 'white' } }}>{l.label}</Typography>
+              <Typography key={l.label} component="a" href={l.href}
+                sx={{ color: '#374151', fontSize: '0.875rem', fontWeight: 500, textDecoration: 'none', cursor: 'pointer', transition: 'color 0.15s', '&:hover': { color: '#111827' } }}>
+                {l.label}
+              </Typography>
             ))}
           </Box>
 
-          {/* Desktop buttons */}
+          {/* Desktop actions */}
           <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 1.5, alignItems: 'center' }}>
-            <LanguageSwitcher dark />
-            <Button onClick={() => navigate('/login')} variant="text" sx={{ color: 'rgba(255,255,255,0.7)', fontSize: '0.88rem', '&:hover': { color: 'white', background: 'rgba(255,255,255,0.06)' } }}>{t('landing.nav.login')}</Button>
-            <Button onClick={() => navigate('/register')} variant="contained" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 2.5, py: 0.9, borderRadius: 2, fontSize: '0.88rem', boxShadow: '0 0 20px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9, boxShadow: '0 0 30px rgba(99,102,241,0.5)' } }}>
-              {t('landing.nav.start')}
+            <LanguageSwitcher />
+            <Button onClick={() => navigate('/login')} variant="text"
+              sx={{ color: '#374151', fontSize: '0.875rem', fontWeight: 600, '&:hover': { background: '#F8FAFC' } }}>
+              Log in
+            </Button>
+            <Button onClick={() => { trackEvent('cta_clicked', { location: 'nav' }); navigate('/register'); }} variant="contained"
+              sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 2.5, py: 1, borderRadius: 2, fontSize: '0.875rem', boxShadow: '0 2px 10px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } }}>
+              Start Free Trial
             </Button>
           </Box>
 
           {/* Mobile hamburger */}
-          <IconButton onClick={() => setMobileMenuOpen(true)} sx={{ display: { xs: 'flex', md: 'none' }, color: 'rgba(255,255,255,0.7)' }}>
+          <IconButton onClick={() => setMobileMenuOpen(true)} sx={{ display: { xs: 'flex', md: 'none' }, color: '#374151' }}>
             <MenuIcon />
           </IconButton>
         </Box>
       </Box>
 
-{/* ─── HERO v1 (hidden) ─── */}
-      {false && <Box sx={{ position: 'relative', background: '#09090B', minHeight: '100vh', display: 'flex', alignItems: 'center', overflow: 'hidden', pt: 10 }}>
-        <Orb sx={{ width: 600, height: 600, background: 'rgba(99,102,241,0.15)', top: -200, left: -200 }} />
-        <Orb sx={{ width: 500, height: 500, background: 'rgba(139,92,246,0.12)', top: 100, right: -150 }} />
-        <Orb sx={{ width: 300, height: 300, background: 'rgba(6,182,212,0.08)', bottom: 50, left: '40%' }} />
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1, py: { xs: 8, md: 12 } }}>
-          <Box sx={{ textAlign: 'center', maxWidth: 800, mx: 'auto', mb: 8 }}>
-            <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, border: '1px solid rgba(99,102,241,0.4)', background: 'rgba(99,102,241,0.1)', mb: 4 }}>
-              <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#10B981', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1, transform: 'scale(1)' }, '50%': { opacity: 0.5, transform: 'scale(0.8)' } } }} />
-              <Typography sx={{ color: '#A5B4FC', fontSize: '0.8rem', fontWeight: 600 }}>{t('landing.hero.badge')}</Typography>
-            </Box>
-            <Typography variant="h1" sx={{ color: 'white', fontSize: { xs: '2.8rem', md: '4.5rem', lg: '5.2rem' }, fontWeight: 800, lineHeight: 1.05, letterSpacing: '-0.04em', mb: 3 }}>
-              {t('landing.hero.h1a')}{' '}
-              <Box component="span" sx={{ background: 'linear-gradient(135deg, #818CF8, #C084FC, #38BDF8)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                {t('landing.hero.h1b')}
-              </Box>
-            </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: { xs: '1.05rem', md: '1.25rem' }, lineHeight: 1.65, mb: 5, maxWidth: 600, mx: 'auto' }}>{t('landing.hero.sub')}</Typography>
-            <Box sx={{ display: 'flex', justifyContent: 'center', mb: 3 }}>
-              <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 32px rgba(99,102,241,0.5)' }, transition: 'all 0.2s' }}>{t('landing.hero.cta1')}</Button>
-            </Box>
-          </Box>
-        </Container>
-      </Box>}
-
-      {/* ─── HERO v2 (Circuit Board photo) ─── */}
+      {/* ─── HERO ─── */}
       <Box sx={{
-        position: 'relative',
-        background: '#0C0E1A',
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'flex-end',
+        background: 'linear-gradient(155deg, #FAFAFF 0%, #EEE9FF 50%, #F0F4FF 100%)',
+        pt: { xs: 11, md: 14 },
+        pb: { xs: 5, md: 0 },
         overflow: 'hidden',
+        minHeight: { lg: '88vh' },
+        display: 'flex',
+        alignItems: 'center',
       }}>
-        {/* Clean JULAY circuit board — no fake elements */}
-        <Box sx={{
-          position: 'absolute', inset: 0,
-          backgroundImage: "url('/hero-bg.jpg')",
-          backgroundSize: 'cover',
-          backgroundPosition: 'center center',
-          backgroundRepeat: 'no-repeat',
-        }} />
+        <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, width: '100%' }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1.25fr' }, gap: { xs: 6, lg: 6 }, alignItems: 'center' }}>
 
-        {/* Top fade: blends image edge with navbar */}
-        <Box sx={{ position: 'absolute', top: 0, left: 0, right: 0, height: 80, background: 'linear-gradient(to bottom, rgba(8,8,14,0.6) 0%, transparent 100%)', pointerEvents: 'none' }} />
+            {/* Left copy */}
+            <Box sx={{ pb: { lg: 6 } }}>
+              {/* Headline */}
+              <Typography sx={{
+                fontSize: { xs: '2.8rem', sm: '3.4rem', md: '4rem', lg: '4.2rem' },
+                fontWeight: 800,
+                letterSpacing: '-0.04em',
+                color: '#0A0A14',
+                lineHeight: 1.08,
+                mb: 0.25,
+              }}>
+                More than a<br />work platform.
+              </Typography>
+              <Typography sx={{
+                fontSize: { xs: '2.8rem', sm: '3.4rem', md: '4rem', lg: '4.2rem' },
+                fontWeight: 800,
+                letterSpacing: '-0.04em',
+                lineHeight: 1.08,
+                mb: 3,
+                background: 'linear-gradient(130deg,#6366F1 20%,#7C3AED 80%)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}>
+                It's your growth<br />engine.
+              </Typography>
 
-        {/* Bottom fade: transitions to solid for text readability */}
-        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, transparent 48%, rgba(8,8,14,0.6) 60%, rgba(8,8,14,1) 72%)', pointerEvents: 'none' }} />
+              {/* Subtitle */}
+              <Typography sx={{ color: '#6B7280', fontSize: { xs: '1rem', md: '1.05rem' }, lineHeight: 1.75, mb: 4, maxWidth: 440 }}>
+                Julay.org combines powerful project management with built-in financial tools to help your team work smarter and your business grow faster.
+              </Typography>
 
-        {/* Text content — anchored to bottom half */}
-        <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1, textAlign: 'center', pb: { xs: 8, md: 10 }, pt: 0 }}>
-          {/* Tagline */}
-          <Typography sx={{
-            color: 'white',
-            fontWeight: 800,
-            fontSize: { xs: '1.6rem', sm: '2rem', md: '2.6rem' },
-            lineHeight: 1.15,
-            letterSpacing: '-0.025em',
-            mb: 2,
-            textShadow: '0 2px 24px rgba(0,0,0,0.9)',
-          }}>
-            {t('landing.hero.h1a')}{' '}
-            <Box component="span" sx={{ background: 'linear-gradient(90deg, #818CF8 0%, #C084FC 60%, #38BDF8 100%)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-              {t('landing.hero.h1b')}
+              {/* CTAs */}
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 5 }}>
+                <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large"
+                  sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', boxShadow: '0 4px 20px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-1px)' }, transition: 'all 0.2s' }}>
+                  Start Free Trial
+                </Button>
+                <Button onClick={() => navigate('/register')} variant="outlined" size="large"
+                  endIcon={<PlayArrow sx={{ fontSize: 15 }} />}
+                  sx={{ borderColor: '#D1D5DB', color: '#374151', fontWeight: 600, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', background: 'white', '&:hover': { background: '#F9FAFB', borderColor: '#9CA3AF' } }}>
+                  Book a Demo
+                </Button>
+              </Box>
+
+              {/* Trusted by */}
+              <Box>
+                <Typography sx={{ color: '#9CA3AF', fontSize: '0.82rem', fontWeight: 500, mb: 1.5 }}>Trusted by teams at</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2.5, sm: 3.5 }, flexWrap: 'wrap' }}>
+                  {TRUSTED_BY.map(co => (
+                    <Typography key={co.name} sx={{ color: '#9CA3AF', fontSize: '1.05rem', fontWeight: 600, ...co.style }}>{co.name}</Typography>
+                  ))}
+                </Box>
+              </Box>
             </Box>
-          </Typography>
 
-          {/* Subtitle */}
-          <Typography sx={{
-            color: 'rgba(255,255,255,0.62)',
-            fontSize: { xs: '0.95rem', md: '1.05rem' },
-            lineHeight: 1.7,
-            mb: 4.5,
-            maxWidth: 500,
-            mx: 'auto',
-            textShadow: '0 1px 12px rgba(0,0,0,0.8)',
-          }}>
-            {t('landing.hero.sub')}
-          </Typography>
-
-          {/* CTA */}
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2, justifyContent: 'center', alignItems: 'center' }}>
-            <Button
-              onClick={() => { trackEvent('cta_clicked', { location: 'hero_v2' }); navigate('/register'); }}
-              variant="contained"
-              size="large"
-              sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5.5, py: 1.6, borderRadius: 99, fontSize: '1.05rem', boxShadow: '0 4px 28px rgba(99,102,241,0.65)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 8px 36px rgba(99,102,241,0.75)' }, transition: 'all 0.2s' }}
-            >
-              {t('landing.hero.cta1')}
-            </Button>
+            {/* Right — dashboard */}
+            <Box sx={{ display: { xs: 'none', lg: 'block' }, pt: 2, pb: 4 }}>
+              <DashboardMockup />
+            </Box>
           </Box>
-        </Container>
+        </Box>
       </Box>
 
-      {/* ─── FEATURE BADGES ─── */}
-      <Box sx={{ background: '#09090B', borderTop: '1px solid rgba(255,255,255,0.06)', py: 4 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: { xs: 2, md: 5 } }}>
-            {BADGES.map((badge, i) => (
-              <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                <CheckCircleOutline sx={{ color: '#6366F1', fontSize: 14 }} />
-                <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.83rem', fontWeight: 500 }}>{badge}</Typography>
+      {/* ─── FEATURES STRIP ─── */}
+      <Box sx={{ background: '#F5F3FF', py: { xs: 5, md: 5.5 } }}>
+        <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 } }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(5,1fr)' }, gap: { xs: 3, md: 4 } }}>
+            {FEATURES_STRIP.map((f, i) => (
+              <Box key={i} sx={{ display: 'flex', gap: 1.75, alignItems: 'flex-start' }}>
+                <Box sx={{ width: 42, height: 42, borderRadius: 2.5, background: f.grad, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, fontSize: '1.2rem' }}>
+                  {f.icon}
+                </Box>
+                <Box>
+                  <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#111827', mb: 0.4, lineHeight: 1.3 }}>{f.title}</Typography>
+                  <Typography sx={{ fontSize: '0.78rem', color: '#6B7280', lineHeight: 1.55 }}>{f.desc}</Typography>
+                </Box>
               </Box>
             ))}
           </Box>
-        </Container>
-      </Box>
-
-      {/* ─── PRODUCT STATS ─── */}
-      <Box sx={{ background: '#09090B', borderBottom: '1px solid rgba(255,255,255,0.06)', py: 8 }}>
-        <Container maxWidth="lg">
-          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 3 }}>
-            {STATS_NUMS.map((s, i) => (
-              <FadeIn key={i} delay={i * 100}>
-                <Box sx={{ textAlign: 'center', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.06)', background: 'rgba(255,255,255,0.02)' }}>
-                  <Typography sx={{ color: 'white', fontSize: { xs: '2.2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.04em', background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                    <AnimCounter end={s.num} suffix={s.suffix} />
-                  </Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.88rem', mt: 0.5 }}>{STATS[i]?.label}</Typography>
-                </Box>
-              </FadeIn>
-            ))}
-          </Box>
-        </Container>
+        </Box>
       </Box>
 
       {/* ─── PROBLEM ─── */}
@@ -420,9 +506,7 @@ export default function Landing() {
                 {t('landing.problem.title')}{' '}
                 <Box component="span" sx={{ color: '#EF4444', textDecoration: 'line-through' }}>{t('landing.problem.strike')}</Box>
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', lineHeight: 1.7 }}>
-                {t('landing.problem.sub')}
-              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', lineHeight: 1.7 }}>{t('landing.problem.sub')}</Typography>
             </Box>
           </FadeIn>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 2 }}>
@@ -448,9 +532,7 @@ export default function Landing() {
                 {t('landing.features.title')}{' '}
                 <Box component="span" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.features.titleGrad')}</Box>
               </Typography>
-              <Typography sx={{ color: '#64748B', fontSize: '1.1rem', maxWidth: 550, mx: 'auto' }}>
-                {t('landing.features.sub')}
-              </Typography>
+              <Typography sx={{ color: '#64748B', fontSize: '1.1rem', maxWidth: 550, mx: 'auto' }}>{t('landing.features.sub')}</Typography>
             </Box>
           </FadeIn>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', md: 'repeat(3,1fr)' }, gap: 2.5 }}>
@@ -467,59 +549,11 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ─── COMPARE ─── hidden temporarily */}
-      {false && <Box id="compare" sx={{ background: '#F8FAFC', py: { xs: 8, md: 14 } }}>
-        <Container maxWidth="lg">
-          <FadeIn>
-            <Box sx={{ textAlign: 'center', mb: 8 }}>
-              <Chip label={t('landing.compare.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A', lineHeight: 1.15, mb: 2 }}>
-                {t('landing.compare.title')}
-              </Typography>
-              <Typography sx={{ color: '#64748B', fontSize: '1.05rem' }}>{t('landing.compare.sub')}</Typography>
-              <Box sx={{ display: 'inline-block', mt: 2, px: 3, py: 1, borderRadius: 99, background: 'linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.08))', border: '1px solid rgba(99,102,241,0.25)' }}>
-                <Typography sx={{ color: '#6366F1', fontSize: '0.92rem', fontWeight: 700, fontStyle: 'italic' }}>
-                  Others help you manage work. Julay does it for you.
-                </Typography>
-              </Box>
-            </Box>
-          </FadeIn>
-          <Box sx={{ borderRadius: 4, overflow: 'hidden', border: '1.5px solid #E2E8F0', background: 'white', boxShadow: '0 4px 32px rgba(0,0,0,0.06)' }}>
-            <Box sx={{ display: 'grid', gridTemplateColumns: '2fr repeat(4,1fr)', background: '#F8FAFC', borderBottom: '1.5px solid #E2E8F0' }}>
-              <Box sx={{ p: 2.5 }} />
-              {['Julay', ...TOOLS].map((t, i) => (
-                <Box key={i} sx={{ p: 2.5, textAlign: 'center', borderLeft: '1px solid #E2E8F0', background: t === 'Julay' ? 'linear-gradient(135deg,rgba(99,102,241,0.1),rgba(139,92,246,0.08))' : 'transparent', boxShadow: t === 'Julay' ? 'inset 0 -2px 12px rgba(99,102,241,0.15)' : 'none' }}>
-                  <Typography sx={{ fontWeight: 700, fontSize: '0.9rem', color: t === 'Julay' ? '#4F46E5' : '#475569' }}>{t}</Typography>
-                  {t === 'Julay' && <Box sx={{ width: 40, height: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', mx: 'auto', mt: 0.5, borderRadius: 1 }} />}
-                </Box>
-              ))}
-            </Box>
-            {COMPARE.map((row, i) => (
-              <Box key={i} sx={{ display: 'grid', gridTemplateColumns: '2fr repeat(4,1fr)', borderBottom: i < COMPARE.length - 1 ? '1px solid #F1F5F9' : 'none', '&:hover': { background: '#FAFAFA' } }}>
-                <Box sx={{ p: 2, px: 2.5, display: 'flex', alignItems: 'center' }}>
-                  <Typography sx={{ fontSize: '0.875rem', color: '#334155', fontWeight: 500 }}>{row.feature}</Typography>
-                </Box>
-                {['julay', 'monday', 'asana', 'notion'].map(k => (
-                  <Box key={k} sx={{ p: 2, textAlign: 'center', borderLeft: '1px solid #F1F5F9', display: 'flex', alignItems: 'center', justifyContent: 'center', background: k === 'julay' ? 'rgba(99,102,241,0.03)' : 'transparent' }}>
-                    {typeof row[k] === 'boolean'
-                      ? row[k]
-                        ? <CheckCircle sx={{ color: k === 'julay' ? '#6366F1' : '#10B981', fontSize: 20 }} />
-                        : <Close sx={{ color: '#CBD5E1', fontSize: 18 }} />
-                      : <Typography sx={{ fontSize: '0.8rem', fontWeight: k === 'julay' ? 700 : 500, color: k === 'julay' ? '#4F46E5' : '#64748B' }}>{row[k]}</Typography>
-                    }
-                  </Box>
-                ))}
-              </Box>
-            ))}
-          </Box>
-        </Container>
-      </Box>}
-
       {/* ─── EARLY ADOPTERS CTA ─── */}
       <Box sx={{ background: 'white', py: { xs: 8, md: 14 } }}>
         <Container maxWidth="md">
           <FadeIn>
-            <Box sx={{ textAlign: 'center', p: { xs: 5, md: 8 }, borderRadius: 4, border: '2px solid #E2E8F0', background: 'linear-gradient(135deg, #F8FAFC, #EEF2FF)' }}>
+            <Box sx={{ textAlign: 'center', p: { xs: 5, md: 8 }, borderRadius: 4, border: '2px solid #E2E8F0', background: 'linear-gradient(135deg,#F8FAFC,#EEF2FF)' }}>
               <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: '#EEF2FF', border: '1px solid rgba(99,102,241,0.3)', mb: 3 }}>
                 <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#6366F1', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
                 <Typography sx={{ color: '#4F46E5', fontSize: '0.78rem', fontWeight: 700, letterSpacing: '0.05em' }}>{t('landing.earlyAccess.badge')}</Typography>
@@ -527,10 +561,8 @@ export default function Landing() {
               <Typography variant="h2" sx={{ fontSize: { xs: '1.8rem', md: '2.5rem' }, fontWeight: 800, color: '#0F172A', letterSpacing: '-0.03em', mb: 2 }}>
                 {t('landing.earlyAccess.title')}
               </Typography>
-              <Typography sx={{ color: '#64748B', fontSize: '1rem', lineHeight: 1.7, mb: 4, maxWidth: 480, mx: 'auto' }}>
-                {t('landing.earlyAccess.sub')}
-              </Typography>
-              <Button onClick={() => window.location.href = '/register'} variant="contained" size="large"
+              <Typography sx={{ color: '#64748B', fontSize: '1rem', lineHeight: 1.7, mb: 4, maxWidth: 480, mx: 'auto' }}>{t('landing.earlyAccess.sub')}</Typography>
+              <Button onClick={() => navigate('/register')} variant="contained" size="large"
                 sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 4, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } }}>
                 {t('landing.earlyAccess.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
@@ -561,19 +593,21 @@ export default function Landing() {
                 <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
                 <Typography sx={{ color: '#EF4444', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.pricing.foundingBadge')}</Typography>
               </Box>
-              <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
-                <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>{t('landing.pricing.monthly')}</ToggleButton>
-                <ToggleButton value="yearly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>
-                  {t('landing.pricing.yearly')} <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
-                </ToggleButton>
-              </ToggleButtonGroup>
+              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
+                  <ToggleButton value="monthly" sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>{t('landing.pricing.monthly')}</ToggleButton>
+                  <ToggleButton value="yearly"  sx={{ px: 3, py: 1, borderRadius: 1.5, fontSize: '0.85rem', fontWeight: 600, border: 'none', '&.Mui-selected': { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white' } }}>
+                    {t('landing.pricing.yearly')} <Box component="span" sx={{ ml: 0.75, px: 0.75, py: 0.15, borderRadius: 1, background: '#10B981', color: 'white', fontSize: '0.68rem', fontWeight: 800 }}>-22%</Box>
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              </Box>
             </Box>
           </FadeIn>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr', lg: 'repeat(4,1fr)' }, gap: 2.5, alignItems: 'start' }}>
             {PLANS.map((plan, i) => (
               <FadeIn key={i} delay={i * 80}>
-                <Box sx={{ position: 'relative', borderRadius: 3, border: plan.highlight ? '2px solid #6366F1' : '1.5px solid #E2E8F0', background: plan.highlight ? 'white' : 'white', boxShadow: plan.highlight ? '0 8px 40px rgba(99,102,241,0.2)' : '0 1px 4px rgba(0,0,0,0.04)', transform: plan.highlight ? 'scale(1.03)' : 'none', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.1)', transform: plan.highlight ? 'scale(1.05)' : 'translateY(-4px)' } }}>
-                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800, letterSpacing: '0.04em' }}>{t('landing.pricing.mostPopular')}</Typography></Box>}
+                <Box sx={{ position: 'relative', borderRadius: 3, border: plan.highlight ? '2px solid #6366F1' : '1.5px solid #E2E8F0', background: 'white', boxShadow: plan.highlight ? '0 8px 40px rgba(99,102,241,0.2)' : '0 1px 4px rgba(0,0,0,0.04)', transform: plan.highlight ? 'scale(1.03)' : 'none', transition: 'all 0.2s', '&:hover': { boxShadow: '0 12px 40px rgba(0,0,0,0.1)', transform: plan.highlight ? 'scale(1.05)' : 'translateY(-4px)' } }}>
+                  {plan.popular && <Box sx={{ position: 'absolute', top: -14, left: '50%', transform: 'translateX(-50%)', px: 2, py: 0.5, borderRadius: 99, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 12px rgba(99,102,241,0.4)' }}><Typography sx={{ color: 'white', fontSize: '0.72rem', fontWeight: 800 }}>{t('landing.pricing.mostPopular')}</Typography></Box>}
                   <Box sx={{ p: 3.5 }}>
                     <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: '#0F172A', mb: 0.5 }}>{plan.name}</Typography>
                     <Typography sx={{ color: '#64748B', fontSize: '0.82rem', mb: 2.5 }}>{plan.description}</Typography>
@@ -591,7 +625,8 @@ export default function Landing() {
                       )}
                       {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>{t('landing.pricing.saveYear', { amount: (plan.price - plan.yearlyPrice) * 12 })}</Typography>}
                     </Box>
-                    <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
+                    <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth
+                      sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
                       {plan.cta}
                     </Button>
                     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.25 }}>
@@ -619,29 +654,23 @@ export default function Landing() {
         </Container>
       </Box>
 
-      {/* ─── INVITE A FRIEND ─── */}
-      <Box sx={{ background: 'linear-gradient(135deg, #0F172A 0%, #1E1B4B 100%)', py: { xs: 8, md: 14 }, position: 'relative', overflow: 'hidden' }}>
-        <Box sx={{ position: 'absolute', top: '10%', right: '5%', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle, rgba(99,102,241,0.18) 0%, transparent 70%)', pointerEvents: 'none' }} />
-        <Box sx={{ position: 'absolute', bottom: '10%', left: '5%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle, rgba(139,92,246,0.15) 0%, transparent 70%)', pointerEvents: 'none' }} />
+      {/* ─── REFERRAL ─── */}
+      <Box sx={{ background: 'linear-gradient(135deg,#0F172A 0%,#1E1B4B 100%)', py: { xs: 8, md: 14 }, position: 'relative', overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: '10%', right: '5%', width: 320, height: 320, borderRadius: '50%', background: 'radial-gradient(circle,rgba(99,102,241,0.18) 0%,transparent 70%)', pointerEvents: 'none' }} />
+        <Box sx={{ position: 'absolute', bottom: '10%', left: '5%', width: 240, height: 240, borderRadius: '50%', background: 'radial-gradient(circle,rgba(139,92,246,0.15) 0%,transparent 70%)', pointerEvents: 'none' }} />
         <Container maxWidth="lg">
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: { xs: 6, md: 8 } }}>
               <Chip label={t('landing.referral.chip')} sx={{ mb: 3, background: 'rgba(99,102,241,0.15)', color: '#818CF8', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em', border: '1px solid rgba(99,102,241,0.3)' }} />
               <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, color: 'white', letterSpacing: '-0.03em', mb: 2 }}>
                 {t('landing.referral.title')}{' '}
-                <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                  {t('landing.referral.titleGrad')}
-                </Box>
+                <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.referral.titleGrad')}</Box>
               </Typography>
-              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>
-                {t('landing.referral.sub')}
-              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '1.05rem', maxWidth: 480, mx: 'auto', lineHeight: 1.7 }}>{t('landing.referral.sub')}</Typography>
             </Box>
-
-            {/* How it works */}
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3,1fr)' }, gap: 3, mb: 8 }}>
-              {(t('landing.referral.steps', { returnObjects: true })).map((item) => (
-                <Box key={item.step} sx={{ position: 'relative', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)', backdropFilter: 'blur(10px)' }}>
+              {t('landing.referral.steps', { returnObjects: true }).map(item => (
+                <Box key={item.step} sx={{ position: 'relative', p: 3, borderRadius: 3, border: '1px solid rgba(255,255,255,0.08)', background: 'rgba(255,255,255,0.03)' }}>
                   <Typography sx={{ position: 'absolute', top: 16, right: 20, fontSize: '0.72rem', fontWeight: 800, color: 'rgba(99,102,241,0.5)', letterSpacing: '0.1em' }}>{item.step}</Typography>
                   <Typography sx={{ fontSize: '2.2rem', mb: 2 }}>{item.icon}</Typography>
                   <Typography sx={{ color: 'white', fontWeight: 800, fontSize: '1.05rem', mb: 1 }}>{item.title}</Typography>
@@ -649,30 +678,23 @@ export default function Landing() {
                 </Box>
               ))}
             </Box>
-
-            {/* Perks banner */}
             <Box sx={{ display: 'flex', flexWrap: 'wrap', justifyContent: 'center', gap: 2, mb: 8 }}>
               {(['♾️','🆓','📅','⚡']).map((icon, i) => {
                 const labels = t('landing.referral.perks', { returnObjects: true });
-                const p = { icon, label: labels[i] };
                 return (
-                <Box key={p.label} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1, borderRadius: 99, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
-                  <Typography sx={{ fontSize: '1rem' }}>{p.icon}</Typography>
-                  <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem', fontWeight: 600 }}>{p.label}</Typography>
-                </Box>
+                  <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1, borderRadius: 99, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.2)' }}>
+                    <Typography sx={{ fontSize: '1rem' }}>{icon}</Typography>
+                    <Typography sx={{ color: 'rgba(255,255,255,0.75)', fontSize: '0.82rem', fontWeight: 600 }}>{labels[i]}</Typography>
+                  </Box>
                 );
               })}
             </Box>
-
-            {/* CTA */}
             <Box sx={{ textAlign: 'center' }}>
-              <Button onClick={() => window.location.href = '/register'} variant="contained" size="large"
+              <Button onClick={() => navigate('/register')} variant="contained" size="large"
                 sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 1.75, borderRadius: 2.5, fontSize: '1rem', boxShadow: '0 4px 24px rgba(99,102,241,0.4)', '&:hover': { opacity: 0.9 } }}>
                 {t('landing.referral.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
-              <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', mt: 2 }}>
-                {t('landing.referral.existing')}
-              </Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', mt: 2 }}>{t('landing.referral.existing')}</Typography>
             </Box>
           </FadeIn>
         </Container>
@@ -684,9 +706,7 @@ export default function Landing() {
           <FadeIn>
             <Box sx={{ textAlign: 'center', mb: 8 }}>
               <Chip label={t('landing.faq.chip')} sx={{ mb: 3, background: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.72rem', letterSpacing: '0.08em' }} />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A' }}>
-                {t('landing.faq.title')}
-              </Typography>
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 800, letterSpacing: '-0.03em', color: '#0F172A' }}>{t('landing.faq.title')}</Typography>
             </Box>
           </FadeIn>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
@@ -719,11 +739,10 @@ export default function Landing() {
               {t('landing.finalCta.title')}{' '}
               <Box component="span" sx={{ background: 'linear-gradient(135deg,#818CF8,#C084FC)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>{t('landing.finalCta.titleGrad')}</Box>
             </Typography>
-            <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto' }}>
-              {t('landing.finalCta.sub')}
-            </Typography>
+            <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '1.1rem', mb: 6, maxWidth: 480, mx: 'auto' }}>{t('landing.finalCta.sub')}</Typography>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center' }}>
-              <Button onClick={() => navigate('/register')} variant="contained" size="large" sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)', boxShadow: '0 12px 48px rgba(99,102,241,0.6)' }, transition: 'all 0.2s' }}>
+              <Button onClick={() => navigate('/register')} variant="contained" size="large"
+                sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, px: 5, py: 2, borderRadius: 2.5, fontSize: '1.05rem', boxShadow: '0 8px 32px rgba(99,102,241,0.5)', '&:hover': { opacity: 0.9, transform: 'translateY(-2px)' }, transition: 'all 0.2s' }}>
                 {t('landing.finalCta.cta')} <ArrowForward sx={{ ml: 1, fontSize: 18 }} />
               </Button>
             </Box>
@@ -747,19 +766,19 @@ export default function Landing() {
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
                 <svg width="24" height="28" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
                   <defs>
-                    <linearGradient id="ftjg" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
+                    <linearGradient id="ftjg2" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
                       <stop stopColor="#8B5CF6"/><stop offset="0.55" stopColor="#6366F1"/><stop offset="1" stopColor="#38BDF8"/>
                     </linearGradient>
                   </defs>
-                  <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#ftjg)"/>
-                  <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#ftjg)"/>
-                  <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#ftjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                  <circle cx="7" cy="59" r="3.5" fill="url(#ftjg)"/>
-                  <circle cx="47" cy="21" r="5" fill="url(#ftjg)"/>
-                  <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#ftjg)"/>
-                  <path d="M47 57 Q47 65 38 65" stroke="url(#ftjg)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                  <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#ftjg2)"/>
+                  <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#ftjg2)"/>
+                  <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#ftjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
+                  <circle cx="7" cy="59" r="3.5" fill="url(#ftjg2)"/>
+                  <circle cx="47" cy="21" r="5" fill="url(#ftjg2)"/>
+                  <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#ftjg2)"/>
+                  <path d="M47 57 Q47 65 38 65" stroke="url(#ftjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
                 </svg>
-                <Typography sx={{ fontFamily: '"Inter", sans-serif', fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.6)', letterSpacing: '-0.3px' }}>Julay</Typography>
+                <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.6)' }}>Julay.org</Typography>
               </Box>
               <Typography sx={{ color: 'rgba(255,255,255,0.35)', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
