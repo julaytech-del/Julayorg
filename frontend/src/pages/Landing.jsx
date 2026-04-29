@@ -443,15 +443,6 @@ export default function Landing() {
                 </Button>
               </Box>
 
-              {/* Trusted by */}
-              <Box>
-                <Typography sx={{ color: '#9CA3AF', fontSize: '0.82rem', fontWeight: 500, mb: 1.5 }}>Trusted by teams at</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 2.5, sm: 3.5 }, flexWrap: 'wrap' }}>
-                  {TRUSTED_BY.map(co => (
-                    <Typography key={co.name} sx={{ color: '#9CA3AF', fontSize: '1.05rem', fontWeight: 600, ...co.style }}>{co.name}</Typography>
-                  ))}
-                </Box>
-              </Box>
             </Box>
 
             {/* Right — dashboard */}
