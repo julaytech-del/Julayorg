@@ -143,7 +143,7 @@ export default function ThemeWrapper({ children }) {
     document.dir = isRTL ? 'rtl' : 'ltr';
     document.documentElement.lang = i18n.language;
     // Apply dark bg to body
-    document.body.style.backgroundColor = darkMode ? '#0F172A' : '';
+    document.body.style.backgroundColor = darkMode ? '#0F172A' : '#F5F5FF';
   }, [isRTL, i18n.language, darkMode]);
 
   return (
