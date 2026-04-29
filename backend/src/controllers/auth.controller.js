@@ -8,6 +8,7 @@ import Invite from '../models/Invite.js';
 import OTP from '../models/OTP.js';
 import { sendOTPEmail } from '../utils/email.js';
 import { OAuth2Client } from 'google-auth-library';
+import { getLimit, isUnlimited } from '../config/planLimits.js';
 
 const googleClient = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
@@ -106,6 +107,23 @@ export const createInvite = async (req, res, next) => {
 
     const existing = await User.findOne({ email });
     if (existing) return res.status(409).json({ success: false, message: 'User with this email already exists' });
+
+    // Check member limit
+    const org = await Organization.findById(req.user.organization);
+    const plan = org?.subscription?.plan || 'free';
+    if (!isUnlimited(plan, 'members')) {
+      const limit = getLimit(plan, 'members');
+      const currentCount = await User.countDocuments({ organization: req.user.organization, status: { $ne: 'inactive' } });
+      if (currentCount >= limit) {
+        return res.status(403).json({
+          success: false,
+          code: 'MEMBER_LIMIT_REACHED',
+          message: `Your ${plan} plan allows up to ${limit} team members. Upgrade to invite more.`,
+          limit,
+          current: currentCount,
+        });
+      }
+    }
 
     // Invalidate any previous unused invite for same email in this org
     await Invite.deleteMany({ email, organization: req.user.organization, used: false });

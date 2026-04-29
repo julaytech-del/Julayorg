@@ -3,6 +3,7 @@ import Project from '../models/Project.js';
 import Goal from '../models/Goal.js';
 import Task from '../models/Task.js';
 import ActivityLog from '../models/ActivityLog.js';
+import { getLimit, isUnlimited } from '../config/planLimits.js';
 
 const logActivity = async (orgId, userId, userName, action, entityType, entity) => {
   try {
@@ -32,6 +33,22 @@ export const getProjects = async (req, res, next) => {
 export const createProject = async (req, res, next) => {
   try {
     const orgId = req.user.organization._id || req.user.organization;
+    const plan = req.user.organization.subscription?.plan || 'free';
+    const limit = getLimit(plan, 'projects');
+
+    if (!isUnlimited(plan, 'projects')) {
+      const count = await Project.countDocuments({ organization: orgId });
+      if (count >= limit) {
+        return res.status(403).json({
+          success: false,
+          code: 'PROJECT_LIMIT_REACHED',
+          message: `Your ${plan} plan allows up to ${limit} projects. Upgrade to create more.`,
+          limit,
+          current: count,
+        });
+      }
+    }
+
     const project = await Project.create({ ...req.body, organization: orgId, createdBy: req.user._id });
     await logActivity(orgId, req.user._id, req.user.name, 'created', 'project', project);
     res.status(201).json({ success: true, data: project });

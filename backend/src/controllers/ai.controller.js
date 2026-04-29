@@ -5,11 +5,38 @@ import Task from '../models/Task.js';
 import User from '../models/User.js';
 import Department from '../models/Department.js';
 import ActivityLog from '../models/ActivityLog.js';
+import Organization from '../models/Organization.js';
 import { analyzePlan } from '../services/ai/planAnalysis.service.js';
 import { generateTasks } from '../services/ai/taskGeneration.service.js';
 import { assignTeam } from '../services/ai/assignment.service.js';
 import { generateTimeline } from '../services/ai/timeline.service.js';
 import { generateStandup, analyzePerformance, generateReplan } from '../services/ai/standup.service.js';
+import { getLimit, isUnlimited } from '../config/planLimits.js';
+
+async function checkAndIncrementAI(orgId, plan) {
+  const org = await Organization.findById(orgId);
+  if (!org) throw new Error('Organization not found');
+
+  // Reset counter if billing period started more than 30 days ago
+  const daysSincePeriodStart = (Date.now() - new Date(org.subscription.billingPeriodStart).getTime()) / (1000 * 60 * 60 * 24);
+  if (daysSincePeriodStart >= 30) {
+    org.subscription.aiUsedThisMonth = 0;
+    org.subscription.billingPeriodStart = new Date();
+  }
+
+  if (!isUnlimited(plan, 'aiRequests')) {
+    const limit = getLimit(plan, 'aiRequests');
+    if (org.subscription.aiUsedThisMonth >= limit) {
+      const err = new Error(`You've used all ${limit} AI requests for this month. Upgrade to get more.`);
+      err.code = 'AI_LIMIT_REACHED';
+      err.statusCode = 403;
+      throw err;
+    }
+  }
+
+  org.subscription.aiUsedThisMonth += 1;
+  await org.save();
+}
 
 export const generatePlan = async (req, res, next) => {
   const session = await mongoose.startSession();
@@ -19,6 +46,13 @@ export const generatePlan = async (req, res, next) => {
     if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
 
     const orgId = req.user.organization._id || req.user.organization;
+    const plan = req.user.organization.subscription?.plan || 'free';
+
+    try { await checkAndIncrementAI(orgId, plan); }
+    catch (err) {
+      await session.abortTransaction();
+      return res.status(err.statusCode || 403).json({ success: false, code: err.code, message: err.message });
+    }
 
     // Step 1: Analyze the plan (AI call — outside transaction, read-only)
     const planAnalysis = await analyzePlan(prompt);

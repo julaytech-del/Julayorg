@@ -59,7 +59,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/register',
     popular: false,
-    highlights: ['3 projects', '5 team members', '1 GB storage', 'Kanban & List views', 'Basic task management', 'No AI features'],
+    highlights: ['3 projects max', '5 team members max', '1 GB storage', 'Kanban & List views', 'Basic task management', 'No AI features'],
   },
   {
     id: 'starter',
@@ -73,7 +73,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/register?plan=starter',
     popular: false,
-    highlights: ['15 projects', '15 team members', '10 GB storage', 'Gantt / Timeline', 'Time tracking', 'Calendar & Workload views', 'Sprint boards', '10 AI requests/month'],
+    highlights: ['15 projects max', '15 team members max', '10 GB storage', 'Gantt / Timeline & Sprint boards', 'Time tracking & Calendar', 'Workload views', '10 AI requests/month'],
   },
   {
     id: 'professional',
@@ -87,7 +87,7 @@ const PLANS = [
     ctaVariant: 'contained',
     ctaHref: '/register?plan=professional',
     popular: true,
-    highlights: ['Unlimited projects', '50 team members', '50 GB storage', 'Full AI project generation', 'AI Standup & Performance analysis', 'Automations & Webhooks', 'Custom dashboards', 'Reports & exports'],
+    highlights: ['Unlimited projects', '50 team members max', '50 GB storage', 'Full AI project generation', 'AI Standup & Performance analysis', '500 AI requests/month', 'Automations, Webhooks & Forms', 'Custom dashboards & Reports'],
   },
   {
     id: 'business',
@@ -101,7 +101,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/contact',
     popular: false,
-    highlights: ['Unlimited everything', 'Unlimited users', '500 GB storage', 'Unlimited AI requests', 'API access & Custom integrations', 'SSO / SAML', 'Dedicated account manager', '99.9% SLA guarantee'],
+    highlights: ['Unlimited projects & users', 'Unlimited AI requests', '500 GB storage', 'API access & Custom integrations', 'Priority support', 'Advanced analytics', 'Dedicated account manager', '99.9% uptime SLA'],
   },
 ];
 
