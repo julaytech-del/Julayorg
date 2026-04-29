@@ -570,9 +570,9 @@ export default function Landing() {
                 {t('landing.pricing.title')}
               </Typography>
               <Typography sx={{ color: '#64748B', fontSize: '1.05rem', mb: 2 }}>{t('landing.pricing.sub')}</Typography>
-              <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.2)', mb: 4 }}>
-                <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#EF4444', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
-                <Typography sx={{ color: '#EF4444', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.pricing.foundingBadge')}</Typography>
+              <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, px: 2, py: 0.75, borderRadius: 99, background: '#EEF2FF', border: '1px solid #C7D2FE', mb: 4 }}>
+                <Box sx={{ width: 6, height: 6, borderRadius: '50%', background: '#6366F1', animation: 'pulse 2s infinite', '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.4 } } }} />
+                <Typography sx={{ color: '#4F46E5', fontSize: '0.78rem', fontWeight: 700 }}>{t('landing.pricing.foundingBadge')}</Typography>
               </Box>
               <Box sx={{ display: 'flex', justifyContent: 'center' }}>
                 <ToggleButtonGroup value={billing} exclusive onChange={(_, v) => v && setBilling(v)} sx={{ background: 'white', border: '1.5px solid #E2E8F0', borderRadius: 2, p: 0.5 }}>
@@ -629,7 +629,7 @@ export default function Landing() {
                 <Typography sx={{ fontWeight: 700, fontSize: '1.1rem', color: '#0F172A', mb: 0.5 }}>{t('landing.pricing.enterprise.title')}</Typography>
                 <Typography sx={{ color: '#64748B', fontSize: '0.9rem' }}>{t('landing.pricing.enterprise.sub')}</Typography>
               </Box>
-              <Button variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>{t('landing.pricing.enterprise.cta')}</Button>
+              <Button onClick={() => navigate('/contact')} variant="outlined" size="large" sx={{ flexShrink: 0, px: 3.5, py: 1.25, fontWeight: 700, borderWidth: '1.5px', borderRadius: 2, whiteSpace: 'nowrap' }}>{t('landing.pricing.enterprise.cta')}</Button>
             </Box>
           </FadeIn>
         </Container>
@@ -754,11 +754,16 @@ export default function Landing() {
               <Typography sx={{ color: '#6B7280', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5 }}>
-              {[t('landing.footer.product', { returnObjects: true }), t('landing.footer.company', { returnObjects: true }), t('landing.footer.legal', { returnObjects: true })].map(col => (
+              {[
+                { col: t('landing.footer.product', { returnObjects: true }), hrefs: ['/#features', '/pricing', '/#compare', '#'] },
+                { col: t('landing.footer.company', { returnObjects: true }), hrefs: ['/about', '#', '#', '/contact'] },
+                { col: t('landing.footer.legal',   { returnObjects: true }), hrefs: ['/privacy', '/terms', '#', '/cookies'] },
+              ].map(({ col, hrefs }) => (
                 <Box key={col.title}>
                   <Typography sx={{ color: '#9CA3AF', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 2 }}>{col.title}</Typography>
                   {col.links.map((l, li) => (
-                    <Typography key={li} sx={{ color: '#6B7280', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', transition: 'color 0.15s', '&:hover': { color: '#D1D5DB' } }}>{l}</Typography>
+                    <Typography key={li} component="a" href={hrefs[li] || '#'}
+                      sx={{ color: '#6B7280', fontSize: '0.85rem', mb: 1.25, cursor: 'pointer', display: 'block', textDecoration: 'none', transition: 'color 0.15s', '&:hover': { color: '#D1D5DB' } }}>{l}</Typography>
                   ))}
                 </Box>
               ))}
