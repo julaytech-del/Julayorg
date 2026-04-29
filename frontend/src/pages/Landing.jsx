@@ -434,12 +434,11 @@ export default function Landing() {
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 5 }}>
                 <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large"
                   sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', boxShadow: '0 4px 20px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-1px)' }, transition: 'all 0.2s' }}>
-                  Start Free Trial
+                  Register Now
                 </Button>
-                <Button onClick={() => navigate('/register')} variant="outlined" size="large"
-                  endIcon={<PlayArrow sx={{ fontSize: 15 }} />}
+                <Button onClick={() => navigate('/login')} variant="outlined" size="large"
                   sx={{ borderColor: '#D1D5DB', color: '#374151', fontWeight: 600, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', background: 'white', '&:hover': { background: '#F9FAFB', borderColor: '#9CA3AF' } }}>
-                  Book a Demo
+                  Log in
                 </Button>
               </Box>
 
