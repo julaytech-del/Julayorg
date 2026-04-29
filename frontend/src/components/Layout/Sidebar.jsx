@@ -87,18 +87,15 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
 
       {/* ── Org badge ── */}
       <Box sx={{ p: 2, pb: 1.5 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.5, borderRadius: 2.5, backgroundColor: orgBg, border: `1px solid ${orgBorder}` }}>
-          <Box sx={{ width: 32, height: 32, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Typography sx={{ color: 'white', fontWeight: 900, fontSize: '0.75rem' }}>J</Typography>
-          </Box>
-          <Box sx={{ flex: 1, minWidth: 0 }}>
-            <Typography sx={{ color: orgName, fontWeight: 700, fontSize: '0.85rem', lineHeight: 1.2, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
-              {typeof org === 'object' ? org?.name : 'Julay.org'}
-            </Typography>
-            <Typography sx={{ color: orgSub, fontSize: '0.68rem', textTransform: 'capitalize' }}>
-              {typeof org === 'object' ? org?.industry : ''} · {user?.role?.name || 'Admin'}
-            </Typography>
-          </Box>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1.5, borderRadius: 2.5, backgroundColor: orgBg, border: `1px solid ${orgBorder}` }}>
+          <Box component="img"
+            src="/julay-logo-full.png"
+            alt="Julay.org"
+            sx={{ height: 24, objectFit: 'contain', filter: darkMode ? 'brightness(0) invert(1)' : 'none' }}
+          />
+          <Typography sx={{ color: orgSub, fontSize: '0.68rem', textTransform: 'capitalize', flexShrink: 0 }}>
+            {user?.role?.name || 'Admin'}
+          </Typography>
         </Box>
       </Box>
 

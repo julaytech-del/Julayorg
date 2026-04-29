@@ -122,9 +122,9 @@ export default function MobileWelcome() {
       {/* Logo + Name */}
       <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
         <img
-          src="/logo-main.svg"
-          alt="Julay"
-          style={{ height: 52, marginBottom: 10 }}
+          src="/julay-logo-full.png"
+          alt="Julay.org"
+          style={{ height: 40, marginBottom: 10, filter: 'brightness(0) invert(1)', opacity: 0.9 }}
         />
         <Typography
           sx={{

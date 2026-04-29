@@ -275,9 +275,9 @@ function TopNav() {
           >
             <Box
               component="img"
-              src="/logo-main.svg"
-              alt="Julay"
-              sx={{ height: 36, objectFit: 'contain' }}
+              src="/julay-logo-full.png"
+              alt="Julay.org"
+              sx={{ height: 34, objectFit: 'contain' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
           </Box>

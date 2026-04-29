@@ -101,11 +101,8 @@ function DashboardMockup() {
 
       {/* ── Sidebar ── */}
       <Box sx={{ width: 165, borderRight: '1px solid #F3F4F6', background: '#FAFAFA', flexShrink: 0, pt: 2.5, pb: 6, display: 'flex', flexDirection: 'column', position: 'relative' }}>
-        <Box sx={{ px: 2, mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ width: 26, height: 26, borderRadius: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-            <Typography sx={{ color: 'white', fontWeight: 900, fontSize: '0.62rem' }}>J</Typography>
-          </Box>
-          <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#111827' }}>Julay</Typography>
+        <Box sx={{ px: 2, mb: 3 }}>
+          <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 22, objectFit: 'contain' }} />
         </Box>
         <Box sx={{ flex: 1 }}>
           {SIDEBAR.map(item => (
@@ -351,24 +348,8 @@ export default function Landing() {
       }}>
         <Box sx={{ maxWidth: 1200, mx: 'auto', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           {/* Logo */}
-          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', gap: 1.25, textDecoration: 'none', flexShrink: 0 }}>
-            <svg width="30" height="35" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <defs>
-                <linearGradient id="navjg2" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
-                  <stop stopColor="#8B5CF6"/>
-                  <stop offset="0.55" stopColor="#6366F1"/>
-                  <stop offset="1" stopColor="#38BDF8"/>
-                </linearGradient>
-              </defs>
-              <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#navjg2)"/>
-              <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#navjg2)"/>
-              <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#navjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-              <circle cx="7" cy="59" r="3.5" fill="url(#navjg2)"/>
-              <circle cx="47" cy="21" r="5" fill="url(#navjg2)"/>
-              <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#navjg2)"/>
-              <path d="M47 57 Q47 65 38 65" stroke="url(#navjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-            </svg>
-            <Typography sx={{ fontWeight: 700, fontSize: '1.05rem', color: '#111827', letterSpacing: '-0.02em' }}>Julay.org</Typography>
+          <Box component="a" href="#" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none', flexShrink: 0 }}>
+            <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 34, objectFit: 'contain' }} />
           </Box>
 
           {/* Desktop nav links */}
@@ -767,22 +748,8 @@ export default function Landing() {
         <Container maxWidth="lg">
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-                <svg width="24" height="28" viewBox="0 0 58 68" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <defs>
-                    <linearGradient id="ftjg2" x1="29" y1="5" x2="29" y2="63" gradientUnits="userSpaceOnUse">
-                      <stop stopColor="#8B5CF6"/><stop offset="0.55" stopColor="#6366F1"/><stop offset="1" stopColor="#38BDF8"/>
-                    </linearGradient>
-                  </defs>
-                  <rect x="8" y="9" width="26" height="7" rx="3.5" fill="url(#ftjg2)"/>
-                  <rect x="25" y="16" width="7" height="39" rx="3.5" fill="url(#ftjg2)"/>
-                  <path d="M28.5 55 Q29 65 16.5 65 Q9.5 65 7 59.5" stroke="url(#ftjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                  <circle cx="7" cy="59" r="3.5" fill="url(#ftjg2)"/>
-                  <circle cx="47" cy="21" r="5" fill="url(#ftjg2)"/>
-                  <rect x="43.5" y="27" width="7" height="30" rx="3.5" fill="url(#ftjg2)"/>
-                  <path d="M47 57 Q47 65 38 65" stroke="url(#ftjg2)" strokeWidth="7" strokeLinecap="round" fill="none"/>
-                </svg>
-                <Typography sx={{ fontWeight: 700, fontSize: '1rem', color: 'rgba(255,255,255,0.8)' }}>Julay.org</Typography>
+              <Box sx={{ mb: 2 }}>
+                <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 30, objectFit: 'contain', filter: 'brightness(0) invert(1)', opacity: 0.85 }} />
               </Box>
               <Typography sx={{ color: '#6B7280', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
