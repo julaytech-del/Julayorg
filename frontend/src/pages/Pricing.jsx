@@ -68,7 +68,7 @@ const PLANS = [
     annualPrice: 180,
     annualMonthlyPrice: 15,
     description: 'For growing teams that need more power.',
-    cta: 'Start 14-day trial',
+    cta: 'Get Started',
     ctaNote: null,
     ctaVariant: 'outlined',
     ctaHref: '/register?plan=starter',
@@ -82,7 +82,7 @@ const PLANS = [
     annualPrice: 564,
     annualMonthlyPrice: 47,
     description: 'For teams serious about shipping faster with AI.',
-    cta: 'Start 14-day trial',
+    cta: 'Get Started',
     ctaNote: null,
     ctaVariant: 'contained',
     ctaHref: '/register?plan=professional',
@@ -275,23 +275,11 @@ function TopNav() {
           >
             <Box
               component="img"
-              src="/logo.png"
+              src="/logo-main.svg"
               alt="Julay"
-              sx={{ width: 32, height: 32, borderRadius: 1, objectFit: 'contain' }}
+              sx={{ height: 36, objectFit: 'contain' }}
               onError={(e) => { e.target.style.display = 'none'; }}
             />
-            <Typography
-              sx={{
-                fontWeight: 800,
-                fontSize: 20,
-                background: `linear-gradient(135deg, #fff 0%, ${PRIMARY_LIGHT} 100%)`,
-                WebkitBackgroundClip: 'text',
-                WebkitTextFillColor: 'transparent',
-                letterSpacing: '-0.3px',
-              }}
-            >
-              Julay
-            </Typography>
           </Box>
 
           <Box sx={{ flex: 1 }} />
