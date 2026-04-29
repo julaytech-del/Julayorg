@@ -134,6 +134,33 @@ export default function AIStudio() {
   const [step, setStep] = useState(0);
   const [users, setUsers] = useState([]);
 
+  const plan = user?.organization?.subscription?.plan || 'free';
+  const isPaid = ['starter', 'professional', 'business', 'enterprise'].includes(plan);
+
+  if (!isPaid) {
+    return (
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', px: 3 }}>
+        <Box sx={{ textAlign: 'center', maxWidth: 460 }}>
+          <Box sx={{ width: 72, height: 72, borderRadius: 3, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
+            <Lock sx={{ color: 'white', fontSize: 36 }} />
+          </Box>
+          <Typography variant="h5" fontWeight={800} gutterBottom>AI Features — Paid Plan Only</Typography>
+          <Typography color="text.secondary" sx={{ mb: 3 }}>
+            AI Project Brain, Daily Standups, Performance Analysis and Auto Re-Plan are available on paid plans. Upgrade to unlock the full power of Julay AI.
+          </Typography>
+          <Button
+            variant="contained"
+            size="large"
+            onClick={() => navigate('/pricing')}
+            sx={{ borderRadius: 3, px: 5, py: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', fontWeight: 700, textTransform: 'none' }}
+          >
+            View Plans & Upgrade
+          </Button>
+        </Box>
+      </Box>
+    );
+  }
+
   const STEPS = [
     t('projects.aiCreate.steps.s1'),
     t('projects.aiCreate.steps.s2'),

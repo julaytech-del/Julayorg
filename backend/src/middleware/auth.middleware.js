@@ -34,8 +34,9 @@ export const requireSubscription = (req, res, next) => {
   const org = user.organization;
   const { plan, expiresAt } = org?.subscription || {};
 
-  if (plan !== 'pro') {
-    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_REQUIRED', message: 'This feature requires a Professional plan ($29/mo) or higher.' });
+  const paidPlans = ['starter', 'professional', 'business', 'enterprise'];
+  if (!paidPlans.includes(plan)) {
+    return res.status(403).json({ success: false, code: 'SUBSCRIPTION_REQUIRED', message: 'This feature requires a paid plan. Upgrade to unlock AI features.' });
   }
   if (expiresAt && new Date() > new Date(expiresAt)) {
     return res.status(403).json({ success: false, code: 'SUBSCRIPTION_EXPIRED', message: 'Your organization subscription has expired. Please renew to continue.' });
