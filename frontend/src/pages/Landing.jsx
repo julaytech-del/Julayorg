@@ -58,32 +58,32 @@ function FadeIn({ children, delay = 0 }) {
 /* ─── Dashboard Mockup ─── */
 function DashboardMockup() {
   const SIDEBAR = [
-    { icon: '⊞', label: 'Home', active: true },
+    { icon: '⊞', label: 'Dashboard',     active: true },
     { icon: '📁', label: 'Projects' },
-    { icon: '✓',  label: 'Tasks' },
-    { icon: '👥', label: 'CRM' },
-    { icon: '$',  label: 'Finance' },
-    { icon: '📄', label: 'Invoicing' },
+    { icon: '👥', label: 'Team' },
+    { icon: '🏢', label: 'Departments' },
+    { icon: '📅', label: 'Calendar' },
+    { icon: '✓',  label: 'My Tasks' },
     { icon: '⏱', label: 'Time Tracking' },
+    { icon: '✨', label: 'AI Studio' },
     { icon: '📊', label: 'Reports' },
-    { icon: '⚡', label: 'Automation' },
   ];
 
   const STATS = [
-    { label: 'Total Earnings',        value: '$128,900', change: '↑ 12.5% from last month', color: '#6366F1' },
-    { label: 'Outstanding Invoices',  value: '$32,540',  change: '↑ 8.2% from last month',  color: '#10B981' },
-    { label: 'Total Projects',        value: '24',       change: '↑ 14% from last month',    color: '#F59E0B' },
-    { label: 'Tasks Completed',       value: '76%',      change: '↑ 9% from last month',     color: '#EF4444' },
+    { label: 'Active Projects',  value: '24',   change: '↑ 14% from last month',   color: '#6366F1' },
+    { label: 'Tasks Completed',  value: '156',  change: '↑ 12.5% from last month', color: '#10B981' },
+    { label: 'Team Members',     value: '18',   change: '↑ 8% this quarter',        color: '#F59E0B' },
+    { label: 'On-time Rate',     value: '89%',  change: '↑ 9% from last month',     color: '#8B5CF6' },
   ];
 
   const PROJECTS = [
-    { name: 'Website Redesign',      pct: 85, deadline: 'May 24, 2024', budget: '$6,500 / $8,000',   dot: '#10B981' },
-    { name: 'Mobile App Development',pct: 60, deadline: 'Jun 15, 2024', budget: '$12,000 / $18,000', dot: '#F59E0B' },
-    { name: 'Marketing Campaign',    pct: 40, deadline: 'May 30, 2024', budget: '$3,200 / $5,000',   dot: '#EF4444' },
-    { name: 'E-commerce Platform',   pct: 75, deadline: 'Jun 10, 2024', budget: '$9,500 / $14,000',  dot: '#10B981' },
+    { name: 'Website Redesign',      pct: 85, deadline: 'May 24', tasks: '18/21', dot: '#10B981' },
+    { name: 'Mobile App',            pct: 60, deadline: 'Jun 15', tasks: '12/20', dot: '#6366F1' },
+    { name: 'Marketing Campaign',    pct: 40, deadline: 'May 30', tasks: '8/20',  dot: '#F59E0B' },
+    { name: 'E-commerce Platform',   pct: 75, deadline: 'Jun 10', tasks: '15/20', dot: '#10B981' },
   ];
 
-  const barColor = p => p >= 75 ? '#10B981' : p >= 50 ? '#6366F1' : '#EF4444';
+  const barColor = p => p >= 75 ? '#10B981' : p >= 50 ? '#6366F1' : '#F59E0B';
 
   return (
     <Box sx={{
@@ -113,7 +113,7 @@ function DashboardMockup() {
           ))}
         </Box>
         <Box sx={{ position: 'absolute', bottom: 12, left: 0, width: '100%', px: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Box sx={{ width: 26, height: 26, borderRadius: '50%', background: 'linear-gradient(135deg,#F59E0B,#EF4444)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Box sx={{ width: 26, height: 26, borderRadius: '50%', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <Typography sx={{ color: 'white', fontSize: '0.55rem', fontWeight: 700 }}>OR</Typography>
           </Box>
           <Box sx={{ overflow: 'hidden' }}>
@@ -163,15 +163,15 @@ function DashboardMockup() {
             {/* Project Overview */}
             <Box sx={{ p: 1.5, borderRadius: 1.5, border: '1px solid #F3F4F6', overflow: 'hidden' }}>
               <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827', mb: 1 }}>Project Overview</Typography>
-              <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1.1fr 0.75fr 1fr 1.2fr', mb: 0.5 }}>
-                {['Project', 'Progress', 'Team', 'Deadline', 'Budget'].map(h => (
+              <Box sx={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 0.8fr 0.8fr 0.9fr', mb: 0.5 }}>
+                {['Project', 'Progress', 'Team', 'Due', 'Tasks'].map(h => (
                   <Typography key={h} sx={{ fontSize: '0.56rem', color: '#9CA3AF', fontWeight: 500 }}>{h}</Typography>
                 ))}
               </Box>
               {PROJECTS.map(p => (
-                <Box key={p.name} sx={{ display: 'grid', gridTemplateColumns: '2fr 1.1fr 0.75fr 1fr 1.2fr', alignItems: 'center', py: 0.7, borderTop: '1px solid #F9FAFB' }}>
+                <Box key={p.name} sx={{ display: 'grid', gridTemplateColumns: '2fr 1.2fr 0.8fr 0.8fr 0.9fr', alignItems: 'center', py: 0.7, borderTop: '1px solid #F9FAFB' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, pr: 0.5 }}>
-                    <Box sx={{ width: 13, height: 13, borderRadius: 0.5, background: `${p.dot}20`, border: `1px solid ${p.dot}`, flexShrink: 0 }} />
+                    <Box sx={{ width: 7, height: 7, borderRadius: '50%', background: p.dot, flexShrink: 0 }} />
                     <Typography sx={{ fontSize: '0.62rem', color: '#374151', fontWeight: 500, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{p.name}</Typography>
                   </Box>
                   <Box sx={{ pr: 1 }}>
@@ -181,49 +181,53 @@ function DashboardMockup() {
                     <Typography sx={{ fontSize: '0.52rem', color: '#9CA3AF' }}>{p.pct}%</Typography>
                   </Box>
                   <Box sx={{ display: 'flex' }}>
-                    {['#6366F1','#F59E0B','#10B981'].map((c, i) => (
+                    {['#6366F1','#8B5CF6','#10B981'].map((c, i) => (
                       <Box key={i} sx={{ width: 13, height: 13, borderRadius: '50%', background: c, border: '1.5px solid white', ml: i > 0 ? '-5px' : 0 }} />
                     ))}
                   </Box>
                   <Typography sx={{ fontSize: '0.56rem', color: '#6B7280' }}>{p.deadline}</Typography>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                    <Typography sx={{ fontSize: '0.56rem', color: '#6B7280' }}>{p.budget}</Typography>
-                    <Box sx={{ width: 5, height: 5, borderRadius: '50%', background: p.dot, flexShrink: 0 }} />
+                    <Box sx={{ px: 0.6, py: 0.15, borderRadius: 0.75, background: `${p.dot}18` }}>
+                      <Typography sx={{ fontSize: '0.52rem', color: p.dot, fontWeight: 600 }}>{p.tasks}</Typography>
+                    </Box>
                   </Box>
                 </Box>
               ))}
             </Box>
 
-            {/* Cash Flow */}
+            {/* Sprint Velocity */}
             <Box sx={{ p: 1.5, borderRadius: 1.5, border: '1px solid #F3F4F6', display: 'flex', flexDirection: 'column' }}>
               <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.5 }}>
-                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>Cash Flow</Typography>
-                <Typography sx={{ fontSize: '0.58rem', color: '#9CA3AF' }}>This Month ▾</Typography>
+                <Typography sx={{ fontSize: '0.75rem', fontWeight: 700, color: '#111827' }}>Sprint Velocity</Typography>
+                <Typography sx={{ fontSize: '0.58rem', color: '#9CA3AF' }}>This Sprint ▾</Typography>
               </Box>
-              <Typography sx={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em' }}>$24,350</Typography>
-              <Typography sx={{ fontSize: '0.58rem', color: '#10B981', fontWeight: 600, mb: 1 }}>↑ 15.3%</Typography>
+              <Typography sx={{ fontSize: '1.2rem', fontWeight: 800, color: '#111827', letterSpacing: '-0.02em' }}>42 pts</Typography>
+              <Typography sx={{ fontSize: '0.58rem', color: '#10B981', fontWeight: 600, mb: 1 }}>↑ 15.3% vs last</Typography>
               <Box sx={{ flex: 1, minHeight: 0 }}>
                 <svg width="100%" height="100%" viewBox="0 0 180 80" preserveAspectRatio="none">
                   <defs>
-                    <linearGradient id="cashGrad" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="#6366F1" stopOpacity="0.3" />
+                    <linearGradient id="velGrad" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="#6366F1" stopOpacity="0.25" />
                       <stop offset="100%" stopColor="#6366F1" stopOpacity="0" />
                     </linearGradient>
                   </defs>
-                  <path d="M0,72 C15,70 25,65 45,58 C65,50 80,44 105,32 C125,22 150,14 180,6"
+                  <path d="M0,72 C20,68 35,60 55,52 C75,44 90,38 110,28 C130,18 155,12 180,6"
                     stroke="#6366F1" strokeWidth="2.5" fill="none" strokeLinecap="round" />
-                  <path d="M0,72 C15,70 25,65 45,58 C65,50 80,44 105,32 C125,22 150,14 180,6 L180,80 L0,80Z"
-                    fill="url(#cashGrad)" />
-                  {/* Y axis labels */}
-                  {['30k','20k','10k','0'].map((l, i) => (
-                    <text key={l} x="0" y={12 + i * 20} fill="#9CA3AF" fontSize="6" fontFamily="Inter, sans-serif">{l}</text>
-                  ))}
+                  <path d="M0,72 C20,68 35,60 55,52 C75,44 90,38 110,28 C130,18 155,12 180,6 L180,80 L0,80Z"
+                    fill="url(#velGrad)" />
+                  <path d="M0,60 C20,58 35,55 55,58 C75,61 90,50 110,44 C130,38 155,32 180,28"
+                    stroke="#8B5CF6" strokeWidth="1.5" fill="none" strokeLinecap="round" strokeDasharray="4 3" opacity="0.5" />
                 </svg>
               </Box>
-              <Box sx={{ display: 'flex', justifyContent: 'space-between', pt: 0.5 }}>
-                {['May 1', 'May 15', 'May 31'].map(d => (
-                  <Typography key={d} sx={{ fontSize: '0.52rem', color: '#9CA3AF' }}>{d}</Typography>
-                ))}
+              <Box sx={{ display: 'flex', gap: 1.5, pt: 0.5 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ width: 6, height: 2, borderRadius: 1, background: '#6366F1' }} />
+                  <Typography sx={{ fontSize: '0.5rem', color: '#9CA3AF' }}>Current</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                  <Box sx={{ width: 6, height: 2, borderRadius: 1, background: '#8B5CF6', opacity: 0.5 }} />
+                  <Typography sx={{ fontSize: '0.5rem', color: '#9CA3AF' }}>Previous</Typography>
+                </Box>
               </Box>
             </Box>
           </Box>
