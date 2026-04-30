@@ -410,7 +410,7 @@ export default function Landing() {
                 lineHeight: 1.08,
                 mb: 0.25,
               }}>
-                More than a<br />work platform.
+                {t('landing.hero.h1a')}
               </Typography>
               <Typography sx={{
                 fontSize: { xs: '2.8rem', sm: '3.4rem', md: '4rem', lg: '4.2rem' },
@@ -422,12 +422,12 @@ export default function Landing() {
                 WebkitBackgroundClip: 'text',
                 WebkitTextFillColor: 'transparent',
               }}>
-                It's your growth<br />engine.
+                {t('landing.hero.h1b')}
               </Typography>
 
               {/* Subtitle */}
               <Typography sx={{ color: '#6B7280', fontSize: { xs: '1rem', md: '1.05rem' }, lineHeight: 1.75, mb: 4, maxWidth: 440 }}>
-                Julay.org combines powerful project management with built-in financial tools to help your team work smarter and your business grow faster.
+                {t('landing.hero.sub')}
               </Typography>
 
               {/* CTAs */}
