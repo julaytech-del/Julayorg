@@ -33,6 +33,9 @@ export default defineConfig(({ mode }) => {
             if (id.includes('pdfjs-dist')) {
               return 'pdf';
             }
+            if (id.includes('mammoth') || id.includes('html2pdf') || id.includes('html2canvas') || id.includes('jspdf')) {
+              return 'doc-tools';
+            }
             if (id.includes('recharts') || id.includes('d3-') || id.includes('victory-')) {
               return 'charts';
             }
