@@ -300,10 +300,10 @@ export default function Landing() {
   const PRICE_ROW     = t('landing.compare.startingPrice',{ returnObjects: true });
 
   const NAV_LINKS = [
-    { label: 'Why Julay', href: '#solutions' },
-    { label: 'Features',  href: '#features'  },
-    { label: 'Pricing',   href: '#pricing'   },
-    { label: 'FAQ',       href: '#faq'       },
+    { label: t('landing.nav.whyJulay'), href: '#solutions' },
+    { label: t('landing.nav.features'), href: '#features'  },
+    { label: t('landing.nav.pricing'),  href: '#pricing'   },
+    { label: t('landing.nav.faq'),      href: '#faq'       },
   ];
 
   const COMPARE = COMPARE_MATRIX.map((row, i) => ({
@@ -334,11 +334,11 @@ export default function Landing() {
           <Box sx={{ display: 'flex', justifyContent: 'center' }}><LanguageSwitcher /></Box>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/login'); }} variant="outlined"
             sx={{ fontWeight: 600, py: 1.25, borderRadius: 2, borderColor: '#D1D5DB', color: '#374151' }}>
-            Log in
+            {t('landing.nav.login')}
           </Button>
           <Button onClick={() => { setMobileMenuOpen(false); navigate('/register'); }} variant="contained"
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', color: 'white', fontWeight: 700, py: 1.25, borderRadius: 2 }}>
-            Start Free Trial
+            {t('landing.nav.start')}
           </Button>
         </Box>
       </Drawer>
@@ -371,11 +371,11 @@ export default function Landing() {
             <LanguageSwitcher />
             <Button onClick={() => navigate('/login')} variant="text"
               sx={{ color: '#374151', fontSize: '0.875rem', fontWeight: 600, '&:hover': { background: '#F8FAFC' } }}>
-              Log in
+              {t('landing.nav.login')}
             </Button>
             <Button onClick={() => { trackEvent('cta_clicked', { location: 'nav' }); navigate('/register'); }} variant="contained"
               sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 2.5, py: 1, borderRadius: 2, fontSize: '0.875rem', boxShadow: '0 2px 10px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } }}>
-              Start Free Trial
+              {t('landing.nav.start')}
             </Button>
           </Box>
 
@@ -434,11 +434,11 @@ export default function Landing() {
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 5 }}>
                 <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large"
                   sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', boxShadow: '0 4px 20px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-1px)' }, transition: 'all 0.2s' }}>
-                  Register Now
+                  {t('landing.nav.start')}
                 </Button>
                 <Button onClick={() => navigate('/login')} variant="outlined" size="large"
                   sx={{ borderColor: '#D1D5DB', color: '#374151', fontWeight: 600, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', background: 'white', '&:hover': { background: '#F9FAFB', borderColor: '#9CA3AF' } }}>
-                  Log in
+                  {t('landing.nav.login')}
                 </Button>
               </Box>
 
@@ -722,7 +722,7 @@ export default function Landing() {
               </Button>
               <Button onClick={() => navigate('/login')} variant="outlined" size="large"
                 sx={{ borderColor: 'rgba(255,255,255,0.4)', color: 'white', fontWeight: 700, px: 4, py: 2, borderRadius: 2.5, fontSize: '1.05rem', '&:hover': { borderColor: 'white', background: 'rgba(255,255,255,0.1)' } }}>
-                Log in
+                {t('landing.nav.login')}
               </Button>
             </Box>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 3, justifyContent: 'center', mt: 5 }}>

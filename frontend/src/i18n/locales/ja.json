@@ -466,12 +466,13 @@
       ]
     },
     "nav": {
+      "whyJulay": "Julayを選ぶ理由",
       "features": "機能",
       "compare": "比較",
       "pricing": "料金",
       "faq": "FAQ",
       "login": "ログイン",
-      "start": "無料で始める →"
+      "start": "今すぐ登録"
     },
     "hero": {
       "badge": "AI搭載 · 公開中",

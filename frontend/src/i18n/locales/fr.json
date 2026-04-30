@@ -466,12 +466,13 @@
       ]
     },
     "nav": {
+      "whyJulay": "Pourquoi Julay",
       "features": "Fonctionnalités",
       "compare": "Comparer",
       "pricing": "Tarifs",
       "faq": "FAQ",
       "login": "Connexion",
-      "start": "Commencer →"
+      "start": "S'inscrire"
     },
     "hero": {
       "badge": "Propulsé par l'IA · Maintenant en direct",

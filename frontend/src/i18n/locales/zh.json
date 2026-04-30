@@ -466,12 +466,13 @@
       ]
     },
     "nav": {
+      "whyJulay": "为什么选Julay",
       "features": "功能",
       "compare": "对比",
       "pricing": "定价",
       "faq": "常见问题",
       "login": "登录",
-      "start": "免费开始 →"
+      "start": "立即注册"
     },
     "hero": {
       "badge": "AI驱动 · 现已上线",
