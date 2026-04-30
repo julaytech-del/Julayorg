@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback } from 'react';
+import pdfWorkerUrl from 'pdfjs-dist/build/pdf.worker.min.mjs?url';
 import { Box, Typography, Button, Card, CardContent, TextField, CircularProgress, Chip, IconButton, Divider, LinearProgress } from '@mui/material';
 import { AutoAwesome, Upload, NavigateBefore, NavigateNext, ZoomIn, ZoomOut, Send, PictureAsPdf } from '@mui/icons-material';
 import { contextAPI, projectsAPI } from '../../services/api.js';
@@ -43,7 +44,7 @@ export default function PDFViewer() {
     setChatLog([]);
     try {
       const { getDocument, GlobalWorkerOptions } = await import('pdfjs-dist');
-      GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/4.4.168/pdf.worker.min.mjs`;
+      GlobalWorkerOptions.workerSrc = pdfWorkerUrl;
 
       const arrayBuffer = await file.arrayBuffer();
       const doc = await getDocument({ data: arrayBuffer }).promise;
