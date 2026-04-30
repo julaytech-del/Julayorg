@@ -30,6 +30,18 @@ const APPS = [
     badge: 'CORE'
   },
   {
+    id: 'doc-converter',
+    name: 'DOC → PDF',
+    desc: 'Upload a Word document (.doc / .docx) and convert it to a PDF instantly — no cloud, 100% private.',
+    icon: '📄',
+    color: '#6366F1',
+    bg: 'linear-gradient(135deg, rgba(99,102,241,0.15), rgba(139,92,246,0.08))',
+    border: 'rgba(99,102,241,0.3)',
+    status: 'available',
+    route: '/dashboard/apps/doc-converter',
+    badge: 'NEW'
+  },
+  {
     id: 'slack',
     name: 'Slack',
     desc: 'Connect your Slack workspace. AI monitors channels and turns messages into tasks.',

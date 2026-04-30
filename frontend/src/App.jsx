@@ -31,6 +31,7 @@ const DepartmentsView     = React.lazy(() => import('./pages/Departments/Departm
 const AppsHub             = React.lazy(() => import('./pages/Apps/AppsHub.jsx'));
 const ShareWithAI         = React.lazy(() => import('./pages/Apps/ShareWithAI.jsx'));
 const PDFViewer           = React.lazy(() => import('./pages/Apps/PDFViewer.jsx'));
+const DocConverter        = React.lazy(() => import('./pages/Apps/DocConverter.jsx'));
 const CalendarView        = React.lazy(() => import('./pages/Calendar/CalendarView.jsx'));
 const WorkloadView        = React.lazy(() => import('./pages/Workload/WorkloadView.jsx'));
 const AutomationsPage     = React.lazy(() => import('./pages/Automations/AutomationsPage.jsx'));
@@ -158,6 +159,9 @@ export default function App() {
           } />
           <Route path="apps/pdf" element={
             <Suspense fallback={<PageLoader />}><PDFViewer /></Suspense>
+          } />
+          <Route path="apps/doc-converter" element={
+            <Suspense fallback={<PageLoader />}><DocConverter /></Suspense>
           } />
           <Route path="calendar" element={
             <Suspense fallback={<PageLoader />}><CalendarView /></Suspense>
