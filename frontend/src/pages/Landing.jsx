@@ -749,9 +749,9 @@ export default function Landing() {
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5 }}>
               {[
-                { col: t('landing.footer.product', { returnObjects: true }), hrefs: ['/#features', '/pricing', '/#compare', '#'] },
-                { col: t('landing.footer.company', { returnObjects: true }), hrefs: ['/about', '#', '#', '/contact'] },
-                { col: t('landing.footer.legal',   { returnObjects: true }), hrefs: ['/privacy', '/terms', '#', '/cookies'] },
+                { col: t('landing.footer.product', { returnObjects: true }), hrefs: ['/#features', '/pricing', '/pricing', '/changelog'] },
+                { col: t('landing.footer.company', { returnObjects: true }), hrefs: ['/about', '/blog', '/careers', '/contact'] },
+                { col: t('landing.footer.legal',   { returnObjects: true }), hrefs: ['/privacy', '/terms', '/security', '/cookies'] },
               ].map(({ col, hrefs }) => (
                 <Box key={col.title}>
                   <Typography sx={{ color: '#9CA3AF', fontSize: '0.75rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 2 }}>{col.title}</Typography>

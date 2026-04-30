@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Careers — Julay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #fff; color: #1E293B; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+    .nav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid #E2E8F0; padding: 0 24px; }
+    .nav-inner { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-logo img { height: 28px; display: block; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { font-size: 0.875rem; font-weight: 500; color: #64748B; text-decoration: none; }
+    .nav-links a:hover { color: #6366F1; }
+    .nav-cta { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: #fff !important; padding: 6px 16px; border-radius: 8px; font-weight: 600 !important; }
+
+    .hero { padding: 80px 24px 64px; text-align: center; background: linear-gradient(160deg, #F8FAFC 0%, #EEF2FF 100%); border-bottom: 1px solid #E2E8F0; }
+    .hero-inner { max-width: 640px; margin: 0 auto; }
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: #6366F1; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .hero h1 { font-size: 2.75rem; font-weight: 800; letter-spacing: -0.04em; color: #0F172A; line-height: 1.15; margin-bottom: 16px; }
+    .hero p { color: #64748B; font-size: 1.1rem; max-width: 500px; margin: 0 auto; }
+
+    .container { max-width: 860px; margin: 0 auto; padding: 0 24px; }
+
+    .values { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 64px 24px 0; max-width: 860px; margin: 0 auto; }
+    .value-card { background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 12px; padding: 22px; }
+    .value-icon { font-size: 1.75rem; margin-bottom: 10px; }
+    .value-card h3 { font-size: 0.95rem; font-weight: 700; color: #0F172A; margin-bottom: 6px; }
+    .value-card p { font-size: 0.83rem; color: #64748B; line-height: 1.55; }
+
+    .section { max-width: 860px; margin: 0 auto; padding: 64px 24px; }
+    .section-title { font-size: 1.5rem; font-weight: 800; letter-spacing: -0.03em; color: #0F172A; margin-bottom: 8px; }
+    .section-sub { color: #64748B; margin-bottom: 32px; }
+
+    .no-roles { border: 1.5px dashed #C7D2FE; border-radius: 14px; padding: 48px 32px; text-align: center; background: #FAFBFF; }
+    .no-roles .icon { font-size: 2.5rem; margin-bottom: 16px; }
+    .no-roles h3 { font-size: 1.1rem; font-weight: 700; color: #0F172A; margin-bottom: 8px; }
+    .no-roles p { color: #64748B; font-size: 0.9rem; max-width: 380px; margin: 0 auto 20px; }
+    .btn { display: inline-block; padding: 10px 24px; border-radius: 8px; font-size: 0.9rem; font-weight: 600; text-decoration: none; cursor: pointer; transition: opacity 0.15s; }
+    .btn-primary { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: #fff; }
+    .btn-primary:hover { opacity: 0.88; }
+
+    .perks { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-top: 32px; }
+    .perk { display: flex; gap: 14px; align-items: flex-start; background: #F8FAFC; border: 1.5px solid #E2E8F0; border-radius: 10px; padding: 18px; }
+    .perk-icon { font-size: 1.4rem; flex-shrink: 0; }
+    .perk h4 { font-size: 0.9rem; font-weight: 700; color: #0F172A; margin-bottom: 3px; }
+    .perk p { font-size: 0.8rem; color: #64748B; }
+
+    .footer { background: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 20px 24px; margin-top: 40px; }
+    .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-copy { font-size: 0.8125rem; color: #64748B; }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a { font-size: 0.8125rem; color: #64748B; text-decoration: none; }
+    .footer-links a:hover { color: #6366F1; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 2rem; }
+      .values { grid-template-columns: 1fr 1fr; }
+      .perks { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/julay-logo-full.png" alt="Julay.org" /></a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/pricing">Pricing</a></li>
+      <li><a href="/about">About</a></li>
+      <li><a href="/login" class="nav-cta">Log in</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Careers</p>
+    <h1>Build the future of work — with us</h1>
+    <p>We're a small team building tools that replace planning meetings with AI execution systems.</p>
+  </div>
+</header>
+
+<div class="values">
+  <div class="value-card">
+    <div class="value-icon">🚀</div>
+    <h3>Bias for action</h3>
+    <p>We ship fast, learn from real users, and iterate relentlessly.</p>
+  </div>
+  <div class="value-card">
+    <div class="value-icon">🧠</div>
+    <h3>AI-first thinking</h3>
+    <p>We build AI into every product decision, not as a feature — as a foundation.</p>
+  </div>
+  <div class="value-card">
+    <div class="value-icon">🌍</div>
+    <h3>Remote by default</h3>
+    <p>Async-first culture. Work from anywhere, stay aligned through systems.</p>
+  </div>
+  <div class="value-card">
+    <div class="value-icon">📈</div>
+    <h3>Ownership</h3>
+    <p>Small team, large scope. Every person owns their area end-to-end.</p>
+  </div>
+</div>
+
+<div class="section">
+  <h2 class="section-title">Open Roles</h2>
+  <p class="section-sub">We're growing carefully and hiring people who genuinely change how we work.</p>
+
+  <div class="no-roles">
+    <div class="icon">🔭</div>
+    <h3>No open roles right now</h3>
+    <p>We don't have any active job openings at the moment. Send us your details and we'll reach out when the right role opens up.</p>
+    <a href="mailto:careers@julay.org" class="btn btn-primary">Send us your CV</a>
+  </div>
+</div>
+
+<div class="section" style="padding-top: 0;">
+  <h2 class="section-title">What we offer</h2>
+  <p class="section-sub">Beyond the work itself.</p>
+  <div class="perks">
+    <div class="perk">
+      <div class="perk-icon">💰</div>
+      <div>
+        <h4>Competitive salary</h4>
+        <p>Market-rate pay benchmarked to top-tier tech companies, regardless of location.</p>
+      </div>
+    </div>
+    <div class="perk">
+      <div class="perk-icon">🌐</div>
+      <div>
+        <h4>100% remote</h4>
+        <p>Work from wherever you're most productive. We have no office requirements.</p>
+      </div>
+    </div>
+    <div class="perk">
+      <div class="perk-icon">📅</div>
+      <div>
+        <h4>Flexible hours</h4>
+        <p>No fixed hours. We care about output, not when you're online.</p>
+      </div>
+    </div>
+    <div class="perk">
+      <div class="perk-icon">🖥️</div>
+      <div>
+        <h4>Equipment budget</h4>
+        <p>$2,000 setup budget to build the workspace you need.</p>
+      </div>
+    </div>
+    <div class="perk">
+      <div class="perk-icon">📚</div>
+      <div>
+        <h4>Learning budget</h4>
+        <p>$1,000/year for courses, books, conferences — whatever helps you grow.</p>
+      </div>
+    </div>
+    <div class="perk">
+      <div class="perk-icon">✈️</div>
+      <div>
+        <h4>Annual retreats</h4>
+        <p>We meet in person once a year to build relationships and plan the year ahead.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-copy">&copy; 2026 Julay. All rights reserved.</p>
+    <ul class="footer-links">
+      <li><a href="/about">About</a></li>
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>

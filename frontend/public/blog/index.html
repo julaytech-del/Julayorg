@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog — Julay</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    html { scroll-behavior: smooth; }
+    body { font-family: 'Inter', system-ui, sans-serif; background: #fff; color: #1E293B; line-height: 1.7; -webkit-font-smoothing: antialiased; }
+
+    .nav { position: sticky; top: 0; z-index: 100; background: #fff; border-bottom: 1px solid #E2E8F0; padding: 0 24px; }
+    .nav-inner { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 56px; }
+    .nav-logo img { height: 28px; display: block; }
+    .nav-links { display: flex; gap: 24px; list-style: none; }
+    .nav-links a { font-size: 0.875rem; font-weight: 500; color: #64748B; text-decoration: none; }
+    .nav-links a:hover { color: #6366F1; }
+    .nav-cta { background: linear-gradient(135deg, #6366F1, #8B5CF6); color: #fff !important; padding: 6px 16px; border-radius: 8px; font-weight: 600 !important; }
+    .nav-cta:hover { opacity: 0.9; }
+
+    .hero { padding: 72px 24px 56px; text-align: center; }
+    .hero-inner { max-width: 640px; margin: 0 auto; }
+    .eyebrow { font-size: 0.78rem; font-weight: 700; color: #6366F1; text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+    .hero h1 { font-size: 2.5rem; font-weight: 800; letter-spacing: -0.04em; color: #0F172A; line-height: 1.15; margin-bottom: 16px; }
+    .hero p { color: #64748B; font-size: 1.05rem; }
+
+    .container { max-width: 1080px; margin: 0 auto; padding: 0 24px; }
+
+    .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 28px; padding: 0 24px 80px; max-width: 1080px; margin: 0 auto; }
+
+    .card { border: 1.5px solid #E2E8F0; border-radius: 14px; overflow: hidden; background: #fff; transition: box-shadow 0.2s, transform 0.2s; }
+    .card:hover { box-shadow: 0 8px 32px rgba(0,0,0,0.08); transform: translateY(-3px); }
+    .card-image { height: 180px; display: flex; align-items: center; justify-content: center; font-size: 3rem; }
+    .card-body { padding: 20px 22px 24px; }
+    .card-tag { display: inline-block; font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.07em; color: #6366F1; background: #EEF2FF; padding: 3px 10px; border-radius: 99px; margin-bottom: 12px; }
+    .card h2 { font-size: 1.05rem; font-weight: 700; color: #0F172A; line-height: 1.4; margin-bottom: 8px; }
+    .card p { font-size: 0.875rem; color: #64748B; line-height: 1.6; margin-bottom: 16px; }
+    .card-meta { font-size: 0.78rem; color: #94A3B8; }
+
+    .footer { background: #F8FAFC; border-top: 1px solid #E2E8F0; padding: 20px 24px; }
+    .footer-inner { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px; }
+    .footer-copy { font-size: 0.8125rem; color: #64748B; }
+    .footer-links { display: flex; gap: 20px; list-style: none; }
+    .footer-links a { font-size: 0.8125rem; color: #64748B; text-decoration: none; }
+    .footer-links a:hover { color: #6366F1; }
+
+    @media (max-width: 600px) {
+      .hero h1 { font-size: 1.75rem; }
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+<nav class="nav">
+  <div class="nav-inner">
+    <a href="/" class="nav-logo"><img src="/julay-logo-full.png" alt="Julay.org" /></a>
+    <ul class="nav-links">
+      <li><a href="/#features">Features</a></li>
+      <li><a href="/pricing">Pricing</a></li>
+      <li><a href="/blog" aria-current="page" style="color:#6366F1">Blog</a></li>
+      <li><a href="/login" class="nav-cta">Log in</a></li>
+    </ul>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="hero-inner">
+    <p class="eyebrow">Blog</p>
+    <h1>Insights on AI-powered work</h1>
+    <p>Product updates, productivity tips, and lessons from building Julay.</p>
+  </div>
+</header>
+
+<div class="grid">
+
+  <article class="card">
+    <div class="card-image" style="background: linear-gradient(135deg, #EEF2FF, #E0E7FF);">🤖</div>
+    <div class="card-body">
+      <span class="card-tag">Product</span>
+      <h2>How Julay AI turns a brief into a full project plan in 60 seconds</h2>
+      <p>A walkthrough of the AI Studio feature and how teams are using it to cut planning time by 80%.</p>
+      <span class="card-meta">April 28, 2026 · 5 min read</span>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-image" style="background: linear-gradient(135deg, #F0FDF4, #DCFCE7);">⚡</div>
+    <div class="card-body">
+      <span class="card-tag">Productivity</span>
+      <h2>Why your team keeps missing deadlines — and how to fix it</h2>
+      <p>The 3 structural reasons projects slip, and how execution systems (not more meetings) solve them.</p>
+      <span class="card-meta">April 22, 2026 · 7 min read</span>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-image" style="background: linear-gradient(135deg, #FFF7ED, #FED7AA);">📊</div>
+    <div class="card-body">
+      <span class="card-tag">Engineering</span>
+      <h2>Building real-time collaboration at scale with WebSockets and Redis</h2>
+      <p>How we handle 10,000+ concurrent users with sub-100ms update latency inside the Julay workspace.</p>
+      <span class="card-meta">April 15, 2026 · 9 min read</span>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-image" style="background: linear-gradient(135deg, #FDF2F8, #FCE7F3);">🎯</div>
+    <div class="card-body">
+      <span class="card-tag">Best Practices</span>
+      <h2>OKRs are dead — here's what high-output teams use instead</h2>
+      <p>Sprint velocity, execution cadence, and the metrics that actually predict whether a project ships.</p>
+      <span class="card-meta">April 10, 2026 · 6 min read</span>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-image" style="background: linear-gradient(135deg, #F0F9FF, #BAE6FD);">🔒</div>
+    <div class="card-body">
+      <span class="card-tag">Security</span>
+      <h2>How we keep your project data private in an AI-first world</h2>
+      <p>Our architecture decisions around data isolation, AI model access, and zero training on customer data.</p>
+      <span class="card-meta">April 4, 2026 · 4 min read</span>
+    </div>
+  </article>
+
+  <article class="card">
+    <div class="card-image" style="background: linear-gradient(135deg, #FEFCE8, #FEF08A);">🚀</div>
+    <div class="card-body">
+      <span class="card-tag">Announcement</span>
+      <h2>Julay is now in public beta — here's everything that's new</h2>
+      <p>From AI-powered project generation to time tracking and departments — a tour of v1.0.</p>
+      <span class="card-meta">March 30, 2026 · 3 min read</span>
+    </div>
+  </article>
+
+</div>
+
+<footer class="footer">
+  <div class="footer-inner">
+    <p class="footer-copy">&copy; 2026 Julay. All rights reserved.</p>
+    <ul class="footer-links">
+      <li><a href="/privacy">Privacy</a></li>
+      <li><a href="/terms">Terms</a></li>
+      <li><a href="/cookies">Cookies</a></li>
+      <li><a href="/contact">Contact</a></li>
+    </ul>
+  </div>
+</footer>
+
+</body>
+</html>
