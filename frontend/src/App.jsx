@@ -1,8 +1,29 @@
 import React, { Suspense, useEffect } from 'react';
 import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import { Box, CircularProgress, LinearProgress } from '@mui/material';
+import { Box, CircularProgress, LinearProgress, Typography, Button } from '@mui/material';
 import { fetchCurrentUser } from './store/slices/authSlice.js';
+
+class ErrorBoundary extends React.Component {
+  constructor(props) { super(props); this.state = { hasError: false }; }
+  static getDerivedStateFromError() { return { hasError: true }; }
+  render() {
+    if (this.state.hasError) {
+      return (
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 2 }}>
+          <Box sx={{ width: 48, height: 48, borderRadius: 2.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <span style={{ color: 'white', fontWeight: 800, fontSize: '1.4rem' }}>J</span>
+          </Box>
+          <Typography fontWeight={700} fontSize="1.1rem">Something went wrong</Typography>
+          <Button variant="contained" onClick={() => window.location.reload()} sx={{ textTransform: 'none', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2 }}>
+            Reload page
+          </Button>
+        </Box>
+      );
+    }
+    return this.props.children;
+  }
+}
 
 // ─── Eagerly loaded (needed immediately, before auth check) ───────────────────
 import Landing from './pages/Landing.jsx';
@@ -49,9 +70,17 @@ const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTr
 // ─── Page loading fallback ────────────────────────────────────────────────────
 function PageLoader() {
   return (
-    <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
-      <LinearProgress sx={{ height: 2, '& .MuiLinearProgress-bar': { background: 'linear-gradient(90deg,#6366F1,#8B5CF6)' } }} />
-    </Box>
+    <>
+      <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 9999 }}>
+        <LinearProgress sx={{ height: 2, '& .MuiLinearProgress-bar': { background: 'linear-gradient(90deg,#6366F1,#8B5CF6)' } }} />
+      </Box>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100vh', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ width: 44, height: 44, borderRadius: 2.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: 'white', fontWeight: 800, fontSize: '1.3rem' }}>J</span>
+        </Box>
+        <CircularProgress size={22} sx={{ color: '#6366F1' }} />
+      </Box>
+    </>
   );
 }
 
@@ -126,7 +155,7 @@ export default function App() {
         <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
 
         {/* ── Protected dashboard ── */}
-        <Route path="/dashboard" element={<ProtectedRoute><MainLayout /></ProtectedRoute>}>
+        <Route path="/dashboard" element={<ProtectedRoute><ErrorBoundary><MainLayout /></ErrorBoundary></ProtectedRoute>}>
           <Route index element={
             <Suspense fallback={<PageLoader />}><Dashboard /></Suspense>
           } />
