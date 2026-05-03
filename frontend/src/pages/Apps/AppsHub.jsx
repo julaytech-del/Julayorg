@@ -18,18 +18,6 @@ const APPS = [
     badge: 'CORE'
   },
   {
-    id: 'pdf',
-    name: 'PDF + AI',
-    desc: 'Open any PDF, ask AI to summarize it, extract tasks, or answer questions about it.',
-    icon: '📑',
-    color: '#e17055',
-    bg: 'linear-gradient(135deg, rgba(225,112,85,0.1), rgba(253,150,68,0.08))',
-    border: 'rgba(225,112,85,0.25)',
-    status: 'available',
-    route: '/dashboard/apps/pdf',
-    badge: 'CORE'
-  },
-  {
     id: 'slack',
     name: 'Slack',
     desc: 'Connect your Slack workspace. AI monitors channels and turns messages into tasks.',

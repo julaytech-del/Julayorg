@@ -48,7 +48,6 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     { title: 'Apps', items: [
       { label: 'Workspace Apps',    icon: Apps,             path: '/dashboard/apps' },
       { label: 'Smart Share',       icon: Share,            path: '/dashboard/apps/share' },
-      { label: 'PDF + AI',          icon: PictureAsPdf,     path: '/dashboard/apps/pdf' },
     ]},
     { title: 'Account', items: [
       { label: 'Settings',          icon: Settings,         path: '/dashboard/settings' },
