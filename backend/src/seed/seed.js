@@ -35,7 +35,7 @@ async function seed() {
     industry: 'technology',
     description: 'A leading technology company specializing in digital transformation',
     settings: { timezone: 'UTC', currency: 'USD', workingDays: [1,2,3,4,5] },
-    subscription: { plan: 'pro' }
+    subscription: { plan: 'professional' }
   });
   console.log('Created organization:', org.name);
 
