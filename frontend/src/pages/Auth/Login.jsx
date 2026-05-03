@@ -4,7 +4,7 @@ import {
   Link, CircularProgress, Tabs, Tab, InputAdornment, IconButton,
 } from '@mui/material';
 import {
-  LockOutlined, Email, CheckCircle, Visibility, VisibilityOff,
+  LockOutlined, Email, CheckCircle, Visibility, VisibilityOff, ArrowBack,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink } from 'react-router-dom';
@@ -179,7 +179,11 @@ export default function Login() {
     }}>
       <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 3 }}>
         <CardContent sx={{ p: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Button component={RouterLink} to="/" startIcon={<ArrowBack sx={{ fontSize: 16 }} />}
+              sx={{ color: 'rgba(0,0,0,0.4)', fontSize: '0.8rem', fontWeight: 500, textTransform: 'none', p: 0, minWidth: 0, '&:hover': { color: '#6366F1', background: 'none' } }}>
+              Home
+            </Button>
             <LanguageSwitcher />
           </Box>
 
