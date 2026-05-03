@@ -1,7 +1,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import {
   Box, Card, CardContent, TextField, Button, Typography, Alert,
-  Link, MenuItem, CircularProgress, Tabs, Tab, LinearProgress,
+  Link, MenuItem, CircularProgress, LinearProgress,
   Checkbox, FormControlLabel, InputAdornment, IconButton, Tooltip,
 } from '@mui/material';
 import {
@@ -341,13 +341,31 @@ export default function Register() {
             <Typography variant="h5" fontWeight={700}>{t('auth.register.title')}</Typography>
           </Box>
 
-          <Tabs
-            value={authTab} onChange={(_, v) => setAuthTab(v)} variant="fullWidth"
-            sx={{ mb: 3, '& .MuiTab-root': { textTransform: 'none', fontWeight: 600, fontSize: '0.85rem' }, '& .Mui-selected': { color: '#6366F1' }, '& .MuiTabs-indicator': { backgroundColor: '#6366F1' } }}
-          >
-            <Tab value="password" label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}><LockOutlined sx={{ fontSize: 15 }} /> {t('auth.register.tabPassword')}</Box>} />
-            <Tab value="otp" label={<Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}><Email sx={{ fontSize: 15 }} /> {t('auth.register.tabEmail')}</Box>} />
-          </Tabs>
+          {/* Auth method toggle — pill style */}
+          <Box sx={{ display: 'flex', background: '#F1F5F9', borderRadius: 2.5, p: 0.5, mb: 3 }}>
+            {[
+              { value: 'password', icon: <LockOutlined sx={{ fontSize: 14 }} />, label: t('auth.register.tabPassword') },
+              { value: 'otp',      icon: <Email sx={{ fontSize: 14 }} />,        label: t('auth.register.tabEmail') },
+            ].map(opt => (
+              <Box
+                key={opt.value}
+                onClick={() => setAuthTab(opt.value)}
+                sx={{
+                  flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  gap: 0.75, py: 1, px: 1.5, borderRadius: 2, cursor: 'pointer',
+                  fontSize: '0.82rem', fontWeight: 600, userSelect: 'none',
+                  transition: 'all 0.2s',
+                  ...(authTab === opt.value
+                    ? { background: 'white', color: '#6366F1', boxShadow: '0 1px 4px rgba(0,0,0,0.1)' }
+                    : { color: '#64748B', '&:hover': { color: '#374151' } }
+                  ),
+                }}
+              >
+                {opt.icon}
+                {opt.label}
+              </Box>
+            ))}
+          </Box>
 
           {authTab === 'password' ? <PasswordRegister /> : <OTPRegister />}
 
