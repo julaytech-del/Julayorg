@@ -26,6 +26,14 @@ const btnSx = {
   '&:disabled': { background: 'rgba(99,102,241,0.4)', color: 'rgba(255,255,255,0.5)' },
 };
 
+const fieldSx = {
+  '& .MuiOutlinedInput-root': {
+    borderRadius: 1.5,
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#6366F1', borderWidth: 1.5 },
+  },
+  '& .MuiInputLabel-root.Mui-focused': { color: '#6366F1' },
+};
+
 // Password policy
 const PWD_RULES = [
   { id: 'len',     label: 'At least 12 characters',         test: p => p.length >= 12 },
@@ -137,21 +145,21 @@ function PasswordRegister() {
 
       <TextField
         fullWidth label={t('auth.register.name')} name="name"
-        value={form.name} onChange={set} required sx={{ mb: 2 }}
+        value={form.name} onChange={set} required sx={{ mb: 2, ...fieldSx }}
         error={!!fieldErrors.name} helperText={fieldErrors.name}
         inputProps={{ 'aria-describedby': fieldErrors.name ? 'name-err' : undefined }}
       />
 
       <TextField
         fullWidth label={t('auth.register.email')} name="email"
-        type="email" value={form.email} onChange={set} required sx={{ mb: 2 }}
+        type="email" value={form.email} onChange={set} required sx={{ mb: 2, ...fieldSx }}
         error={!!fieldErrors.email} helperText={fieldErrors.email}
       />
 
       <TextField
         fullWidth label={t('auth.register.password')} name="password"
         type={showPwd ? 'text' : 'password'} value={form.password}
-        onChange={set} required sx={{ mb: 0.5 }}
+        onChange={set} required sx={{ mb: 0.5, ...fieldSx }}
         error={!!fieldErrors.password} helperText={fieldErrors.password}
         InputProps={{
           endAdornment: (
@@ -167,12 +175,12 @@ function PasswordRegister() {
 
       <TextField
         fullWidth label={t('auth.register.orgName')} name="organizationName"
-        value={form.organizationName} onChange={set} required sx={{ mb: 2 }}
+        value={form.organizationName} onChange={set} required sx={{ mb: 2, ...fieldSx }}
       />
 
       <TextField
         fullWidth select label={t('auth.register.industry')} name="industry"
-        value={form.industry} onChange={set} sx={{ mb: 2 }}
+        value={form.industry} onChange={set} sx={{ mb: 2, ...fieldSx }}
       >
         {INDUSTRIES.map(i => <MenuItem key={i} value={i} sx={{ textTransform: 'capitalize' }}>{i}</MenuItem>)}
       </TextField>
@@ -274,7 +282,7 @@ function OTPRegister() {
           onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
           required autoFocus placeholder="000000"
           inputProps={{ inputMode: 'numeric', style: { letterSpacing: '0.4em', fontSize: '1.5rem', textAlign: 'center', fontFamily: 'monospace' } }}
-          sx={{ mb: 3 }}
+          sx={{ mb: 3, ...fieldSx }}
         />
         <Button fullWidth type="submit" variant="contained" size="large"
           disabled={loading || code.length !== 6}
@@ -297,10 +305,10 @@ function OTPRegister() {
   return (
     <form onSubmit={handleSendCode} noValidate>
       {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
-      <TextField fullWidth label={t('auth.register.name')} name="name" value={form.name} onChange={set} required sx={{ mb: 2 }} />
-      <TextField fullWidth label={t('auth.register.email')} name="email" type="email" value={form.email} onChange={set} required sx={{ mb: 2 }} />
-      <TextField fullWidth label={t('auth.register.orgName')} name="organizationName" value={form.organizationName} onChange={set} sx={{ mb: 2 }} />
-      <TextField fullWidth select label={t('auth.register.industry')} name="industry" value={form.industry} onChange={set} sx={{ mb: 2 }}>
+      <TextField fullWidth label={t('auth.register.name')} name="name" value={form.name} onChange={set} required sx={{ mb: 2, ...fieldSx }} />
+      <TextField fullWidth label={t('auth.register.email')} name="email" type="email" value={form.email} onChange={set} required sx={{ mb: 2, ...fieldSx }} />
+      <TextField fullWidth label={t('auth.register.orgName')} name="organizationName" value={form.organizationName} onChange={set} sx={{ mb: 2, ...fieldSx }} />
+      <TextField fullWidth select label={t('auth.register.industry')} name="industry" value={form.industry} onChange={set} sx={{ mb: 2, ...fieldSx }}>
         {INDUSTRIES.map(i => <MenuItem key={i} value={i} sx={{ textTransform: 'capitalize' }}>{i}</MenuItem>)}
       </TextField>
       <FormControlLabel
