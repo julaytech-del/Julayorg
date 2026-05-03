@@ -58,6 +58,10 @@ jobs:
             git reset --hard origin/main
             git clean -fd
 
+            echo "=== Block port 5000 from external access ==="
+            sudo ufw deny 5000/tcp 2>/dev/null || true
+            sudo ufw --force enable 2>/dev/null || true
+
             echo "=== Prepare nginx dist dir ==="
             sudo mkdir -p /var/www/julay/frontend/dist
             sudo chown -R ubuntu:ubuntu /var/www/julay

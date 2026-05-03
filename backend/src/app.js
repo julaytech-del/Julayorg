@@ -34,7 +34,7 @@ import { errorHandler, notFound } from './middleware/error.middleware.js';
 const app = express();
 
 const allowedOrigins = ['https://julay.org', 'https://www.julay.org', 'https://analytics.julay.org', 'http://localhost:3000', 'http://localhost:5173'];
-app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(origin)) cb(null, true); else cb(new Error('Not allowed by CORS')); }, credentials: true }));
+app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(origin)) cb(null, true); else cb(null, false); }, credentials: true }));
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
 app.use(express.json({ limit: '10mb' }));
