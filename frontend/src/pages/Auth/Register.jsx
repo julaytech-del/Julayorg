@@ -29,9 +29,12 @@ const btnSx = {
 const fieldSx = {
   '& .MuiOutlinedInput-root': {
     borderRadius: 1.5,
-    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#6366F1', borderWidth: 1.5 },
+    '& .MuiOutlinedInput-notchedOutline': { borderColor: '#E2E8F0' },
+    '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: '#CBD5E1' },
+    '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: '#E2E8F0', borderWidth: 1 },
   },
   '& .MuiInputLabel-root.Mui-focused': { color: '#6366F1' },
+  '& .MuiInputBase-root': { outline: 'none' },
 };
 
 // Password policy
