@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import {
   LockOutlined, Email, CheckCircle, Visibility, VisibilityOff,
-  CheckCircleOutline, RadioButtonUnchecked,
+  CheckCircleOutline, RadioButtonUnchecked, ArrowBack,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, Link as RouterLink, useSearchParams } from 'react-router-dom';
@@ -349,7 +349,11 @@ export default function Register() {
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%)', p: 2 }}>
       <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 3 }}>
         <CardContent sx={{ p: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 2 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Button component={RouterLink} to="/" startIcon={<ArrowBack sx={{ fontSize: 16 }} />}
+              sx={{ color: 'rgba(0,0,0,0.4)', fontSize: '0.8rem', fontWeight: 500, textTransform: 'none', p: 0, minWidth: 0, '&:hover': { color: '#6366F1', background: 'none' } }}>
+              Home
+            </Button>
             <LanguageSwitcher />
           </Box>
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, mb: 3 }}>
