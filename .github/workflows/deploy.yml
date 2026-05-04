@@ -58,12 +58,9 @@ jobs:
             git reset --hard origin/main
             git clean -fd
 
-            echo "=== Block port 5000 from external access (safe UFW) ==="
-            sudo ufw allow 22/tcp 2>/dev/null || true
-            sudo ufw allow 80/tcp 2>/dev/null || true
-            sudo ufw allow 443/tcp 2>/dev/null || true
-            sudo ufw deny 5000/tcp 2>/dev/null || true
-            sudo ufw --force enable 2>/dev/null || true
+            echo "=== Block port 5000 via iptables (no UFW risk) ==="
+            sudo iptables -C INPUT -p tcp --dport 5000 -j DROP 2>/dev/null || \
+              sudo iptables -I INPUT -p tcp --dport 5000 -j DROP 2>/dev/null || true
 
             echo "=== Prepare nginx dist dir ==="
             sudo mkdir -p /var/www/julay/frontend/dist
