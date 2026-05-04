@@ -67,6 +67,10 @@ jobs:
             sudo mkdir -p /var/www/julay/frontend/dist
             sudo chown -R ubuntu:ubuntu /var/www/julay
 
+            echo "=== Ensure uploads directory persists ==="
+            mkdir -p /home/ubuntu/Julayorg/backend/uploads
+            chmod 755 /home/ubuntu/Julayorg/backend/uploads
+
             echo "=== Install & restart backend ==="
             cd backend
             npm install --production
