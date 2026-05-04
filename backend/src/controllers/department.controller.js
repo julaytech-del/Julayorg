@@ -27,6 +27,16 @@ export const createDepartment = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+export const getDepartment = async (req, res, next) => {
+  try {
+    const dept = await Department.findById(req.params.id).populate('head', 'name avatar');
+    if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
+    const orgId = req.user.organization._id || req.user.organization;
+    const memberCount = await User.countDocuments({ department: dept._id, organization: orgId });
+    res.json({ success: true, data: { ...dept.toObject(), memberCount } });
+  } catch (err) { next(err); }
+};
+
 export const updateDepartment = async (req, res, next) => {
   try {
     const dept = await Department.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('head', 'name avatar');

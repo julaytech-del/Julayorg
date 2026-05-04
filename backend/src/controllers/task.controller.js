@@ -151,6 +151,14 @@ export const updateTaskStatus = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+export const getComments = async (req, res, next) => {
+  try {
+    const task = await Task.findById(req.params.id).populate('comments.author', 'name avatar');
+    if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
+    res.json({ success: true, data: task.comments });
+  } catch (err) { next(err); }
+};
+
 export const addComment = async (req, res, next) => {
   try {
     const { content } = req.body;

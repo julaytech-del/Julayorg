@@ -35,7 +35,8 @@ const organizationSchema = new mongoose.Schema({
     stripeCustomerId: { type: String },
     stripeSubscriptionId: { type: String },
     aiUsedThisMonth: { type: Number, default: 0 },
-    billingPeriodStart: { type: Date, default: Date.now }
+    billingPeriodStart: { type: Date, default: Date.now },
+    storageUsedBytes: { type: Number, default: 0 }
   }
 }, { timestamps: true });
 

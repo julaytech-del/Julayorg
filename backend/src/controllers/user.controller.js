@@ -55,6 +55,15 @@ export const deleteUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+export const getMe = async (req, res, next) => {
+  try {
+    const user = await User.findById(req.user._id)
+      .populate('role', 'name level permissions').populate('department', 'name color');
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    res.json({ success: true, data: user });
+  } catch (err) { next(err); }
+};
+
 export const updateMe = async (req, res, next) => {
   try {
     const { password, email, isAdmin, organization, ...updates } = req.body;
