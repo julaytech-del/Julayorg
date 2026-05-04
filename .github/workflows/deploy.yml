@@ -130,8 +130,7 @@ jobs:
       - name: Reload nginx & setup analytics subdomain SSL
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
-            echo "=== APPLYING NGINX CONFIG ==="
-            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
+            echo "=== SETUP NGINX SYMLINKS ==="
             sudo ln -sf /etc/nginx/sites-available/julay.org /etc/nginx/sites-enabled/julay.org
             sudo rm -f /etc/nginx/sites-enabled/default
 
@@ -139,6 +138,9 @@ jobs:
             sudo certbot certonly --nginx --non-interactive --agree-tos \
               --expand -d julay.org -d www.julay.org -d analytics.julay.org \
               --email assimohammad489@gmail.com 2>&1 || echo "CERTBOT: cert already up to date or failed"
+
+            echo "=== APPLYING NGINX CONFIG (after certbot so it cannot overwrite ours) ==="
+            sudo cp /home/ubuntu/Julayorg/nginx.conf /etc/nginx/sites-available/julay.org
 
             echo "=== RELOAD NGINX ==="
             sudo nginx -t && sudo systemctl reload nginx && echo "NGINX RELOADED OK"
