@@ -82,6 +82,9 @@ jobs:
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << ENDSSH
             touch /home/ubuntu/Julayorg/backend/.env
+            grep -q '^GOOGLE_CLIENT_ID=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^GOOGLE_CLIENT_ID=.*|GOOGLE_CLIENT_ID=722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'GOOGLE_CLIENT_ID=722079093063-prb89vbbksnhhrgsi1q785atmgs6hhac.apps.googleusercontent.com' >> /home/ubuntu/Julayorg/backend/.env
             grep -q '^GOOGLE_CLIENT_SECRET=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^GOOGLE_CLIENT_SECRET=.*|GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'GOOGLE_CLIENT_SECRET=${{ secrets.GOOGLE_CLIENT_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env

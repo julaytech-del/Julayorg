@@ -56,10 +56,19 @@ export default function GoogleAuthButton({ dark = false }) {
 
     setLoading(true);
 
+    // Auto-cancel if popup never returns within 3 minutes
+    const timeoutId = setTimeout(() => {
+      clearInterval(pollTimer);
+      if (!popup.closed) popup.close();
+      setLoading(false);
+      dispatch(showSnackbar({ message: 'Google sign-in timed out. Please try again.', severity: 'warning' }));
+    }, 3 * 60 * 1000);
+
     const pollTimer = setInterval(async () => {
       try {
         if (popup.closed) {
           clearInterval(pollTimer);
+          clearTimeout(timeoutId);
           setLoading(false);
           return;
         }
@@ -69,6 +78,7 @@ export default function GoogleAuthButton({ dark = false }) {
 
         // Popup landed on our domain — read code/error immediately before SPA nav
         clearInterval(pollTimer);
+        clearTimeout(timeoutId);
         const search = new URLSearchParams(popup.location.search);
         const hash = new URLSearchParams(popup.location.hash.replace('#', ''));
         popup.close();
