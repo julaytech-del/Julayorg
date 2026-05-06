@@ -76,6 +76,12 @@ jobs:
             npm install --production
             pm2 delete julay-backend 2>/dev/null || true
             pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
+
+            echo "=== Wait 8s then check backend health ==="
+            sleep 8
+            pm2 status julay-backend
+            pm2 logs julay-backend --lines 30 --nostream || true
+            curl -sf http://localhost:5000/health && echo "BACKEND HEALTHY ✅" || echo "BACKEND NOT RESPONDING ❌"
           ENDSSH
 
       - name: Inject secrets into .env
