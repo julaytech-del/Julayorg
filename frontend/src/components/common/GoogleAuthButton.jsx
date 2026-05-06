@@ -108,7 +108,7 @@ export default function GoogleAuthButton({ dark = false }) {
         }
 
         try {
-          const res = await api.post('/auth/google-code', { code, redirect_uri: REDIRECT_URI });
+          const res = await api.post('/auth/google-code', { code, redirect_uri: REDIRECT_URI }, { timeout: 15000 });
           dispatch(setCredentials(res.data));
           navigate('/dashboard');
         } catch (err) {
