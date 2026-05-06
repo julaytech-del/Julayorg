@@ -59,9 +59,11 @@ jobs:
             git reset --hard origin/main
             git clean -fd
 
-            echo "=== Block port 5000 via iptables (no UFW risk) ==="
+            echo "=== Block external port 5000, allow loopback (for nginx proxy) ==="
+            sudo iptables -C INPUT -i lo -p tcp --dport 5000 -j ACCEPT 2>/dev/null || \
+              sudo iptables -I INPUT 1 -i lo -p tcp --dport 5000 -j ACCEPT 2>/dev/null || true
             sudo iptables -C INPUT -p tcp --dport 5000 -j DROP 2>/dev/null || \
-              sudo iptables -I INPUT -p tcp --dport 5000 -j DROP 2>/dev/null || true
+              sudo iptables -A INPUT -p tcp --dport 5000 -j DROP 2>/dev/null || true
 
             echo "=== Prepare nginx dist dir ==="
             sudo mkdir -p /var/www/julay/frontend/dist
