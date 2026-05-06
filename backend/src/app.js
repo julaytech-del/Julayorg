@@ -29,7 +29,6 @@ import portfolioRoutes from './routes/portfolio.routes.js';
 import twoFactorRoutes from './routes/twoFactor.routes.js';
 import integrationsRoutes from './routes/integrations.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
-import uploadRoutes from './routes/upload.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -73,7 +72,6 @@ app.use('/api/portfolio', portfolioRoutes);
 app.use('/api/2fa', twoFactorRoutes);
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/analytics', analyticsRoutes);
-app.use('/api/upload', uploadRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
