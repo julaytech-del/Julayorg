@@ -108,8 +108,8 @@ export default function ProjectDetail() {
               </Box>
             </Box>
             <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
-              <Button size="small" variant="outlined" startIcon={<ViewKanban />} onClick={() => navigate(`/projects/${id}/kanban`)}>{t('kanban.title')}</Button>
-              <Button size="small" variant="outlined" startIcon={<Timeline />} onClick={() => navigate(`/projects/${id}/timeline`)}>{t('timeline.title')}</Button>
+              <Button size="small" variant="outlined" startIcon={<ViewKanban />} onClick={() => navigate(`/dashboard/projects/${id}/kanban`)}>{t('kanban.title')}</Button>
+              <Button size="small" variant="outlined" startIcon={<Timeline />} onClick={() => navigate(`/dashboard/projects/${id}/timeline`)}>{t('timeline.title')}</Button>
               <Button size="small" variant="outlined" startIcon={<PsychologyAlt />} onClick={handleStandup} disabled={aiLoading}>{t('ai.tools.standup.title')}</Button>
               <Button size="small" variant="outlined" startIcon={<AutoAwesome />} onClick={handlePerformance} disabled={aiLoading}>{t('ai.tools.performance.analyze')}</Button>
               <Button size="small" variant="outlined" startIcon={<Refresh />} onClick={handleReplan} color="warning">{t('ai.tools.replan.replan')}</Button>
