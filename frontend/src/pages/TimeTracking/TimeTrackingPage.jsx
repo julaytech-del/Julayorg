@@ -59,6 +59,10 @@ export default function TimeTrackingPage() {
 
   useEffect(() => {
     loadData();
+    // re-fetch when user returns to tab
+    const onFocus = () => loadData();
+    window.addEventListener('focus', onFocus);
+    return () => window.removeEventListener('focus', onFocus);
   }, []);
 
   const loadData = async () => {
@@ -152,10 +156,10 @@ export default function TimeTrackingPage() {
     }
   };
 
-  // backend returns { totalMinutes, billableMinutes, entriesByTask }
-  const totalMins    = report?.totalMinutes    || 0;
-  const billableMins = report?.billableMinutes || 0;
-  const tasksTracked = report?.entriesByTask?.length || 0;
+  // compute stats directly from loaded entries (no separate API needed)
+  const totalMins    = entries.reduce((s, e) => s + (e.duration || 0), 0);
+  const billableMins = entries.filter(e => e.billable).reduce((s, e) => s + (e.duration || 0), 0);
+  const tasksTracked = new Set(entries.map(e => (e.task?._id || e.task)?.toString()).filter(Boolean)).size;
   const todayEntries = entries.filter(e => new Date(e.createdAt).toDateString() === new Date().toDateString()).length;
 
   return (
