@@ -203,6 +203,26 @@ export default function TimeTrackingPage() {
                 const elapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
                 const h = Math.floor(elapsed / 3600), m = Math.floor((elapsed % 3600) / 60), s = elapsed % 60;
                 const display = [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+
+                const handleStopAndSave = async () => {
+                  const finalElapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
+                  dispatch(stopGlobalTimer(timer.taskId));
+                  if (finalElapsed < 5) return;
+                  try {
+                    await api.post('/time-entries', {
+                      task: timer.taskId,
+                      description: 'Timer entry',
+                      startTime: new Date(timer.startedAt),
+                      endTime: new Date(),
+                      billable: true,
+                    });
+                    dispatch(showSnackbar({ message: `Saved ${fmt(finalElapsed)} for "${timer.taskTitle}"`, severity: 'success' }));
+                    loadData();
+                  } catch {
+                    dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));
+                  }
+                };
+
                 return (
                   <Box key={timer.taskId} sx={{
                     display: 'flex', alignItems: 'center', gap: 2,
@@ -219,8 +239,8 @@ export default function TimeTrackingPage() {
                     <Typography sx={{ fontFamily: 'monospace', fontSize: '1.4rem', fontWeight: 800, color: '#EF4444', minWidth: 90 }}>
                       {display}
                     </Typography>
-                    <Tooltip title="Stop & discard">
-                      <IconButton size="small" onClick={() => dispatch(stopGlobalTimer(timer.taskId))}
+                    <Tooltip title="Stop & save">
+                      <IconButton size="small" onClick={handleStopAndSave}
                         sx={{ color: '#EF4444', '&:hover': { bgcolor: '#FEE2E2' } }}>
                         <Stop fontSize="small" />
                       </IconButton>
