@@ -7,17 +7,11 @@
   </defs>
   <!-- Rounded square background -->
   <rect width="64" height="64" rx="14" fill="url(#bg)"/>
-  <!-- J letterform in white -->
-  <!-- Top bar of J -->
-  <rect x="16" y="13" width="22" height="7" rx="3.5" fill="white"/>
-  <!-- Vertical stem of J -->
-  <rect x="25" y="19" width="7" height="22" rx="3.5" fill="white"/>
-  <!-- J curve at bottom -->
-  <path d="M28.5 41 Q29 51 19 51 Q13 51 11 46.5" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
-  <circle cx="11" cy="46" r="3.5" fill="white"/>
-  <!-- dot above (ai spark) -->
-  <circle cx="46" cy="17" r="5" fill="white" opacity="0.9"/>
-  <!-- second vertical line (org mark) -->
-  <rect x="42" y="23" width="7" height="19" rx="3.5" fill="white"/>
-  <path d="M45.5 42 Q45.5 50 38 50" stroke="white" stroke-width="7" stroke-linecap="round" fill="none"/>
+  <!-- J — top horizontal bar -->
+  <rect x="13" y="11" width="30" height="8" rx="4" fill="white"/>
+  <!-- J — vertical stem -->
+  <rect x="25" y="18" width="8" height="24" rx="4" fill="white"/>
+  <!-- J — bottom curve turning left -->
+  <path d="M29 42 Q29 54 18 54 Q11 54 9 49" stroke="white" stroke-width="8" stroke-linecap="round" fill="none"/>
+  <circle cx="9" cy="49" r="4" fill="white"/>
 </svg>

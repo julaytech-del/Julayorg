@@ -38,13 +38,13 @@
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <meta name="apple-mobile-web-app-title" content="Julay" />
     <link rel="manifest" href="/manifest.json" />
-    <link rel="apple-touch-icon" sizes="180x180" href="/logo-icon.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/logo-icon-favicon.png" />
     <link id="fav32" rel="icon" type="image/png" sizes="32x32" href="/icon-julay.png" />
     <link id="fav16" rel="icon" type="image/png" sizes="16x16" href="/icon-julay-small.png" />
     <link id="favshortcut" rel="shortcut icon" href="/icon-julay.png" />
     <script>
-      // Force every browser to re-fetch favicon on each deploy
-      var _fbt = '20260510-1';
+      // Force every browser to re-fetch favicon on each deploy — update _fbt on new deploy
+      var _fbt = '20260510-2';
       ['fav32','fav16','favshortcut'].forEach(function(id){
         var el = document.getElementById(id);
         if (el) el.href = el.href.split('?')[0] + '?v=' + _fbt;
