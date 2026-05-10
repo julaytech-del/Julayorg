@@ -153,6 +153,10 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     dispatch(stopGlobalTimer(task._id));
     if (elapsed < 5) return;
     const hours = Math.round((elapsed / 3600) * 100) / 100;
+    // update display immediately (don't wait for network)
+    const hours = Math.round((elapsed / 3600) * 100) / 100;
+    const newActual = Math.round(((localTask.actualHours || 0) + hours) * 100) / 100;
+    setLocalTask(p => ({ ...p, actualHours: newActual }));
     try {
       await api.post('/time-entries', {
         task: task._id,
@@ -161,13 +165,11 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         endTime: new Date(),
         billable: true,
       });
-      // backend auto-increments actualHours; fetch fresh value for display
-      const taskRes = await api.get(`/tasks/${task._id}`);
-      const fresh = taskRes.data?.data;
-      if (fresh) setLocalTask(p => ({ ...p, actualHours: fresh.actualHours }));
+      // backend auto-increments actualHours
       dispatch(showSnackbar({ message: `Logged ${fmtSeconds(elapsed)}`, severity: 'success' }));
       onUpdate?.();
     } catch {
+      setLocalTask(p => ({ ...p, actualHours: localTask.actualHours || 0 })); // revert on error
       dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));
     }
   };

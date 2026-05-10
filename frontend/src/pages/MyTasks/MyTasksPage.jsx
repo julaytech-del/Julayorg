@@ -161,6 +161,12 @@ export default function MyTasksPage() {
       // backend returns { success, data: { tasks, counts } }
       const list = d?.data?.tasks ?? d?.tasks ?? (Array.isArray(d) ? d : []);
       setTasks(list);
+      // keep selectedTask fresh so modal shows updated actualHours on reopen
+      setSelectedTask(prev => {
+        if (!prev?._id) return prev;
+        const fresh = list.find(t => t._id === prev._id);
+        return fresh || prev;
+      });
     } catch {
       setTasks([]);
     } finally {
