@@ -69,8 +69,9 @@ export default function TimeTrackingPage() {
         api.get('/tasks?limit=100'),
         api.get('/time-entries/my-report'),
       ]);
-      if (entriesRes.status === 'fulfilled') setEntries(entriesRes.value?.data?.data || entriesRes.value?.data || []);
-      if (tasksRes.status === 'fulfilled')   setTasks(tasksRes.value?.data?.data || tasksRes.value?.data || []);
+      // axios: res.data = { success, data: [...] }  →  res.data.data = actual array
+      if (entriesRes.status === 'fulfilled') setEntries(Array.isArray(entriesRes.value?.data?.data) ? entriesRes.value.data.data : entriesRes.value?.data || []);
+      if (tasksRes.status === 'fulfilled')   setTasks(tasksRes.value?.data?.data?.tasks || tasksRes.value?.data?.data || tasksRes.value?.data || []);
       if (reportRes.status === 'fulfilled')  setReport(reportRes.value?.data?.data || null);
     } catch {
       // silently fail
@@ -151,8 +152,11 @@ export default function TimeTrackingPage() {
     }
   };
 
-  const totalMins = Array.isArray(report) ? report.reduce((sum, r) => sum + (r.totalMinutes || 0), 0) : 0;
-  const billableMins = Array.isArray(report) ? report.reduce((sum, r) => sum + (r.billableMinutes || 0), 0) : 0;
+  // backend returns { totalMinutes, billableMinutes, entriesByTask }
+  const totalMins    = report?.totalMinutes    || 0;
+  const billableMins = report?.billableMinutes || 0;
+  const tasksTracked = report?.entriesByTask?.length || 0;
+  const todayEntries = entries.filter(e => new Date(e.createdAt).toDateString() === new Date().toDateString()).length;
 
   return (
     <Box>
@@ -172,10 +176,10 @@ export default function TimeTrackingPage() {
       {/* Stats Row */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 2, mb: 3 }}>
         {[
-          { icon: <AccessTime sx={{ color: '#6366F1' }} />, label: 'Total Logged', value: fmtMins(totalMins), color: '#6366F1' },
-          { icon: <AttachMoney sx={{ color: '#10B981' }} />, label: 'Billable Time', value: fmtMins(billableMins), color: '#10B981' },
-          { icon: <CalendarToday sx={{ color: '#F59E0B' }} />, label: 'Tasks Tracked', value: Array.isArray(report) ? report.length : 0, color: '#F59E0B' },
-          { icon: <BarChart sx={{ color: '#8B5CF6' }} />, label: "Today's Entries", value: entries.filter(e => new Date(e.createdAt).toDateString() === new Date().toDateString()).length, color: '#8B5CF6' },
+          { icon: <AccessTime sx={{ color: '#6366F1' }} />,  label: 'Total Logged',    value: fmtMins(totalMins),   color: '#6366F1' },
+          { icon: <AttachMoney sx={{ color: '#10B981' }} />, label: 'Billable Time',   value: fmtMins(billableMins), color: '#10B981' },
+          { icon: <CalendarToday sx={{ color: '#F59E0B' }} />, label: 'Tasks Tracked', value: tasksTracked,          color: '#F59E0B' },
+          { icon: <BarChart sx={{ color: '#8B5CF6' }} />,   label: "Today's Entries",  value: todayEntries,          color: '#8B5CF6' },
         ].map(s => (
           <Card key={s.label} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
