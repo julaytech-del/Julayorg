@@ -9,8 +9,8 @@ import {
   PlayArrow, Stop, Add, Delete, AccessTime, AttachMoney, CalendarToday,
   BarChart, Timer,
 } from '@mui/icons-material';
-import { useDispatch } from 'react-redux';
-import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { useDispatch, useSelector } from 'react-redux';
+import { showSnackbar, stopGlobalTimer } from '../../store/slices/uiSlice.js';
 import api from '../../services/api.js';
 
 function fmt(seconds) {
@@ -28,7 +28,15 @@ function fmtMins(mins) {
 }
 
 export default function TimeTrackingPage() {
-  const dispatch = useDispatch();
+  const dispatch     = useDispatch();
+  const activeTimers = useSelector(s => s.ui.activeTimers);
+  const [tick, setTick] = useState(0);
+
+  useEffect(() => {
+    if (!activeTimers.length) return;
+    const id = setInterval(() => setTick(t => t + 1), 1000);
+    return () => clearInterval(id);
+  }, [activeTimers.length]);
 
   // Timer state
   const [running, setRunning]       = useState(false);
@@ -177,6 +185,53 @@ export default function TimeTrackingPage() {
           </Card>
         ))}
       </Box>
+
+      {/* ── Active Timers from Redux ── */}
+      {activeTimers.length > 0 && (
+        <Card elevation={0} sx={{ border: '1.5px solid #FECACA', borderRadius: 2, mb: 3, bgcolor: '#FFF5F5' }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+              <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: '#EF4444',
+                animation: 'liveDot 1s ease-in-out infinite',
+                '@keyframes liveDot': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } } }} />
+              <Typography fontWeight={700} sx={{ color: '#EF4444' }}>
+                Active Timers ({activeTimers.length})
+              </Typography>
+            </Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {activeTimers.map(timer => {
+                const elapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
+                const h = Math.floor(elapsed / 3600), m = Math.floor((elapsed % 3600) / 60), s = elapsed % 60;
+                const display = [h, m, s].map(v => String(v).padStart(2, '0')).join(':');
+                return (
+                  <Box key={timer.taskId} sx={{
+                    display: 'flex', alignItems: 'center', gap: 2,
+                    p: 1.5, borderRadius: 2, bgcolor: 'white',
+                    border: '1px solid #FECACA',
+                  }}>
+                    <Timer sx={{ color: '#EF4444', fontSize: 18, flexShrink: 0 }} />
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography fontWeight={600} noWrap sx={{ fontSize: '0.9rem' }}>{timer.taskTitle}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Started {new Date(timer.startedAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                      </Typography>
+                    </Box>
+                    <Typography sx={{ fontFamily: 'monospace', fontSize: '1.4rem', fontWeight: 800, color: '#EF4444', minWidth: 90 }}>
+                      {display}
+                    </Typography>
+                    <Tooltip title="Stop & discard">
+                      <IconButton size="small" onClick={() => dispatch(stopGlobalTimer(timer.taskId))}
+                        sx={{ color: '#EF4444', '&:hover': { bgcolor: '#FEE2E2' } }}>
+                        <Stop fontSize="small" />
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                );
+              })}
+            </Box>
+          </CardContent>
+        </Card>
+      )}
 
       {/* Timer */}
       <Card elevation={0} sx={{ border: '1px solid', borderColor: running ? '#6366F1' : 'divider', borderRadius: 2, mb: 3, transition: 'border-color 0.3s' }}>

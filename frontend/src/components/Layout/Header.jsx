@@ -274,20 +274,28 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
           {activeTimers.map(timer => {
             const elapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
             return (
-              <Tooltip key={timer.taskId} title={`Timer: ${timer.taskTitle}`}>
+              <Tooltip key={timer.taskId} title={timer.taskTitle}>
                 <Box sx={{
                   display:'flex', alignItems:'center', gap:0.6,
                   bgcolor:'#FEF2F2', border:'1.5px solid #FECACA',
-                  borderRadius:'10px', px:1, py:0.4,
+                  borderRadius:'10px', overflow:'hidden',
                 }}>
-                  <Box sx={{ width:6, height:6, borderRadius:'50%', bgcolor:'#EF4444', flexShrink:0,
-                    animation:'timerDot 1s ease-in-out infinite',
-                    '@keyframes timerDot':{ '0%,100%':{ opacity:1 }, '50%':{ opacity:0.2 } } }}/>
-                  <Typography sx={{ fontSize:'0.75rem', fontWeight:700, color:'#EF4444', fontFamily:'monospace', letterSpacing:'0.04em' }}>
-                    {fmtTimer(elapsed)}
-                  </Typography>
+                  {/* clickable area → go to Time Tracking */}
+                  <Box onClick={() => navigate('/dashboard/time-tracking')} sx={{
+                    display:'flex', alignItems:'center', gap:0.5,
+                    px:1, py:0.4, cursor:'pointer',
+                    '&:hover':{ bgcolor:'#FEE2E2' },
+                  }}>
+                    <Box sx={{ width:6, height:6, borderRadius:'50%', bgcolor:'#EF4444', flexShrink:0,
+                      animation:'timerDot 1s ease-in-out infinite',
+                      '@keyframes timerDot':{ '0%,100%':{ opacity:1 }, '50%':{ opacity:0.2 } } }}/>
+                    <Typography sx={{ fontSize:'0.75rem', fontWeight:700, color:'#EF4444', fontFamily:'monospace', letterSpacing:'0.04em' }}>
+                      {fmtTimer(elapsed)}
+                    </Typography>
+                  </Box>
+                  {/* X to discard */}
                   <IconButton size="small" onClick={() => dispatch(stopGlobalTimer(timer.taskId))}
-                    sx={{ p:0.2, color:'#EF4444', '&:hover':{ bgcolor:'#FEE2E2' } }}>
+                    sx={{ p:0.3, mr:0.3, color:'#EF4444', '&:hover':{ bgcolor:'#FEE2E2' } }}>
                     <Close sx={{ fontSize:12 }}/>
                   </IconButton>
                 </Box>
