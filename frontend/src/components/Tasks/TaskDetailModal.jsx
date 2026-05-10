@@ -148,27 +148,29 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   };
 
   const handleTimerStop = async () => {
-    const elapsed   = timerSeconds;
-    const startTime = new Date(activeTimer.startedAt);
+    if (!activeTimer) return;
+    const startedAt = activeTimer.startedAt;
+    const endTime   = new Date();
+    const elapsed   = Math.floor((endTime.getTime() - startedAt) / 1000);
     dispatch(stopGlobalTimer(task._id));
     if (elapsed < 5) return;
-    // update display immediately (don't wait for network)
-    const hours = Math.round((elapsed / 3600) * 100) / 100;
-    const newActual = Math.round(((localTask.actualHours || 0) + hours) * 100) / 100;
-    setLocalTask(p => ({ ...p, actualHours: newActual }));
+    // update display immediately before any network call
+    const hours     = Math.round((elapsed / 3600) * 100) / 100;
+    setLocalTask(p => {
+      const newActual = Math.round(((p.actualHours || 0) + hours) * 100) / 100;
+      return { ...p, actualHours: newActual };
+    });
     try {
       await api.post('/time-entries', {
-        task: task._id,
+        task:        task._id,
         description: 'Timer entry',
-        startTime,
-        endTime: new Date(),
-        billable: true,
+        startTime:   new Date(startedAt),
+        endTime,
+        billable:    true,
       });
-      // backend auto-increments actualHours
       dispatch(showSnackbar({ message: `Logged ${fmtSeconds(elapsed)}`, severity: 'success' }));
       onUpdate?.();
     } catch {
-      setLocalTask(p => ({ ...p, actualHours: localTask.actualHours || 0 })); // revert on error
       dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));
     }
   };
