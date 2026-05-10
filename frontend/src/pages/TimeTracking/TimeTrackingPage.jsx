@@ -217,6 +217,7 @@ export default function TimeTrackingPage() {
                   const finalElapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
                   dispatch(stopGlobalTimer(timer.taskId));
                   if (finalElapsed < 5) return;
+                  const hours = Math.round((finalElapsed / 3600) * 100) / 100;
                   try {
                     await api.post('/time-entries', {
                       task: timer.taskId,
@@ -225,6 +226,12 @@ export default function TimeTrackingPage() {
                       endTime: new Date(),
                       billable: true,
                     });
+                    // update task's actualHours
+                    try {
+                      const taskRes = await api.get(`/tasks/${timer.taskId}`);
+                      const current = taskRes.data?.data?.actualHours || 0;
+                      await api.put(`/tasks/${timer.taskId}`, { actualHours: Math.round((current + hours) * 100) / 100 });
+                    } catch { /* non-fatal */ }
                     dispatch(showSnackbar({ message: `Saved ${fmt(finalElapsed)} for "${timer.taskTitle}"`, severity: 'success' }));
                     loadData();
                   } catch {
