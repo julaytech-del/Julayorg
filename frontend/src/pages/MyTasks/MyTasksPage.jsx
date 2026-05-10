@@ -2,15 +2,16 @@ import React, { useState, useEffect, useCallback } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Avatar, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab,
-  Skeleton, Tooltip, Button, CircularProgress,
+  Skeleton, Tooltip, Button, IconButton,
 } from '@mui/material';
 import {
   CheckCircle, Assignment, Warning, Today, CalendarToday,
-  FolderOpen, AccessTime, Inbox,
+  FolderOpen, AccessTime, Inbox, OpenInNew,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { myTasksAPI } from '../../services/api.js';
+import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 const getGreeting = () => {
@@ -105,10 +106,11 @@ export default function MyTasksPage() {
   const user = useSelector(s => s.auth.user);
   const navigate = useNavigate();
 
-  const [tab, setTab]     = useState('all');
-  const [tasks, setTasks] = useState([]);
-  const [stats, setStats] = useState({ total: 0, dueToday: 0, overdue: 0, completedMonth: 0 });
-  const [loading, setLoading]     = useState(true);
+  const [tab, setTab]               = useState('all');
+  const [tasks, setTasks]           = useState([]);
+  const [selectedTask, setSelectedTask] = useState(null);
+  const [stats, setStats]           = useState({ total: 0, dueToday: 0, overdue: 0, completedMonth: 0 });
+  const [loading, setLoading]       = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
 
   const fetchData = useCallback(async () => {
@@ -237,15 +239,15 @@ export default function MyTasksPage() {
                 </TableCell>
               </TableRow>
             ) : filteredTasks.map(task => {
-              const projName = typeof task.project === 'object' ? task.project?.name : task.projectName || 'Unknown';
-              const projId   = typeof task.project === 'object' ? task.project?._id : task.projectId;
-              const pColor   = projectColor(projName);
+              const projName = typeof task.project === 'object' ? task.project?.name : null;
+              const projId   = typeof task.project === 'object' ? task.project?._id : task.project;
+              const pColor   = projectColor(projName || '');
               return (
                 <TableRow
                   key={task._id}
                   hover
                   sx={{ cursor: 'pointer', '&:last-child td': { border: 0 } }}
-                  onClick={() => projId && navigate(`/dashboard/projects/${projId}`)}
+                  onClick={() => setSelectedTask(task)}
                 >
                   <TableCell sx={{ fontWeight: 600, maxWidth: 280 }}>
                     <Tooltip title={task.title} placement="top-start">
@@ -253,12 +255,16 @@ export default function MyTasksPage() {
                     </Tooltip>
                   </TableCell>
                   <TableCell>
-                    <Chip
-                      icon={<FolderOpen sx={{ fontSize: '14px !important' }} />}
-                      label={projName}
-                      size="small"
-                      sx={{ backgroundColor: `${pColor}18`, color: pColor, fontWeight: 600, fontSize: '0.72rem', border: `1px solid ${pColor}30` }}
-                    />
+                    {projName ? (
+                      <Chip
+                        icon={<FolderOpen sx={{ fontSize: '14px !important' }} />}
+                        label={projName}
+                        size="small"
+                        sx={{ backgroundColor: `${pColor}18`, color: pColor, fontWeight: 600, fontSize: '0.72rem', border: `1px solid ${pColor}30` }}
+                      />
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">—</Typography>
+                    )}
                   </TableCell>
                   <TableCell>
                     <Typography variant="body2" sx={{ color: dueDateColor(task.dueDate), fontWeight: isOverdue(task.dueDate) || isToday(task.dueDate) ? 600 : 400 }}>
@@ -271,13 +277,18 @@ export default function MyTasksPage() {
                     ) : <Typography variant="body2" color="text.disabled">—</Typography>}
                   </TableCell>
                   <TableCell>
-                    <Chip label={STATUS_LABELS[task.status] || task.status || 'To Do'} size="small" color={STATUS_COLORS[task.status] || 'default'} sx={{ fontSize: '0.72rem' }} />
+                    <Chip label={STATUS_LABELS[task.status] || task.status || 'Planned'} size="small" color={STATUS_COLORS[task.status] || 'default'} sx={{ fontSize: '0.72rem' }} />
                   </TableCell>
                   <TableCell align="right">
-                    <Button size="small" variant="text" sx={{ color: '#6366F1', fontSize: '0.72rem' }}
-                      onClick={(e) => { e.stopPropagation(); projId && navigate(`/dashboard/projects/${projId}`); }}>
-                      Open
-                    </Button>
+                    <Tooltip title="Open task">
+                      <IconButton
+                        size="small"
+                        onClick={(e) => { e.stopPropagation(); setSelectedTask(task); }}
+                        sx={{ color: '#6366F1', '&:hover': { bgcolor: '#EEF2FF' } }}
+                      >
+                        <OpenInNew sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
                   </TableCell>
                 </TableRow>
               );
@@ -285,6 +296,14 @@ export default function MyTasksPage() {
           </TableBody>
         </Table>
       </TableContainer>
+
+      {selectedTask && (
+        <TaskDetailModal
+          task={selectedTask}
+          onClose={() => setSelectedTask(null)}
+          onUpdate={fetchData}
+        />
+      )}
     </Box>
   );
 }
