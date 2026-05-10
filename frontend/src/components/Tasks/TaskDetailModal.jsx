@@ -92,7 +92,8 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const dispatch    = useDispatch();
   const { t }       = useTranslation();
   const user        = useSelector(s => s.auth.user);
-  const activeTimer = useSelector(s => s.ui.activeTimer);
+  const activeTimers = useSelector(s => s.ui.activeTimers);
+  const activeTimer  = activeTimers.find(t => t.taskId === task?._id) || null;
 
   const [localTask, setLocalTask] = useState(task);
   const [comment,   setComment]   = useState('');
@@ -136,35 +137,14 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     return () => clearInterval(tickRef.current);
   }, [timerRunning]);
 
-  const handleTimerStart = async () => {
-    // if a different task's timer is running, save it first then start new
-    if (activeTimer && activeTimer.taskId !== task._id) {
-      const elapsed   = Math.floor((Date.now() - activeTimer.startedAt) / 1000);
-      const startTime = new Date(activeTimer.startedAt);
-      dispatch(stopGlobalTimer());
-      if (elapsed >= 5) {
-        const hours = Math.round((elapsed / 3600) * 100) / 100;
-        try {
-          await api.post('/time-entries', {
-            task: activeTimer.taskId,
-            description: 'Timer entry',
-            startTime,
-            endTime: new Date(),
-            billable: true,
-          });
-          // update actualHours on the previous task silently
-          await dispatch(updateTask({ id: activeTimer.taskId, data: { actualHours: hours } }));
-          dispatch(showSnackbar({ message: `Saved ${fmtSeconds(elapsed)} on "${activeTimer.taskTitle}"`, severity: 'info' }));
-        } catch { /* silent */ }
-      }
-    }
+  const handleTimerStart = () => {
     dispatch(startGlobalTimer({ taskId: task._id, taskTitle: task.title, startedAt: Date.now() }));
   };
 
   const handleTimerStop = async () => {
-    const elapsed = timerSeconds;
+    const elapsed   = timerSeconds;
     const startTime = new Date(activeTimer.startedAt);
-    dispatch(stopGlobalTimer());
+    dispatch(stopGlobalTimer(task._id));
     if (elapsed < 5) return;
     const hours = Math.round((elapsed / 3600) * 100) / 100;
     try {

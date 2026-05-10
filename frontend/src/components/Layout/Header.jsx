@@ -216,21 +216,18 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
   const location    = useLocation();
   const user        = useSelector(s => s.auth.user);
   const darkMode    = useSelector(s => s.ui.darkMode);
-  const activeTimer = useSelector(s => s.ui.activeTimer);
+  const activeTimers = useSelector(s => s.ui.activeTimers);
   const { t }       = useTranslation();
   const [anchorEl,  setAnchorEl]  = useState(null);
   const [quickAdd,  setQuickAdd]  = useState(false);
   const [timerTick, setTimerTick] = useState(0);
 
   React.useEffect(() => {
-    if (!activeTimer) return;
+    if (!activeTimers.length) return;
     const id = setInterval(() => setTimerTick(x => x + 1), 1000);
     return () => clearInterval(id);
-  }, [activeTimer]);
+  }, [activeTimers.length]);
 
-  const timerElapsed = activeTimer
-    ? Math.floor((Date.now() - activeTimer.startedAt) / 1000)
-    : 0;
   const fmtTimer = (s) => {
     const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
     return [h, m, sec].map(v => String(v).padStart(2, '0')).join(':');
@@ -273,30 +270,30 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
           <Box sx={{ flex:1 }}/>
           <LanguageSwitcher/>
 
-          {/* ── Global Timer pill ── */}
-          {activeTimer && (
-            <Tooltip title={`Timer running: ${activeTimer.taskTitle}`}>
-              <Box sx={{
-                display:'flex', alignItems:'center', gap:0.75,
-                bgcolor:'#FEF2F2', border:'1.5px solid #FECACA',
-                borderRadius:'10px', px:1.25, py:0.5,
-                animation: 'timerPulse 2s ease-in-out infinite',
-                '@keyframes timerPulse': { '0%,100%':{ borderColor:'#FECACA' }, '50%':{ borderColor:'#EF4444' } },
-              }}>
-                <Box sx={{ width:7, height:7, borderRadius:'50%', bgcolor:'#EF4444',
-                  animation:'dot 1s ease-in-out infinite', '@keyframes dot':{ '0%,100%':{ opacity:1 }, '50%':{ opacity:0.3 } } }}/>
-                <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:'#EF4444', fontFamily:'monospace', letterSpacing:'0.05em' }}>
-                  {fmtTimer(timerElapsed)}
-                </Typography>
-                <Tooltip title="Stop timer">
-                  <IconButton size="small" onClick={() => dispatch(stopGlobalTimer())}
-                    sx={{ p:0.25, color:'#EF4444', '&:hover':{ bgcolor:'#FEE2E2' } }}>
-                    <Close sx={{ fontSize:13 }}/>
+          {/* ── Global Timer pills (one per running task) ── */}
+          {activeTimers.map(timer => {
+            const elapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
+            return (
+              <Tooltip key={timer.taskId} title={`Timer: ${timer.taskTitle}`}>
+                <Box sx={{
+                  display:'flex', alignItems:'center', gap:0.6,
+                  bgcolor:'#FEF2F2', border:'1.5px solid #FECACA',
+                  borderRadius:'10px', px:1, py:0.4,
+                }}>
+                  <Box sx={{ width:6, height:6, borderRadius:'50%', bgcolor:'#EF4444', flexShrink:0,
+                    animation:'timerDot 1s ease-in-out infinite',
+                    '@keyframes timerDot':{ '0%,100%':{ opacity:1 }, '50%':{ opacity:0.2 } } }}/>
+                  <Typography sx={{ fontSize:'0.75rem', fontWeight:700, color:'#EF4444', fontFamily:'monospace', letterSpacing:'0.04em' }}>
+                    {fmtTimer(elapsed)}
+                  </Typography>
+                  <IconButton size="small" onClick={() => dispatch(stopGlobalTimer(timer.taskId))}
+                    sx={{ p:0.2, color:'#EF4444', '&:hover':{ bgcolor:'#FEE2E2' } }}>
+                    <Close sx={{ fontSize:12 }}/>
                   </IconButton>
-                </Tooltip>
-              </Box>
-            </Tooltip>
-          )}
+                </Box>
+              </Tooltip>
+            );
+          })}
 
           {/* ── Quick Add button ── */}
           <Tooltip title="New task (N)">

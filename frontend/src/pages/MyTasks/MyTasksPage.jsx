@@ -134,15 +134,15 @@ function EmptyState({ tab }) {
 export default function MyTasksPage() {
   const user            = useSelector(s => s.auth.user);
   const dashboardRefresh = useSelector(s => s.ui.dashboardRefresh);
-  const activeTimer     = useSelector(s => s.ui.activeTimer);
+  const activeTimers    = useSelector(s => s.ui.activeTimers);
   const navigate        = useNavigate();
   const [tick, setTick] = useState(0);
 
   useEffect(() => {
-    if (!activeTimer) return;
+    if (!activeTimers.length) return;
     const id = setInterval(() => setTick(x => x + 1), 1000);
     return () => clearInterval(id);
-  }, [activeTimer]);
+  }, [activeTimers.length]);
 
   const [tab, setTab]               = useState('all');
   const [tasks, setTasks]           = useState([]);
@@ -364,23 +364,26 @@ export default function MyTasksPage() {
                       <Tooltip title={task.title} placement="top-start">
                         <Typography variant="body2" fontWeight={600} noWrap sx={{ maxWidth: 220 }}>{task.title}</Typography>
                       </Tooltip>
-                      {activeTimer?.taskId === task._id && (
-                        <Box sx={{
-                          display: 'flex', alignItems: 'center', gap: 0.5,
-                          px: 0.75, py: 0.2, borderRadius: '6px',
-                          bgcolor: '#FEF2F2', border: '1px solid #FECACA',
-                          flexShrink: 0,
-                        }}>
+                      {(() => {
+                        const t = activeTimers.find(t => t.taskId === task._id);
+                        if (!t) return null;
+                        return (
                           <Box sx={{
-                            width: 5, height: 5, borderRadius: '50%', bgcolor: '#EF4444',
-                            animation: 'blink 1s ease-in-out infinite',
-                            '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } },
-                          }} />
-                          <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#EF4444', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
-                            {fmtSecs(Math.floor((Date.now() - activeTimer.startedAt) / 1000))}
-                          </Typography>
-                        </Box>
-                      )}
+                            display: 'flex', alignItems: 'center', gap: 0.5,
+                            px: 0.75, py: 0.2, borderRadius: '6px',
+                            bgcolor: '#FEF2F2', border: '1px solid #FECACA', flexShrink: 0,
+                          }}>
+                            <Box sx={{
+                              width: 5, height: 5, borderRadius: '50%', bgcolor: '#EF4444',
+                              animation: 'blink 1s ease-in-out infinite',
+                              '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } },
+                            }} />
+                            <Typography sx={{ fontSize: '0.7rem', fontWeight: 700, color: '#EF4444', fontFamily: 'monospace', letterSpacing: '0.04em' }}>
+                              {fmtSecs(Math.floor((Date.now() - t.startedAt) / 1000))}
+                            </Typography>
+                          </Box>
+                        );
+                      })()}
                     </Box>
                   </TableCell>
                   <TableCell>

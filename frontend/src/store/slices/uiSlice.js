@@ -1,5 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+const loadTimers = () => {
+  try { return JSON.parse(localStorage.getItem('julay_timers') || '[]'); }
+  catch { return []; }
+};
+const saveTimers = (timers) => localStorage.setItem('julay_timers', JSON.stringify(timers));
+
 const uiSlice = createSlice({
   name: 'ui',
   initialState: {
@@ -8,7 +14,7 @@ const uiSlice = createSlice({
     modals: {},
     darkMode: localStorage.getItem('julay_dark') === 'true',
     dashboardRefresh: 0,
-    activeTimer: null,  // { taskId, taskTitle, startedAt (ms timestamp) }
+    activeTimers: loadTimers(),  // [{ taskId, taskTitle, startedAt }]
   },
   reducers: {
     toggleSidebar(s) { s.sidebarOpen = !s.sidebarOpen; },
@@ -22,10 +28,25 @@ const uiSlice = createSlice({
       localStorage.setItem('julay_dark', String(s.darkMode));
     },
     triggerDashboardRefresh(s) { s.dashboardRefresh += 1; },
-    startGlobalTimer(s, a) { s.activeTimer = { taskId: a.payload.taskId, taskTitle: a.payload.taskTitle, startedAt: a.payload.startedAt }; },
-    stopGlobalTimer(s) { s.activeTimer = null; },
+    startGlobalTimer(s, a) {
+      const exists = s.activeTimers.some(t => t.taskId === a.payload.taskId);
+      if (exists) return;
+      s.activeTimers.push({ taskId: a.payload.taskId, taskTitle: a.payload.taskTitle, startedAt: a.payload.startedAt });
+      saveTimers(s.activeTimers);
+    },
+    stopGlobalTimer(s, a) {
+      // a.payload = taskId  (or undefined = stop all)
+      s.activeTimers = a.payload
+        ? s.activeTimers.filter(t => t.taskId !== a.payload)
+        : [];
+      saveTimers(s.activeTimers);
+    },
   }
 });
 
-export const { toggleSidebar, setSidebar, showSnackbar, hideSnackbar, openModal, closeModal, toggleDarkMode, triggerDashboardRefresh, startGlobalTimer, stopGlobalTimer } = uiSlice.actions;
+export const {
+  toggleSidebar, setSidebar, showSnackbar, hideSnackbar,
+  openModal, closeModal, toggleDarkMode, triggerDashboardRefresh,
+  startGlobalTimer, stopGlobalTimer,
+} = uiSlice.actions;
 export default uiSlice.reducer;
