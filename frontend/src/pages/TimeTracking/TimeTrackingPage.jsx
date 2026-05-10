@@ -226,12 +226,7 @@ export default function TimeTrackingPage() {
                       endTime: new Date(),
                       billable: true,
                     });
-                    // update task's actualHours
-                    try {
-                      const taskRes = await api.get(`/tasks/${timer.taskId}`);
-                      const current = taskRes.data?.data?.actualHours || 0;
-                      await api.put(`/tasks/${timer.taskId}`, { actualHours: Math.round((current + hours) * 100) / 100 });
-                    } catch { /* non-fatal */ }
+                    // backend auto-increments task.actualHours
                     dispatch(showSnackbar({ message: `Saved ${fmt(finalElapsed)} for "${timer.taskTitle}"`, severity: 'success' }));
                     loadData();
                   } catch {

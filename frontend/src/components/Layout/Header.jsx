@@ -280,7 +280,6 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
               const finalElapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
               dispatch(stopGlobalTimer(timer.taskId));
               if (finalElapsed < 5) return;
-              const hours = Math.round((finalElapsed / 3600) * 100) / 100;
               try {
                 await api.post('/time-entries', {
                   task: timer.taskId,
@@ -289,10 +288,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
                   endTime: new Date(),
                   billable: true,
                 });
-                // update actualHours on the task
-                const taskRes = await api.get(`/tasks/${timer.taskId}`);
-                const current = taskRes.data?.data?.actualHours || taskRes.data?.actualHours || 0;
-                await api.put(`/tasks/${timer.taskId}`, { actualHours: Math.round((current + hours) * 100) / 100 });
+                // backend auto-increments task.actualHours
                 dispatch(showSnackbar({ message: `Saved ${fmtT(finalElapsed)} for "${timer.taskTitle}"`, severity: 'success' }));
               } catch {
                 dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));

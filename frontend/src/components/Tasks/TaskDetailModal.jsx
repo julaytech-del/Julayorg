@@ -161,9 +161,10 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         endTime: new Date(),
         billable: true,
       });
-      const newActual = Math.round(((localTask.actualHours || 0) + hours) * 100) / 100;
-      setLocalTask(p => ({ ...p, actualHours: newActual }));
-      await dispatch(updateTask({ id: task._id, data: { actualHours: newActual } }));
+      // backend auto-increments actualHours; fetch fresh value for display
+      const taskRes = await api.get(`/tasks/${task._id}`);
+      const fresh = taskRes.data?.data;
+      if (fresh) setLocalTask(p => ({ ...p, actualHours: fresh.actualHours }));
       dispatch(showSnackbar({ message: `Logged ${fmtSeconds(elapsed)}`, severity: 'success' }));
       onUpdate?.();
     } catch {

@@ -1,4 +1,5 @@
 import TimeEntry from '../models/TimeEntry.js';
+import Task from '../models/Task.js';
 
 export const getTimeEntries = async (req, res) => {
   try {
@@ -27,6 +28,11 @@ export const createTimeEntry = async (req, res) => {
     }
     const entry = await TimeEntry.create(body);
     const populated = await entry.populate('task', 'title');
+    // auto-increment task's actualHours from saved duration
+    if (body.task && entry.duration) {
+      const addedHours = Math.round((entry.duration / 60) * 100) / 100;
+      await Task.findByIdAndUpdate(body.task, { $inc: { actualHours: addedHours } });
+    }
     res.status(201).json({ success: true, data: populated });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
