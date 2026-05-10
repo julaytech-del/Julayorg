@@ -116,6 +116,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     : 0;
 
   useEffect(() => {
+    if (!task?._id) return;
     setLocalTask(task);
     usersAPI.getAll().then(res => setUsers(res.data || [])).catch(() => {});
     if (task?.project?._id || task?.project) {
@@ -125,7 +126,12 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         .then(res => setAllTasks((res.data || []).filter(t => t._id !== task._id)))
         .catch(() => {});
     }
-  }, [task]);
+    // fetch fresh task data so actualHours is always up-to-date
+    api.get(`/tasks/${task._id}`).then(res => {
+      const fresh = res.data?.data;
+      if (fresh) setLocalTask(t => ({ ...t, actualHours: fresh.actualHours ?? t.actualHours }));
+    }).catch(() => {});
+  }, [task?._id]);
 
   // tick every second while timer is running for this task
   useEffect(() => {
