@@ -104,7 +104,7 @@ function StatCard({ label, value, icon: Icon, color, loading }) {
 function SkeletonRows() {
   return Array.from({ length: 5 }).map((_, i) => (
     <TableRow key={i}>
-      {Array.from({ length: 6 }).map((__, j) => (
+      {Array.from({ length: 8 }).map((__, j) => (
         <TableCell key={j}><Skeleton /></TableCell>
       ))}
     </TableRow>
@@ -314,12 +314,14 @@ export default function MyTasksPage() {
           <TableHead>
             <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
               {[
-                { label: 'Task',     key: 'title' },
-                { label: 'Project',  key: null },
-                { label: 'Due Date', key: 'dueDate' },
-                { label: 'Priority', key: 'priority' },
-                { label: 'Status',   key: 'status' },
-                { label: '',         key: null },
+                { label: 'Task',        key: 'title' },
+                { label: 'Status',      key: 'status' },
+                { label: 'Project',     key: null },
+                { label: 'Created',     key: null },
+                { label: 'Start Date',  key: null },
+                { label: 'Due Date',    key: 'dueDate' },
+                { label: 'Priority',    key: 'priority' },
+                { label: '',            key: null },
               ].map(({ label, key }) => (
                 <TableCell
                   key={label}
@@ -350,7 +352,7 @@ export default function MyTasksPage() {
           <TableBody>
             {loading ? <SkeletonRows /> : filteredTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={6} sx={{ border: 0 }}>
+                <TableCell colSpan={8} sx={{ border: 0 }}>
                   <EmptyState tab={tab} />
                 </TableCell>
               </TableRow>
@@ -392,6 +394,11 @@ export default function MyTasksPage() {
                       })()}
                     </Box>
                   </TableCell>
+                  {/* Status */}
+                  <TableCell>
+                    <Chip label={STATUS_LABELS[task.status] || task.status || 'Planned'} size="small" color={STATUS_COLORS[task.status] || 'default'} sx={{ fontSize: '0.72rem' }} />
+                  </TableCell>
+                  {/* Project */}
                   <TableCell>
                     {projName ? (
                       <Chip
@@ -404,18 +411,29 @@ export default function MyTasksPage() {
                       <Typography variant="body2" color="text.disabled">—</Typography>
                     )}
                   </TableCell>
+                  {/* Created */}
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {task.createdAt ? formatDate(task.createdAt) : '—'}
+                    </Typography>
+                  </TableCell>
+                  {/* Start Date */}
+                  <TableCell>
+                    <Typography variant="body2" color="text.secondary">
+                      {task.startDate ? formatDate(task.startDate) : '—'}
+                    </Typography>
+                  </TableCell>
+                  {/* Due Date */}
                   <TableCell>
                     <Typography variant="body2" sx={{ color: dueDateColor(task.dueDate), fontWeight: isOverdue(task.dueDate) || isToday(task.dueDate) ? 600 : 400 }}>
                       {formatDate(task.dueDate)}
                     </Typography>
                   </TableCell>
+                  {/* Priority */}
                   <TableCell>
                     {task.priority ? (
                       <Chip label={task.priority} size="small" color={PRIORITY_COLORS[task.priority] || 'default'} variant="outlined" sx={{ textTransform: 'capitalize', fontSize: '0.72rem' }} />
                     ) : <Typography variant="body2" color="text.disabled">—</Typography>}
-                  </TableCell>
-                  <TableCell>
-                    <Chip label={STATUS_LABELS[task.status] || task.status || 'Planned'} size="small" color={STATUS_COLORS[task.status] || 'default'} sx={{ fontSize: '0.72rem' }} />
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title="Open task">
