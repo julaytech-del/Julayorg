@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const taskSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   description: { type: String },
-  project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
+  project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: false, default: null },
   goal: { type: mongoose.Schema.Types.ObjectId, ref: 'Goal' },
   status: { type: String, enum: ['planned', 'in_progress', 'blocked', 'review', 'done'], default: 'planned' },
   priority: { type: String, enum: ['critical', 'high', 'medium', 'low'], default: 'medium' },

@@ -59,13 +59,13 @@ describe('POST /api/tasks', () => {
     expect(res.status).toBe(401);
   });
 
-  it('requires project reference', async () => {
+  it('creates task without project (project is optional)', async () => {
     const { token } = await getAuthToken();
     const res = await request(app)
       .post('/api/tasks')
       .set('Authorization', `Bearer ${token}`)
       .send({ title: 'Task without project' });
-    expect(res.status).toBeGreaterThanOrEqual(400);
+    expect(res.status).toBe(201);
   });
 });
 
