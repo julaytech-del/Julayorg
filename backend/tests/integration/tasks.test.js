@@ -8,12 +8,16 @@ beforeAll(connectTestDB);
 afterEach(clearTestDB);
 afterAll(closeTestDB);
 
-async function setupProjectAndTask(token, taskOverrides = {}) {
-  const projRes = await request(app)
+async function createProject(token) {
+  const res = await request(app)
     .post('/api/projects')
     .set('Authorization', `Bearer ${token}`)
     .send({ name: 'Test Project' });
-  const projectId = projRes.body._id || projRes.body.data?._id || projRes.body.project?._id;
+  return res.body._id || res.body.data?._id || res.body.project?._id;
+}
+
+async function setupProjectAndTask(token, taskOverrides = {}, existingProjectId = null) {
+  const projectId = existingProjectId ?? await createProject(token);
 
   const taskRes = await request(app)
     .post('/api/tasks')
@@ -33,17 +37,19 @@ describe('POST /api/tasks', () => {
 
   it('creates task with all priorities', async () => {
     const { token } = await getAuthToken();
+    const projectId = await createProject(token);
     for (const priority of ['critical', 'high', 'medium', 'low']) {
-      const { taskRes } = await setupProjectAndTask(token, { title: `Task-${priority}`, priority });
+      const { taskRes } = await setupProjectAndTask(token, { title: `Task-${priority}`, priority }, projectId);
       expect(taskRes.status).toBe(201);
     }
   });
 
   it('creates task with all valid types', async () => {
     const { token } = await getAuthToken();
+    const projectId = await createProject(token);
     const types = ['feature', 'bug', 'research', 'design', 'meeting', 'review', 'deployment', 'content', 'testing'];
     for (const type of types) {
-      const { taskRes } = await setupProjectAndTask(token, { title: `Task-${type}`, type });
+      const { taskRes } = await setupProjectAndTask(token, { title: `Task-${type}`, type }, projectId);
       expect(taskRes.status).toBe(201);
     }
   });

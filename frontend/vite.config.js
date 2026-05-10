@@ -6,6 +6,17 @@ export default defineConfig(({ mode }) => {
 
   return {
     plugins: [react()],
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./src/tests/setup.js'],
+      css: false,
+      coverage: {
+        provider: 'v8',
+        reporter: ['text', 'lcov'],
+        exclude: ['node_modules/', 'src/tests/', 'dist/'],
+      },
+    },
     build: {
       outDir: 'dist',
       sourcemap: false,
