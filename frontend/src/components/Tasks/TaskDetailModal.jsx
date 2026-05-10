@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Drawer, Box, Typography, TextField, MenuItem, Chip, Button,
   Avatar, IconButton, Checkbox, LinearProgress, Divider,
@@ -6,14 +6,22 @@ import {
 } from '@mui/material';
 import {
   Close, Delete, Add, AutoAwesome, OpenInNew, Send,
-  Repeat, AccountTree, AccessTime,
+  Repeat, AccountTree, AccessTime, PlayArrow, Stop,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { updateTask, deleteTask, addComment } from '../../store/slices/taskSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import { tasksAPI, usersAPI } from '../../services/api.js';
+import api from '../../services/api.js';
 import { format, formatDistanceToNow } from 'date-fns';
+
+function fmtSeconds(s) {
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  return [h, m, sec].map(v => String(v).padStart(2, '0')).join(':');
+}
 
 // ── constants ─────────────────────────────────────────────────────────────────
 
@@ -93,9 +101,13 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const [allTasks,   setAllTasks]   = useState([]);
 
   // time tracking
-  const [logTimeOpen, setLogTimeOpen] = useState(false);
-  const [timeHours,   setTimeHours]   = useState('');
-  const [timeNote,    setTimeNote]    = useState('');
+  const [logTimeOpen,    setLogTimeOpen]    = useState(false);
+  const [timeHours,      setTimeHours]      = useState('');
+  const [timeNote,       setTimeNote]       = useState('');
+  const [timerRunning,   setTimerRunning]   = useState(false);
+  const [timerSeconds,   setTimerSeconds]   = useState(0);
+  const timerRef   = useRef(null);
+  const startedAt  = useRef(null);
 
   useEffect(() => {
     setLocalTask(task);
@@ -107,7 +119,49 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         .then(res => setAllTasks((res.data || []).filter(t => t._id !== task._id)))
         .catch(() => {});
     }
+    // stop any running timer when task changes
+    setTimerRunning(false);
+    setTimerSeconds(0);
+    clearInterval(timerRef.current);
   }, [task]);
+
+  useEffect(() => {
+    if (timerRunning) {
+      timerRef.current = setInterval(() => setTimerSeconds(s => s + 1), 1000);
+    } else {
+      clearInterval(timerRef.current);
+    }
+    return () => clearInterval(timerRef.current);
+  }, [timerRunning]);
+
+  const handleTimerStart = () => {
+    startedAt.current = new Date();
+    setTimerSeconds(0);
+    setTimerRunning(true);
+  };
+
+  const handleTimerStop = async () => {
+    setTimerRunning(false);
+    if (timerSeconds < 5) { setTimerSeconds(0); return; }
+    const hours = Math.round((timerSeconds / 3600) * 100) / 100;
+    try {
+      await api.post('/time-entries', {
+        task: task._id,
+        description: 'Timer entry',
+        startTime: startedAt.current,
+        endTime: new Date(),
+        billable: true,
+      });
+      const newActual = Math.round(((localTask.actualHours || 0) + hours) * 100) / 100;
+      setLocalTask(p => ({ ...p, actualHours: newActual }));
+      await dispatch(updateTask({ id: task._id, data: { actualHours: newActual } }));
+      dispatch(showSnackbar({ message: `Logged ${fmtSeconds(timerSeconds)}`, severity: 'success' }));
+      setTimerSeconds(0);
+      onUpdate?.();
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));
+    }
+  };
 
   // ── helpers ─────────────────────────────────────────────────────────────────
 
@@ -488,18 +542,48 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
               <AccessTime sx={{ fontSize: 13, color: '#94A3B8' }} />
               <SectionLabel>Time Tracking</SectionLabel>
             </Box>
-            <Button
-              size="small"
-              startIcon={<Add sx={{ fontSize: '14px !important' }} />}
-              onClick={() => setLogTimeOpen(v => !v)}
-              sx={{
-                fontSize: '0.72rem', fontWeight: 600,
-                color: '#6366F1', textTransform: 'none',
-                '&:hover': { bgcolor: '#EEF2FF' },
-              }}
-            >
-              Log Time
-            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+              {/* Live timer display */}
+              {timerRunning && (
+                <Typography sx={{
+                  fontSize: '0.85rem', fontWeight: 700, fontFamily: 'monospace',
+                  color: '#6366F1', letterSpacing: '0.05em',
+                  animation: 'pulse 1s ease-in-out infinite',
+                  '@keyframes pulse': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.6 } },
+                }}>
+                  {fmtSeconds(timerSeconds)}
+                </Typography>
+              )}
+
+              {/* Start / Stop button */}
+              <Button
+                size="small"
+                variant={timerRunning ? 'contained' : 'outlined'}
+                startIcon={timerRunning
+                  ? <Stop sx={{ fontSize: '14px !important' }} />
+                  : <PlayArrow sx={{ fontSize: '14px !important' }} />
+                }
+                onClick={timerRunning ? handleTimerStop : handleTimerStart}
+                sx={{
+                  fontSize: '0.72rem', fontWeight: 700, textTransform: 'none',
+                  borderRadius: '8px',
+                  ...(timerRunning
+                    ? { bgcolor: '#EF4444', '&:hover': { bgcolor: '#DC2626' }, border: 'none' }
+                    : { color: '#6366F1', borderColor: '#C7D2FE', '&:hover': { bgcolor: '#EEF2FF' } }
+                  ),
+                }}
+              >
+                {timerRunning ? 'Stop' : 'Start Timer'}
+              </Button>
+
+              {/* Manual log */}
+              <Tooltip title="Log manual hours">
+                <IconButton size="small" onClick={() => setLogTimeOpen(v => !v)}
+                  sx={{ color: '#94A3B8', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+                  <Add sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Tooltip>
+            </Box>
           </Box>
 
           {/* Progress bar */}
