@@ -152,7 +152,6 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     const startTime = new Date(activeTimer.startedAt);
     dispatch(stopGlobalTimer(task._id));
     if (elapsed < 5) return;
-    const hours = Math.round((elapsed / 3600) * 100) / 100;
     // update display immediately (don't wait for network)
     const hours = Math.round((elapsed / 3600) * 100) / 100;
     const newActual = Math.round(((localTask.actualHours || 0) + hours) * 100) / 100;
