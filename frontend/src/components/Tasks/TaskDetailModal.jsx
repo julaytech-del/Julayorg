@@ -136,7 +136,28 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     return () => clearInterval(tickRef.current);
   }, [timerRunning]);
 
-  const handleTimerStart = () => {
+  const handleTimerStart = async () => {
+    // if a different task's timer is running, save it first then start new
+    if (activeTimer && activeTimer.taskId !== task._id) {
+      const elapsed   = Math.floor((Date.now() - activeTimer.startedAt) / 1000);
+      const startTime = new Date(activeTimer.startedAt);
+      dispatch(stopGlobalTimer());
+      if (elapsed >= 5) {
+        const hours = Math.round((elapsed / 3600) * 100) / 100;
+        try {
+          await api.post('/time-entries', {
+            task: activeTimer.taskId,
+            description: 'Timer entry',
+            startTime,
+            endTime: new Date(),
+            billable: true,
+          });
+          // update actualHours on the previous task silently
+          await dispatch(updateTask({ id: activeTimer.taskId, data: { actualHours: hours } }));
+          dispatch(showSnackbar({ message: `Saved ${fmtSeconds(elapsed)} on "${activeTimer.taskTitle}"`, severity: 'info' }));
+        } catch { /* silent */ }
+      }
+    }
     dispatch(startGlobalTimer({ taskId: task._id, taskTitle: task.title, startedAt: Date.now() }));
   };
 
