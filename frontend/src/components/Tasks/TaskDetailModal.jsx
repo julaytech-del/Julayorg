@@ -26,10 +26,16 @@ function fmtSeconds(s) {
 // ── constants ─────────────────────────────────────────────────────────────────
 
 const STATUSES = [
-  { value: 'planned',     label: 'Planned',     color: '#94A3B8' },
+  { value: 'backlog',     label: 'Backlog',     color: '#CBD5E1' },
+  { value: 'todo',        label: 'Todo',        color: '#94A3B8' },
+  { value: 'planned',     label: 'Planned',     color: '#6366F1' },
   { value: 'in_progress', label: 'In Progress', color: '#3B82F6' },
-  { value: 'blocked',     label: 'Blocked',     color: '#EF4444' },
+  { value: 'testing',     label: 'Testing',     color: '#8B5CF6' },
   { value: 'review',      label: 'Review',      color: '#F59E0B' },
+  { value: 'blocked',     label: 'Blocked',     color: '#EF4444' },
+  { value: 'on_hold',     label: 'On Hold',     color: '#F97316' },
+  { value: 'cancelled',   label: 'Cancelled',   color: '#9CA3AF' },
+  { value: 'deployed',    label: 'Deployed',    color: '#14B8A6' },
   { value: 'done',        label: 'Done',        color: '#22C55E' },
 ];
 

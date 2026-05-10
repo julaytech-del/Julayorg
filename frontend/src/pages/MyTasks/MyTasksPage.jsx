@@ -52,13 +52,13 @@ const formatDate = (d) => {
 };
 
 const PRIORITY_COLORS  = { critical: 'error', high: 'error', medium: 'warning', low: 'success' };
-const STATUS_COLORS    = { planned: 'default', in_progress: 'primary', done: 'success', review: 'warning', blocked: 'error' };
-const STATUS_LABELS    = { planned: 'Planned', in_progress: 'In Progress', done: 'Done', review: 'Review', blocked: 'Blocked' };
+const STATUS_COLORS    = { backlog: 'default', todo: 'default', planned: 'primary', in_progress: 'info', testing: 'secondary', review: 'warning', blocked: 'error', on_hold: 'warning', cancelled: 'default', deployed: 'success', done: 'success' };
+const STATUS_LABELS    = { backlog: 'Backlog', todo: 'Todo', planned: 'Planned', in_progress: 'In Progress', testing: 'Testing', review: 'Review', blocked: 'Blocked', on_hold: 'On Hold', cancelled: 'Cancelled', deployed: 'Deployed', done: 'Done' };
 const PRIORITY_WEIGHT  = { critical: 4, high: 3, medium: 2, low: 1 };
 
 // ── urgency bucket: 0=overdue 1=today 2=this_week 3=upcoming 4=no_date 5=done
 const urgencyOf = (task) => {
-  if (task.status === 'done') return 5;
+  if (['done', 'cancelled', 'deployed'].includes(task.status)) return 5;
   if (!task.dueDate) return 4;
   if (isOverdue(task.dueDate)) return 0;
   if (isToday(task.dueDate))   return 1;
