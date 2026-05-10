@@ -6,7 +6,7 @@ import {
 } from '@mui/material';
 import {
   Search, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown,
-  DarkMode, LightMode, Add, Close,
+  DarkMode, LightMode, Add, Close, CalendarToday, LocalOffer,
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -20,12 +20,24 @@ import { tasksAPI, projectsAPI } from '../../services/api.js';
 import { fetchTasks } from '../../store/slices/taskSlice.js';
 
 // ── Quick-add task modal ───────────────────────────────────────────────────────
+const PRIORITIES = [
+  { value:'critical', label:'Critical', color:'#DC2626' },
+  { value:'high',     label:'High',     color:'#EA580C' },
+  { value:'medium',   label:'Medium',   color:'#D97706' },
+  { value:'low',      label:'Low',      color:'#65A30D' },
+];
+
+const PRESET_TAGS = ['Design','Frontend','Backend','Bug','Feature','Research','Meeting','Urgent'];
+
 function QuickAddModal({ open, onClose }) {
   const dispatch = useDispatch();
   const user = useSelector(s => s.auth.user);
   const [title,    setTitle]    = useState('');
   const [project,  setProject]  = useState('');
   const [priority, setPriority] = useState('medium');
+  const [dueDate,  setDueDate]  = useState('');
+  const [tags,     setTags]     = useState([]);
+  const [tagInput, setTagInput] = useState('');
   const [projects, setProjects] = useState([]);
   const [saving,   setSaving]   = useState(false);
 
@@ -36,9 +48,12 @@ function QuickAddModal({ open, onClose }) {
   }, [open]);
 
   const handleClose = () => {
-    setTitle(''); setProject(''); setPriority('medium');
+    setTitle(''); setProject(''); setPriority('medium'); setDueDate(''); setTags([]);
     onClose();
   };
+
+  const addTag = (t) => { if (t && !tags.includes(t)) setTags(prev => [...prev, t]); setTagInput(''); };
+  const removeTag = (t) => setTags(prev => prev.filter(x => x !== t));
 
   const handleSave = async () => {
     if (!title.trim()) return;
@@ -51,6 +66,8 @@ function QuickAddModal({ open, onClose }) {
         createdBy: user._id,
         assignees: [user._id],
         ...(project ? { project } : {}),
+        ...(dueDate ? { dueDate } : {}),
+        ...(tags.length ? { tags } : {}),
       });
       dispatch(showSnackbar({ message: 'Task created!', severity: 'success' }));
       dispatch(fetchTasks());
@@ -61,16 +78,18 @@ function QuickAddModal({ open, onClose }) {
     } finally { setSaving(false); }
   };
 
-  const PRIORITIES = [
-    { value:'critical', label:'Critical', color:'#DC2626' },
-    { value:'high',     label:'High',     color:'#EA580C' },
-    { value:'medium',   label:'Medium',   color:'#D97706' },
-    { value:'low',      label:'Low',      color:'#65A30D' },
-  ];
+  const fieldSx = {
+    '& .MuiOutlinedInput-root': { borderRadius:'10px', fontSize:'0.82rem' },
+  };
+
+  const isOverdue = dueDate && new Date(dueDate) < new Date();
+  const isToday   = dueDate && new Date(dueDate).toDateString() === new Date().toDateString();
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth
       PaperProps={{ sx: { borderRadius:'16px', boxShadow:'0 24px 60px rgba(0,0,0,0.18)' } }}>
+
+      {/* Header */}
       <Box sx={{ display:'flex', alignItems:'center', justifyContent:'space-between', px:3, pt:2.5, pb:0 }}>
         <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
           <Box sx={{ width:28, height:28, borderRadius:'8px', bgcolor:'#EEF2FF', display:'flex', alignItems:'center', justifyContent:'center' }}>
@@ -84,6 +103,7 @@ function QuickAddModal({ open, onClose }) {
       </Box>
 
       <DialogContent sx={{ px:3, pt:2, pb:1 }}>
+        {/* Title */}
         <TextField
           autoFocus fullWidth multiline maxRows={3}
           placeholder="Task title…"
@@ -91,32 +111,22 @@ function QuickAddModal({ open, onClose }) {
           onChange={e => setTitle(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && title.trim()) { e.preventDefault(); handleSave(); } }}
           variant="outlined"
-          sx={{
-            mb:2,
-            '& .MuiOutlinedInput-root': {
-              fontSize:'0.95rem', fontWeight:500, borderRadius:'10px',
-              '&:hover fieldset': { borderColor:'#A5B4FC' },
-              '&.Mui-focused fieldset': { borderColor:'#6366F1' },
-            },
-          }}
+          sx={{ mb:2, '& .MuiOutlinedInput-root': { fontSize:'0.95rem', fontWeight:500, borderRadius:'10px', '&:hover fieldset':{ borderColor:'#A5B4FC' }, '&.Mui-focused fieldset':{ borderColor:'#6366F1' } } }}
         />
 
-        <Box sx={{ display:'flex', gap:1.5 }}>
-          <FormControl size="small" sx={{ flex:1 }}>
+        {/* Row 1: Project + Priority */}
+        <Box sx={{ display:'flex', gap:1.5, mb:1.5 }}>
+          <FormControl size="small" sx={{ flex:1, ...fieldSx }}>
             <InputLabel sx={{ fontSize:'0.82rem' }}>Project (optional)</InputLabel>
-            <Select value={project} onChange={e => setProject(e.target.value)}
-              label="Project (optional)"
-              sx={{ borderRadius:'10px', fontSize:'0.82rem' }}>
+            <Select value={project} onChange={e => setProject(e.target.value)} label="Project (optional)">
               <MuiItem value=""><em>No project</em></MuiItem>
               {projects.map(p => <MuiItem key={p._id} value={p._id}>{p.name}</MuiItem>)}
             </Select>
           </FormControl>
 
-          <FormControl size="small" sx={{ minWidth:130 }}>
+          <FormControl size="small" sx={{ minWidth:130, ...fieldSx }}>
             <InputLabel sx={{ fontSize:'0.82rem' }}>Priority</InputLabel>
-            <Select value={priority} onChange={e => setPriority(e.target.value)}
-              label="Priority"
-              sx={{ borderRadius:'10px', fontSize:'0.82rem' }}>
+            <Select value={priority} onChange={e => setPriority(e.target.value)} label="Priority">
               {PRIORITIES.map(p => (
                 <MuiItem key={p.value} value={p.value}>
                   <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
@@ -128,6 +138,62 @@ function QuickAddModal({ open, onClose }) {
             </Select>
           </FormControl>
         </Box>
+
+        {/* Row 2: Due Date */}
+        <TextField
+          size="small" fullWidth type="date" label="Due Date (optional)"
+          value={dueDate} onChange={e => setDueDate(e.target.value)}
+          InputLabelProps={{ shrink: true }}
+          sx={{
+            mb:1.5,
+            ...fieldSx,
+            '& .MuiOutlinedInput-root': {
+              borderRadius:'10px', fontSize:'0.82rem',
+              ...(isOverdue ? { '& fieldset':{ borderColor:'#EF4444' } } : {}),
+              ...(isToday   ? { '& fieldset':{ borderColor:'#F59E0B' } } : {}),
+            },
+          }}
+          helperText={isOverdue ? '⚠️ This date is in the past' : isToday ? '📅 Due today' : ''}
+          FormHelperTextProps={{ sx:{ fontSize:'0.72rem', mt:0.25, color: isOverdue ? '#EF4444' : '#F59E0B' } }}
+        />
+
+        {/* Row 3: Tags */}
+        <Box sx={{ mb:0.5 }}>
+          <Box sx={{ display:'flex', alignItems:'center', gap:0.75, mb:0.75 }}>
+            <LocalOffer sx={{ fontSize:14, color:'#94A3B8' }}/>
+            <Typography sx={{ fontSize:'0.75rem', color:'#64748B', fontWeight:600 }}>Tags</Typography>
+          </Box>
+
+          {/* Selected tags */}
+          <Box sx={{ display:'flex', flexWrap:'wrap', gap:0.5, mb:0.75 }}>
+            {tags.map(t => (
+              <Box key={t} onClick={() => removeTag(t)} sx={{
+                display:'flex', alignItems:'center', gap:0.4,
+                px:1, py:0.25, borderRadius:'999px',
+                bgcolor:'#EEF2FF', border:'1px solid #C7D2FE',
+                fontSize:'0.72rem', fontWeight:600, color:'#6366F1',
+                cursor:'pointer', '&:hover':{ bgcolor:'#E0E7FF' },
+              }}>
+                {t} <Close sx={{ fontSize:11 }}/>
+              </Box>
+            ))}
+          </Box>
+
+          {/* Preset tags */}
+          <Box sx={{ display:'flex', flexWrap:'wrap', gap:0.5 }}>
+            {PRESET_TAGS.filter(t => !tags.includes(t)).map(t => (
+              <Box key={t} onClick={() => addTag(t)} sx={{
+                px:1, py:0.25, borderRadius:'999px',
+                bgcolor:'#F8FAFC', border:'1px solid #E2E8F0',
+                fontSize:'0.72rem', color:'#64748B', cursor:'pointer',
+                '&:hover':{ bgcolor:'#EEF2FF', borderColor:'#C7D2FE', color:'#6366F1' },
+                transition:'all 0.1s',
+              }}>
+                + {t}
+              </Box>
+            ))}
+          </Box>
+        </Box>
       </DialogContent>
 
       <DialogActions sx={{ px:3, pb:2.5, pt:1.5, gap:1 }}>
@@ -136,12 +202,7 @@ function QuickAddModal({ open, onClose }) {
         </Button>
         <Button
           variant="contained" onClick={handleSave} disabled={!title.trim() || saving}
-          sx={{
-            borderRadius:'8px', textTransform:'none', fontWeight:700,
-            bgcolor:'#6366F1', '&:hover':{ bgcolor:'#4F46E5' },
-            boxShadow:'0 2px 8px rgba(99,102,241,0.35)',
-            px:2.5,
-          }}>
+          sx={{ borderRadius:'8px', textTransform:'none', fontWeight:700, bgcolor:'#6366F1', '&:hover':{ bgcolor:'#4F46E5' }, boxShadow:'0 2px 8px rgba(99,102,241,0.35)', px:2.5 }}>
           {saving ? 'Creating…' : 'Create Task'}
         </Button>
       </DialogActions>
