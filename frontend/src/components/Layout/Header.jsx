@@ -13,7 +13,7 @@ import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { logout } from '../../store/slices/authSlice.js';
 import { toggleDarkMode } from '../../store/slices/uiSlice.js';
-import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { showSnackbar, triggerDashboardRefresh } from '../../store/slices/uiSlice.js';
 import LanguageSwitcher from '../common/LanguageSwitcher.jsx';
 import NotificationBell from '../common/NotificationBell.jsx';
 import { tasksAPI, projectsAPI } from '../../services/api.js';
@@ -49,9 +49,12 @@ function QuickAddModal({ open, onClose }) {
         priority,
         status: 'planned',
         createdBy: user._id,
+        assignees: [user._id],
         ...(project ? { project } : {}),
       });
       dispatch(showSnackbar({ message: 'Task created!', severity: 'success' }));
+      dispatch(fetchTasks());
+      dispatch(triggerDashboardRefresh());
       handleClose();
     } catch {
       dispatch(showSnackbar({ message: 'Failed to create task', severity: 'error' }));

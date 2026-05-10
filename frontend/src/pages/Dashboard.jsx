@@ -127,6 +127,7 @@ function MyTaskCard({ task, onClick }) {
 // ── Main Dashboard ────────────────────────────────────────────────────────────
 export default function Dashboard() {
   const user = useSelector(s => s.auth.user);
+  const dashboardRefresh = useSelector(s => s.ui.dashboardRefresh);
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -140,10 +141,10 @@ export default function Dashboard() {
     dashboardAPI.getStats()
       .then(res => { setStats(res.data); setLoading(false); })
       .catch(() => setLoading(false));
-    myTasksAPI.getTasks({ limit:10, status:'active' })
+    myTasksAPI.getTasks({ limit:10 })
       .then(res => { setMyTasks(res.data?.tasks || res.data || []); setMyLoading(false); })
       .catch(() => setMyLoading(false));
-  }, []);
+  }, [dashboardRefresh]);
 
   const hour = new Date().getHours();
   const greeting = hour < 12 ? t('dashboard.greeting.morning') : hour < 17 ? t('dashboard.greeting.afternoon') : t('dashboard.greeting.evening');

@@ -6,7 +6,8 @@ const uiSlice = createSlice({
     sidebarOpen: true,
     snackbar: { open: false, message: '', severity: 'success' },
     modals: {},
-    darkMode: localStorage.getItem('julay_dark') === 'true'
+    darkMode: localStorage.getItem('julay_dark') === 'true',
+    dashboardRefresh: 0,
   },
   reducers: {
     toggleSidebar(s) { s.sidebarOpen = !s.sidebarOpen; },
@@ -18,9 +19,10 @@ const uiSlice = createSlice({
     toggleDarkMode(s) {
       s.darkMode = !s.darkMode;
       localStorage.setItem('julay_dark', String(s.darkMode));
-    }
+    },
+    triggerDashboardRefresh(s) { s.dashboardRefresh += 1; },
   }
 });
 
-export const { toggleSidebar, setSidebar, showSnackbar, hideSnackbar, openModal, closeModal, toggleDarkMode } = uiSlice.actions;
+export const { toggleSidebar, setSidebar, showSnackbar, hideSnackbar, openModal, closeModal, toggleDarkMode, triggerDashboardRefresh } = uiSlice.actions;
 export default uiSlice.reducer;
