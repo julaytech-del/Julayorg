@@ -6,7 +6,7 @@ import {
   Divider, Avatar,
 } from '@mui/material';
 import {
-  PlayArrow, Stop, Add, Delete, AccessTime, AttachMoney, CalendarToday,
+  PlayArrow, Stop, Add, Delete, AccessTime, CalendarToday,
   BarChart, Timer,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
@@ -158,9 +158,10 @@ export default function TimeTrackingPage() {
 
   // compute stats directly from loaded entries (no separate API needed)
   const totalMins    = entries.reduce((s, e) => s + (e.duration || 0), 0);
-  const billableMins = entries.filter(e => e.billable).reduce((s, e) => s + (e.duration || 0), 0);
   const tasksTracked = new Set(entries.map(e => (e.task?._id || e.task)?.toString()).filter(Boolean)).size;
   const todayEntries = entries.filter(e => new Date(e.createdAt).toDateString() === new Date().toDateString()).length;
+  const weekStart    = new Date(); weekStart.setDate(weekStart.getDate() - weekStart.getDay()); weekStart.setHours(0,0,0,0);
+  const weekMins     = entries.filter(e => new Date(e.createdAt) >= weekStart).reduce((s, e) => s + (e.duration || 0), 0);
 
   return (
     <Box>
@@ -180,10 +181,10 @@ export default function TimeTrackingPage() {
       {/* Stats Row */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr 1fr', md: 'repeat(4,1fr)' }, gap: 2, mb: 3 }}>
         {[
-          { icon: <AccessTime sx={{ color: '#6366F1' }} />,  label: 'Total Logged',    value: fmtMins(totalMins),   color: '#6366F1' },
-          { icon: <AttachMoney sx={{ color: '#10B981' }} />, label: 'Billable Time',   value: fmtMins(billableMins), color: '#10B981' },
-          { icon: <CalendarToday sx={{ color: '#F59E0B' }} />, label: 'Tasks Tracked', value: tasksTracked,          color: '#F59E0B' },
-          { icon: <BarChart sx={{ color: '#8B5CF6' }} />,   label: "Today's Entries",  value: todayEntries,          color: '#8B5CF6' },
+          { icon: <AccessTime sx={{ color: '#6366F1' }} />,    label: 'Total Logged',   value: fmtMins(totalMins),  color: '#6366F1' },
+          { icon: <BarChart sx={{ color: '#8B5CF6' }} />,    label: 'This Week',       value: fmtMins(weekMins),   color: '#8B5CF6' },
+          { icon: <CalendarToday sx={{ color: '#F59E0B' }} />, label: 'Tasks Tracked', value: tasksTracked,        color: '#F59E0B' },
+          { icon: <Timer sx={{ color: '#10B981' }} />,       label: "Today's Entries", value: todayEntries,        color: '#10B981' },
         ].map(s => (
           <Card key={s.label} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
             <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
@@ -323,7 +324,6 @@ export default function TimeTrackingPage() {
                       size="small"
                       sx={{ fontWeight: 700, background: 'rgba(99,102,241,0.1)', color: '#6366F1', minWidth: 60 }}
                     />
-                    {entry.billable && <Chip label="Billable" size="small" color="success" variant="outlined" sx={{ fontSize: '0.68rem' }} />}
                     <Typography variant="caption" color="text.secondary" sx={{ minWidth: 90, textAlign: 'right' }}>
                       {new Date(entry.createdAt).toLocaleDateString()}
                     </Typography>
@@ -356,13 +356,6 @@ export default function TimeTrackingPage() {
             <TextField label="Start Time *" type="datetime-local" value={manualForm.startTime} onChange={e => setManualForm(f => ({ ...f, startTime: e.target.value }))} InputLabelProps={{ shrink: true }} fullWidth />
             <TextField label="End Time *" type="datetime-local" value={manualForm.endTime} onChange={e => setManualForm(f => ({ ...f, endTime: e.target.value }))} InputLabelProps={{ shrink: true }} fullWidth />
           </Box>
-          <FormControl fullWidth>
-            <InputLabel>Billable</InputLabel>
-            <Select value={manualForm.billable} onChange={e => setManualForm(f => ({ ...f, billable: e.target.value }))} label="Billable">
-              <MenuItem value={true}>Yes - Billable</MenuItem>
-              <MenuItem value={false}>No - Non-billable</MenuItem>
-            </Select>
-          </FormControl>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setManualOpen(false)}>Cancel</Button>
