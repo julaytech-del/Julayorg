@@ -8,6 +8,7 @@ export const getTimeEntries = async (req, res) => {
 
     const entries = await TimeEntry.find(filter)
       .populate('user', 'name avatar')
+      .populate('task', 'title')
       .sort({ createdAt: -1 });
 
     res.json({ success: true, data: entries });
@@ -19,12 +20,14 @@ export const getTimeEntries = async (req, res) => {
 export const createTimeEntry = async (req, res) => {
   try {
     const orgId = req.user.organization?._id || req.user.organization;
-    const entry = await TimeEntry.create({
-      ...req.body,
-      user: req.user._id,
-      organization: orgId
-    });
-    res.status(201).json({ success: true, data: entry });
+    const body  = { ...req.body, user: req.user._id, organization: orgId };
+    // compute duration if not provided
+    if (!body.duration && body.startTime && body.endTime) {
+      body.duration = Math.max(1, Math.round((new Date(body.endTime) - new Date(body.startTime)) / 60000));
+    }
+    const entry = await TimeEntry.create(body);
+    const populated = await entry.populate('task', 'title');
+    res.status(201).json({ success: true, data: populated });
   } catch (err) {
     res.status(500).json({ success: false, message: err.message });
   }
