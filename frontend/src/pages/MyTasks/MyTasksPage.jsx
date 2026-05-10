@@ -103,8 +103,9 @@ function EmptyState({ tab }) {
 
 // ── main ───────────────────────────────────────────────────────────────────
 export default function MyTasksPage() {
-  const user = useSelector(s => s.auth.user);
-  const navigate = useNavigate();
+  const user            = useSelector(s => s.auth.user);
+  const dashboardRefresh = useSelector(s => s.ui.dashboardRefresh);
+  const navigate        = useNavigate();
 
   const [tab, setTab]               = useState('all');
   const [tasks, setTasks]           = useState([]);
@@ -147,7 +148,7 @@ export default function MyTasksPage() {
     }
   }, []);
 
-  useEffect(() => { fetchData(); fetchStats(); }, []);
+  useEffect(() => { fetchData(); fetchStats(); }, [dashboardRefresh]);
 
   // Always derive total + dueToday from local tasks list (most accurate)
   useEffect(() => {
