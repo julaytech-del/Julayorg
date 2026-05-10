@@ -115,7 +115,10 @@ export default function MyTasksPage() {
     setLoading(true);
     try {
       const res = await myTasksAPI.getTasks();
-      setTasks(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []);
+      const d = res?.data;
+      // backend returns { success, data: { tasks, counts } }
+      const list = d?.data?.tasks ?? d?.tasks ?? (Array.isArray(d) ? d : []);
+      setTasks(list);
     } catch {
       setTasks([]);
     } finally {
@@ -127,15 +130,16 @@ export default function MyTasksPage() {
     setStatsLoading(true);
     try {
       const res = await myTasksAPI.getStats();
-      const d = res?.data || res || {};
+      // backend: { success, data: { tasksCompleted, hoursLogged, overdueTasks, upcomingDeadlines } }
+      const d = res?.data?.data || res?.data || {};
       setStats({
-        total:          d.total          ?? 0,
-        dueToday:       d.dueToday       ?? 0,
-        overdue:        d.overdue        ?? 0,
-        completedMonth: d.completedMonth ?? 0,
+        total:          0,                       // derived from tasks list after load
+        dueToday:       d.upcomingDeadlines ?? 0,
+        overdue:        d.overdueTasks      ?? 0,
+        completedMonth: d.tasksCompleted    ?? 0,
       });
     } catch {
-      // derive from tasks when API unavailable — will recalc after tasks load
+      // derive from tasks when API unavailable
     } finally {
       setStatsLoading(false);
     }
@@ -143,19 +147,16 @@ export default function MyTasksPage() {
 
   useEffect(() => { fetchData(); fetchStats(); }, []);
 
-  // Derive stats from tasks when stats API fails (offline / not implemented yet)
+  // Always derive total + dueToday from local tasks list (most accurate)
   useEffect(() => {
-    if (!loading && statsLoading === false && stats.total === 0 && tasks.length > 0) {
-      const now = new Date();
-      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1);
-      setStats({
-        total:          tasks.length,
-        dueToday:       tasks.filter(t => isToday(t.dueDate)).length,
-        overdue:        tasks.filter(t => isOverdue(t.dueDate) && t.status !== 'done').length,
-        completedMonth: tasks.filter(t => t.status === 'done' && new Date(t.updatedAt) >= monthStart).length,
-      });
+    if (!loading) {
+      setStats(prev => ({
+        ...prev,
+        total:    tasks.length,
+        dueToday: tasks.filter(t => isToday(t.dueDate)).length,
+      }));
     }
-  }, [loading, tasks, statsLoading, stats.total]);
+  }, [loading, tasks]);
 
   const filteredTasks = tasks.filter(t => {
     if (tab === 'all')       return true;
