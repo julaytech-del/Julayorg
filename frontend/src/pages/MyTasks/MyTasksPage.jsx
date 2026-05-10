@@ -1,12 +1,13 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
-  Box, Typography, Card, CardContent, Chip, Avatar, Table, TableBody,
+  Box, Typography, Card, CardContent, Chip, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab,
-  Skeleton, Tooltip, Button, IconButton,
+  Skeleton, Tooltip, IconButton,
 } from '@mui/material';
 import {
   CheckCircle, Assignment, Warning, Today, CalendarToday,
   FolderOpen, AccessTime, Inbox, OpenInNew,
+  ArrowUpward, ArrowDownward, UnfoldMore,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -45,9 +46,32 @@ const formatDate = (d) => {
   return new Date(d).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
 };
 
-const PRIORITY_COLORS = { high: 'error', medium: 'warning', low: 'success', urgent: 'error' };
-const STATUS_COLORS   = { todo: 'default', in_progress: 'primary', done: 'success', review: 'warning' };
-const STATUS_LABELS   = { todo: 'To Do', in_progress: 'In Progress', done: 'Done', review: 'Review' };
+const PRIORITY_COLORS  = { critical: 'error', high: 'error', medium: 'warning', low: 'success' };
+const STATUS_COLORS    = { planned: 'default', in_progress: 'primary', done: 'success', review: 'warning', blocked: 'error' };
+const STATUS_LABELS    = { planned: 'Planned', in_progress: 'In Progress', done: 'Done', review: 'Review', blocked: 'Blocked' };
+const PRIORITY_WEIGHT  = { critical: 4, high: 3, medium: 2, low: 1 };
+
+// ── urgency bucket: 0=overdue 1=today 2=this_week 3=upcoming 4=no_date 5=done
+const urgencyOf = (task) => {
+  if (task.status === 'done') return 5;
+  if (!task.dueDate) return 4;
+  if (isOverdue(task.dueDate)) return 0;
+  if (isToday(task.dueDate))   return 1;
+  if (isThisWeek(task.dueDate)) return 2;
+  return 3;
+};
+
+const smartSort = (a, b) => {
+  const ua = urgencyOf(a), ub = urgencyOf(b);
+  if (ua !== ub) return ua - ub;
+  // same urgency: sort by due date (overdue → most overdue first; upcoming → soonest first)
+  if (a.dueDate && b.dueDate) {
+    const diff = new Date(a.dueDate) - new Date(b.dueDate);
+    if (diff !== 0) return ua === 0 ? diff : diff; // ascending for all
+  }
+  // then by priority weight descending
+  return (PRIORITY_WEIGHT[b.priority] || 0) - (PRIORITY_WEIGHT[a.priority] || 0);
+};
 
 const PROJECT_PALETTE = ['#6366F1','#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6'];
 const projectColor = (name = '') => PROJECT_PALETTE[name.charCodeAt(0) % PROJECT_PALETTE.length];
@@ -113,6 +137,8 @@ export default function MyTasksPage() {
   const [stats, setStats]           = useState({ total: 0, dueToday: 0, overdue: 0, completedMonth: 0 });
   const [loading, setLoading]       = useState(true);
   const [statsLoading, setStatsLoading] = useState(true);
+  const [sortKey, setSortKey]       = useState('smart');  // smart | title | dueDate | priority | status
+  const [sortDir, setSortDir]       = useState('asc');
 
   const fetchData = useCallback(async () => {
     setLoading(true);
@@ -161,14 +187,36 @@ export default function MyTasksPage() {
     }
   }, [loading, tasks]);
 
-  const filteredTasks = tasks.filter(t => {
-    if (tab === 'all')       return true;
-    if (tab === 'today')     return isToday(t.dueDate);
-    if (tab === 'this_week') return isThisWeek(t.dueDate);
-    if (tab === 'overdue')   return isOverdue(t.dueDate) && t.status !== 'done';
-    if (tab === 'upcoming')  return isUpcoming(t.dueDate);
-    return true;
-  });
+  const handleSort = (key) => {
+    if (sortKey === key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
+    else { setSortKey(key); setSortDir('asc'); }
+  };
+
+  const filteredTasks = useMemo(() => {
+    const base = tasks.filter(t => {
+      if (tab === 'all')       return true;
+      if (tab === 'today')     return isToday(t.dueDate);
+      if (tab === 'this_week') return isThisWeek(t.dueDate);
+      if (tab === 'overdue')   return isOverdue(t.dueDate) && t.status !== 'done';
+      if (tab === 'upcoming')  return isUpcoming(t.dueDate);
+      return true;
+    });
+
+    const dir = sortDir === 'asc' ? 1 : -1;
+    return [...base].sort((a, b) => {
+      if (sortKey === 'smart')    return smartSort(a, b) * dir;
+      if (sortKey === 'title')    return a.title.localeCompare(b.title) * dir;
+      if (sortKey === 'priority') return ((PRIORITY_WEIGHT[b.priority] || 0) - (PRIORITY_WEIGHT[a.priority] || 0)) * dir;
+      if (sortKey === 'status')   return (a.status || '').localeCompare(b.status || '') * dir;
+      if (sortKey === 'dueDate') {
+        if (!a.dueDate && !b.dueDate) return 0;
+        if (!a.dueDate) return 1 * dir;
+        if (!b.dueDate) return -1 * dir;
+        return (new Date(a.dueDate) - new Date(b.dueDate)) * dir;
+      }
+      return 0;
+    });
+  }, [tasks, tab, sortKey, sortDir]);
 
   const TAB_COUNTS = {
     all:       tasks.length,
@@ -222,13 +270,61 @@ export default function MyTasksPage() {
         ))}
       </Tabs>
 
+      {/* Sort info */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+        <Typography sx={{ fontSize: '0.75rem', color: 'text.disabled' }}>
+          {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''} · sorted by{' '}
+          <Box
+            component="span"
+            onClick={() => { setSortKey('smart'); setSortDir('asc'); }}
+            sx={{
+              color: sortKey === 'smart' ? '#6366F1' : 'text.secondary',
+              cursor: 'pointer', fontWeight: 600,
+              '&:hover': { color: '#6366F1' },
+            }}
+          >
+            {sortKey === 'smart' ? 'urgency + priority' : sortKey}
+            {sortKey !== 'smart' && ' · click to reset'}
+          </Box>
+        </Typography>
+      </Box>
+
       {/* Task table */}
       <TableContainer component={Paper} elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
         <Table>
           <TableHead>
             <TableRow sx={{ backgroundColor: '#F8FAFC' }}>
-              {['Task', 'Project', 'Due Date', 'Priority', 'Status', ''].map(h => (
-                <TableCell key={h} sx={{ fontWeight: 600, fontSize: '0.78rem', color: 'text.secondary', py: 1.5 }}>{h}</TableCell>
+              {[
+                { label: 'Task',     key: 'title' },
+                { label: 'Project',  key: null },
+                { label: 'Due Date', key: 'dueDate' },
+                { label: 'Priority', key: 'priority' },
+                { label: 'Status',   key: 'status' },
+                { label: '',         key: null },
+              ].map(({ label, key }) => (
+                <TableCell
+                  key={label}
+                  onClick={key ? () => handleSort(key) : undefined}
+                  sx={{
+                    fontWeight: 600, fontSize: '0.78rem', py: 1.5,
+                    color: key && sortKey === key ? '#6366F1' : 'text.secondary',
+                    cursor: key ? 'pointer' : 'default',
+                    userSelect: 'none',
+                    '&:hover': key ? { color: '#6366F1' } : {},
+                    whiteSpace: 'nowrap',
+                  }}
+                >
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                    {label}
+                    {key && (
+                      sortKey === key
+                        ? sortDir === 'asc'
+                          ? <ArrowUpward sx={{ fontSize: 13 }} />
+                          : <ArrowDownward sx={{ fontSize: 13 }} />
+                        : <UnfoldMore sx={{ fontSize: 13, opacity: 0.35 }} />
+                    )}
+                  </Box>
+                </TableCell>
               ))}
             </TableRow>
           </TableHead>
