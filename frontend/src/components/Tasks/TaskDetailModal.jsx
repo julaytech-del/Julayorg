@@ -11,7 +11,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { updateTask, deleteTask, addComment } from '../../store/slices/taskSlice.js';
-import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { showSnackbar, startGlobalTimer, stopGlobalTimer } from '../../store/slices/uiSlice.js';
 import { tasksAPI, usersAPI } from '../../services/api.js';
 import api from '../../services/api.js';
 import { format, formatDistanceToNow } from 'date-fns';
@@ -89,9 +89,10 @@ const PropRow = ({ label, children }) => (
 // ── main component ────────────────────────────────────────────────────────────
 
 export default function TaskDetailModal({ task, onClose, onUpdate }) {
-  const dispatch   = useDispatch();
-  const { t }      = useTranslation();
-  const user       = useSelector(s => s.auth.user);
+  const dispatch    = useDispatch();
+  const { t }       = useTranslation();
+  const user        = useSelector(s => s.auth.user);
+  const activeTimer = useSelector(s => s.ui.activeTimer);
 
   const [localTask, setLocalTask] = useState(task);
   const [comment,   setComment]   = useState('');
@@ -101,13 +102,17 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const [allTasks,   setAllTasks]   = useState([]);
 
   // time tracking
-  const [logTimeOpen,    setLogTimeOpen]    = useState(false);
-  const [timeHours,      setTimeHours]      = useState('');
-  const [timeNote,       setTimeNote]       = useState('');
-  const [timerRunning,   setTimerRunning]   = useState(false);
-  const [timerSeconds,   setTimerSeconds]   = useState(0);
-  const timerRef   = useRef(null);
-  const startedAt  = useRef(null);
+  const [logTimeOpen,  setLogTimeOpen]  = useState(false);
+  const [timeHours,    setTimeHours]    = useState('');
+  const [timeNote,     setTimeNote]     = useState('');
+  const [tick,         setTick]         = useState(0);  // forces re-render every second
+  const tickRef = useRef(null);
+
+  // derive timer state from Redux (survives drawer close/reopen)
+  const timerRunning = activeTimer?.taskId === task?._id;
+  const timerSeconds = timerRunning
+    ? Math.floor((Date.now() - activeTimer.startedAt) / 1000)
+    : 0;
 
   useEffect(() => {
     setLocalTask(task);
@@ -119,44 +124,40 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         .then(res => setAllTasks((res.data || []).filter(t => t._id !== task._id)))
         .catch(() => {});
     }
-    // stop any running timer when task changes
-    setTimerRunning(false);
-    setTimerSeconds(0);
-    clearInterval(timerRef.current);
   }, [task]);
 
+  // tick every second while timer is running for this task
   useEffect(() => {
     if (timerRunning) {
-      timerRef.current = setInterval(() => setTimerSeconds(s => s + 1), 1000);
+      tickRef.current = setInterval(() => setTick(t => t + 1), 1000);
     } else {
-      clearInterval(timerRef.current);
+      clearInterval(tickRef.current);
     }
-    return () => clearInterval(timerRef.current);
+    return () => clearInterval(tickRef.current);
   }, [timerRunning]);
 
   const handleTimerStart = () => {
-    startedAt.current = new Date();
-    setTimerSeconds(0);
-    setTimerRunning(true);
+    dispatch(startGlobalTimer({ taskId: task._id, taskTitle: task.title, startedAt: Date.now() }));
   };
 
   const handleTimerStop = async () => {
-    setTimerRunning(false);
-    if (timerSeconds < 5) { setTimerSeconds(0); return; }
-    const hours = Math.round((timerSeconds / 3600) * 100) / 100;
+    const elapsed = timerSeconds;
+    const startTime = new Date(activeTimer.startedAt);
+    dispatch(stopGlobalTimer());
+    if (elapsed < 5) return;
+    const hours = Math.round((elapsed / 3600) * 100) / 100;
     try {
       await api.post('/time-entries', {
         task: task._id,
         description: 'Timer entry',
-        startTime: startedAt.current,
+        startTime,
         endTime: new Date(),
         billable: true,
       });
       const newActual = Math.round(((localTask.actualHours || 0) + hours) * 100) / 100;
       setLocalTask(p => ({ ...p, actualHours: newActual }));
       await dispatch(updateTask({ id: task._id, data: { actualHours: newActual } }));
-      dispatch(showSnackbar({ message: `Logged ${fmtSeconds(timerSeconds)}`, severity: 'success' }));
-      setTimerSeconds(0);
+      dispatch(showSnackbar({ message: `Logged ${fmtSeconds(elapsed)}`, severity: 'success' }));
       onUpdate?.();
     } catch {
       dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));

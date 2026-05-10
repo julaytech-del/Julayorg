@@ -8,6 +8,7 @@ const uiSlice = createSlice({
     modals: {},
     darkMode: localStorage.getItem('julay_dark') === 'true',
     dashboardRefresh: 0,
+    activeTimer: null,  // { taskId, taskTitle, startedAt (ms timestamp) }
   },
   reducers: {
     toggleSidebar(s) { s.sidebarOpen = !s.sidebarOpen; },
@@ -21,8 +22,10 @@ const uiSlice = createSlice({
       localStorage.setItem('julay_dark', String(s.darkMode));
     },
     triggerDashboardRefresh(s) { s.dashboardRefresh += 1; },
+    startGlobalTimer(s, a) { s.activeTimer = { taskId: a.payload.taskId, taskTitle: a.payload.taskTitle, startedAt: a.payload.startedAt }; },
+    stopGlobalTimer(s) { s.activeTimer = null; },
   }
 });
 
-export const { toggleSidebar, setSidebar, showSnackbar, hideSnackbar, openModal, closeModal, toggleDarkMode, triggerDashboardRefresh } = uiSlice.actions;
+export const { toggleSidebar, setSidebar, showSnackbar, hideSnackbar, openModal, closeModal, toggleDarkMode, triggerDashboardRefresh, startGlobalTimer, stopGlobalTimer } = uiSlice.actions;
 export default uiSlice.reducer;
