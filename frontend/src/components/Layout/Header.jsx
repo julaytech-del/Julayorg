@@ -16,6 +16,7 @@ import { toggleDarkMode, showSnackbar, triggerDashboardRefresh, stopGlobalTimer 
 import LanguageSwitcher from '../common/LanguageSwitcher.jsx';
 import NotificationBell from '../common/NotificationBell.jsx';
 import { tasksAPI, projectsAPI } from '../../services/api.js';
+import api from '../../services/api.js';
 import { fetchTasks } from '../../store/slices/taskSlice.js';
 
 // ── Quick-add task modal ───────────────────────────────────────────────────────
@@ -273,8 +274,28 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
           {/* ── Global Timer pills (one per running task) ── */}
           {activeTimers.map(timer => {
             const elapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
+            const fmtT = (s) => { const h=Math.floor(s/3600),m=Math.floor((s%3600)/60),sc=s%60; return [h,m,sc].map(v=>String(v).padStart(2,'0')).join(':'); };
+
+            const stopAndSave = async () => {
+              const finalElapsed = Math.floor((Date.now() - timer.startedAt) / 1000);
+              dispatch(stopGlobalTimer(timer.taskId));
+              if (finalElapsed < 5) return;
+              try {
+                await api.post('/time-entries', {
+                  task: timer.taskId,
+                  description: 'Timer entry',
+                  startTime: new Date(timer.startedAt),
+                  endTime: new Date(),
+                  billable: true,
+                });
+                dispatch(showSnackbar({ message: `Saved ${fmtT(finalElapsed)} for "${timer.taskTitle}"`, severity: 'success' }));
+              } catch {
+                dispatch(showSnackbar({ message: 'Failed to save time entry', severity: 'error' }));
+              }
+            };
+
             return (
-              <Tooltip key={timer.taskId} title={timer.taskTitle}>
+              <Tooltip key={timer.taskId} title={`${timer.taskTitle} — click time to open, × to save & stop`}>
                 <Box sx={{
                   display:'flex', alignItems:'center', gap:0.6,
                   bgcolor:'#FEF2F2', border:'1.5px solid #FECACA',
@@ -293,8 +314,8 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
                       {fmtTimer(elapsed)}
                     </Typography>
                   </Box>
-                  {/* X to discard */}
-                  <IconButton size="small" onClick={() => dispatch(stopGlobalTimer(timer.taskId))}
+                  {/* × = save + stop */}
+                  <IconButton size="small" onClick={stopAndSave}
                     sx={{ p:0.3, mr:0.3, color:'#EF4444', '&:hover':{ bgcolor:'#FEE2E2' } }}>
                     <Close sx={{ fontSize:12 }}/>
                   </IconButton>
