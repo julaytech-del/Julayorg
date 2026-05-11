@@ -15,7 +15,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as LTooltip,
 } from 'recharts';
 import { format, subDays, startOfDay } from 'date-fns';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import api from '../../services/api.js';
 import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -162,7 +162,8 @@ const BLANK_FORM = { title: '', status: 'todo', priority: 'medium', dueDate: '',
 
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function ExecutionBoard() {
-  const dispatch = useDispatch();
+  const dispatch  = useDispatch();
+  const currentUser = useSelector(s => s.auth.user);
   const [tasks,       setTasks]       = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [selected,    setSelected]    = useState(null);
@@ -189,7 +190,9 @@ export default function ExecutionBoard() {
   }, []);
 
   const openCreate = (defaultStatus = 'todo') => {
-    setForm({ ...BLANK_FORM, status: defaultStatus });
+    // pre-assign to current user so task shows up in My Tasks
+    const selfAssignee = currentUser ? [{ _id: currentUser._id, name: currentUser.name, email: currentUser.email }] : [];
+    setForm({ ...BLANK_FORM, status: defaultStatus, assignees: selfAssignee });
     setDlgOpen(true);
   };
 
