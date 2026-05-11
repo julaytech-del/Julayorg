@@ -60,7 +60,12 @@ export const getTasks = async (req, res, next) => {
 
 export const createTask = async (req, res, next) => {
   try {
-    const task = await Task.create({ ...req.body, createdBy: req.user._id });
+    const body = { ...req.body, createdBy: req.user._id };
+    // Auto-assign creator if no assignees provided
+    if (!body.assignees || body.assignees.length === 0) {
+      body.assignees = [req.user._id];
+    }
+    const task = await Task.create(body);
     if (task.project) {
       await recalcProjectProgress(task.project);
       await Project.findByIdAndUpdate(task.project, { $inc: { 'progress.totalTasks': 1 } });
