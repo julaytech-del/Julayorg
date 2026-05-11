@@ -357,21 +357,37 @@ export default function MyTasksPage() {
                 </TableCell>
               </TableRow>
             ) : filteredTasks.map(task => {
-              const projName = typeof task.project === 'object' ? task.project?.name : null;
-              const projId   = typeof task.project === 'object' ? task.project?._id : task.project;
-              const pColor   = projectColor(projName || '');
+              const projName  = typeof task.project === 'object' ? task.project?.name : null;
+              const projId    = typeof task.project === 'object' ? task.project?._id : task.project;
+              const pColor    = projectColor(projName || '');
+              const overdue   = isOverdue(task.dueDate) && !['done','cancelled','deployed'].includes(task.status);
               return (
                 <TableRow
                   key={task._id}
                   hover
-                  sx={{ cursor: 'pointer', '&:last-child td': { border: 0 } }}
+                  sx={{
+                    cursor: 'pointer',
+                    '&:last-child td': { border: 0 },
+                    ...(overdue ? {
+                      bgcolor: '#FFF5F5',
+                      borderLeft: '3px solid #EF4444',
+                      '&:hover': { bgcolor: '#FEE2E2' },
+                    } : {}),
+                  }}
                   onClick={() => setSelectedTask(task)}
                 >
                   <TableCell sx={{ fontWeight: 600, maxWidth: 300 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                       <Tooltip title={task.title} placement="top-start">
-                        <Typography variant="body2" fontWeight={600} noWrap sx={{ maxWidth: 220 }}>{task.title}</Typography>
+                        <Typography variant="body2" fontWeight={600} noWrap sx={{ maxWidth: 200, color: overdue ? '#DC2626' : 'inherit' }}>{task.title}</Typography>
                       </Tooltip>
+                      {overdue && (
+                        <Chip
+                          label="Overdue"
+                          size="small"
+                          sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700, bgcolor: '#FEE2E2', color: '#DC2626', flexShrink: 0 }}
+                        />
+                      )}
                       {(() => {
                         const t = activeTimers.find(t => t.taskId === task._id);
                         if (!t) return null;
