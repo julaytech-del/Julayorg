@@ -2,27 +2,52 @@ import React, { useState, useEffect, useMemo } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Avatar, AvatarGroup,
   CircularProgress, LinearProgress, IconButton, Button, Tooltip, Divider,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  TextField, MenuItem, Select, FormControl, InputLabel, Autocomplete,
 } from '@mui/material';
 import {
   Add, KeyboardDoubleArrowUp, KeyboardArrowUp, Remove, KeyboardArrowDown,
   CheckCircle, Warning, AccessTime, TrendingUp, CalendarToday,
-  OpenInNew, FilterList, Refresh,
+  Refresh, Close,
 } from '@mui/icons-material';
 import {
   PieChart, Pie, Cell, Tooltip as RTooltip, Legend, ResponsiveContainer,
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as LTooltip,
 } from 'recharts';
 import { format, subDays, startOfDay } from 'date-fns';
+import { useDispatch } from 'react-redux';
 import api from '../../services/api.js';
 import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
+import { showSnackbar } from '../../store/slices/uiSlice.js';
 
 // ── Column config ─────────────────────────────────────────────────────────────
 const COLUMNS = [
-  { id: 'todo',        label: 'To Do',      color: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE', statuses: ['backlog','todo','planned'] },
-  { id: 'in_progress', label: 'In Progress', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', statuses: ['in_progress'] },
-  { id: 'review',      label: 'Review',      color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', statuses: ['testing','review'] },
-  { id: 'done',        label: 'Done',        color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', statuses: ['done','deployed'] },
-  { id: 'blocked',     label: 'Blocked',     color: '#EF4444', bg: '#FEF2F2', border: '#FECACA', statuses: ['blocked','on_hold','cancelled'] },
+  { id: 'todo',        label: 'To Do',      color: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE', statuses: ['backlog','todo','planned'],          defaultStatus: 'todo' },
+  { id: 'in_progress', label: 'In Progress', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', statuses: ['in_progress'],                       defaultStatus: 'in_progress' },
+  { id: 'review',      label: 'Review',      color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', statuses: ['testing','review'],                   defaultStatus: 'review' },
+  { id: 'done',        label: 'Done',        color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', statuses: ['done','deployed'],                    defaultStatus: 'done' },
+  { id: 'blocked',     label: 'Blocked',     color: '#EF4444', bg: '#FEF2F2', border: '#FECACA', statuses: ['blocked','on_hold','cancelled'],      defaultStatus: 'blocked' },
+];
+
+const ALL_STATUSES = [
+  { value: 'backlog',     label: 'Backlog' },
+  { value: 'todo',        label: 'To Do' },
+  { value: 'planned',     label: 'Planned' },
+  { value: 'in_progress', label: 'In Progress' },
+  { value: 'testing',     label: 'Testing' },
+  { value: 'review',      label: 'Review' },
+  { value: 'blocked',     label: 'Blocked' },
+  { value: 'on_hold',     label: 'On Hold' },
+  { value: 'cancelled',   label: 'Cancelled' },
+  { value: 'deployed',    label: 'Deployed' },
+  { value: 'done',        label: 'Done' },
+];
+
+const ALL_PRIORITIES = [
+  { value: 'critical', label: 'Critical' },
+  { value: 'high',     label: 'High' },
+  { value: 'medium',   label: 'Medium' },
+  { value: 'low',      label: 'Low' },
 ];
 
 // ── Priority config ───────────────────────────────────────────────────────────
@@ -43,29 +68,24 @@ function avatarColor(name = '') {
 
 // ── Task Card ─────────────────────────────────────────────────────────────────
 function TaskCard({ task, onClick }) {
-  const overdue  = task.dueDate && new Date(task.dueDate) < new Date() && !['done','deployed','cancelled'].includes(task.status);
-  const subs     = task.subtasks || [];
-  const done     = subs.filter(s => s.status === 'done').length;
-  const pct      = subs.length > 0 ? Math.round((done / subs.length) * 100) : 0;
-  const pMeta    = PRIORITY[task.priority] || PRIORITY.medium;
-  const PIcon    = pMeta.Icon;
+  const overdue = task.dueDate && new Date(task.dueDate) < new Date() && !['done','deployed','cancelled'].includes(task.status);
+  const subs    = task.subtasks || [];
+  const done    = subs.filter(s => s.status === 'done').length;
+  const pct     = subs.length > 0 ? Math.round((done / subs.length) * 100) : 0;
+  const pMeta   = PRIORITY[task.priority] || PRIORITY.medium;
+  const PIcon   = pMeta.Icon;
 
   return (
     <Box
       onClick={onClick}
       sx={{
-        bgcolor: 'white',
-        borderRadius: 2,
-        p: 1.5,
-        mb: 1.25,
-        border: '1px solid #E2E8F0',
-        cursor: 'pointer',
+        bgcolor: 'white', borderRadius: 2, p: 1.5, mb: 1.25,
+        border: '1px solid #E2E8F0', cursor: 'pointer',
         transition: 'all 0.15s',
         '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.10)', transform: 'translateY(-1px)', borderColor: '#C7D2FE' },
         ...(overdue ? { borderLeft: '3px solid #EF4444', bgcolor: '#FFFAFA' } : {}),
       }}
     >
-      {/* Title row */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1 }}>
         <Typography sx={{ fontSize: '0.82rem', fontWeight: 600, flex: 1, lineHeight: 1.35, color: overdue ? '#DC2626' : '#0F172A' }}>
           {task.title}
@@ -77,7 +97,6 @@ function TaskCard({ task, onClick }) {
         </Box>
       </Box>
 
-      {/* Assignees + due date */}
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <AvatarGroup max={3} sx={{ '& .MuiAvatar-root': { width: 22, height: 22, fontSize: '0.6rem', border: '1.5px solid white' } }}>
           {(task.assignees || []).map((a, i) => (
@@ -96,7 +115,6 @@ function TaskCard({ task, onClick }) {
         )}
       </Box>
 
-      {/* Tags */}
       {(task.tags || []).length > 0 && (
         <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', mt: 1 }}>
           {task.tags.slice(0, 2).map(tag => (
@@ -106,7 +124,6 @@ function TaskCard({ task, onClick }) {
         </Box>
       )}
 
-      {/* Subtask progress */}
       {subs.length > 0 && (
         <Box sx={{ mt: 1 }}>
           <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.25 }}>
@@ -141,11 +158,19 @@ function StatCard({ label, value, icon: Icon, color, sub }) {
   );
 }
 
+const BLANK_FORM = { title: '', status: 'todo', priority: 'medium', dueDate: '', assignees: [], project: '' };
+
 // ── Main ──────────────────────────────────────────────────────────────────────
 export default function ExecutionBoard() {
-  const [tasks,    setTasks]    = useState([]);
-  const [loading,  setLoading]  = useState(true);
-  const [selected, setSelected] = useState(null);
+  const dispatch = useDispatch();
+  const [tasks,       setTasks]       = useState([]);
+  const [loading,     setLoading]     = useState(true);
+  const [selected,    setSelected]    = useState(null);
+  const [dlgOpen,     setDlgOpen]     = useState(false);
+  const [saving,      setSaving]      = useState(false);
+  const [form,        setForm]        = useState(BLANK_FORM);
+  const [users,       setUsers]       = useState([]);
+  const [projects,    setProjects]    = useState([]);
 
   const load = async () => {
     setLoading(true);
@@ -157,7 +182,39 @@ export default function ExecutionBoard() {
     finally { setLoading(false); }
   };
 
-  useEffect(() => { load(); }, []);
+  useEffect(() => {
+    load();
+    api.get('/users').then(r => setUsers(r.data?.data || r.data || [])).catch(() => {});
+    api.get('/projects').then(r => setProjects(r.data?.data?.projects || r.data?.data || r.data || [])).catch(() => {});
+  }, []);
+
+  const openCreate = (defaultStatus = 'todo') => {
+    setForm({ ...BLANK_FORM, status: defaultStatus });
+    setDlgOpen(true);
+  };
+
+  const handleCreate = async () => {
+    if (!form.title.trim()) return;
+    setSaving(true);
+    try {
+      const body = {
+        title:     form.title.trim(),
+        status:    form.status,
+        priority:  form.priority,
+        dueDate:   form.dueDate || undefined,
+        assignees: form.assignees.map(u => u._id || u),
+        project:   form.project || undefined,
+      };
+      await api.post('/tasks', body);
+      dispatch(showSnackbar({ message: 'Task created!', severity: 'success' }));
+      setDlgOpen(false);
+      load();
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to create task', severity: 'error' }));
+    } finally {
+      setSaving(false);
+    }
+  };
 
   // ── Kanban groups ──────────────────────────────────────────────────────────
   const columns = useMemo(() => COLUMNS.map(col => ({
@@ -166,10 +223,10 @@ export default function ExecutionBoard() {
   })), [tasks]);
 
   // ── Stats ──────────────────────────────────────────────────────────────────
-  const totalTasks  = tasks.length;
-  const completed   = tasks.filter(t => ['done','deployed'].includes(t.status)).length;
-  const inProgress  = tasks.filter(t => t.status === 'in_progress').length;
-  const overdueCnt  = tasks.filter(t =>
+  const totalTasks = tasks.length;
+  const completed  = tasks.filter(t => ['done','deployed'].includes(t.status)).length;
+  const inProgress = tasks.filter(t => t.status === 'in_progress').length;
+  const overdueCnt = tasks.filter(t =>
     t.dueDate && new Date(t.dueDate) < new Date() && !['done','deployed','cancelled'].includes(t.status)
   ).length;
 
@@ -211,13 +268,10 @@ export default function ExecutionBoard() {
 
   const maxWorkload = Math.max(...teamWorkload.map(m => m.count), 1);
 
-  // ── Task summary ───────────────────────────────────────────────────────────
-  const dueToday  = tasks.filter(t => t.dueDate && format(new Date(t.dueDate),'yyyy-MM-dd') === format(new Date(),'yyyy-MM-dd') && !['done','deployed'].includes(t.status)).length;
-  const dueWeek   = tasks.filter(t => {
+  const dueToday = tasks.filter(t => t.dueDate && format(new Date(t.dueDate),'yyyy-MM-dd') === format(new Date(),'yyyy-MM-dd') && !['done','deployed'].includes(t.status)).length;
+  const dueWeek  = tasks.filter(t => {
     if (!t.dueDate || ['done','deployed'].includes(t.status)) return false;
-    const d  = new Date(t.dueDate);
-    const now = new Date();
-    const end = new Date(); end.setDate(now.getDate() + 7);
+    const d = new Date(t.dueDate); const now = new Date(); const end = new Date(); end.setDate(now.getDate() + 7);
     return d >= now && d <= end;
   }).length;
 
@@ -235,10 +289,11 @@ export default function ExecutionBoard() {
           <Typography color="text.secondary" variant="body2">Plan, track and complete work in one place.</Typography>
         </Box>
         <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button variant="outlined" startIcon={<Refresh />} onClick={load} size="small" sx={{ borderRadius: 2, textTransform: 'none' }}>
+          <Button variant="outlined" startIcon={<Refresh />} onClick={load} size="small"
+            sx={{ borderRadius: 2, textTransform: 'none' }}>
             Refresh
           </Button>
-          <Button variant="contained" startIcon={<Add />} size="small"
+          <Button variant="contained" startIcon={<Add />} size="small" onClick={() => openCreate()}
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2, textTransform: 'none', fontWeight: 700, boxShadow: '0 4px 12px rgba(99,102,241,0.35)' }}>
             New Task
           </Button>
@@ -255,7 +310,6 @@ export default function ExecutionBoard() {
           <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2, mb: 3 }}>
             {columns.map(col => (
               <Box key={col.id} sx={{ minWidth: 260, flex: '0 0 260px' }}>
-                {/* Column header */}
                 <Box sx={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   mb: 1.5, px: 1.5, py: 1,
@@ -269,19 +323,30 @@ export default function ExecutionBoard() {
                       {col.tasks.length}
                     </Box>
                   </Box>
-                  <IconButton size="small" sx={{ color: col.color, opacity: 0.7 }}>
-                    <Add sx={{ fontSize: 16 }} />
-                  </IconButton>
+                  <Tooltip title={`Add task to ${col.label}`}>
+                    <IconButton size="small" onClick={() => openCreate(col.defaultStatus)}
+                      sx={{ color: col.color, opacity: 0.7, '&:hover': { opacity: 1, bgcolor: `${col.color}18` } }}>
+                      <Add sx={{ fontSize: 16 }} />
+                    </IconButton>
+                  </Tooltip>
                 </Box>
 
-                {/* Cards */}
                 <Box sx={{ minHeight: 120 }}>
                   {col.tasks.map(task => (
                     <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} />
                   ))}
                   {col.tasks.length === 0 && (
-                    <Box sx={{ textAlign: 'center', py: 4, color: 'text.disabled', border: '1.5px dashed', borderColor: 'divider', borderRadius: 2 }}>
-                      <Typography sx={{ fontSize: '0.78rem' }}>No tasks</Typography>
+                    <Box
+                      onClick={() => openCreate(col.defaultStatus)}
+                      sx={{
+                        textAlign: 'center', py: 4, color: 'text.disabled',
+                        border: '1.5px dashed', borderColor: 'divider', borderRadius: 2,
+                        cursor: 'pointer', transition: 'all 0.15s',
+                        '&:hover': { borderColor: col.color, color: col.color, bgcolor: col.bg },
+                      }}
+                    >
+                      <Add sx={{ fontSize: 18, mb: 0.5 }} />
+                      <Typography sx={{ fontSize: '0.78rem' }}>Add task</Typography>
                     </Box>
                   )}
                 </Box>
@@ -291,10 +356,10 @@ export default function ExecutionBoard() {
 
           {/* ── Stats Row ── */}
           <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-            <StatCard label="Total Tasks"   value={totalTasks} icon={TrendingUp}   color="#6366F1" sub="All active tasks" />
-            <StatCard label="Completed"     value={completed}  icon={CheckCircle}  color="#10B981" sub={`${totalTasks > 0 ? Math.round((completed/totalTasks)*100) : 0}% completion rate`} />
-            <StatCard label="In Progress"   value={inProgress} icon={AccessTime}   color="#3B82F6" sub="Currently active" />
-            <StatCard label="Overdue"       value={overdueCnt} icon={Warning}      color="#EF4444" sub="Need attention" />
+            <StatCard label="Total Tasks"   value={totalTasks} icon={TrendingUp}  color="#6366F1" sub="All active tasks" />
+            <StatCard label="Completed"     value={completed}  icon={CheckCircle} color="#10B981" sub={`${totalTasks > 0 ? Math.round((completed/totalTasks)*100) : 0}% completion rate`} />
+            <StatCard label="In Progress"   value={inProgress} icon={AccessTime}  color="#3B82F6" sub="Currently active" />
+            <StatCard label="Overdue"       value={overdueCnt} icon={Warning}     color="#EF4444" sub="Need attention" />
           </Box>
 
           {/* ── Bottom Section ── */}
@@ -343,15 +408,13 @@ export default function ExecutionBoard() {
 
             {/* Right sidebar */}
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-
-              {/* Task Summary */}
               <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
                 <CardContent sx={{ p: 2 }}>
                   <Typography fontWeight={700} sx={{ mb: 1.5, fontSize: '0.88rem' }}>Task Summary</Typography>
                   {[
-                    { label: 'Due Today',    count: dueToday,  color: '#F59E0B' },
-                    { label: 'Due This Week',count: dueWeek,   color: '#6366F1' },
-                    { label: 'Overdue',      count: overdueCnt,color: '#EF4444' },
+                    { label: 'Due Today',     count: dueToday,  color: '#F59E0B' },
+                    { label: 'Due This Week', count: dueWeek,   color: '#6366F1' },
+                    { label: 'Overdue',       count: overdueCnt,color: '#EF4444' },
                   ].map(item => (
                     <Box key={item.label} sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', py: 0.75 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
@@ -364,7 +427,6 @@ export default function ExecutionBoard() {
                 </CardContent>
               </Card>
 
-              {/* Team Workload */}
               <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2 }}>
                 <CardContent sx={{ p: 2 }}>
                   <Typography fontWeight={700} sx={{ mb: 1.5, fontSize: '0.88rem' }}>Team Workload</Typography>
@@ -396,12 +458,12 @@ export default function ExecutionBoard() {
                   ))}
                 </CardContent>
               </Card>
-
             </Box>
           </Box>
         </>
       )}
 
+      {/* ── Task Detail Modal ── */}
       {selected && (
         <TaskDetailModal
           task={selected}
@@ -409,6 +471,96 @@ export default function ExecutionBoard() {
           onUpdate={load}
         />
       )}
+
+      {/* ── Create Task Dialog ── */}
+      <Dialog open={dlgOpen} onClose={() => setDlgOpen(false)} maxWidth="sm" fullWidth
+        PaperProps={{ sx: { borderRadius: 3 } }}>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pb: 1 }}>
+          <Typography fontWeight={700} fontSize="1rem">New Task</Typography>
+          <IconButton size="small" onClick={() => setDlgOpen(false)}><Close fontSize="small" /></IconButton>
+        </DialogTitle>
+        <Divider />
+
+        <DialogContent sx={{ pt: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+          {/* Title */}
+          <TextField
+            label="Task title *"
+            value={form.title}
+            onChange={e => setForm(f => ({ ...f, title: e.target.value }))}
+            onKeyDown={e => { if (e.key === 'Enter' && form.title.trim()) handleCreate(); }}
+            fullWidth size="small" autoFocus
+            sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+          />
+
+          {/* Status + Priority */}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <FormControl size="small" fullWidth>
+              <InputLabel>Status</InputLabel>
+              <Select label="Status" value={form.status} onChange={e => setForm(f => ({ ...f, status: e.target.value }))}
+                sx={{ borderRadius: 2 }}>
+                {ALL_STATUSES.map(s => <MenuItem key={s.value} value={s.value}>{s.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+            <FormControl size="small" fullWidth>
+              <InputLabel>Priority</InputLabel>
+              <Select label="Priority" value={form.priority} onChange={e => setForm(f => ({ ...f, priority: e.target.value }))}
+                sx={{ borderRadius: 2 }}>
+                {ALL_PRIORITIES.map(p => <MenuItem key={p.value} value={p.value}>{p.label}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Due Date + Project */}
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <TextField
+              label="Due Date"
+              type="date"
+              value={form.dueDate}
+              onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))}
+              size="small" fullWidth
+              InputLabelProps={{ shrink: true }}
+              sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
+            <FormControl size="small" fullWidth>
+              <InputLabel>Project</InputLabel>
+              <Select label="Project" value={form.project} onChange={e => setForm(f => ({ ...f, project: e.target.value }))}
+                sx={{ borderRadius: 2 }}>
+                <MenuItem value="">— None —</MenuItem>
+                {projects.map(p => <MenuItem key={p._id} value={p._id}>{p.name}</MenuItem>)}
+              </Select>
+            </FormControl>
+          </Box>
+
+          {/* Assignees */}
+          <Autocomplete
+            multiple
+            size="small"
+            options={users}
+            getOptionLabel={u => u.name || u.email || ''}
+            value={form.assignees}
+            onChange={(_, v) => setForm(f => ({ ...f, assignees: v }))}
+            renderInput={params => <TextField {...params} label="Assignees" sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }} />}
+            renderTags={(val, getTagProps) =>
+              val.map((u, i) => (
+                <Chip key={u._id} label={u.name || u.email} size="small" {...getTagProps({ index: i })} />
+              ))
+            }
+          />
+        </DialogContent>
+
+        <Divider />
+        <DialogActions sx={{ px: 3, py: 1.5 }}>
+          <Button onClick={() => setDlgOpen(false)} sx={{ textTransform: 'none', borderRadius: 2 }}>Cancel</Button>
+          <Button
+            variant="contained"
+            onClick={handleCreate}
+            disabled={!form.title.trim() || saving}
+            sx={{ textTransform: 'none', borderRadius: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', fontWeight: 700 }}
+          >
+            {saving ? 'Creating…' : 'Create Task'}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 }
