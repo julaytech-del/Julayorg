@@ -22,11 +22,14 @@ import { showSnackbar } from '../../store/slices/uiSlice.js';
 
 // ── Column config ─────────────────────────────────────────────────────────────
 const COLUMNS = [
-  { id: 'todo',        label: 'To Do',      color: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE', statuses: ['backlog','todo','planned'],          defaultStatus: 'todo' },
-  { id: 'in_progress', label: 'In Progress', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', statuses: ['in_progress'],                       defaultStatus: 'in_progress' },
-  { id: 'review',      label: 'Review',      color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', statuses: ['testing','review'],                   defaultStatus: 'review' },
-  { id: 'done',        label: 'Done',        color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', statuses: ['done','deployed'],                    defaultStatus: 'done' },
-  { id: 'blocked',     label: 'Blocked',     color: '#EF4444', bg: '#FEF2F2', border: '#FECACA', statuses: ['blocked','on_hold','cancelled'],      defaultStatus: 'blocked' },
+  { id: 'backlog',     label: 'Backlog',     color: '#8B5CF6', bg: '#F5F3FF', border: '#DDD6FE', statuses: ['backlog'],       defaultStatus: 'backlog' },
+  { id: 'todo',        label: 'To Do',       color: '#6366F1', bg: '#EEF2FF', border: '#C7D2FE', statuses: ['todo','planned'], defaultStatus: 'todo' },
+  { id: 'in_progress', label: 'In Progress', color: '#3B82F6', bg: '#EFF6FF', border: '#BFDBFE', statuses: ['in_progress'],   defaultStatus: 'in_progress' },
+  { id: 'testing',     label: 'Testing',     color: '#EC4899', bg: '#FDF2F8', border: '#FBCFE8', statuses: ['testing'],       defaultStatus: 'testing' },
+  { id: 'review',      label: 'Review',      color: '#F59E0B', bg: '#FFFBEB', border: '#FDE68A', statuses: ['review'],        defaultStatus: 'review' },
+  { id: 'blocked',     label: 'Blocked',     color: '#EF4444', bg: '#FEF2F2', border: '#FECACA', statuses: ['blocked'],       defaultStatus: 'blocked' },
+  { id: 'on_hold',     label: 'On Hold',     color: '#F97316', bg: '#FFF7ED', border: '#FED7AA', statuses: ['on_hold'],       defaultStatus: 'on_hold' },
+  { id: 'done',        label: 'Done',        color: '#10B981', bg: '#ECFDF5', border: '#A7F3D0', statuses: ['done','deployed','cancelled'], defaultStatus: 'done' },
 ];
 
 const ALL_STATUSES = [
