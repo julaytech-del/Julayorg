@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 
 const SIDEBAR_WIDTH = 260;
@@ -25,6 +25,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       { label: t('nav.departments'),icon: Business,         path: '/dashboard/departments' },
     ]},
     { title: 'Views', items: [
+      { label: 'Execution Board',   icon: ViewKanban,       path: '/dashboard/execution-board' },
       { label: 'Calendar',          icon: CalendarMonth,    path: '/dashboard/calendar' },
       { label: 'Workload',          icon: Speed,            path: '/dashboard/workload' },
       { label: 'Custom Dashboard',  icon: ViewQuilt,        path: '/dashboard/custom-dashboard' },

@@ -66,6 +66,7 @@ const PortfolioView       = React.lazy(() => import('./pages/Portfolio/Portfolio
 const ActivityLogPage     = React.lazy(() => import('./pages/Activity/ActivityLogPage.jsx'));
 const SettingsPage        = React.lazy(() => import('./pages/Settings/SettingsPage.jsx'));
 const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTrackingPage.jsx'));
+const ExecutionBoard      = React.lazy(() => import('./pages/ExecutionBoard/ExecutionBoard.jsx'));
 
 // ─── Page loading fallback ────────────────────────────────────────────────────
 function PageLoader() {
@@ -230,6 +231,9 @@ export default function App() {
           } />
           <Route path="time-tracking" element={
             <Suspense fallback={<PageLoader />}><TimeTrackingPage /></Suspense>
+          } />
+          <Route path="execution-board" element={
+            <Suspense fallback={<PageLoader />}><ExecutionBoard /></Suspense>
           } />
         </Route>
 
