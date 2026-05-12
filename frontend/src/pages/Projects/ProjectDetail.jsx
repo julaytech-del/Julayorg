@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem } from '@mui/material';
+import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Menu } from '@mui/material';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { fetchProject, fetchGoals, createGoal, createProject } from '../../store/slices/projectSlice.js';
+import { projectsAPI } from '../../services/api.js';
 import { fetchTasks, createTask, updateTaskStatus } from '../../store/slices/taskSlice.js';
 import { getStandup, analyzePerformance, replanProject } from '../../store/slices/aiSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -29,6 +30,26 @@ export default function ProjectDetail() {
   const [newGoalTitle, setNewGoalTitle] = useState('');
   const [addTaskGoal, setAddTaskGoal] = useState(null);
   const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [statusAnchor, setStatusAnchor] = useState(null);
+
+  const PROJECT_STATUSES = [
+    { value: 'planning',   label: 'Planning',   color: '#6366F1' },
+    { value: 'active',     label: 'Active',     color: '#10B981' },
+    { value: 'on_hold',    label: 'On Hold',    color: '#F59E0B' },
+    { value: 'completed',  label: 'Completed',  color: '#3B82F6' },
+    { value: 'cancelled',  label: 'Cancelled',  color: '#EF4444' },
+  ];
+
+  const handleStatusChange = async (newStatus) => {
+    setStatusAnchor(null);
+    try {
+      await projectsAPI.update(id, { status: newStatus });
+      dispatch(fetchProject(id));
+      dispatch(showSnackbar({ message: 'Project status updated', severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to update status', severity: 'error' }));
+    }
+  };
 
   useEffect(() => {
     dispatch(fetchProject(id));
@@ -94,8 +115,21 @@ export default function ProjectDetail() {
         <CardContent sx={{ p: 3 }}>
           <Box sx={{ display: 'flex', gap: 3, flexWrap: 'wrap', alignItems: 'flex-start', justifyContent: 'space-between' }}>
             <Box sx={{ flex: 1, minWidth: 200 }}>
-              <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
-                <StatusChip status={project.status} />
+              <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap', alignItems: 'center' }}>
+                <Box onClick={e => setStatusAnchor(e.currentTarget)} sx={{ cursor: 'pointer', '&:hover': { opacity: 0.8 } }}>
+                  <StatusChip status={project.status} />
+                </Box>
+                <Menu anchorEl={statusAnchor} open={Boolean(statusAnchor)} onClose={() => setStatusAnchor(null)}
+                  PaperProps={{ sx: { borderRadius: 2, boxShadow: '0 8px 24px rgba(0,0,0,0.12)', minWidth: 160, py: 0.5 } }}>
+                  {PROJECT_STATUSES.map(s => (
+                    <MenuItem key={s.value} onClick={() => handleStatusChange(s.value)}
+                      selected={project.status === s.value}
+                      sx={{ borderRadius: 1, mx: 0.5, my: 0.15, gap: 1.5, fontSize: '0.83rem' }}>
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: s.color, flexShrink: 0 }} />
+                      {s.label}
+                    </MenuItem>
+                  ))}
+                </Menu>
                 <PriorityChip priority={project.priority} />
                 {project.aiGenerated && <Chip size="small" icon={<AutoAwesome sx={{ fontSize: '12px !important' }} />} label={t('projects.card.ai')} sx={{ bgcolor: '#EEF2FF', color: '#6366F1', fontWeight: 600 }} />}
               </Box>
