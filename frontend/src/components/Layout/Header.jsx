@@ -3,10 +3,12 @@ import {
   AppBar, Toolbar, Box, InputBase, IconButton, Badge, Avatar, Menu, MenuItem,
   Typography, Chip, Divider, Tooltip, Dialog, DialogContent, DialogActions,
   TextField, Button, Select, FormControl, InputLabel, MenuItem as MuiItem,
+  ListItemIcon, Popover,
 } from '@mui/material';
 import {
   Search, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown,
   DarkMode, LightMode, Add, Close, CalendarToday, LocalOffer,
+  Task, FolderOpen,
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -210,6 +212,114 @@ function QuickAddModal({ open, onClose }) {
   );
 }
 
+// ── Quick-add project modal ───────────────────────────────────────────────────
+const PROJECT_COLORS = ['#6366F1','#8B5CF6','#EC4899','#3B82F6','#10B981','#F59E0B','#EF4444','#14B8A6','#F97316'];
+
+function QuickAddProjectModal({ open, onClose }) {
+  const dispatch = useDispatch();
+  const [name,      setName]      = useState('');
+  const [desc,      setDesc]      = useState('');
+  const [color,     setColor]     = useState('#6366F1');
+  const [status,    setStatus]    = useState('planning');
+  const [startDate, setStartDate] = useState('');
+  const [endDate,   setEndDate]   = useState('');
+  const [saving,    setSaving]    = useState(false);
+
+  const handleClose = () => {
+    setName(''); setDesc(''); setColor('#6366F1'); setStatus('planning');
+    setStartDate(''); setEndDate('');
+    onClose();
+  };
+
+  const handleSave = async () => {
+    if (!name.trim()) return;
+    setSaving(true);
+    try {
+      await projectsAPI.create({ name: name.trim(), description: desc, color, status, startDate: startDate||undefined, endDate: endDate||undefined });
+      dispatch(showSnackbar({ message: 'Project created!', severity: 'success' }));
+      dispatch(triggerDashboardRefresh());
+      handleClose();
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to create project', severity: 'error' }));
+    } finally { setSaving(false); }
+  };
+
+  const fSx = { '& .MuiOutlinedInput-root': { borderRadius: '10px', fontSize: '0.82rem' } };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth
+      PaperProps={{ sx: { borderRadius: '16px', boxShadow: '0 24px 60px rgba(0,0,0,0.18)' } }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 3, pt: 2.5, pb: 0 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Box sx={{ width: 28, height: 28, borderRadius: '8px', bgcolor: `${color}22`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <FolderOpen sx={{ fontSize: 16, color }} />
+          </Box>
+          <Typography sx={{ fontWeight: 700, fontSize: '0.95rem', color: '#0F172A' }}>New Project</Typography>
+        </Box>
+        <IconButton size="small" onClick={handleClose} sx={{ color: '#94A3B8' }}>
+          <Close sx={{ fontSize: 18 }} />
+        </IconButton>
+      </Box>
+
+      <DialogContent sx={{ px: 3, pt: 2, pb: 1, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        {/* Name */}
+        <TextField autoFocus fullWidth placeholder="Project name…" value={name}
+          onChange={e => setName(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && name.trim()) handleSave(); }}
+          sx={{ '& .MuiOutlinedInput-root': { fontSize: '0.95rem', fontWeight: 500, borderRadius: '10px' } }} />
+
+        {/* Description */}
+        <TextField fullWidth multiline rows={2} placeholder="Description (optional)" value={desc}
+          onChange={e => setDesc(e.target.value)} sx={fSx} />
+
+        {/* Color + Status */}
+        <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+          <Box>
+            <Typography sx={{ fontSize: '0.72rem', fontWeight: 600, color: '#64748B', mb: 0.75 }}>Color</Typography>
+            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap' }}>
+              {PROJECT_COLORS.map(c => (
+                <Box key={c} onClick={() => setColor(c)} sx={{
+                  width: 22, height: 22, borderRadius: '50%', bgcolor: c, cursor: 'pointer',
+                  border: color === c ? `2.5px solid ${c}` : '2.5px solid transparent',
+                  outline: color === c ? `2px solid white` : 'none',
+                  boxShadow: color === c ? `0 0 0 2px ${c}` : 'none',
+                  transition: 'all 0.12s',
+                }} />
+              ))}
+            </Box>
+          </Box>
+          <FormControl size="small" sx={{ flex: 1, ...fSx }}>
+            <InputLabel sx={{ fontSize: '0.82rem' }}>Status</InputLabel>
+            <Select label="Status" value={status} onChange={e => setStatus(e.target.value)}>
+              {['planning','active','on_hold','completed','cancelled'].map(s => (
+                <MuiItem key={s} value={s} sx={{ textTransform: 'capitalize' }}>{s.replace('_',' ')}</MuiItem>
+              ))}
+            </Select>
+          </FormControl>
+        </Box>
+
+        {/* Dates */}
+        <Box sx={{ display: 'flex', gap: 1.5 }}>
+          <TextField size="small" fullWidth type="date" label="Start Date"
+            value={startDate} onChange={e => setStartDate(e.target.value)}
+            InputLabelProps={{ shrink: true }} sx={fSx} />
+          <TextField size="small" fullWidth type="date" label="End Date"
+            value={endDate} onChange={e => setEndDate(e.target.value)}
+            InputLabelProps={{ shrink: true }} sx={fSx} />
+        </Box>
+      </DialogContent>
+
+      <DialogActions sx={{ px: 3, pb: 2.5, pt: 1.5, gap: 1 }}>
+        <Button onClick={handleClose} sx={{ borderRadius: '8px', textTransform: 'none', color: '#64748B' }}>Cancel</Button>
+        <Button variant="contained" onClick={handleSave} disabled={!name.trim() || saving}
+          sx={{ borderRadius: '8px', textTransform: 'none', fontWeight: 700, bgcolor: color, '&:hover': { bgcolor: color, opacity: 0.88 }, px: 2.5 }}>
+          {saving ? 'Creating…' : 'Create Project'}
+        </Button>
+      </DialogActions>
+    </Dialog>
+  );
+}
+
 // ── Header ────────────────────────────────────────────────────────────────────
 export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
   const dispatch    = useDispatch();
@@ -219,9 +329,11 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
   const darkMode    = useSelector(s => s.ui.darkMode);
   const activeTimers = useSelector(s => s.ui.activeTimers);
   const { t }       = useTranslation();
-  const [anchorEl,  setAnchorEl]  = useState(null);
-  const [quickAdd,  setQuickAdd]  = useState(false);
-  const [timerTick, setTimerTick] = useState(0);
+  const [anchorEl,      setAnchorEl]      = useState(null);
+  const [newMenuAnchor, setNewMenuAnchor] = useState(null);
+  const [quickAdd,      setQuickAdd]      = useState(false);
+  const [quickProject,  setQuickProject]  = useState(false);
+  const [timerTick,     setTimerTick]     = useState(0);
 
   React.useEffect(() => {
     if (!activeTimers.length) return;
@@ -325,20 +437,47 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             );
           })}
 
-          {/* ── Quick Add button ── */}
-          <Tooltip title="New task (N)">
-            <Box onClick={() => setQuickAdd(true)} sx={{
-              display:'flex', alignItems:'center', gap:0.75,
-              bgcolor: darkMode ? 'rgba(99,102,241,0.15)' : '#EEF2FF',
-              border:`1.5px solid ${darkMode ? 'rgba(99,102,241,0.3)' : '#C7D2FE'}`,
-              borderRadius:'10px', px:1.25, py:0.6, cursor:'pointer',
-              transition:'all 0.15s',
-              '&:hover':{ bgcolor: darkMode ? 'rgba(99,102,241,0.25)' : '#E0E7FF', transform:'translateY(-1px)', boxShadow:'0 4px 12px rgba(99,102,241,0.2)' },
-            }}>
-              <Add sx={{ fontSize:16, color:'#6366F1' }}/>
-              <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:'#6366F1', display:{ xs:'none', sm:'block' } }}>New</Typography>
-            </Box>
-          </Tooltip>
+          {/* ── Quick Add button (dropdown) ── */}
+          <Box onClick={e => setNewMenuAnchor(e.currentTarget)} sx={{
+            display:'flex', alignItems:'center', gap:0.75,
+            bgcolor: darkMode ? 'rgba(99,102,241,0.15)' : '#EEF2FF',
+            border:`1.5px solid ${darkMode ? 'rgba(99,102,241,0.3)' : '#C7D2FE'}`,
+            borderRadius:'10px', px:1.25, py:0.6, cursor:'pointer',
+            transition:'all 0.15s',
+            '&:hover':{ bgcolor: darkMode ? 'rgba(99,102,241,0.25)' : '#E0E7FF', transform:'translateY(-1px)', boxShadow:'0 4px 12px rgba(99,102,241,0.2)' },
+          }}>
+            <Add sx={{ fontSize:16, color:'#6366F1' }}/>
+            <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:'#6366F1', display:{ xs:'none', sm:'block' } }}>New</Typography>
+            <KeyboardArrowDown sx={{ fontSize:14, color:'#6366F1' }}/>
+          </Box>
+          <Menu anchorEl={newMenuAnchor} open={Boolean(newMenuAnchor)} onClose={() => setNewMenuAnchor(null)}
+            transformOrigin={{ horizontal:'left', vertical:'top' }} anchorOrigin={{ horizontal:'left', vertical:'bottom' }}
+            PaperProps={{ sx:{ mt:0.75, minWidth:180, borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,0.12)', py:0.5 } }}>
+            <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickAdd(true); }}
+              sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
+              <ListItemIcon sx={{ minWidth:0 }}>
+                <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EEF2FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
+                  <Task sx={{ fontSize:15, color:'#6366F1' }}/>
+                </Box>
+              </ListItemIcon>
+              <Box>
+                <Typography sx={{ fontSize:'0.83rem', fontWeight:600 }}>New Task</Typography>
+                <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Add a task to your board</Typography>
+              </Box>
+            </MenuItem>
+            <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickProject(true); }}
+              sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
+              <ListItemIcon sx={{ minWidth:0 }}>
+                <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EFF6FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
+                  <FolderOpen sx={{ fontSize:15, color:'#3B82F6' }}/>
+                </Box>
+              </ListItemIcon>
+              <Box>
+                <Typography sx={{ fontSize:'0.83rem', fontWeight:600 }}>New Project</Typography>
+                <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Create a new project</Typography>
+              </Box>
+            </MenuItem>
+          </Menu>
 
           {/* AI Studio chip */}
           <Chip icon={<AutoAwesome sx={{ fontSize:'14px !important' }}/>} label={t('header.aiGenerate')}
@@ -391,6 +530,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
       </AppBar>
 
       <QuickAddModal open={quickAdd} onClose={() => setQuickAdd(false)}/>
+      <QuickAddProjectModal open={quickProject} onClose={() => setQuickProject(false)}/>
     </>
   );
 }
