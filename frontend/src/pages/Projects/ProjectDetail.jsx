@@ -26,10 +26,12 @@ export default function ProjectDetail() {
   const [tab, setTab] = useState(0);
   const [selectedTask, setSelectedTask] = useState(null);
   const [aiDialog, setAiDialog] = useState(null);
-  const [addGoalOpen, setAddGoalOpen] = useState(false);
-  const [newGoalTitle, setNewGoalTitle] = useState('');
-  const [addTaskGoal, setAddTaskGoal] = useState(null);
-  const [newTaskTitle, setNewTaskTitle] = useState('');
+  const [addGoalOpen,        setAddGoalOpen]        = useState(false);
+  const [newGoalTitle,       setNewGoalTitle]        = useState('');
+  const [addTaskGoal,        setAddTaskGoal]         = useState(null);
+  const [newTaskTitle,       setNewTaskTitle]        = useState('');
+  const [addStandaloneTask,  setAddStandaloneTask]   = useState(false);
+  const [standaloneTitle,    setStandaloneTitle]     = useState('');
   const [statusAnchor, setStatusAnchor] = useState(null);
 
   const PROJECT_STATUSES = [
@@ -94,6 +96,16 @@ export default function ProjectDetail() {
     setAddTaskGoal(null);
     dispatch(fetchTasks({ projectId: id }));
   };
+
+  const handleAddStandaloneTask = async () => {
+    if (!standaloneTitle.trim()) return;
+    await dispatch(createTask({ title: standaloneTitle, project: id, status: 'planned', priority: 'medium' }));
+    setStandaloneTitle('');
+    setAddStandaloneTask(false);
+    dispatch(fetchTasks({ projectId: id }));
+  };
+
+  const standaloneTask = tasks.filter(t => !t.goal);
 
   const handleToggleTask = async (task) => {
     const newStatus = task.status === 'done' ? 'planned' : 'done';
@@ -253,15 +265,62 @@ export default function ProjectDetail() {
               </Accordion>
             );
           })}
-          {addGoalOpen ? (
-            <Box sx={{ display: 'flex', gap: 1, mt: 2 }}>
-              <TextField size="small" placeholder={t('projectDetail.addGoal') + '...'} value={newGoalTitle} onChange={e => setNewGoalTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddGoal()} autoFocus sx={{ flex: 1 }} />
-              <Button variant="contained" onClick={handleAddGoal}>{t('projectDetail.addGoal')}</Button>
-              <Button onClick={() => setAddGoalOpen(false)}>{t('common.cancel')}</Button>
-            </Box>
-          ) : (
-            <Button variant="outlined" startIcon={<Add />} sx={{ mt: 2 }} onClick={() => setAddGoalOpen(true)}>{t('projectDetail.addGoal')}</Button>
+          {/* ── Standalone tasks (no goal) ── */}
+          {standaloneTask.length > 0 && (
+            <Accordion defaultExpanded sx={{ mb: 1, mt: 1, '&:before': { display: 'none' }, borderRadius: '12px !important', border: '1px solid', borderColor: 'divider' }}>
+              <AccordionSummary expandIcon={<ExpandMore />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+                  <Box sx={{ width: 12, height: 12, borderRadius: '50%', bgcolor: '#94A3B8' }} />
+                  <Typography fontWeight={600}>Tasks</Typography>
+                  <Chip label={standaloneTask.length} size="small" sx={{ bgcolor: 'grey.100', fontWeight: 600 }} />
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails sx={{ pt: 0 }}>
+                {standaloneTask.map(task => (
+                  <Box key={task._id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 1, px: 1, borderRadius: 2, cursor: 'pointer', '&:hover': { bgcolor: 'grey.50' } }}
+                    onClick={() => setSelectedTask(task)}>
+                    <Checkbox size="small" checked={task.status === 'done'} onClick={e => { e.stopPropagation(); handleToggleTask(task); }} />
+                    <Typography variant="body2" fontWeight={500} noWrap sx={{ flex: 1, textDecoration: task.status === 'done' ? 'line-through' : 'none', color: task.status === 'done' ? 'text.secondary' : 'text.primary' }}>
+                      {task.title}
+                    </Typography>
+                    <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
+                      <PriorityChip priority={task.priority} />
+                      {task.dueDate && <Typography variant="caption" color="text.secondary">{format(new Date(task.dueDate), 'MMM dd')}</Typography>}
+                    </Box>
+                  </Box>
+                ))}
+              </AccordionDetails>
+            </Accordion>
           )}
+
+          {/* ── Bottom action buttons ── */}
+          <Box sx={{ display: 'flex', gap: 1.5, mt: 2, flexWrap: 'wrap' }}>
+            {addStandaloneTask ? (
+              <Box sx={{ display: 'flex', gap: 1, flex: 1 }}>
+                <TextField size="small" placeholder="Task title…" value={standaloneTitle}
+                  onChange={e => setStandaloneTitle(e.target.value)}
+                  onKeyDown={e => e.key === 'Enter' && handleAddStandaloneTask()}
+                  autoFocus sx={{ flex: 1 }} />
+                <Button variant="contained" onClick={handleAddStandaloneTask} sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' } }}>Add</Button>
+                <Button onClick={() => setAddStandaloneTask(false)}>{t('common.cancel')}</Button>
+              </Box>
+            ) : (
+              <Button variant="contained" startIcon={<Add />} onClick={() => setAddStandaloneTask(true)}
+                sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', borderRadius: 2 }}>
+                Add Task
+              </Button>
+            )}
+
+            {!addStandaloneTask && (addGoalOpen ? (
+              <Box sx={{ display: 'flex', gap: 1, flex: 1 }}>
+                <TextField size="small" placeholder={t('projectDetail.addGoal') + '...'} value={newGoalTitle} onChange={e => setNewGoalTitle(e.target.value)} onKeyDown={e => e.key === 'Enter' && handleAddGoal()} autoFocus sx={{ flex: 1 }} />
+                <Button variant="contained" onClick={handleAddGoal}>{t('projectDetail.addGoal')}</Button>
+                <Button onClick={() => setAddGoalOpen(false)}>{t('common.cancel')}</Button>
+              </Box>
+            ) : (
+              <Button variant="outlined" startIcon={<Add />} onClick={() => setAddGoalOpen(true)} sx={{ textTransform: 'none', borderRadius: 2 }}>{t('projectDetail.addGoal')}</Button>
+            ))}
+          </Box>
         </Box>
       )}
 
