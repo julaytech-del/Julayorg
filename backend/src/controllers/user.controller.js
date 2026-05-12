@@ -1,5 +1,7 @@
 import User from '../models/User.js';
 import Task from '../models/Task.js';
+import Role from '../models/Role.js';
+import Department from '../models/Department.js';
 
 export const getUsers = async (req, res, next) => {
   try {
@@ -52,6 +54,42 @@ export const deleteUser = async (req, res, next) => {
     }
     await user.deleteOne();
     res.json({ success: true, message: 'User deleted' });
+  } catch (err) { next(err); }
+};
+
+export const createMember = async (req, res, next) => {
+  try {
+    const orgId = req.user.organization._id || req.user.organization;
+    const { name, email, password, jobTitle, department: deptId } = req.body;
+
+    if (!name || !email || !password) {
+      return res.status(400).json({ success: false, message: 'Name, email, and password are required' });
+    }
+
+    const existing = await User.findOne({ email: email.toLowerCase() });
+    if (existing) return res.status(409).json({ success: false, message: 'Email already registered' });
+
+    // Find the Member role for this org
+    const memberRole = await Role.findOne({ organization: orgId, level: 'member' });
+
+    // Use provided dept or org's first dept
+    const dept = deptId
+      ? deptId
+      : (await Department.findOne({ organization: orgId }))?._id;
+
+    const user = await User.create({
+      name,
+      email: email.toLowerCase(),
+      password,
+      jobTitle: jobTitle || '',
+      organization: orgId,
+      role: memberRole?._id,
+      department: dept,
+      status: 'active',
+    });
+
+    const populated = await User.findById(user._id).populate('role', 'name level').populate('department', 'name color');
+    res.status(201).json({ success: true, data: populated });
   } catch (err) { next(err); }
 };
 

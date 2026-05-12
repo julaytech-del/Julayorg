@@ -1,11 +1,12 @@
 import { Router } from 'express';
-import { getUsers, getUser, updateUser, deleteUser, getMe, updateMe } from '../controllers/user.controller.js';
+import { getUsers, getUser, updateUser, deleteUser, getMe, updateMe, createMember } from '../controllers/user.controller.js';
 import { protect } from '../middleware/auth.middleware.js';
 
 const router = Router();
 router.use(protect);
 
 router.get('/', getUsers);
+router.post('/', createMember);
 router.get('/me', getMe);
 router.put('/me', updateMe);
 router.get('/:id', getUser);

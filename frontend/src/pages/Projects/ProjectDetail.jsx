@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Menu, Select, FormControl, InputLabel, Autocomplete, Alert, Tooltip } from '@mui/material';
+import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Menu, Select, FormControl, InputLabel, Autocomplete } from '@mui/material';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit, PersonAdd, Delete, ContentCopy, CheckCircle, Email } from '@mui/icons-material';
+import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit, PersonAdd, Delete } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { fetchProject, fetchGoals, createGoal, createProject } from '../../store/slices/projectSlice.js';
-import api, { projectsAPI, usersAPI } from '../../services/api.js';
+import api, { projectsAPI, usersAPI } from '../../services/api.js'; // api used for POST /users
 import { fetchTasks, createTask, updateTaskStatus } from '../../store/slices/taskSlice.js';
 import { getStandup, analyzePerformance, replanProject } from '../../store/slices/aiSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -39,10 +39,8 @@ export default function ProjectDetail() {
   const [selectedMember, setSelectedMember] = useState(null);
   const [memberRole, setMemberRole] = useState('member');
   const [memberLoading, setMemberLoading] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
-  const [inviteLink, setInviteLink] = useState('');
-  const [inviting, setInviting] = useState(false);
-  const [copied, setCopied] = useState(false);
+  const [newMemberForm, setNewMemberForm] = useState({ name: '', email: '', password: '', jobTitle: '' });
+  const [creating, setCreating] = useState(false);
 
   const PROJECT_STATUSES = [
     { value: 'planning',   label: 'Planning',   color: '#6366F1' },
@@ -112,9 +110,7 @@ export default function ProjectDetail() {
     setAddMemberOpen(false);
     setSelectedMember(null);
     setMemberRole('member');
-    setInviteEmail('');
-    setInviteLink('');
-    setCopied(false);
+    setNewMemberForm({ name: '', email: '', password: '', jobTitle: '' });
     setMemberDialogTab(0);
   };
 
@@ -136,25 +132,29 @@ export default function ProjectDetail() {
     }
   };
 
-  const handleInviteByEmail = async () => {
-    if (!inviteEmail) return;
-    setInviting(true);
-    try {
-      const res = await api.post('/auth/invite', { email: inviteEmail });
-      setInviteLink(res.data.inviteLink);
-      dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
-    } catch (e) {
-      dispatch(showSnackbar({ message: e.message || 'Failed to generate invite', severity: 'error' }));
-    } finally {
-      setInviting(false);
+  const handleCreateMember = async () => {
+    const { name, email, password } = newMemberForm;
+    if (!name || !email || !password) {
+      dispatch(showSnackbar({ message: 'Name, email, and password are required', severity: 'warning' }));
+      return;
     }
-  };
-
-  const handleCopyInviteLink = () => {
-    navigator.clipboard.writeText(inviteLink);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    dispatch(showSnackbar({ message: 'Invite link copied!', severity: 'success' }));
+    setCreating(true);
+    try {
+      const res = await api.post('/users', newMemberForm);
+      const newUser = res.data.data;
+      // Also add to this project's team
+      const currentTeam = (project.team || []).map(m => ({ user: m.user?._id || m.user, role: m.role }));
+      await projectsAPI.update(id, { team: [...currentTeam, { user: newUser._id, role: memberRole }] });
+      // Refresh org users list + project
+      usersAPI.getAll().then(r => setOrgUsers(r.data?.data || [])).catch(() => {});
+      dispatch(fetchProject(id));
+      dispatch(showSnackbar({ message: `${name} created and added to the team!`, severity: 'success' }));
+      closeMemberDialog();
+    } catch (e) {
+      dispatch(showSnackbar({ message: e.response?.data?.message || 'Failed to create member', severity: 'error' }));
+    } finally {
+      setCreating(false);
+    }
   };
 
   const handleRemoveMember = async (userId) => {
@@ -450,7 +450,7 @@ export default function ProjectDetail() {
               <Tabs value={memberDialogTab} onChange={(_, v) => { setMemberDialogTab(v); setInviteLink(''); }}
                 sx={{ borderBottom: '1px solid', borderColor: 'divider', '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, minWidth: 0, px: 2 } }}>
                 <Tab icon={<PersonAdd sx={{ fontSize: 16 }} />} iconPosition="start" label="From Team" />
-                <Tab icon={<Email sx={{ fontSize: 16 }} />} iconPosition="start" label="Invite by Email" />
+                <Tab icon={<Add sx={{ fontSize: 16 }} />} iconPosition="start" label="Create New Member" />
               </Tabs>
             </Box>
 
@@ -473,11 +473,11 @@ export default function ProjectDetail() {
                         </Box>
                       </Box>
                     )}
-                    noOptionsText={orgUsers.length === 0 ? 'No users in org yet — use Invite by Email' : 'All org members already in team'}
+                    noOptionsText={orgUsers.length === 0 ? 'No other users in org — create one in the next tab' : 'All org members already in team'}
                   />
                   <FormControl fullWidth>
-                    <InputLabel>Role</InputLabel>
-                    <Select value={memberRole} onChange={e => setMemberRole(e.target.value)} label="Role">
+                    <InputLabel>Role in Project</InputLabel>
+                    <Select value={memberRole} onChange={e => setMemberRole(e.target.value)} label="Role in Project">
                       <MenuItem value="member">Member</MenuItem>
                       <MenuItem value="manager">Manager</MenuItem>
                       <MenuItem value="owner">Owner</MenuItem>
@@ -486,58 +486,50 @@ export default function ProjectDetail() {
                 </Box>
               )}
 
-              {/* Tab 1: Invite by email */}
+              {/* Tab 1: Create new member */}
               {memberDialogTab === 1 && (
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-                  {!inviteLink ? (
-                    <>
-                      <Typography variant="body2" color="text.secondary">
-                        Enter the email of the person you want to invite. They'll get a unique link to join the workspace.
-                      </Typography>
-                      <TextField
-                        label="Email Address" type="email" fullWidth autoFocus
-                        value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
-                        onKeyDown={e => e.key === 'Enter' && handleInviteByEmail()}
-                      />
-                    </>
-                  ) : (
-                    <Box>
-                      <Alert severity="success" sx={{ mb: 2 }}>
-                        Invite link generated for <strong>{inviteEmail}</strong>! Share it via WhatsApp, email, or any messaging app.
-                      </Alert>
-                      <Typography variant="caption" color="text.secondary" display="block" mb={1}>
-                        Invite link (valid for 7 days):
-                      </Typography>
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid', borderColor: 'divider', bgcolor: 'grey.50' }}>
-                        <Typography variant="body2" sx={{ flex: 1, wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.75rem' }}>
-                          {inviteLink}
-                        </Typography>
-                        <Tooltip title={copied ? 'Copied!' : 'Copy link'}>
-                          <IconButton size="small" onClick={handleCopyInviteLink} color={copied ? 'success' : 'default'}>
-                            {copied ? <CheckCircle fontSize="small" /> : <ContentCopy fontSize="small" />}
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </Box>
-                  )}
+                  <Typography variant="body2" color="text.secondary">
+                    Create a new account for your team member. They can log in immediately with these credentials.
+                  </Typography>
+                  <TextField label="Full Name" fullWidth autoFocus
+                    value={newMemberForm.name}
+                    onChange={e => setNewMemberForm(f => ({ ...f, name: e.target.value }))} />
+                  <TextField label="Email Address" type="email" fullWidth
+                    value={newMemberForm.email}
+                    onChange={e => setNewMemberForm(f => ({ ...f, email: e.target.value }))} />
+                  <TextField label="Password" type="password" fullWidth
+                    value={newMemberForm.password}
+                    onChange={e => setNewMemberForm(f => ({ ...f, password: e.target.value }))}
+                    helperText="At least 8 characters" />
+                  <TextField label="Job Title (optional)" fullWidth
+                    value={newMemberForm.jobTitle}
+                    onChange={e => setNewMemberForm(f => ({ ...f, jobTitle: e.target.value }))} />
+                  <FormControl fullWidth>
+                    <InputLabel>Role in Project</InputLabel>
+                    <Select value={memberRole} onChange={e => setMemberRole(e.target.value)} label="Role in Project">
+                      <MenuItem value="member">Member</MenuItem>
+                      <MenuItem value="manager">Manager</MenuItem>
+                      <MenuItem value="owner">Owner</MenuItem>
+                    </Select>
+                  </FormControl>
                 </Box>
               )}
             </DialogContent>
 
             <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-              <Button onClick={closeMemberDialog} sx={{ textTransform: 'none' }}>
-                {inviteLink ? 'Close' : 'Cancel'}
-              </Button>
+              <Button onClick={closeMemberDialog} sx={{ textTransform: 'none' }}>Cancel</Button>
               {memberDialogTab === 0 && (
                 <Button variant="contained" onClick={handleAddMember} disabled={!selectedMember || memberLoading}
                   sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 110 }}>
-                  {memberLoading ? <CircularProgress size={18} color="inherit" /> : 'Add Member'}
+                  {memberLoading ? <CircularProgress size={18} color="inherit" /> : 'Add to Team'}
                 </Button>
               )}
-              {memberDialogTab === 1 && !inviteLink && (
-                <Button variant="contained" onClick={handleInviteByEmail} disabled={!inviteEmail || inviting}
-                  sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 110 }}>
-                  {inviting ? <CircularProgress size={18} color="inherit" /> : 'Generate Link'}
+              {memberDialogTab === 1 && (
+                <Button variant="contained" onClick={handleCreateMember}
+                  disabled={!newMemberForm.name || !newMemberForm.email || !newMemberForm.password || creating}
+                  sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 120 }}>
+                  {creating ? <CircularProgress size={18} color="inherit" /> : 'Create & Add'}
                 </Button>
               )}
             </DialogActions>
