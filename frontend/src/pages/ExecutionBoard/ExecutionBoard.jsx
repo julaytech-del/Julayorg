@@ -175,6 +175,7 @@ export default function ExecutionBoard() {
   const [form,        setForm]        = useState(BLANK_FORM);
   const [users,       setUsers]       = useState([]);
   const [projects,    setProjects]    = useState([]);
+  const [hoveredCol,  setHoveredCol]  = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -313,51 +314,125 @@ export default function ExecutionBoard() {
       ) : (
         <>
           {/* ── Kanban Board ── */}
-          <Box sx={{ display: 'grid', gridTemplateColumns: `repeat(${COLUMNS.length}, 1fr)`, gap: 1.5, mb: 3 }}>
-            {columns.map(col => (
-              <Box key={col.id}>
-                <Box sx={{
-                  display: 'flex', alignItems: 'center', justifyContent: 'space-between',
-                  mb: 1.5, px: 1.5, py: 1,
-                  bgcolor: col.bg, borderRadius: 2,
-                  border: `1px solid ${col.border}`,
-                }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: col.color }} />
-                    <Typography fontWeight={700} sx={{ fontSize: '0.85rem', color: col.color }}>{col.label}</Typography>
-                    <Box sx={{ bgcolor: col.color, color: 'white', borderRadius: '999px', px: 0.75, py: 0.1, fontSize: '0.68rem', fontWeight: 800, lineHeight: 1.5 }}>
-                      {col.tasks.length}
-                    </Box>
-                  </Box>
-                  <Tooltip title={`Add task to ${col.label}`}>
-                    <IconButton size="small" onClick={() => openCreate(col.defaultStatus)}
-                      sx={{ color: col.color, opacity: 0.7, '&:hover': { opacity: 1, bgcolor: `${col.color}18` } }}>
-                      <Add sx={{ fontSize: 16 }} />
-                    </IconButton>
-                  </Tooltip>
-                </Box>
+          <Box sx={{
+            position: 'relative', mb: 3,
+            '&::after': {
+              content: '""', position: 'absolute', top: 0, right: 0, bottom: 0,
+              width: 48, pointerEvents: 'none',
+              background: 'linear-gradient(to right, transparent, rgba(248,249,250,0.95))',
+              zIndex: 1,
+            },
+          }}>
+            <Box sx={{
+              display: 'flex', gap: 1.5, alignItems: 'flex-start',
+              overflowX: 'auto',
+              pb: 1,
+              scrollbarWidth: 'none',
+              '&::-webkit-scrollbar': { display: 'none' },
+            }}>
+              {columns.map(col => {
+                const isEmpty   = col.tasks.length === 0;
+                const isHovered = hoveredCol === col.id;
+                const collapsed = isEmpty && !isHovered;
 
-                <Box sx={{ minHeight: 120 }}>
-                  {col.tasks.map(task => (
-                    <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} />
-                  ))}
-                  {col.tasks.length === 0 && (
-                    <Box
-                      onClick={() => openCreate(col.defaultStatus)}
-                      sx={{
-                        textAlign: 'center', py: 4, color: 'text.disabled',
-                        border: '1.5px dashed', borderColor: 'divider', borderRadius: 2,
-                        cursor: 'pointer', transition: 'all 0.15s',
-                        '&:hover': { borderColor: col.color, color: col.color, bgcolor: col.bg },
-                      }}
-                    >
-                      <Add sx={{ fontSize: 18, mb: 0.5 }} />
-                      <Typography sx={{ fontSize: '0.78rem' }}>Add task</Typography>
-                    </Box>
-                  )}
-                </Box>
-              </Box>
-            ))}
+                return (
+                  <Box
+                    key={col.id}
+                    onMouseEnter={() => setHoveredCol(col.id)}
+                    onMouseLeave={() => setHoveredCol(null)}
+                    sx={{
+                      flexShrink: 0,
+                      width: collapsed ? 48 : 230,
+                      transition: 'width 0.22s cubic-bezier(0.4,0,0.2,1)',
+                      overflow: 'hidden',
+                    }}
+                  >
+                    {collapsed ? (
+                      /* ── Collapsed strip ── */
+                      <Tooltip title={`${col.label} · click to add`} placement="right">
+                        <Box
+                          onClick={() => openCreate(col.defaultStatus)}
+                          sx={{
+                            height: 180, borderRadius: 2, cursor: 'pointer',
+                            border: `1.5px dashed ${col.border}`,
+                            bgcolor: col.bg,
+                            display: 'flex', flexDirection: 'column',
+                            alignItems: 'center', justifyContent: 'space-between',
+                            py: 1.5, px: 0,
+                            transition: 'all 0.15s',
+                            '&:hover': { borderStyle: 'solid', borderColor: col.color },
+                          }}
+                        >
+                          <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: col.color, flexShrink: 0 }} />
+                          <Typography sx={{
+                            fontSize: '0.7rem', fontWeight: 700, color: col.color,
+                            writingMode: 'vertical-rl', textOrientation: 'mixed',
+                            transform: 'rotate(180deg)', letterSpacing: '0.04em',
+                            whiteSpace: 'nowrap',
+                          }}>
+                            {col.label}
+                          </Typography>
+                          <Box sx={{
+                            bgcolor: `${col.color}22`, color: col.color,
+                            borderRadius: '50%', width: 20, height: 20,
+                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                            fontSize: '0.62rem', fontWeight: 800,
+                          }}>
+                            0
+                          </Box>
+                        </Box>
+                      </Tooltip>
+                    ) : (
+                      /* ── Full column ── */
+                      <Box>
+                        <Box sx={{
+                          display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                          mb: 1.5, px: 1.5, py: 1,
+                          bgcolor: col.bg, borderRadius: 2,
+                          border: `1px solid ${col.border}`,
+                        }}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                            <Box sx={{ width: 9, height: 9, borderRadius: '50%', bgcolor: col.color, flexShrink: 0 }} />
+                            <Typography fontWeight={700} noWrap sx={{ fontSize: '0.82rem', color: col.color, maxWidth: 100 }}>
+                              {col.label}
+                            </Typography>
+                            <Box sx={{ bgcolor: col.color, color: 'white', borderRadius: '999px', px: 0.7, fontSize: '0.65rem', fontWeight: 800, lineHeight: '20px', minWidth: 18, textAlign: 'center' }}>
+                              {col.tasks.length}
+                            </Box>
+                          </Box>
+                          <Tooltip title={`Add to ${col.label}`}>
+                            <IconButton size="small" onClick={() => openCreate(col.defaultStatus)}
+                              sx={{ color: col.color, opacity: 0.6, '&:hover': { opacity: 1, bgcolor: `${col.color}18` } }}>
+                              <Add sx={{ fontSize: 15 }} />
+                            </IconButton>
+                          </Tooltip>
+                        </Box>
+
+                        <Box sx={{ minHeight: 80 }}>
+                          {col.tasks.map(task => (
+                            <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} />
+                          ))}
+                          {isEmpty && (
+                            <Box
+                              onClick={() => openCreate(col.defaultStatus)}
+                              sx={{
+                                textAlign: 'center', py: 3.5, color: 'text.disabled',
+                                border: '1.5px dashed', borderColor: 'divider', borderRadius: 2,
+                                cursor: 'pointer', transition: 'all 0.15s',
+                                '&:hover': { borderColor: col.color, color: col.color, bgcolor: col.bg },
+                              }}
+                            >
+                              <Add sx={{ fontSize: 17, mb: 0.25 }} />
+                              <Typography sx={{ fontSize: '0.75rem' }}>Add task</Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      </Box>
+                    )}
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
 
           {/* ── Stats Row ── */}
