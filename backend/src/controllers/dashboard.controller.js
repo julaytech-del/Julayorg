@@ -8,31 +8,48 @@ export const getDashboardStats = async (req, res, next) => {
     const orgId = req.user.organization._id || req.user.organization;
     const now = new Date();
 
+    const orgProjects = await Project.find({ organization: orgId }, '_id');
+    const orgProjectIds = orgProjects.map(p => p._id);
+    const orgUserIds    = (await User.find({ organization: orgId }, '_id')).map(u => u._id);
+
+    // All tasks belonging to this org — either via project OR created by an org member
+    const taskFilter = {
+      $or: [
+        { project: { $in: orgProjectIds } },
+        { createdBy: { $in: orgUserIds } },
+        { assignees: { $in: orgUserIds } },
+      ]
+    };
+
     const [projects, tasks, users, recentActivity, upcomingDeadlines] = await Promise.all([
       Project.find({ organization: orgId }),
-      Task.find({ project: { $in: (await Project.find({ organization: orgId }, '_id')).map(p => p._id) } }).populate('assignees', 'name avatar'),
+      Task.find(taskFilter).populate('assignees', 'name avatar'),
       User.find({ organization: orgId }),
       ActivityLog.find({ organization: orgId }).sort({ timestamp: -1 }).limit(15).populate('user', 'name avatar'),
       Task.find({
-        project: { $in: (await Project.find({ organization: orgId }, '_id')).map(p => p._id) },
+        ...taskFilter,
         dueDate: { $gte: now, $lte: new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000) },
-        status: { $ne: 'done' }
+        status: { $nin: ['done', 'deployed', 'cancelled'] }
       }).sort({ dueDate: 1 }).limit(10).populate('assignees', 'name avatar').populate('project', 'name')
     ]);
 
     const overdueProjects = projects.filter(p => p.endDate && new Date(p.endDate) < now && p.status !== 'completed').length;
-    const overdueTasks = tasks.filter(t => t.dueDate && new Date(t.dueDate) < now && t.status !== 'done').length;
+    const DONE_STATUSES = ['done', 'deployed', 'cancelled'];
+    const overdueTasks = tasks.filter(t => t.dueDate && new Date(t.dueDate) < now && !DONE_STATUSES.includes(t.status)).length;
 
     const completionRate = tasks.length > 0
-      ? Math.round((tasks.filter(t => t.status === 'done').length / tasks.length) * 100)
+      ? Math.round((tasks.filter(t => DONE_STATUSES.includes(t.status)).length / tasks.length) * 100)
       : 0;
 
     const tasksByStatus = {
-      planned: tasks.filter(t => t.status === 'planned').length,
+      backlog:     tasks.filter(t => t.status === 'backlog').length,
+      todo:        tasks.filter(t => ['todo','planned'].includes(t.status)).length,
       in_progress: tasks.filter(t => t.status === 'in_progress').length,
-      blocked: tasks.filter(t => t.status === 'blocked').length,
-      review: tasks.filter(t => t.status === 'review').length,
-      done: tasks.filter(t => t.status === 'done').length
+      testing:     tasks.filter(t => t.status === 'testing').length,
+      review:      tasks.filter(t => t.status === 'review').length,
+      blocked:     tasks.filter(t => t.status === 'blocked').length,
+      on_hold:     tasks.filter(t => t.status === 'on_hold').length,
+      done:        tasks.filter(t => DONE_STATUSES.includes(t.status)).length,
     };
 
     const projectsByStatus = {
