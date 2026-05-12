@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Menu } from '@mui/material';
+import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Menu, Select, FormControl, InputLabel, Autocomplete } from '@mui/material';
 import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit } from '@mui/icons-material';
+import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit, PersonAdd, Delete } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { fetchProject, fetchGoals, createGoal, createProject } from '../../store/slices/projectSlice.js';
-import { projectsAPI } from '../../services/api.js';
+import { projectsAPI, usersAPI } from '../../services/api.js';
 import { fetchTasks, createTask, updateTaskStatus } from '../../store/slices/taskSlice.js';
 import { getStandup, analyzePerformance, replanProject } from '../../store/slices/aiSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -33,6 +33,11 @@ export default function ProjectDetail() {
   const [addStandaloneTask,  setAddStandaloneTask]   = useState(false);
   const [standaloneTitle,    setStandaloneTitle]     = useState('');
   const [statusAnchor, setStatusAnchor] = useState(null);
+  const [addMemberOpen, setAddMemberOpen] = useState(false);
+  const [orgUsers, setOrgUsers] = useState([]);
+  const [selectedMember, setSelectedMember] = useState(null);
+  const [memberRole, setMemberRole] = useState('member');
+  const [memberLoading, setMemberLoading] = useState(false);
 
   const PROJECT_STATUSES = [
     { value: 'planning',   label: 'Planning',   color: '#6366F1' },
@@ -56,6 +61,7 @@ export default function ProjectDetail() {
   useEffect(() => {
     dispatch(fetchProject(id));
     dispatch(fetchTasks({ projectId: id }));
+    usersAPI.getAll().then(res => setOrgUsers(res.data?.data || [])).catch(() => {});
   }, [id]);
 
   const project = currentProject;
@@ -95,6 +101,39 @@ export default function ProjectDetail() {
     setNewTaskTitle('');
     setAddTaskGoal(null);
     dispatch(fetchTasks({ projectId: id }));
+  };
+
+  const handleAddMember = async () => {
+    if (!selectedMember) return;
+    setMemberLoading(true);
+    try {
+      const currentTeam = (project.team || []).map(m => ({ user: m.user?._id || m.user, role: m.role }));
+      const alreadyIn = currentTeam.some(m => m.user === selectedMember._id);
+      if (alreadyIn) { dispatch(showSnackbar({ message: 'Member already in team', severity: 'warning' })); return; }
+      await projectsAPI.update(id, { team: [...currentTeam, { user: selectedMember._id, role: memberRole }] });
+      dispatch(fetchProject(id));
+      dispatch(showSnackbar({ message: 'Member added successfully', severity: 'success' }));
+      setAddMemberOpen(false);
+      setSelectedMember(null);
+      setMemberRole('member');
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to add member', severity: 'error' }));
+    } finally {
+      setMemberLoading(false);
+    }
+  };
+
+  const handleRemoveMember = async (userId) => {
+    try {
+      const newTeam = (project.team || [])
+        .filter(m => (m.user?._id || m.user) !== userId)
+        .map(m => ({ user: m.user?._id || m.user, role: m.role }));
+      await projectsAPI.update(id, { team: newTeam });
+      dispatch(fetchProject(id));
+      dispatch(showSnackbar({ message: 'Member removed', severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to remove member', severity: 'error' }));
+    }
   };
 
   const handleAddStandaloneTask = async () => {
@@ -326,22 +365,89 @@ export default function ProjectDetail() {
 
       {/* Team Tab */}
       {tab === 2 && (
-        <Grid container spacing={2}>
-          {(project.team || []).map(member => (
-            <Grid item xs={12} sm={6} md={4} key={member.user?._id}>
-              <Card>
-                <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                  <Avatar sx={{ width: 44, height: 44, bgcolor: 'primary.main', fontSize: '1.1rem' }}>{member.user?.name?.[0]}</Avatar>
-                  <Box>
-                    <Typography variant="subtitle2" fontWeight={600}>{member.user?.name}</Typography>
-                    <Typography variant="caption" color="text.secondary">{member.user?.jobTitle}</Typography>
-                    <Chip label={member.role} size="small" sx={{ display: 'block', mt: 0.5, textTransform: 'capitalize', width: 'fit-content' }} />
+        <Box>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2.5 }}>
+            <Typography variant="h6" fontWeight={600}>Team Members ({project.team?.length || 0})</Typography>
+            <Button variant="contained" startIcon={<PersonAdd />} onClick={() => setAddMemberOpen(true)}
+              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', borderRadius: 2 }}>
+              Add Member
+            </Button>
+          </Box>
+          <Grid container spacing={2}>
+            {(project.team || []).map(member => (
+              <Grid item xs={12} sm={6} md={4} key={member.user?._id}>
+                <Card sx={{ '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.10)' }, transition: 'box-shadow 0.2s' }}>
+                  <CardContent sx={{ display: 'flex', gap: 2, alignItems: 'center', position: 'relative', pr: 5 }}>
+                    <Avatar sx={{ width: 48, height: 48, bgcolor: '#6366F1', fontSize: '1.15rem', fontWeight: 700 }}>
+                      {member.user?.name?.[0]?.toUpperCase()}
+                    </Avatar>
+                    <Box sx={{ flex: 1, minWidth: 0 }}>
+                      <Typography variant="subtitle2" fontWeight={600} noWrap>{member.user?.name}</Typography>
+                      {member.user?.jobTitle && <Typography variant="caption" color="text.secondary" noWrap display="block">{member.user.jobTitle}</Typography>}
+                      <Chip label={member.role} size="small"
+                        sx={{ mt: 0.5, textTransform: 'capitalize', width: 'fit-content',
+                          bgcolor: member.role === 'owner' ? '#EEF2FF' : member.role === 'manager' ? '#FFF7ED' : '#F0FDF4',
+                          color: member.role === 'owner' ? '#6366F1' : member.role === 'manager' ? '#F97316' : '#10B981',
+                          fontWeight: 600 }} />
+                    </Box>
+                    <IconButton size="small" onClick={() => handleRemoveMember(member.user?._id)}
+                      sx={{ position: 'absolute', top: 8, right: 8, color: 'text.disabled', '&:hover': { color: 'error.main', bgcolor: '#FEF2F2' } }}>
+                      <Delete fontSize="small" />
+                    </IconButton>
+                  </CardContent>
+                </Card>
+              </Grid>
+            ))}
+            {(project.team || []).length === 0 && (
+              <Grid item xs={12}>
+                <Box sx={{ textAlign: 'center', py: 6, color: 'text.secondary' }}>
+                  <PersonAdd sx={{ fontSize: 48, mb: 1, opacity: 0.3 }} />
+                  <Typography variant="body2">No team members yet. Add your first member!</Typography>
+                </Box>
+              </Grid>
+            )}
+          </Grid>
+
+          {/* Add Member Dialog */}
+          <Dialog open={addMemberOpen} onClose={() => { setAddMemberOpen(false); setSelectedMember(null); setMemberRole('member'); }} maxWidth="xs" fullWidth
+            PaperProps={{ sx: { borderRadius: 3 } }}>
+            <DialogTitle sx={{ fontWeight: 700, pb: 1 }}>Add Team Member</DialogTitle>
+            <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2.5, pt: '12px !important' }}>
+              <Autocomplete
+                options={orgUsers.filter(u => !(project.team || []).some(m => (m.user?._id || m.user) === u._id))}
+                getOptionLabel={o => o.name + (o.email ? ` (${o.email})` : '')}
+                value={selectedMember}
+                onChange={(_, v) => setSelectedMember(v)}
+                renderInput={params => <TextField {...params} label="Select Member" placeholder="Search by name or email" />}
+                renderOption={(props, o) => (
+                  <Box component="li" {...props} sx={{ gap: 1.5 }}>
+                    <Avatar sx={{ width: 30, height: 30, fontSize: '0.8rem', bgcolor: '#6366F1' }}>{o.name?.[0]}</Avatar>
+                    <Box>
+                      <Typography variant="body2" fontWeight={500}>{o.name}</Typography>
+                      <Typography variant="caption" color="text.secondary">{o.email}</Typography>
+                    </Box>
                   </Box>
-                </CardContent>
-              </Card>
-            </Grid>
-          ))}
-        </Grid>
+                )}
+                noOptionsText="No available members"
+              />
+              <FormControl fullWidth>
+                <InputLabel>Role</InputLabel>
+                <Select value={memberRole} onChange={e => setMemberRole(e.target.value)} label="Role">
+                  <MenuItem value="member">Member</MenuItem>
+                  <MenuItem value="manager">Manager</MenuItem>
+                  <MenuItem value="owner">Owner</MenuItem>
+                </Select>
+              </FormControl>
+            </DialogContent>
+            <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+              <Button onClick={() => { setAddMemberOpen(false); setSelectedMember(null); setMemberRole('member'); }} sx={{ textTransform: 'none' }}>Cancel</Button>
+              <Button variant="contained" onClick={handleAddMember} disabled={!selectedMember || memberLoading}
+                sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 100 }}>
+                {memberLoading ? <CircularProgress size={18} color="inherit" /> : 'Add Member'}
+              </Button>
+            </DialogActions>
+          </Dialog>
+        </Box>
       )}
 
       {/* Task Detail Modal */}
