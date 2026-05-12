@@ -313,9 +313,9 @@ export default function ExecutionBoard() {
       ) : (
         <>
           {/* ── Kanban Board ── */}
-          <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2, mb: 3 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: `repeat(${COLUMNS.length}, 1fr)`, gap: 1.5, mb: 3 }}>
             {columns.map(col => (
-              <Box key={col.id} sx={{ minWidth: 260, flex: '0 0 260px' }}>
+              <Box key={col.id}>
                 <Box sx={{
                   display: 'flex', alignItems: 'center', justifyContent: 'space-between',
                   mb: 1.5, px: 1.5, py: 1,
