@@ -64,7 +64,7 @@ export default function ProjectDetail() {
   useEffect(() => {
     dispatch(fetchProject(id));
     dispatch(fetchTasks({ projectId: id }));
-    usersAPI.getAll().then(res => setOrgUsers(res.data?.data || [])).catch(() => {});
+    usersAPI.getAll().then(res => setOrgUsers(res.data || [])).catch(() => {});
   }, [id]);
 
   const project = currentProject;

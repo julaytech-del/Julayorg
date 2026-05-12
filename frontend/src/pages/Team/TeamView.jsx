@@ -1,22 +1,60 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress } from '@mui/material';
-import { Search, Group, TrendingUp, EmojiEvents } from '@mui/icons-material';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Autocomplete } from '@mui/material';
+import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { usersAPI } from '../../services/api.js';
-import { format } from 'date-fns';
+import { useDispatch } from 'react-redux';
+import { showSnackbar } from '../../store/slices/uiSlice.js';
+import api, { usersAPI } from '../../services/api.js';
 
 const STATUS_COLORS = { active: '#10B981', inactive: '#94A3B8', busy: '#F59E0B', away: '#3B82F6' };
 
 export default function TeamView() {
   const { t } = useTranslation();
+  const dispatch = useDispatch();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
 
-  useEffect(() => {
-    usersAPI.getAll().then(res => { setUsers(res.data || []); setLoading(false); }).catch(() => setLoading(false));
-  }, []);
+  // Add member dialog
+  const [addOpen, setAddOpen] = useState(false);
+  const [dialogTab, setDialogTab] = useState(0);
+  const [form, setForm] = useState({ name: '', email: '', password: '', jobTitle: '' });
+  const [creating, setCreating] = useState(false);
+
+  const loadUsers = () => {
+    setLoading(true);
+    usersAPI.getAll()
+      .then(res => setUsers(res.data || []))
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  };
+
+  useEffect(() => { loadUsers(); }, []);
+
+  const closeDialog = () => {
+    setAddOpen(false);
+    setForm({ name: '', email: '', password: '', jobTitle: '' });
+    setDialogTab(0);
+  };
+
+  const handleCreate = async () => {
+    if (!form.name || !form.email || !form.password) {
+      dispatch(showSnackbar({ message: 'Name, email, and password are required', severity: 'warning' }));
+      return;
+    }
+    setCreating(true);
+    try {
+      await api.post('/users', form);
+      dispatch(showSnackbar({ message: `${form.name} added to team!`, severity: 'success' }));
+      loadUsers();
+      closeDialog();
+    } catch (e) {
+      dispatch(showSnackbar({ message: e.message || 'Failed to create member', severity: 'error' }));
+    } finally {
+      setCreating(false);
+    }
+  };
 
   const filtered = users.filter(u => !search || u.name.toLowerCase().includes(search.toLowerCase()) || u.jobTitle?.toLowerCase().includes(search.toLowerCase()));
   const avgPerf = users.length ? Math.round(users.reduce((sum, u) => sum + (u.performance?.score || 0), 0) / users.length) : 0;
@@ -25,6 +63,10 @@ export default function TeamView() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" fontWeight={700}>{t('team.title')}</Typography>
+        <Button variant="contained" startIcon={<PersonAdd />} onClick={() => setAddOpen(true)}
+          sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', borderRadius: 2 }}>
+          Add Member
+        </Button>
       </Box>
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -88,6 +130,7 @@ export default function TeamView() {
         ))}
       </Grid>
 
+      {/* View Profile Dialog */}
       <Dialog open={Boolean(selectedUser)} onClose={() => setSelectedUser(null)} maxWidth="sm" fullWidth>
         {selectedUser && (
           <>
@@ -134,6 +177,72 @@ export default function TeamView() {
             <DialogActions><Button onClick={() => setSelectedUser(null)}>{t('common.close')}</Button></DialogActions>
           </>
         )}
+      </Dialog>
+
+      {/* Add Member Dialog */}
+      <Dialog open={addOpen} onClose={closeDialog} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+        <DialogTitle sx={{ fontWeight: 700, pb: 0 }}>Add Team Member</DialogTitle>
+        <Box sx={{ px: 3, pt: 1 }}>
+          <Tabs value={dialogTab} onChange={(_, v) => setDialogTab(v)}
+            sx={{ borderBottom: '1px solid', borderColor: 'divider', '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, minWidth: 0, px: 2 } }}>
+            <Tab icon={<PersonAdd sx={{ fontSize: 16 }} />} iconPosition="start" label="Existing Member" />
+            <Tab icon={<Add sx={{ fontSize: 16 }} />} iconPosition="start" label="Create New Member" />
+          </Tabs>
+        </Box>
+
+        <DialogContent sx={{ pt: 2.5 }}>
+          {/* Tab 0: pick from existing org users (already registered but maybe not shown?) */}
+          {dialogTab === 0 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                All registered members in your org are already shown in the team list above.
+                Use <strong>Create New Member</strong> to add someone new.
+              </Typography>
+              <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
+                {users.map(u => (
+                  <Box key={u._id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75 }}>
+                    <Avatar sx={{ width: 32, height: 32, fontSize: '0.82rem', bgcolor: '#6366F1' }}>{u.name?.[0]?.toUpperCase()}</Avatar>
+                    <Box>
+                      <Typography variant="body2" fontWeight={500}>{u.name}</Typography>
+                      <Typography variant="caption" color="text.secondary">{u.email}</Typography>
+                    </Box>
+                    <Chip label={u.status || 'active'} size="small" sx={{ ml: 'auto' }}
+                      color={u.status === 'active' ? 'success' : 'default'} />
+                  </Box>
+                ))}
+              </Box>
+            </Box>
+          )}
+
+          {/* Tab 1: Create new user */}
+          {dialogTab === 1 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Typography variant="body2" color="text.secondary">
+                Create a new account. They can log in immediately with these credentials.
+              </Typography>
+              <TextField label="Full Name" fullWidth autoFocus
+                value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
+              <TextField label="Email Address" type="email" fullWidth
+                value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
+              <TextField label="Password" type="password" fullWidth
+                value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
+                helperText="At least 8 characters" />
+              <TextField label="Job Title (optional)" fullWidth
+                value={form.jobTitle} onChange={e => setForm(f => ({ ...f, jobTitle: e.target.value }))} />
+            </Box>
+          )}
+        </DialogContent>
+
+        <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
+          <Button onClick={closeDialog} sx={{ textTransform: 'none' }}>Cancel</Button>
+          {dialogTab === 1 && (
+            <Button variant="contained" onClick={handleCreate}
+              disabled={!form.name || !form.email || !form.password || creating}
+              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 120 }}>
+              {creating ? <CircularProgress size={18} color="inherit" /> : 'Create Member'}
+            </Button>
+          )}
+        </DialogActions>
       </Dialog>
     </Box>
   );
