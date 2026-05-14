@@ -27,6 +27,7 @@ export const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } }
 
 export const uploadFile = async (req, res, next) => {
   try {
+    console.log('[upload] user:', req.user?._id, 'file:', req.file?.originalname, 'org:', req.user?.organization?._id || req.user?.organization);
     if (!req.file) return res.status(400).json({ success: false, message: 'No file provided' });
 
     const orgRef = req.user?.organization;

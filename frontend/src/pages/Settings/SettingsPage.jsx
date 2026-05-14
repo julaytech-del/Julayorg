@@ -50,8 +50,9 @@ function ProfileTab({ user }) {
       const fullUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
       setForm(f => ({ ...f, avatar: fullUrl }));
       dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
-    } catch {
-      dispatch(showSnackbar({ message: 'Failed to upload photo', severity: 'error' }));
+    } catch (err) {
+      const msg = err?.message || err?.data?.message || JSON.stringify(err) || 'Failed to upload photo';
+      dispatch(showSnackbar({ message: msg, severity: 'error' }));
     } finally {
       setUploading(false);
     }
