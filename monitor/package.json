@@ -1,0 +1,9 @@
+{
+  "name": "julay-monitor",
+  "version": "1.0.0",
+  "type": "module",
+  "main": "monitor.js",
+  "dependencies": {
+    "nodemailer": "^6.9.9"
+  }
+}
