@@ -33,18 +33,20 @@ export const uploadFile = async (req, res, next) => {
     const org = await Organization.findById(orgId);
     if (!org) { fs.unlinkSync(req.file.path); return res.status(404).json({ success: false, message: 'Organization not found' }); }
 
-    const plan = org.subscription?.plan || 'free';
+    if (!org.subscription) org.subscription = {};
+    const plan = org.subscription.plan || 'free';
     const limitGB = getLimit(plan, 'storage');
 
     if (!isUnlimited(plan, 'storage')) {
       const limitBytes = limitGB * 1024 * 1024 * 1024;
-      if (org.subscription.storageUsedBytes + req.file.size > limitBytes) {
+      const usedBytes = org.subscription.storageUsedBytes || 0;
+      if (usedBytes + req.file.size > limitBytes) {
         fs.unlinkSync(req.file.path);
         return res.status(403).json({
           success: false,
           code: 'STORAGE_LIMIT_REACHED',
           message: `Storage limit reached (${limitGB} GB). Upgrade your plan to upload more files.`,
-          used: org.subscription.storageUsedBytes,
+          used: usedBytes,
           limit: limitBytes,
         });
       }
