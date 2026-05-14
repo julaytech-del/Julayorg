@@ -72,7 +72,7 @@ export const sendInvite = async (toEmail, inviterName, orgName, token) => {
     <div style="font-family:Inter,sans-serif;max-width:520px;margin:0 auto;color:#1E293B">
       <h2 style="color:#6366F1">You're invited! 🎉</h2>
       <p><strong>${inviterName}</strong> invited you to join <strong>${orgName}</strong> on Julay — the AI-powered work OS.</p>
-      ${btn('Accept Invitation', `${BASE_URL}/accept-invite?token=${token}`)}
+      ${btn('Accept Invitation', `${BASE_URL}/accept-invite/${token}`)}
       <p style="color:#94A3B8;font-size:12px;margin-top:24px">This link expires in 7 days.</p>
     </div>
   `);
