@@ -11,13 +11,13 @@ import {
   Person, Group, CreditCard, Security, Notifications, Extension,
   Lock, Email, GitHub, Webhook, FlashOn, VideoCall, Edit, CheckCircle,
   Cancel, LockOutlined, Add, Visibility, VisibilityOff, ContentCopy, AddLink,
-  CardGiftcard, Share, WhatsApp,
+  CardGiftcard, Share, WhatsApp, Business,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
-import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI } from '../../services/api.js';
+import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI, organizationAPI } from '../../services/api.js';
 
 // ── Profile Tab ────────────────────────────────────────────────────────────
 const TIMEZONES = ['UTC', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Paris', 'Asia/Dubai', 'Asia/Riyadh', 'Asia/Tokyo'];
@@ -846,23 +846,91 @@ function ReferTab({ user }) {
   );
 }
 
+// ── Workspace Tab ──────────────────────────────────────────────────────────
+const INDUSTRIES = [
+  { value: 'technology',    label: 'Technology' },
+  { value: 'healthcare',    label: 'Healthcare' },
+  { value: 'finance',       label: 'Finance' },
+  { value: 'education',     label: 'Education' },
+  { value: 'construction',  label: 'Construction' },
+  { value: 'retail',        label: 'Retail' },
+  { value: 'media',         label: 'Media' },
+  { value: 'consulting',    label: 'Consulting' },
+  { value: 'manufacturing', label: 'Manufacturing' },
+  { value: 'other',         label: 'Other' },
+];
+
+function WorkspaceTab() {
+  const dispatch = useDispatch();
+  const [form, setForm] = useState({ name: '', industry: 'technology', description: '' });
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  useEffect(() => {
+    organizationAPI.get()
+      .then(res => {
+        const org = res.data || res;
+        setForm({ name: org.name || '', industry: org.industry || 'technology', description: org.description || '' });
+      })
+      .catch(() => {})
+      .finally(() => setLoading(false));
+  }, []);
+
+  const handleSave = async () => {
+    setSaving(true);
+    try {
+      await organizationAPI.update(form);
+      dispatch(showSnackbar({ message: 'Workspace settings saved', severity: 'success' }));
+    } catch (err) {
+      dispatch(showSnackbar({ message: err?.message || 'Failed to save', severity: 'error' }));
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  if (loading) return <CircularProgress />;
+
+  return (
+    <Box sx={{ maxWidth: 560 }}>
+      <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Workspace Settings</Typography>
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <TextField label="Organization Name" value={form.name} onChange={set('name')} fullWidth required />
+        <FormControl fullWidth>
+          <InputLabel>Industry</InputLabel>
+          <Select value={form.industry} label="Industry" onChange={e => setForm(f => ({ ...f, industry: e.target.value }))}>
+            {INDUSTRIES.map(i => <MenuItem key={i.value} value={i.value}>{i.label}</MenuItem>)}
+          </Select>
+        </FormControl>
+        <TextField label="Description" value={form.description} onChange={set('description')} fullWidth multiline rows={3} placeholder="Brief description of your organization..." />
+        <Button variant="contained" onClick={handleSave} disabled={saving || !form.name.trim()}
+          sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', alignSelf: 'flex-start', px: 4 }}>
+          {saving ? 'Saving…' : 'Save Changes'}
+        </Button>
+      </Box>
+    </Box>
+  );
+}
+
 // ── main ───────────────────────────────────────────────────────────────────
 const TABS = [
-  { value: 'profile',       label: 'Profile',       icon: Person },
-  { value: 'team',          label: 'Team',           icon: Group },
-  { value: 'billing',       label: 'Billing',        icon: CreditCard },
-  { value: 'security',      label: 'Security',       icon: Security },
-  { value: 'notifications', label: 'Notifications',  icon: Notifications },
-  { value: 'integrations',  label: 'Integrations',   icon: Extension },
+  { value: 'workspace',     label: 'Workspace',      icon: Business },
+  { value: 'profile',       label: 'Profile',        icon: Person },
+  { value: 'team',          label: 'Team',            icon: Group },
+  { value: 'billing',       label: 'Billing',         icon: CreditCard },
+  { value: 'security',      label: 'Security',        icon: Security },
+  { value: 'notifications', label: 'Notifications',   icon: Notifications },
+  { value: 'integrations',  label: 'Integrations',    icon: Extension },
   { value: 'refer',         label: 'Invite a Friend', icon: CardGiftcard },
 ];
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState('profile');
+  const [tab, setTab] = useState('workspace');
   const user = useSelector(s => s.auth.user);
 
   const renderContent = () => {
     switch (tab) {
+      case 'workspace':     return <WorkspaceTab />;
       case 'profile':       return <ProfileTab user={user} />;
       case 'team':          return <TeamTab currentUser={user} />;
       case 'billing':       return <BillingTab />;

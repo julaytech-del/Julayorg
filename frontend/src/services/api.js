@@ -235,3 +235,9 @@ export const settingsAPI = {
   changePassword: (data) => api.post('/auth/change-password', data),
   getOrgMembers: () => api.get('/users'),
 };
+
+// Organization
+export const organizationAPI = {
+  get: () => api.get('/organization'),
+  update: (data) => api.put('/organization', data),
+};
