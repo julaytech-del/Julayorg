@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit, PersonAdd, Delete } from '@mui/icons-material';
 import { format } from 'date-fns';
 import { fetchProject, fetchGoals, createGoal, createProject } from '../../store/slices/projectSlice.js';
-import api, { projectsAPI, usersAPI } from '../../services/api.js'; // api used for POST /users
+import api, { projectsAPI, usersAPI, departmentsAPI } from '../../services/api.js';
 import { fetchTasks, createTask, updateTaskStatus } from '../../store/slices/taskSlice.js';
 import { getStandup, analyzePerformance, replanProject } from '../../store/slices/aiSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -65,6 +65,11 @@ export default function ProjectDetail() {
     dispatch(fetchProject(id));
     dispatch(fetchTasks({ projectId: id }));
     usersAPI.getAll().then(res => setOrgUsers(res.data || [])).catch(() => {});
+    departmentsAPI.getAll().then(res => {
+      const depts = res.data || [];
+      const defaultDept = depts.find(d => d.isDefault)?._id || depts[0]?._id || '';
+      setNewMemberForm(f => ({ ...f, department: defaultDept }));
+    }).catch(() => {});
   }, [id]);
 
   const project = currentProject;

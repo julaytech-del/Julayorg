@@ -82,10 +82,21 @@ export default function TeamView() {
 
   useEffect(() => {
     loadUsers();
-    departmentsAPI.getAll().then(res => setDepartments(res.data || [])).catch(() => {});
+    departmentsAPI.getAll().then(res => {
+      const depts = res.data || [];
+      setDepartments(depts);
+      // Auto-select default department in the form
+      const defaultDept = depts.find(d => d.isDefault) || depts[0];
+      if (defaultDept) setForm(f => ({ ...f, department: defaultDept._id }));
+    }).catch(() => {});
   }, []);
 
-  const closeDialog = () => { setAddOpen(false); setForm(BLANK_FORM); setDialogTab(1); };
+  const closeDialog = () => {
+    const defaultDept = departments.find(d => d.isDefault)?._id || departments[0]?._id || '';
+    setAddOpen(false);
+    setForm({ ...BLANK_FORM, department: defaultDept });
+    setDialogTab(1);
+  };
 
   const handleCreate = async () => {
     if (!form.name || !form.email || !form.password) {
@@ -290,12 +301,14 @@ export default function TeamView() {
                 <FormControl fullWidth>
                   <InputLabel>Department</InputLabel>
                   <Select value={form.department} onChange={set('department')} label="Department">
-                    <MenuItem value=""><em>No Department</em></MenuItem>
                     {departments.map(d => (
                       <MenuItem key={d._id} value={d._id}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
                           <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: d.color }} />
                           {d.name}
+                          {d.isDefault && (
+                            <Chip label="Default" size="small" sx={{ ml: 0.5, height: 16, fontSize: '0.62rem', bgcolor: '#EEF2FF', color: '#6366F1', fontWeight: 700 }} />
+                          )}
                         </Box>
                       </MenuItem>
                     ))}

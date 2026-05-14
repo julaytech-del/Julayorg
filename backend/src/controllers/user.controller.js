@@ -80,8 +80,10 @@ export const createMember = async (req, res, next) => {
     // Find role by level (default: member)
     const role = await Role.findOne({ organization: orgId, level: roleLevel || 'member' });
 
-    // Use provided dept or org's first dept
-    const dept = deptId || (await Department.findOne({ organization: orgId }))?._id;
+    // Use provided dept, or org default dept, or first dept
+    const dept = deptId ||
+      (await Department.findOne({ organization: orgId, isDefault: true }))?._id ||
+      (await Department.findOne({ organization: orgId }))?._id;
 
     const user = await User.create({
       name,

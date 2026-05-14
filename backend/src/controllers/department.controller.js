@@ -5,7 +5,7 @@ import Task from '../models/Task.js';
 export const getDepartments = async (req, res, next) => {
   try {
     const orgId = req.user.organization._id || req.user.organization;
-    const departments = await Department.find({ organization: orgId }).populate('head', 'name avatar');
+    const departments = await Department.find({ organization: orgId }).populate('head', 'name avatar').sort({ isDefault: -1, createdAt: 1 });
 
     const deptIds = departments.map(d => d._id);
     const memberCounts = await User.aggregate([

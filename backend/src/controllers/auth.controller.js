@@ -57,7 +57,7 @@ export const register = async (req, res, next) => {
     const roles = await createDefaultRoles(org._id);
     const adminRole = roles.find(r => r.level === 'admin');
 
-    const dept = await Department.create({ name: 'General', organization: org._id, description: 'Default department', color: '#6366F1' });
+    const dept = await Department.create({ name: 'General', organization: org._id, description: 'Default department', color: '#6366F1', isDefault: true });
 
     const user = await User.create({ name, email, password, organization: org._id, role: adminRole._id, department: dept._id, isAdmin: true, jobTitle: 'Administrator' });
 
