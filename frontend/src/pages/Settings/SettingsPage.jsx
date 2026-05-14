@@ -14,7 +14,7 @@ import {
   CardGiftcard, Share, WhatsApp, Business,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI, organizationAPI } from '../../services/api.js';
@@ -956,7 +956,8 @@ const TABS = [
 ];
 
 export default function SettingsPage() {
-  const [tab, setTab] = useState('workspace');
+  const [searchParams] = useSearchParams();
+  const [tab, setTab] = useState(searchParams.get('tab') || 'workspace');
   const user = useSelector(s => s.auth.user);
 
   const renderContent = () => {

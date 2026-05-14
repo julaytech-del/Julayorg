@@ -522,7 +522,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
               <Box sx={{ mt:0.5 }}><Chip label={user?.role?.name||'Member'} size="small" sx={{ fontSize:'0.68rem', height:18, backgroundColor:'#EEF2FF', color:'#4F46E5', fontWeight:600 }}/></Box>
             </Box>
             <Divider sx={{ my:0.5 }}/>
-            <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/settings'); }}><Person sx={{ mr:1.5, fontSize:17, color:'text.secondary' }}/><Typography variant="body2">{t('header.profile')}</Typography></MenuItem>
+            <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/settings?tab=profile'); }}><Person sx={{ mr:1.5, fontSize:17, color:'text.secondary' }}/><Typography variant="body2">{t('header.profile')}</Typography></MenuItem>
             <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/settings'); }}><Settings sx={{ mr:1.5, fontSize:17, color:'text.secondary' }}/><Typography variant="body2">{t('header.settings')}</Typography></MenuItem>
             <Divider sx={{ my:0.5 }}/>
             <MenuItem onClick={() => { dispatch(logout()); setAnchorEl(null); }} sx={{ color:'error.main', '&:hover':{ backgroundColor:'#FEF2F2' } }}>
