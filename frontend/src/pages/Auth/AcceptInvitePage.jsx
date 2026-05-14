@@ -47,6 +47,7 @@ export default function AcceptInvitePage() {
       const res = await api.post(`/auth/accept-invite/${token}`, { name, password });
       const { token: jwt, user } = res.data;
       dispatch(setCredentials({ token: jwt, user }));
+      localStorage.setItem('julay_onboarding_done', 'true');
       setDone(true);
       setTimeout(() => navigate('/dashboard'), 1500);
     } catch (e) {
