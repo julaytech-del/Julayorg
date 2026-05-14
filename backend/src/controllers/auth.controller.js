@@ -7,6 +7,7 @@ import Department from '../models/Department.js';
 import Invite from '../models/Invite.js';
 import OTP from '../models/OTP.js';
 import { sendOTPEmail } from '../utils/email.js';
+import { sendInvite } from '../services/email.service.js';
 import { OAuth2Client } from 'google-auth-library';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
 
@@ -141,6 +142,9 @@ export const createInvite = async (req, res, next) => {
 
     const baseUrl = process.env.FRONTEND_URL || 'https://julay.org';
     const inviteLink = `${baseUrl}/accept-invite/${token}`;
+
+    const org = await Organization.findById(req.user.organization).select('name');
+    sendInvite(email, req.user.name, org?.name || 'Julay', token).catch(() => {});
 
     res.status(201).json({ success: true, data: { inviteLink, email, expiresAt } });
   } catch (err) {
