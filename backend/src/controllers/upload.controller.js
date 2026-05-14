@@ -8,52 +8,51 @@ import { getLimit, isUnlimited } from '../config/planLimits.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const UPLOADS_DIR = path.join(__dirname, '../../uploads');
 
-try {
-  fs.mkdirSync(UPLOADS_DIR, { recursive: true });
-} catch (e) {
-  console.error('[upload] Could not create uploads dir:', e.message);
-}
+const ensureUploadsDir = () => {
+  try { fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (e) { /* already exists */ }
+};
+ensureUploadsDir();
 
-const storage = multer.diskStorage({
-  destination: (req, file, cb) => cb(null, UPLOADS_DIR),
-  filename: (req, file, cb) => {
-    const unique = `${Date.now()}-${Math.round(Math.random() * 1e9)}`;
-    cb(null, `${unique}${path.extname(file.originalname)}`);
-  },
+// Use memory storage — avoids all disk-write issues during multer parsing
+export const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: { fileSize: 50 * 1024 * 1024 },
 });
-
-// 50 MB per file hard cap (server-side sanity check)
-export const upload = multer({ storage, limits: { fileSize: 50 * 1024 * 1024 } });
 
 export const uploadFile = async (req, res, next) => {
   try {
-    console.log('[upload] user:', req.user?._id, 'file:', req.file?.originalname, 'org:', req.user?.organization?._id || req.user?.organization);
+    console.log('[upload] user:', req.user?._id, 'file:', req.file?.originalname, 'size:', req.file?.size);
+
     if (!req.file) return res.status(400).json({ success: false, message: 'No file provided' });
 
     const orgRef = req.user?.organization;
     const orgId = orgRef?._id ?? orgRef;
-    if (!orgId) { fs.unlinkSync(req.file.path); return res.status(400).json({ success: false, message: 'User has no organization' }); }
+    if (!orgId) return res.status(400).json({ success: false, message: 'User has no organization' });
 
     const org = await Organization.findById(orgId);
-    if (!org) { fs.unlinkSync(req.file.path); return res.status(404).json({ success: false, message: 'Organization not found' }); }
+    if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });
 
     const plan = org.subscription?.plan || 'free';
-    const limitGB = getLimit(plan, 'storage');
 
     if (!isUnlimited(plan, 'storage')) {
+      const limitGB = getLimit(plan, 'storage');
       const limitBytes = limitGB * 1024 * 1024 * 1024;
       const usedBytes = org.subscription?.storageUsedBytes || 0;
       if (usedBytes + req.file.size > limitBytes) {
-        fs.unlinkSync(req.file.path);
         return res.status(403).json({
           success: false,
           code: 'STORAGE_LIMIT_REACHED',
           message: `Storage limit reached (${limitGB} GB). Upgrade your plan to upload more files.`,
-          used: usedBytes,
-          limit: limitBytes,
         });
       }
     }
+
+    // Write buffer to disk now that we've done all checks
+    ensureUploadsDir();
+    const ext = path.extname(req.file.originalname) || '.bin';
+    const filename = `${Date.now()}-${Math.round(Math.random() * 1e9)}${ext}`;
+    const filePath = path.join(UPLOADS_DIR, filename);
+    fs.writeFileSync(filePath, req.file.buffer);
 
     await Organization.findByIdAndUpdate(orgId, {
       $inc: { 'subscription.storageUsedBytes': req.file.size },
@@ -62,15 +61,15 @@ export const uploadFile = async (req, res, next) => {
     res.json({
       success: true,
       data: {
-        filename: req.file.filename,
+        filename,
         originalName: req.file.originalname,
         size: req.file.size,
-        url: `/uploads/${req.file.filename}`,
+        url: `/uploads/${filename}`,
         mimeType: req.file.mimetype,
       },
     });
   } catch (err) {
-    if (req.file?.path && fs.existsSync(req.file.path)) fs.unlinkSync(req.file.path);
+    console.error('[upload] error:', err.message);
     next(err);
   }
 };
@@ -78,35 +77,33 @@ export const uploadFile = async (req, res, next) => {
 export const deleteFile = async (req, res, next) => {
   try {
     const { filename } = req.params;
-    // Prevent path traversal
     if (filename.includes('/') || filename.includes('..')) {
       return res.status(400).json({ success: false, message: 'Invalid filename' });
     }
-
     const filePath = path.join(UPLOADS_DIR, filename);
-    if (!fs.existsSync(filePath)) return res.status(404).json({ success: false, message: 'File not found' });
+    if (fs.existsSync(filePath)) fs.unlinkSync(filePath);
 
-    const stat = fs.statSync(filePath);
-    fs.unlinkSync(filePath);
-
-    const orgId = req.user.organization._id || req.user.organization;
-    await Organization.findByIdAndUpdate(orgId, {
-      $inc: { 'subscription.storageUsedBytes': -stat.size },
-    });
-
+    const orgRef = req.user?.organization;
+    const orgId = orgRef?._id ?? orgRef;
+    if (orgId) {
+      const stat = fs.existsSync(filePath) ? fs.statSync(filePath) : null;
+      await Organization.findByIdAndUpdate(orgId, {
+        $inc: { 'subscription.storageUsedBytes': -(stat?.size || 0) },
+      });
+    }
     res.json({ success: true, message: 'File deleted' });
   } catch (err) { next(err); }
 };
 
 export const getStorageUsage = async (req, res, next) => {
   try {
-    const orgId = req.user.organization._id || req.user.organization;
+    const orgRef = req.user?.organization;
+    const orgId = orgRef?._id ?? orgRef;
     const org = await Organization.findById(orgId);
-    const plan = org.subscription?.plan || 'free';
+    const plan = org?.subscription?.plan || 'free';
     const limitGB = getLimit(plan, 'storage');
-    const usedBytes = org.subscription.storageUsedBytes || 0;
+    const usedBytes = org?.subscription?.storageUsedBytes || 0;
     const limitBytes = isUnlimited(plan, 'storage') ? null : limitGB * 1024 * 1024 * 1024;
-
     res.json({
       success: true,
       data: {
