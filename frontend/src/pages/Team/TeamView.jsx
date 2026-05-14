@@ -386,9 +386,6 @@ export default function TeamView() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {!inviteLink ? (
                 <>
-                  <Typography variant="body2" color="text.secondary">
-                    أرسل لينك دعوة للشخص — يسجّل بنفسه ويختار باسورده. اللينك صالح 7 أيام.
-                  </Typography>
                   <TextField
                     label="Email Address" type="email" fullWidth autoFocus
                     value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}

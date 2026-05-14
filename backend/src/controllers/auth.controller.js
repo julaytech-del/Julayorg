@@ -106,7 +106,7 @@ export const createInvite = async (req, res, next) => {
     if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
 
     const existing = await User.findOne({ email });
-    if (existing) return res.status(409).json({ success: false, message: 'User with this email already exists' });
+    if (existing) return res.status(409).json({ success: false, message: 'This email already has an account. Use "Create Member" tab to add them directly instead.' });
 
     // Check member limit
     const org = await Organization.findById(req.user.organization);
