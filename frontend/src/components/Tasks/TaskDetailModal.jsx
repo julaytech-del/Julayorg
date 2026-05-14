@@ -99,6 +99,8 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const { t }       = useTranslation();
   const user        = useSelector(s => s.auth.user);
   const activeTimers = useSelector(s => s.ui.activeTimers);
+  const roleLevel   = user?.role?.level || 'viewer';
+  const canEdit     = !['viewer'].includes(roleLevel);
   const activeTimer  = activeTimers.find(t => t.taskId === task?._id) || null;
 
   const [localTask, setLocalTask] = useState(task);
@@ -184,6 +186,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   // ── helpers ─────────────────────────────────────────────────────────────────
 
   const updateField = async (field, value) => {
+    if (!canEdit) return;
     setLocalTask(p => ({ ...p, [field]: value }));
     setSaving(true);
     await dispatch(updateTask({ id: task._id, data: { [field]: value } }));
@@ -311,12 +314,13 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
             fullWidth
             variant="standard"
             value={localTask.title}
-            onChange={e => setLocalTask(p => ({ ...p, title: e.target.value }))}
+            onChange={e => canEdit && setLocalTask(p => ({ ...p, title: e.target.value }))}
             onBlur={e => updateField('title', e.target.value)}
+            InputProps={{ readOnly: !canEdit }}
             inputProps={{ style: { fontSize: '1.15rem', fontWeight: 700, lineHeight: 1.3, color: '#0F172A' } }}
             sx={{
               '& .MuiInput-underline:before': { borderBottom: 'none' },
-              '& .MuiInput-underline:hover:before': { borderBottom: '2px solid #E2E8F0' },
+              '& .MuiInput-underline:hover:before': { borderBottom: canEdit ? '2px solid #E2E8F0' : 'none' },
               '& .MuiInput-underline:after': { borderBottom: '2px solid #6366F1' },
             }}
           />
@@ -327,11 +331,13 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
           {saving && (
             <Typography sx={{ fontSize: '0.72rem', color: '#94A3B8', mr: 0.5 }}>saving...</Typography>
           )}
-          <Tooltip title="Delete task">
-            <IconButton size="small" onClick={handleDelete} sx={{ color: '#EF4444', '&:hover': { bgcolor: '#FEF2F2' } }}>
-              <Delete fontSize="small" />
-            </IconButton>
-          </Tooltip>
+          {canEdit && (
+            <Tooltip title="Delete task">
+              <IconButton size="small" onClick={handleDelete} sx={{ color: '#EF4444', '&:hover': { bgcolor: '#FEF2F2' } }}>
+                <Delete fontSize="small" />
+              </IconButton>
+            </Tooltip>
+          )}
           <Tooltip title="Close">
             <IconButton size="small" onClick={onClose} sx={{ color: '#64748B', '&:hover': { bgcolor: '#F1F5F9' } }}>
               <Close fontSize="small" />
@@ -353,12 +359,12 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
               return (
                 <Box
                   key={s.value}
-                  onClick={() => updateField('status', s.value)}
+                  onClick={() => canEdit && updateField('status', s.value)}
                   sx={{
                     px: 1.5, py: 0.4,
                     borderRadius: '999px',
                     fontSize: '0.75rem', fontWeight: 600,
-                    cursor: 'pointer',
+                    cursor: canEdit ? 'pointer' : 'default',
                     transition: 'all 0.15s',
                     userSelect: 'none',
                     ...(isActive
@@ -387,7 +393,8 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                 variant="standard"
                 value={localTask.priority || ''}
                 onChange={e => updateField('priority', e.target.value)}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
+                inputProps={{ disabled: !canEdit }}
                 sx={{ minWidth: 120, '& .MuiSelect-select': { py: 0 } }}
               >
                 {PRIORITIES.map(p => (
@@ -410,7 +417,8 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                 variant="standard"
                 value={localTask.type || ''}
                 onChange={e => updateField('type', e.target.value)}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
+                inputProps={{ disabled: !canEdit }}
                 sx={{ minWidth: 140, '& .MuiSelect-select': { py: 0 } }}
               >
                 {TYPES.map(tp => (
@@ -428,7 +436,8 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
               <Autocomplete
                 multiple
                 size="small"
-                options={users}
+                options={canEdit ? users : []}
+                readOnly={!canEdit}
                 getOptionLabel={u => u.name || u.email || ''}
                 value={users.filter(u => (localTask.assignees || []).some(a => (a._id || a) === u._id))}
                 onChange={(_, val) => updateField('assignees', val.map(v => v._id))}
@@ -464,7 +473,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                 variant="standard"
                 value={localTask.dueDate ? format(new Date(localTask.dueDate), 'yyyy-MM-dd') : ''}
                 onChange={e => updateField('dueDate', e.target.value)}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
                 inputProps={{
                   style: {
                     fontSize: '0.85rem', fontWeight: 500,
@@ -485,7 +494,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                 variant="standard"
                 value={localTask.startDate ? format(new Date(localTask.startDate), 'yyyy-MM-dd') : ''}
                 onChange={e => updateField('startDate', e.target.value)}
-                InputProps={{ disableUnderline: true }}
+                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
                 inputProps={{ style: { fontSize: '0.85rem', fontWeight: 500, padding: 0 } }}
                 InputLabelProps={{ shrink: true }}
               />
@@ -501,7 +510,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                   variant="standard"
                   value={localTask.estimatedHours || ''}
                   onChange={e => updateField('estimatedHours', parseFloat(e.target.value) || 0)}
-                  InputProps={{ disableUnderline: true }}
+                  InputProps={{ disableUnderline: true, readOnly: !canEdit }}
                   inputProps={{ style: { fontSize: '0.85rem', fontWeight: 500, padding: 0, width: 60 } }}
                 />
                 <Typography sx={{ fontSize: '0.8rem', color: '#94A3B8' }}>h</Typography>
@@ -535,11 +544,12 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
             fullWidth
             multiline
             minRows={2}
-            placeholder="Add a description…"
+            placeholder={canEdit ? "Add a description…" : ""}
             variant="outlined"
             value={localTask.description || ''}
-            onChange={e => setLocalTask(p => ({ ...p, description: e.target.value }))}
+            onChange={e => canEdit && setLocalTask(p => ({ ...p, description: e.target.value }))}
             onBlur={e => updateField('description', e.target.value)}
+            InputProps={{ readOnly: !canEdit }}
             sx={{
               '& .MuiOutlinedInput-root': {
                 fontSize: '0.88rem',
