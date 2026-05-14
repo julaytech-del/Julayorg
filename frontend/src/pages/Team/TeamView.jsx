@@ -66,6 +66,7 @@ export default function TeamView() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [changingRole, setChangingRole] = useState(false);
   const [departments, setDepartments] = useState([]);
 
   const [addOpen, setAddOpen] = useState(false);
@@ -141,6 +142,20 @@ export default function TeamView() {
       dispatch(showSnackbar({ message: e.message || 'Failed to add user', severity: 'error' }));
     } finally {
       setAddingExisting(false);
+    }
+  };
+
+  const handleRoleChange = async (userId, newLevel) => {
+    setChangingRole(true);
+    try {
+      const res = await api.put(`/users/${userId}`, { roleLevel: newLevel });
+      setUsers(prev => prev.map(u => u._id === userId ? { ...u, role: res.data.role } : u));
+      setSelectedUser(prev => ({ ...prev, role: res.data.role }));
+      dispatch(showSnackbar({ message: 'Role updated successfully', severity: 'success' }));
+    } catch (e) {
+      dispatch(showSnackbar({ message: e.message || 'Failed to update role', severity: 'error' }));
+    } finally {
+      setChangingRole(false);
     }
   };
 
@@ -255,6 +270,27 @@ export default function TeamView() {
               <Chip label={selectedUser.email} size="small" variant="outlined" />
               {selectedUser.department && <Chip label={selectedUser.department.name} size="small" />}
             </Box>
+            <FormControl fullWidth size="small" sx={{ mb: 2.5 }}>
+              <InputLabel>Role</InputLabel>
+              <Select
+                value={selectedUser.role?.level || 'member'}
+                label="Role"
+                disabled={changingRole}
+                onChange={e => handleRoleChange(selectedUser._id, e.target.value)}
+              >
+                {ROLE_LEVELS.map(r => (
+                  <MenuItem key={r.level} value={r.level}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: r.color, flexShrink: 0 }} />
+                      <Box>
+                        <Typography fontSize="0.875rem" fontWeight={600}>{r.label}</Typography>
+                        <Typography fontSize="0.72rem" color="text.secondary">{r.desc}</Typography>
+                      </Box>
+                    </Box>
+                  </MenuItem>
+                ))}
+              </Select>
+            </FormControl>
             <Typography variant="subtitle2" fontWeight={700} mb={1}>{t('team.card.skills')}</Typography>
             <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2 }}>
               {(selectedUser.skills || []).map((s, i) => <Chip key={i} label={`${s.name} (${s.level}/5)`} size="small" variant="outlined" />)}

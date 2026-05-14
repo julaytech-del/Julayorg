@@ -37,7 +37,15 @@ export const getUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    const { password, email, isAdmin, ...updates } = req.body;
+    const { password, email, isAdmin, roleLevel, ...updates } = req.body;
+    if (roleLevel) {
+      const orgId = req.user.organization._id || req.user.organization;
+      const role = await Role.findOne({ organization: orgId, level: roleLevel });
+      if (role) {
+        updates.role = role._id;
+        updates.isAdmin = roleLevel === 'admin';
+      }
+    }
     const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
       .populate('role', 'name level').populate('department', 'name color');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
