@@ -328,6 +328,8 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
   const user        = useSelector(s => s.auth.user);
   const darkMode    = useSelector(s => s.ui.darkMode);
   const activeTimers = useSelector(s => s.ui.activeTimers);
+  const roleLevel   = user?.role?.level || 'member';
+  const canCreate   = roleLevel !== 'viewer';
   const { t }       = useTranslation();
   const [anchorEl,      setAnchorEl]      = useState(null);
   const [newMenuAnchor, setNewMenuAnchor] = useState(null);
@@ -437,8 +439,8 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             );
           })}
 
-          {/* ── Quick Add button (dropdown) ── */}
-          <Box onClick={e => setNewMenuAnchor(e.currentTarget)} sx={{
+          {/* ── Quick Add button (dropdown) — hidden for viewers ── */}
+          {canCreate && <Box onClick={e => setNewMenuAnchor(e.currentTarget)} sx={{
             display:'flex', alignItems:'center', gap:0.75,
             bgcolor: darkMode ? 'rgba(99,102,241,0.15)' : '#EEF2FF',
             border:`1.5px solid ${darkMode ? 'rgba(99,102,241,0.3)' : '#C7D2FE'}`,
@@ -477,12 +479,12 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
                 <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Create a new project</Typography>
               </Box>
             </MenuItem>
-          </Menu>
+          </Menu>}
 
-          {/* AI Studio chip */}
-          <Chip icon={<AutoAwesome sx={{ fontSize:'14px !important' }}/>} label={t('header.aiGenerate')}
+          {/* AI Studio chip — hidden for viewers */}
+          {canCreate && <Chip icon={<AutoAwesome sx={{ fontSize:'14px !important' }}/>} label={t('header.aiGenerate')}
             onClick={() => navigate('/dashboard/ai')} size="small"
-            sx={{ background:'linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)', color:'white', fontWeight:700, fontSize:'0.75rem', px:0.5, cursor:'pointer', '& .MuiChip-icon':{ color:'white' }, '&:hover':{ opacity:0.88, transform:'translateY(-1px)' }, transition:'all 0.15s', boxShadow:'0 2px 8px rgba(79,70,229,0.35)' }}/>
+            sx={{ background:'linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)', color:'white', fontWeight:700, fontSize:'0.75rem', px:0.5, cursor:'pointer', '& .MuiChip-icon':{ color:'white' }, '&:hover':{ opacity:0.88, transform:'translateY(-1px)' }, transition:'all 0.15s', boxShadow:'0 2px 8px rgba(79,70,229,0.35)' }} />}
 
           {/* Dark mode */}
           <Tooltip title={darkMode ? 'Light Mode' : 'Dark Mode'}>
