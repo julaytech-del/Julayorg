@@ -439,52 +439,52 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             );
           })}
 
-          {/* ── Quick Add button (dropdown) — hidden for viewers ── */}
-          {canCreate && <Box onClick={e => setNewMenuAnchor(e.currentTarget)} sx={{
-            display:'flex', alignItems:'center', gap:0.75,
-            bgcolor: darkMode ? 'rgba(99,102,241,0.15)' : '#EEF2FF',
-            border:`1.5px solid ${darkMode ? 'rgba(99,102,241,0.3)' : '#C7D2FE'}`,
-            borderRadius:'10px', px:1.25, py:0.6, cursor:'pointer',
-            transition:'all 0.15s',
-            '&:hover':{ bgcolor: darkMode ? 'rgba(99,102,241,0.25)' : '#E0E7FF', transform:'translateY(-1px)', boxShadow:'0 4px 12px rgba(99,102,241,0.2)' },
-          }}>
-            <Add sx={{ fontSize:16, color:'#6366F1' }}/>
-            <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:'#6366F1', display:{ xs:'none', sm:'block' } }}>New</Typography>
-            <KeyboardArrowDown sx={{ fontSize:14, color:'#6366F1' }}/>
-          </Box>
-          <Menu anchorEl={newMenuAnchor} open={Boolean(newMenuAnchor)} onClose={() => setNewMenuAnchor(null)}
-            transformOrigin={{ horizontal:'left', vertical:'top' }} anchorOrigin={{ horizontal:'left', vertical:'bottom' }}
-            PaperProps={{ sx:{ mt:0.75, minWidth:180, borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,0.12)', py:0.5 } }}>
-            <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickAdd(true); }}
-              sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
-              <ListItemIcon sx={{ minWidth:0 }}>
-                <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EEF2FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                  <Task sx={{ fontSize:15, color:'#6366F1' }}/>
+          {/* ── Quick Add + AI Generate — hidden for viewers ── */}
+          {canCreate && <>
+            <Box onClick={e => setNewMenuAnchor(e.currentTarget)} sx={{
+              display:'flex', alignItems:'center', gap:0.75,
+              bgcolor: darkMode ? 'rgba(99,102,241,0.15)' : '#EEF2FF',
+              border:`1.5px solid ${darkMode ? 'rgba(99,102,241,0.3)' : '#C7D2FE'}`,
+              borderRadius:'10px', px:1.25, py:0.6, cursor:'pointer',
+              transition:'all 0.15s',
+              '&:hover':{ bgcolor: darkMode ? 'rgba(99,102,241,0.25)' : '#E0E7FF', transform:'translateY(-1px)', boxShadow:'0 4px 12px rgba(99,102,241,0.2)' },
+            }}>
+              <Add sx={{ fontSize:16, color:'#6366F1' }}/>
+              <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:'#6366F1', display:{ xs:'none', sm:'block' } }}>New</Typography>
+              <KeyboardArrowDown sx={{ fontSize:14, color:'#6366F1' }}/>
+            </Box>
+            <Menu anchorEl={newMenuAnchor} open={Boolean(newMenuAnchor)} onClose={() => setNewMenuAnchor(null)}
+              transformOrigin={{ horizontal:'left', vertical:'top' }} anchorOrigin={{ horizontal:'left', vertical:'bottom' }}
+              PaperProps={{ sx:{ mt:0.75, minWidth:180, borderRadius:'12px', boxShadow:'0 8px 24px rgba(0,0,0,0.12)', py:0.5 } }}>
+              <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickAdd(true); }}
+                sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
+                <ListItemIcon sx={{ minWidth:0 }}>
+                  <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EEF2FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
+                    <Task sx={{ fontSize:15, color:'#6366F1' }}/>
+                  </Box>
+                </ListItemIcon>
+                <Box>
+                  <Typography sx={{ fontSize:'0.83rem', fontWeight:600 }}>New Task</Typography>
+                  <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Add a task to your board</Typography>
                 </Box>
-              </ListItemIcon>
-              <Box>
-                <Typography sx={{ fontSize:'0.83rem', fontWeight:600 }}>New Task</Typography>
-                <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Add a task to your board</Typography>
-              </Box>
-            </MenuItem>
-            <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickProject(true); }}
-              sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
-              <ListItemIcon sx={{ minWidth:0 }}>
-                <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EFF6FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                  <FolderOpen sx={{ fontSize:15, color:'#3B82F6' }}/>
+              </MenuItem>
+              <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickProject(true); }}
+                sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
+                <ListItemIcon sx={{ minWidth:0 }}>
+                  <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EFF6FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
+                    <FolderOpen sx={{ fontSize:15, color:'#3B82F6' }}/>
+                  </Box>
+                </ListItemIcon>
+                <Box>
+                  <Typography sx={{ fontSize:'0.83rem', fontWeight:600 }}>New Project</Typography>
+                  <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Create a new project</Typography>
                 </Box>
-              </ListItemIcon>
-              <Box>
-                <Typography sx={{ fontSize:'0.83rem', fontWeight:600 }}>New Project</Typography>
-                <Typography sx={{ fontSize:'0.7rem', color:'text.secondary' }}>Create a new project</Typography>
-              </Box>
-            </MenuItem>
-          </Menu>}
-
-          {/* AI Studio chip — hidden for viewers */}
-          {canCreate && <Chip icon={<AutoAwesome sx={{ fontSize:'14px !important' }}/>} label={t('header.aiGenerate')}
-            onClick={() => navigate('/dashboard/ai')} size="small"
-            sx={{ background:'linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)', color:'white', fontWeight:700, fontSize:'0.75rem', px:0.5, cursor:'pointer', '& .MuiChip-icon':{ color:'white' }, '&:hover':{ opacity:0.88, transform:'translateY(-1px)' }, transition:'all 0.15s', boxShadow:'0 2px 8px rgba(79,70,229,0.35)' }} />}
+              </MenuItem>
+            </Menu>
+            <Chip icon={<AutoAwesome sx={{ fontSize:'14px !important' }}/>} label={t('header.aiGenerate')}
+              onClick={() => navigate('/dashboard/ai')} size="small"
+              sx={{ background:'linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)', color:'white', fontWeight:700, fontSize:'0.75rem', px:0.5, cursor:'pointer', '& .MuiChip-icon':{ color:'white' }, '&:hover':{ opacity:0.88, transform:'translateY(-1px)' }, transition:'all 0.15s', boxShadow:'0 2px 8px rgba(79,70,229,0.35)' }} />
+          </>}
 
           {/* Dark mode */}
           <Tooltip title={darkMode ? 'Light Mode' : 'Dark Mode'}>
