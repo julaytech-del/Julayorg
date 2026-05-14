@@ -583,34 +583,36 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                 </Typography>
               )}
 
-              {/* Start / Stop button */}
-              <Button
-                size="small"
-                variant={timerRunning ? 'contained' : 'outlined'}
-                startIcon={timerRunning
-                  ? <Stop sx={{ fontSize: '14px !important' }} />
-                  : <PlayArrow sx={{ fontSize: '14px !important' }} />
-                }
-                onClick={timerRunning ? handleTimerStop : handleTimerStart}
-                sx={{
-                  fontSize: '0.72rem', fontWeight: 700, textTransform: 'none',
-                  borderRadius: '8px',
-                  ...(timerRunning
-                    ? { bgcolor: '#EF4444', '&:hover': { bgcolor: '#DC2626' }, border: 'none' }
-                    : { color: '#6366F1', borderColor: '#C7D2FE', '&:hover': { bgcolor: '#EEF2FF' } }
-                  ),
-                }}
-              >
-                {timerRunning ? 'Stop' : 'Start Timer'}
-              </Button>
+              {/* Start / Stop button — hidden for viewer */}
+              {canEdit && <>
+                <Button
+                  size="small"
+                  variant={timerRunning ? 'contained' : 'outlined'}
+                  startIcon={timerRunning
+                    ? <Stop sx={{ fontSize: '14px !important' }} />
+                    : <PlayArrow sx={{ fontSize: '14px !important' }} />
+                  }
+                  onClick={timerRunning ? handleTimerStop : handleTimerStart}
+                  sx={{
+                    fontSize: '0.72rem', fontWeight: 700, textTransform: 'none',
+                    borderRadius: '8px',
+                    ...(timerRunning
+                      ? { bgcolor: '#EF4444', '&:hover': { bgcolor: '#DC2626' }, border: 'none' }
+                      : { color: '#6366F1', borderColor: '#C7D2FE', '&:hover': { bgcolor: '#EEF2FF' } }
+                    ),
+                  }}
+                >
+                  {timerRunning ? 'Stop' : 'Start Timer'}
+                </Button>
 
-              {/* Manual log */}
-              <Tooltip title="Log manual hours">
-                <IconButton size="small" onClick={() => setLogTimeOpen(v => !v)}
-                  sx={{ color: '#94A3B8', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
-                  <Add sx={{ fontSize: 16 }} />
-                </IconButton>
-              </Tooltip>
+                {/* Manual log */}
+                <Tooltip title="Log manual hours">
+                  <IconButton size="small" onClick={() => setLogTimeOpen(v => !v)}
+                    sx={{ color: '#94A3B8', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+                    <Add sx={{ fontSize: 16 }} />
+                  </IconButton>
+                </Tooltip>
+              </>}
             </Box>
           </Box>
 
