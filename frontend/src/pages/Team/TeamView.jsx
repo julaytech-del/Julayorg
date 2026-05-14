@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Table, TableBody, TableRow, TableCell } from '@mui/material';
-import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add, CheckCircle, Cancel } from '@mui/icons-material';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Table, TableBody, TableRow, TableCell, Alert, IconButton, Tooltip } from '@mui/material';
+import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add, CheckCircle, Cancel, Email, ContentCopy } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -69,9 +69,14 @@ export default function TeamView() {
   const [departments, setDepartments] = useState([]);
 
   const [addOpen, setAddOpen] = useState(false);
-  const [dialogTab, setDialogTab] = useState(1); // default to Create New
+  const [dialogTab, setDialogTab] = useState(1);
   const [form, setForm] = useState(BLANK_FORM);
   const [creating, setCreating] = useState(false);
+  // Invite by email state
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteLink, setInviteLink] = useState('');
+  const [inviting, setInviting] = useState(false);
+  const [copied, setCopied] = useState(false);
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
@@ -96,6 +101,30 @@ export default function TeamView() {
     setAddOpen(false);
     setForm({ ...BLANK_FORM, department: defaultDept });
     setDialogTab(1);
+    setInviteEmail('');
+    setInviteLink('');
+    setCopied(false);
+  };
+
+  const handleInvite = async () => {
+    if (!inviteEmail) return;
+    setInviting(true);
+    try {
+      const res = await api.post('/auth/invite', { email: inviteEmail });
+      setInviteLink(res.data.inviteLink);
+      dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
+    } catch (e) {
+      dispatch(showSnackbar({ message: e.message || 'Failed to generate invite', severity: 'error' }));
+    } finally {
+      setInviting(false);
+    }
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(inviteLink);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
+    dispatch(showSnackbar({ message: 'Invite link copied!', severity: 'success' }));
   };
 
   const handleCreate = async () => {
@@ -234,7 +263,8 @@ export default function TeamView() {
           <Tabs value={dialogTab} onChange={(_, v) => setDialogTab(v)}
             sx={{ borderBottom: '1px solid', borderColor: 'divider', '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, minWidth: 0, px: 2 } }}>
             <Tab icon={<PersonAdd sx={{ fontSize: 16 }} />} iconPosition="start" label="Permissions Guide" />
-            <Tab icon={<Add sx={{ fontSize: 16 }} />} iconPosition="start" label="Create New Member" />
+            <Tab icon={<Add sx={{ fontSize: 16 }} />} iconPosition="start" label="Create Member" />
+            <Tab icon={<Email sx={{ fontSize: 16 }} />} iconPosition="start" label="Invite by Email" />
           </Tabs>
         </Box>
 
@@ -350,15 +380,60 @@ export default function TeamView() {
               </Grid>
             </Grid>
           )}
+
+          {/* Tab 2: Invite by email */}
+          {dialogTab === 2 && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              {!inviteLink ? (
+                <>
+                  <Typography variant="body2" color="text.secondary">
+                    أرسل لينك دعوة للشخص — يسجّل بنفسه ويختار باسورده. اللينك صالح 7 أيام.
+                  </Typography>
+                  <TextField
+                    label="Email Address" type="email" fullWidth autoFocus
+                    value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleInvite()}
+                    placeholder="example@email.com"
+                  />
+                </>
+              ) : (
+                <Box>
+                  <Alert severity="success" sx={{ mb: 2 }}>
+                    تم توليد لينك الدعوة لـ <strong>{inviteEmail}</strong> — شاركه عبر واتساب أو إيميل.
+                  </Alert>
+                  <Typography variant="caption" color="text.secondary" display="block" mb={1}>
+                    Invite link (valid 7 days):
+                  </Typography>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, p: 1.5, borderRadius: 2, border: '1.5px solid', borderColor: 'divider', bgcolor: 'grey.50' }}>
+                    <Typography variant="body2" sx={{ flex: 1, wordBreak: 'break-all', fontFamily: 'monospace', fontSize: '0.75rem' }}>
+                      {inviteLink}
+                    </Typography>
+                    <Tooltip title={copied ? 'Copied!' : 'Copy'}>
+                      <IconButton size="small" onClick={handleCopy} color={copied ? 'success' : 'default'}>
+                        {copied ? <CheckCircle fontSize="small" /> : <ContentCopy fontSize="small" />}
+                      </IconButton>
+                    </Tooltip>
+                  </Box>
+                </Box>
+              )}
+            </Box>
+          )}
         </DialogContent>
 
         <DialogActions sx={{ px: 3, pb: 2.5, gap: 1 }}>
-          <Button onClick={closeDialog} sx={{ textTransform: 'none' }}>Cancel</Button>
+          <Button onClick={closeDialog} sx={{ textTransform: 'none' }}>{inviteLink ? 'Close' : 'Cancel'}</Button>
           {dialogTab === 1 && (
             <Button variant="contained" onClick={handleCreate}
               disabled={!form.name || !form.email || !form.password || creating}
               sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 130 }}>
               {creating ? <CircularProgress size={18} color="inherit" /> : 'Create Member'}
+            </Button>
+          )}
+          {dialogTab === 2 && !inviteLink && (
+            <Button variant="contained" onClick={handleInvite}
+              disabled={!inviteEmail || inviting}
+              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 130 }}>
+              {inviting ? <CircularProgress size={18} color="inherit" /> : 'Generate Link'}
             </Button>
           )}
         </DialogActions>
