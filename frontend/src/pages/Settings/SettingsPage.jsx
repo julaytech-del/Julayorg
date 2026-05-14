@@ -45,14 +45,20 @@ function ProfileTab({ user }) {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await api.post('/upload', fd);
-      const url = res.data?.url;
+      const token = localStorage.getItem('julay_token');
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${token}` },
+        body: fd,
+      });
+      const data = await response.json();
+      if (!response.ok) throw new Error(data?.message || 'Upload failed');
+      const url = data?.data?.url;
       const fullUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
       setForm(f => ({ ...f, avatar: fullUrl }));
       dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
     } catch (err) {
-      const msg = err?.message || err?.data?.message || JSON.stringify(err) || 'Failed to upload photo';
-      dispatch(showSnackbar({ message: msg, severity: 'error' }));
+      dispatch(showSnackbar({ message: err?.message || 'Failed to upload photo', severity: 'error' }));
     } finally {
       setUploading(false);
     }
