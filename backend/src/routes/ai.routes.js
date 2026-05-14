@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { generatePlan, assignTeamToProject, getStandup, getPerformanceAnalysis, replanProject } from '../controllers/ai.controller.js';
-import { protect, requireSubscription } from '../middleware/auth.middleware.js';
+import { protect, requireSubscription, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
 router.use(protect);
 router.use(requireSubscription);
+router.use(requirePermission('ai', 'use'));
 
 router.post('/generate-plan', generatePlan);
 router.post('/assign-team/:projectId', assignTeamToProject);

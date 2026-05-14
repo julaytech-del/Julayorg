@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 const SIDEBAR_WIDTH = 260;
 
@@ -16,13 +17,14 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const darkMode  = useSelector(s => s.ui.darkMode);
   const { t }     = useTranslation();
   const org       = user?.organization;
+  const { canUseAI, canViewReports, canManageDepartment, isAdmin } = usePermissions();
 
   const NAV = [
     { title: t('nav.sections.workspace'), items: [
       { label: t('nav.dashboard'), icon: Dashboard,         path: '/dashboard' },
       { label: t('nav.projects'),  icon: FolderOpen,        path: '/dashboard/projects' },
       { label: t('nav.team'),      icon: Group,             path: '/dashboard/team' },
-      { label: t('nav.departments'),icon: Business,         path: '/dashboard/departments' },
+      ...(canManageDepartment ? [{ label: t('nav.departments'), icon: Business, path: '/dashboard/departments' }] : []),
     ]},
     { title: 'Views', items: [
       { label: 'Execution Board',   icon: ViewKanban,       path: '/dashboard/execution-board' },
@@ -37,14 +39,16 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       { label: 'Activity',          icon: History,          path: '/dashboard/activity' },
     ]},
     { title: t('nav.sections.intelligence'), items: [
-      { label: t('nav.aiStudio'),   icon: AutoAwesome,      path: '/dashboard/ai',     badge: 'AI' },
-      { label: 'Reports',           icon: BarChart,         path: '/dashboard/reports' },
+      ...(canUseAI    ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
+      ...(canViewReports ? [{ label: 'Reports', icon: BarChart, path: '/dashboard/reports' }] : []),
     ]},
     { title: 'Automation', items: [
-      { label: 'Automations',       icon: Bolt,             path: '/dashboard/automations' },
-      { label: 'Sprints',           icon: FilterTiltShift,  path: '/dashboard/sprints' },
-      { label: 'Form Views',        icon: DynamicForm,      path: '/dashboard/views/forms' },
-      { label: 'Webhooks',          icon: Webhook,          path: '/dashboard/settings/webhooks' },
+      ...(isAdmin ? [
+        { label: 'Automations',   icon: Bolt,            path: '/dashboard/automations' },
+        { label: 'Form Views',    icon: DynamicForm,     path: '/dashboard/views/forms' },
+        { label: 'Webhooks',      icon: Webhook,         path: '/dashboard/settings/webhooks' },
+      ] : []),
+      { label: 'Sprints',         icon: FilterTiltShift, path: '/dashboard/sprints' },
     ]},
     { title: 'Apps', items: [
       { label: 'Workspace Apps',    icon: Apps,             path: '/dashboard/apps' },
