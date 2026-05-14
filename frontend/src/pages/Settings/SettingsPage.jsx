@@ -51,7 +51,9 @@ function ProfileTab({ user }) {
         headers: { Authorization: `Bearer ${token}` },
         body: fd,
       });
-      const data = await response.json();
+      const text = await response.text();
+      let data;
+      try { data = JSON.parse(text); } catch { throw new Error(`Server error (${response.status}): ${text.slice(0, 150)}`); }
       if (!response.ok) throw new Error(data?.message || 'Upload failed');
       const url = data?.data?.url;
       const fullUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
