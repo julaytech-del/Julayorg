@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Table, TableBody, TableRow, TableCell, Alert, IconButton, Tooltip } from '@mui/material';
 import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add, CheckCircle, Cancel, Email, ContentCopy } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import api, { usersAPI, departmentsAPI } from '../../services/api.js';
 
@@ -62,6 +62,8 @@ const BLANK_FORM = { name: '', email: '', password: '', jobTitle: '', department
 export default function TeamView() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
+  const currentUser = useSelector(s => s.auth.user);
+  const canManageTeam = ['admin', 'manager'].includes(currentUser?.role?.level);
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
@@ -192,10 +194,12 @@ export default function TeamView() {
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" fontWeight={700}>{t('team.title')}</Typography>
-        <Button variant="contained" startIcon={<PersonAdd />} onClick={() => setAddOpen(true)}
-          sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', borderRadius: 2 }}>
-          Add Member
-        </Button>
+        {canManageTeam && (
+          <Button variant="contained" startIcon={<PersonAdd />} onClick={() => setAddOpen(true)}
+            sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', borderRadius: 2 }}>
+            Add Member
+          </Button>
+        )}
       </Box>
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
@@ -270,7 +274,7 @@ export default function TeamView() {
               <Chip label={selectedUser.email} size="small" variant="outlined" />
               {selectedUser.department && <Chip label={selectedUser.department.name} size="small" />}
             </Box>
-            <FormControl fullWidth size="small" sx={{ mb: 2.5 }}>
+            {canManageTeam && <FormControl fullWidth size="small" sx={{ mb: 2.5 }}>
               <InputLabel>Role</InputLabel>
               <Select
                 value={selectedUser.role?.level || 'member'}
@@ -290,7 +294,7 @@ export default function TeamView() {
                   </MenuItem>
                 ))}
               </Select>
-            </FormControl>
+            </FormControl>}
             <Typography variant="subtitle2" fontWeight={700} mb={1}>{t('team.card.skills')}</Typography>
             <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2 }}>
               {(selectedUser.skills || []).map((s, i) => <Chip key={i} label={`${s.name} (${s.level}/5)`} size="small" variant="outlined" />)}

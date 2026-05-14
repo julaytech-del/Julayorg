@@ -1,13 +1,13 @@
 import { Router } from 'express';
 import { register, login, getMe, changePassword, createInvite, getInviteInfo, acceptInvite, sendOTP, verifyOTPLogin, verifyOTPRegister, googleAuth, googleCodeAuth, forgotPassword, resetPassword } from '../controllers/auth.controller.js';
-import { protect } from '../middleware/auth.middleware.js';
+import { protect, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
 router.post('/register', register);
 router.post('/login', login);
 router.get('/me', protect, getMe);
 router.post('/change-password', protect, changePassword);
-router.post('/invite', protect, createInvite);
+router.post('/invite', protect, requirePermission('users', 'create'), createInvite);
 router.get('/invite/:token', getInviteInfo);
 router.post('/accept-invite/:token', acceptInvite);
 // OTP (email code) auth
