@@ -1,12 +1,63 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Autocomplete } from '@mui/material';
-import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add } from '@mui/icons-material';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Table, TableBody, TableRow, TableCell } from '@mui/material';
+import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add, CheckCircle, Cancel } from '@mui/icons-material';
 import { useTranslation } from 'react-i18next';
 import { useDispatch } from 'react-redux';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
-import api, { usersAPI } from '../../services/api.js';
+import api, { usersAPI, departmentsAPI } from '../../services/api.js';
 
 const STATUS_COLORS = { active: '#10B981', inactive: '#94A3B8', busy: '#F59E0B', away: '#3B82F6' };
+
+const ROLE_LEVELS = [
+  {
+    level: 'admin',
+    label: 'Admin',
+    color: '#EF4444',
+    bg: '#FEF2F2',
+    desc: 'Full access — manages everything',
+    perms: { Projects: true, Tasks: true, 'Assign Tasks': true, Team: true, Departments: true, 'AI Tools': true, Reports: true },
+  },
+  {
+    level: 'manager',
+    label: 'Manager',
+    color: '#F97316',
+    bg: '#FFF7ED',
+    desc: 'Manages projects & tasks, uses AI, views reports',
+    perms: { Projects: true, Tasks: true, 'Assign Tasks': true, Team: '👁 view', Departments: '👁 view', 'AI Tools': true, Reports: true },
+  },
+  {
+    level: 'lead',
+    label: 'Lead',
+    color: '#6366F1',
+    bg: '#EEF2FF',
+    desc: 'Handles tasks & assignments, limited project access',
+    perms: { Projects: '👁 view', Tasks: true, 'Assign Tasks': true, Team: '👁 view', Departments: '👁 view', 'AI Tools': true, Reports: '👁 view' },
+  },
+  {
+    level: 'member',
+    label: 'Member',
+    color: '#10B981',
+    bg: '#ECFDF5',
+    desc: 'Creates & updates own tasks, basic access',
+    perms: { Projects: '👁 view', Tasks: true, 'Assign Tasks': false, Team: '👁 view', Departments: '👁 view', 'AI Tools': false, Reports: false },
+  },
+  {
+    level: 'viewer',
+    label: 'Viewer',
+    color: '#94A3B8',
+    bg: '#F8FAFC',
+    desc: 'Read-only — can view but not change anything',
+    perms: { Projects: '👁 view', Tasks: '👁 view', 'Assign Tasks': false, Team: '👁 view', Departments: '👁 view', 'AI Tools': false, Reports: '👁 view' },
+  },
+];
+
+const PermIcon = ({ val }) => {
+  if (val === true) return <CheckCircle sx={{ fontSize: 16, color: '#10B981' }} />;
+  if (val === false) return <Cancel sx={{ fontSize: 16, color: '#EF4444' }} />;
+  return <Typography variant="caption" color="text.secondary">{val}</Typography>;
+};
+
+const BLANK_FORM = { name: '', email: '', password: '', jobTitle: '', department: '', roleLevel: 'member' };
 
 export default function TeamView() {
   const { t } = useTranslation();
@@ -15,28 +66,26 @@ export default function TeamView() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
+  const [departments, setDepartments] = useState([]);
 
-  // Add member dialog
   const [addOpen, setAddOpen] = useState(false);
-  const [dialogTab, setDialogTab] = useState(0);
-  const [form, setForm] = useState({ name: '', email: '', password: '', jobTitle: '' });
+  const [dialogTab, setDialogTab] = useState(1); // default to Create New
+  const [form, setForm] = useState(BLANK_FORM);
   const [creating, setCreating] = useState(false);
+
+  const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const loadUsers = () => {
     setLoading(true);
-    usersAPI.getAll()
-      .then(res => setUsers(res.data || []))
-      .catch(() => {})
-      .finally(() => setLoading(false));
+    usersAPI.getAll().then(res => setUsers(res.data || [])).catch(() => {}).finally(() => setLoading(false));
   };
 
-  useEffect(() => { loadUsers(); }, []);
+  useEffect(() => {
+    loadUsers();
+    departmentsAPI.getAll().then(res => setDepartments(res.data || [])).catch(() => {});
+  }, []);
 
-  const closeDialog = () => {
-    setAddOpen(false);
-    setForm({ name: '', email: '', password: '', jobTitle: '' });
-    setDialogTab(0);
-  };
+  const closeDialog = () => { setAddOpen(false); setForm(BLANK_FORM); setDialogTab(1); };
 
   const handleCreate = async () => {
     if (!form.name || !form.email || !form.password) {
@@ -46,7 +95,7 @@ export default function TeamView() {
     setCreating(true);
     try {
       await api.post('/users', form);
-      dispatch(showSnackbar({ message: `${form.name} added to team!`, severity: 'success' }));
+      dispatch(showSnackbar({ message: `${form.name} created successfully!`, severity: 'success' }));
       loadUsers();
       closeDialog();
     } catch (e) {
@@ -58,6 +107,7 @@ export default function TeamView() {
 
   const filtered = users.filter(u => !search || u.name.toLowerCase().includes(search.toLowerCase()) || u.jobTitle?.toLowerCase().includes(search.toLowerCase()));
   const avgPerf = users.length ? Math.round(users.reduce((sum, u) => sum + (u.performance?.score || 0), 0) / users.length) : 0;
+  const selectedRole = ROLE_LEVELS.find(r => r.level === form.roleLevel) || ROLE_LEVELS[3];
 
   return (
     <Box>
@@ -76,17 +126,15 @@ export default function TeamView() {
           { labelKey: 'team.stats.avgPerformance', value: `${avgPerf}%`, icon: <EmojiEvents />, color: '#F59E0B' }
         ].map(s => (
           <Grid item xs={12} sm={4} key={s.labelKey}>
-            <Card>
-              <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box sx={{ width: 40, height: 40, borderRadius: 2, backgroundColor: `${s.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                  {React.cloneElement(s.icon, { sx: { color: s.color } })}
-                </Box>
-                <Box>
-                  <Typography variant="caption" color="text.secondary">{t(s.labelKey)}</Typography>
-                  <Typography variant="h5" fontWeight={700}>{s.value}</Typography>
-                </Box>
-              </CardContent>
-            </Card>
+            <Card><CardContent sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ width: 40, height: 40, borderRadius: 2, backgroundColor: `${s.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                {React.cloneElement(s.icon, { sx: { color: s.color } })}
+              </Box>
+              <Box>
+                <Typography variant="caption" color="text.secondary">{t(s.labelKey)}</Typography>
+                <Typography variant="h5" fontWeight={700}>{s.value}</Typography>
+              </Box>
+            </CardContent></Card>
           </Grid>
         ))}
       </Grid>
@@ -104,17 +152,13 @@ export default function TeamView() {
                   <Avatar sx={{ width: 64, height: 64, fontSize: '1.5rem', bgcolor: 'primary.main', mx: 'auto' }}>{member.name?.[0]}</Avatar>
                   <Box sx={{ position: 'absolute', bottom: 2, right: 2, width: 12, height: 12, borderRadius: '50%', backgroundColor: STATUS_COLORS[member.status] || '#94A3B8', border: '2px solid white' }} />
                 </Box>
-
                 <Typography variant="subtitle1" fontWeight={700}>{member.name}</Typography>
                 <Typography variant="caption" color="text.secondary" display="block" mb={1}>{member.jobTitle || 'Team Member'}</Typography>
-
                 {member.department && <Chip label={member.department.name} size="small" sx={{ mb: 1.5, backgroundColor: `${member.department.color}18`, color: member.department.color, fontWeight: 600 }} />}
-
                 <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap', mb: 1.5 }}>
                   {(member.skills || []).slice(0, 3).map((s, i) => <Chip key={i} label={s.name} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 20 }} />)}
                   {(member.skills || []).length > 3 && <Chip label={`+${member.skills.length - 3}`} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 20 }} />}
                 </Box>
-
                 <Box sx={{ mb: 2 }}>
                   <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
                     <Typography variant="caption" color="text.secondary">{t('team.card.performance')}</Typography>
@@ -122,7 +166,6 @@ export default function TeamView() {
                   </Box>
                   <LinearProgress variant="determinate" value={member.performance?.score || 0} sx={{ height: 4, borderRadius: 2 }} />
                 </Box>
-
                 <Button size="small" variant="outlined" fullWidth onClick={() => setSelectedUser(member)}>{t('team.card.viewProfile')}</Button>
               </CardContent>
             </Card>
@@ -132,104 +175,167 @@ export default function TeamView() {
 
       {/* View Profile Dialog */}
       <Dialog open={Boolean(selectedUser)} onClose={() => setSelectedUser(null)} maxWidth="sm" fullWidth>
-        {selectedUser && (
-          <>
-            <DialogTitle>
-              <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
-                <Avatar sx={{ width: 52, height: 52, fontSize: '1.3rem', bgcolor: 'primary.main' }}>{selectedUser.name?.[0]}</Avatar>
-                <Box>
-                  <Typography variant="h6" fontWeight={700}>{selectedUser.name}</Typography>
-                  <Typography variant="body2" color="text.secondary">{selectedUser.jobTitle}</Typography>
-                </Box>
+        {selectedUser && (<>
+          <DialogTitle>
+            <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+              <Avatar sx={{ width: 52, height: 52, fontSize: '1.3rem', bgcolor: 'primary.main' }}>{selectedUser.name?.[0]}</Avatar>
+              <Box>
+                <Typography variant="h6" fontWeight={700}>{selectedUser.name}</Typography>
+                <Typography variant="body2" color="text.secondary">{selectedUser.jobTitle}</Typography>
               </Box>
-            </DialogTitle>
-            <DialogContent>
-              <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
-                <Chip label={selectedUser.status} size="small" sx={{ backgroundColor: `${STATUS_COLORS[selectedUser.status]}20`, color: STATUS_COLORS[selectedUser.status], textTransform: 'capitalize', fontWeight: 600 }} />
-                <Chip label={selectedUser.email} size="small" variant="outlined" />
-                {selectedUser.department && <Chip label={selectedUser.department.name} size="small" />}
-              </Box>
-
-              <Typography variant="subtitle2" fontWeight={700} mb={1}>{t('team.card.skills')}</Typography>
-              <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2 }}>
-                {(selectedUser.skills || []).map((s, i) => (
-                  <Chip key={i} label={`${s.name} (${s.level}/5)`} size="small" variant="outlined" />
-                ))}
-              </Box>
-
-              <Typography variant="subtitle2" fontWeight={700} mb={1}>{t('team.card.performance')}</Typography>
-              <Grid container spacing={2}>
-                {[
-                  { labelKey: 'task.detail.subtasks', value: selectedUser.performance?.tasksCompleted || 0 },
-                  { labelKey: 'task.detail.dueDate', value: `${selectedUser.performance?.onTimeRate || 0}%` },
-                  { labelKey: 'dashboard.stats.overdueBadge', value: selectedUser.performance?.tasksOverdue || 0 },
-                  { labelKey: 'dashboard.stats.completionRate', value: `${selectedUser.performance?.score || 0}%` }
-                ].map(m => (
-                  <Grid item xs={6} key={m.labelKey}>
-                    <Box sx={{ p: 1.5, backgroundColor: 'grey.50', borderRadius: 2, textAlign: 'center' }}>
-                      <Typography variant="h5" fontWeight={700}>{m.value}</Typography>
-                      <Typography variant="caption" color="text.secondary">{t(m.labelKey, { count: m.value })}</Typography>
-                    </Box>
-                  </Grid>
-                ))}
-              </Grid>
-            </DialogContent>
-            <DialogActions><Button onClick={() => setSelectedUser(null)}>{t('common.close')}</Button></DialogActions>
-          </>
-        )}
+            </Box>
+          </DialogTitle>
+          <DialogContent>
+            <Box sx={{ display: 'flex', gap: 1, mb: 2, flexWrap: 'wrap' }}>
+              <Chip label={selectedUser.status} size="small" sx={{ backgroundColor: `${STATUS_COLORS[selectedUser.status]}20`, color: STATUS_COLORS[selectedUser.status], textTransform: 'capitalize', fontWeight: 600 }} />
+              <Chip label={selectedUser.email} size="small" variant="outlined" />
+              {selectedUser.department && <Chip label={selectedUser.department.name} size="small" />}
+            </Box>
+            <Typography variant="subtitle2" fontWeight={700} mb={1}>{t('team.card.skills')}</Typography>
+            <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2 }}>
+              {(selectedUser.skills || []).map((s, i) => <Chip key={i} label={`${s.name} (${s.level}/5)`} size="small" variant="outlined" />)}
+            </Box>
+            <Typography variant="subtitle2" fontWeight={700} mb={1}>{t('team.card.performance')}</Typography>
+            <Grid container spacing={2}>
+              {[
+                { labelKey: 'task.detail.subtasks', value: selectedUser.performance?.tasksCompleted || 0 },
+                { labelKey: 'task.detail.dueDate', value: `${selectedUser.performance?.onTimeRate || 0}%` },
+                { labelKey: 'dashboard.stats.overdueBadge', value: selectedUser.performance?.tasksOverdue || 0 },
+                { labelKey: 'dashboard.stats.completionRate', value: `${selectedUser.performance?.score || 0}%` }
+              ].map(m => (
+                <Grid item xs={6} key={m.labelKey}>
+                  <Box sx={{ p: 1.5, backgroundColor: 'grey.50', borderRadius: 2, textAlign: 'center' }}>
+                    <Typography variant="h5" fontWeight={700}>{m.value}</Typography>
+                    <Typography variant="caption" color="text.secondary">{t(m.labelKey, { count: m.value })}</Typography>
+                  </Box>
+                </Grid>
+              ))}
+            </Grid>
+          </DialogContent>
+          <DialogActions><Button onClick={() => setSelectedUser(null)}>{t('common.close')}</Button></DialogActions>
+        </>)}
       </Dialog>
 
       {/* Add Member Dialog */}
-      <Dialog open={addOpen} onClose={closeDialog} maxWidth="sm" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
+      <Dialog open={addOpen} onClose={closeDialog} maxWidth="md" fullWidth PaperProps={{ sx: { borderRadius: 3 } }}>
         <DialogTitle sx={{ fontWeight: 700, pb: 0 }}>Add Team Member</DialogTitle>
         <Box sx={{ px: 3, pt: 1 }}>
           <Tabs value={dialogTab} onChange={(_, v) => setDialogTab(v)}
             sx={{ borderBottom: '1px solid', borderColor: 'divider', '& .MuiTab-root': { textTransform: 'none', fontWeight: 500, minWidth: 0, px: 2 } }}>
-            <Tab icon={<PersonAdd sx={{ fontSize: 16 }} />} iconPosition="start" label="Existing Member" />
+            <Tab icon={<PersonAdd sx={{ fontSize: 16 }} />} iconPosition="start" label="Permissions Guide" />
             <Tab icon={<Add sx={{ fontSize: 16 }} />} iconPosition="start" label="Create New Member" />
           </Tabs>
         </Box>
 
         <DialogContent sx={{ pt: 2.5 }}>
-          {/* Tab 0: pick from existing org users (already registered but maybe not shown?) */}
+          {/* Tab 0: Permissions table */}
           {dialogTab === 0 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                All registered members in your org are already shown in the team list above.
-                Use <strong>Create New Member</strong> to add someone new.
+            <Box>
+              <Typography variant="body2" color="text.secondary" mb={2}>
+                Choose the right role when creating a member. Each role controls what they can see and do.
               </Typography>
-              <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 2 }}>
-                {users.map(u => (
-                  <Box key={u._id} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, py: 0.75 }}>
-                    <Avatar sx={{ width: 32, height: 32, fontSize: '0.82rem', bgcolor: '#6366F1' }}>{u.name?.[0]?.toUpperCase()}</Avatar>
-                    <Box>
-                      <Typography variant="body2" fontWeight={500}>{u.name}</Typography>
-                      <Typography variant="caption" color="text.secondary">{u.email}</Typography>
-                    </Box>
-                    <Chip label={u.status || 'active'} size="small" sx={{ ml: 'auto' }}
-                      color={u.status === 'active' ? 'success' : 'default'} />
-                  </Box>
-                ))}
+              <Box sx={{ overflowX: 'auto' }}>
+                <Table size="small">
+                  <TableBody>
+                    <TableRow sx={{ bgcolor: 'grey.50' }}>
+                      <TableCell sx={{ fontWeight: 700, minWidth: 110 }}>Permission</TableCell>
+                      {ROLE_LEVELS.map(r => (
+                        <TableCell key={r.level} align="center">
+                          <Chip label={r.label} size="small" sx={{ bgcolor: r.bg, color: r.color, fontWeight: 700 }} />
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                    {Object.keys(ROLE_LEVELS[0].perms).map(perm => (
+                      <TableRow key={perm} hover>
+                        <TableCell sx={{ fontWeight: 500, fontSize: '0.82rem' }}>{perm}</TableCell>
+                        {ROLE_LEVELS.map(r => (
+                          <TableCell key={r.level} align="center">
+                            <PermIcon val={r.perms[perm]} />
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                    <TableRow sx={{ bgcolor: 'grey.50' }}>
+                      <TableCell sx={{ fontWeight: 600, fontSize: '0.78rem', color: 'text.secondary' }}>Summary</TableCell>
+                      {ROLE_LEVELS.map(r => (
+                        <TableCell key={r.level} sx={{ fontSize: '0.73rem', color: 'text.secondary' }}>{r.desc}</TableCell>
+                      ))}
+                    </TableRow>
+                  </TableBody>
+                </Table>
               </Box>
+              <Button variant="contained" sx={{ mt: 2.5, bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none' }}
+                onClick={() => setDialogTab(1)}>
+                Create New Member →
+              </Button>
             </Box>
           )}
 
-          {/* Tab 1: Create new user */}
+          {/* Tab 1: Create new member form */}
           {dialogTab === 1 && (
-            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-              <Typography variant="body2" color="text.secondary">
-                Create a new account. They can log in immediately with these credentials.
-              </Typography>
-              <TextField label="Full Name" fullWidth autoFocus
-                value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} />
-              <TextField label="Email Address" type="email" fullWidth
-                value={form.email} onChange={e => setForm(f => ({ ...f, email: e.target.value }))} />
-              <TextField label="Password" type="password" fullWidth
-                value={form.password} onChange={e => setForm(f => ({ ...f, password: e.target.value }))}
-                helperText="At least 8 characters" />
-              <TextField label="Job Title (optional)" fullWidth
-                value={form.jobTitle} onChange={e => setForm(f => ({ ...f, jobTitle: e.target.value }))} />
-            </Box>
+            <Grid container spacing={2}>
+              <Grid item xs={12} sm={6}>
+                <TextField label="Full Name" fullWidth autoFocus value={form.name} onChange={set('name')} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField label="Job Title (optional)" fullWidth value={form.jobTitle} onChange={set('jobTitle')} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField label="Email Address" type="email" fullWidth value={form.email} onChange={set('email')} />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <TextField label="Password" type="password" fullWidth value={form.password} onChange={set('password')} helperText="Min 8 characters" />
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Department</InputLabel>
+                  <Select value={form.department} onChange={set('department')} label="Department">
+                    <MenuItem value=""><em>No Department</em></MenuItem>
+                    {departments.map(d => (
+                      <MenuItem key={d._id} value={d._id}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: d.color }} />
+                          {d.name}
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <FormControl fullWidth>
+                  <InputLabel>Role</InputLabel>
+                  <Select value={form.roleLevel} onChange={set('roleLevel')} label="Role">
+                    {ROLE_LEVELS.map(r => (
+                      <MenuItem key={r.level} value={r.level}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: r.color }} />
+                          <Typography variant="body2" fontWeight={600}>{r.label}</Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ ml: 0.5 }}>— {r.desc}</Typography>
+                        </Box>
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Grid>
+
+              {/* Role preview */}
+              <Grid item xs={12}>
+                <Box sx={{ p: 1.5, borderRadius: 2, bgcolor: selectedRole.bg, border: `1px solid ${selectedRole.color}30` }}>
+                  <Typography variant="caption" fontWeight={700} sx={{ color: selectedRole.color }}>
+                    {selectedRole.label} permissions:
+                  </Typography>
+                  <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', mt: 0.5 }}>
+                    {Object.entries(selectedRole.perms).map(([perm, val]) => (
+                      <Chip key={perm} size="small" label={perm}
+                        sx={{ fontSize: '0.68rem', height: 20,
+                          bgcolor: val === true ? '#DCFCE7' : val === false ? '#FEE2E2' : '#FFF7ED',
+                          color: val === true ? '#16A34A' : val === false ? '#DC2626' : '#EA580C' }} />
+                    ))}
+                  </Box>
+                </Box>
+              </Grid>
+            </Grid>
           )}
         </DialogContent>
 
@@ -238,7 +344,7 @@ export default function TeamView() {
           {dialogTab === 1 && (
             <Button variant="contained" onClick={handleCreate}
               disabled={!form.name || !form.email || !form.password || creating}
-              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 120 }}>
+              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 130 }}>
               {creating ? <CircularProgress size={18} color="inherit" /> : 'Create Member'}
             </Button>
           )}
