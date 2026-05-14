@@ -50,7 +50,7 @@ const isTest = process.env.NODE_ENV === 'test';
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 20, message: { success: false, message: 'Too many attempts, please try again later.' } });
 const aiLimiter   = rateLimit({ windowMs: 60 * 1000,      max: isTest ? 10000 : 20, message: { success: false, message: 'Too many AI requests, please slow down.' } });
 
-app.get('/health', (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
+app.get(['/health', '/api/health'], (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/projects', projectRoutes);
