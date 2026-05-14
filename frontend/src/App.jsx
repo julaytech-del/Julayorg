@@ -31,6 +31,7 @@ import MobileWelcome from './pages/MobileWelcome.jsx';
 import Login from './pages/Auth/Login.jsx';
 import Register from './pages/Auth/Register.jsx';
 import AcceptInvitePage from './pages/Auth/AcceptInvitePage.jsx';
+import OAuthCallback from './pages/Auth/OAuthCallback.jsx';
 import MainLayout from './components/Layout/MainLayout.jsx';
 import SnackbarAlert from './components/common/SnackbarAlert.jsx';
 import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
@@ -154,6 +155,8 @@ export default function App() {
         <Route path="/forms/:token" element={<FormViewRenderer />} />
         {/* ── Accept team invite (no auth required) ── */}
         <Route path="/accept-invite/:token" element={<AcceptInvitePage />} />
+        {/* ── Google OAuth callback ── */}
+        <Route path="/oauth-callback" element={<OAuthCallback />} />
 
         {/* ── Protected dashboard ── */}
         <Route path="/dashboard" element={<ProtectedRoute><ErrorBoundary><MainLayout /></ErrorBoundary></ProtectedRoute>}>

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Typography, CircularProgress } from '@mui/material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
@@ -7,7 +7,7 @@ import { showSnackbar } from '../../store/slices/uiSlice.js';
 import api from '../../services/api.js';
 
 const GOOGLE_CLIENT_ID = import.meta.env.VITE_GOOGLE_CLIENT_ID || '';
-const REDIRECT_URI = window.location.origin; // https://julay.org
+const REDIRECT_URI = `${window.location.origin}/oauth-callback`;
 
 const GoogleIcon = () => (
   <svg width="18" height="18" viewBox="0 0 18 18" xmlns="http://www.w3.org/2000/svg">
@@ -22,6 +22,52 @@ export default function GoogleAuthButton({ dark = false }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const popupRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  useEffect(() => {
+    const handleMessage = async (event) => {
+      if (event.origin !== window.location.origin) return;
+      if (event.data?.type !== 'GOOGLE_OAUTH_CALLBACK') return;
+
+      const { code, state, error } = event.data;
+
+      if (error) {
+        setLoading(false);
+        dispatch(showSnackbar({ message: `Google sign-in failed: ${error}`, severity: 'error' }));
+        return;
+      }
+
+      const savedState = sessionStorage.getItem('oauth_state');
+      sessionStorage.removeItem('oauth_state');
+
+      if (!code) {
+        setLoading(false);
+        dispatch(showSnackbar({ message: 'Google sign-in cancelled.', severity: 'warning' }));
+        return;
+      }
+
+      if (state !== savedState) {
+        setLoading(false);
+        dispatch(showSnackbar({ message: 'Security check failed. Please try again.', severity: 'error' }));
+        return;
+      }
+
+      try {
+        const res = await api.post('/auth/google-code', { code, redirect_uri: REDIRECT_URI }, { timeout: 15000 });
+        dispatch(setCredentials(res.data));
+        navigate('/dashboard');
+      } catch (err) {
+        dispatch(showSnackbar({ message: err?.message || 'Google sign-in failed. Please try again.', severity: 'error' }));
+      } finally {
+        setLoading(false);
+        clearTimeout(timeoutRef.current);
+      }
+    };
+
+    window.addEventListener('message', handleMessage);
+    return () => window.removeEventListener('message', handleMessage);
+  }, [dispatch, navigate]);
 
   const handleLogin = () => {
     if (loading) return;
@@ -54,74 +100,23 @@ export default function GoogleAuthButton({ dark = false }) {
       return;
     }
 
+    popupRef.current = popup;
     setLoading(true);
 
-    // Auto-cancel if popup never returns within 3 minutes
-    const timeoutId = setTimeout(() => {
-      clearInterval(pollTimer);
+    timeoutRef.current = setTimeout(() => {
       if (!popup.closed) popup.close();
       setLoading(false);
       dispatch(showSnackbar({ message: 'Google sign-in timed out. Please try again.', severity: 'warning' }));
     }, 3 * 60 * 1000);
 
-    const pollTimer = setInterval(async () => {
-      try {
-        if (popup.closed) {
-          clearInterval(pollTimer);
-          clearTimeout(timeoutId);
-          setLoading(false);
-          return;
-        }
-
-        const currentUrl = popup.location.href;
-        if (!currentUrl || !currentUrl.includes(window.location.hostname)) return;
-
-        // Popup landed on our domain — read code/error immediately before SPA nav
-        clearInterval(pollTimer);
-        clearTimeout(timeoutId);
-        const search = new URLSearchParams(popup.location.search);
-        const hash = new URLSearchParams(popup.location.hash.replace('#', ''));
-        popup.close();
-
-        const error = search.get('error') || hash.get('error');
-        if (error) {
-          setLoading(false);
-          dispatch(showSnackbar({ message: `Google sign-in failed: ${error}`, severity: 'error' }));
-          return;
-        }
-
-        const code = search.get('code');
-        const returnedState = search.get('state');
-        const savedState = sessionStorage.getItem('oauth_state');
-        sessionStorage.removeItem('oauth_state');
-
-        if (!code) {
-          setLoading(false);
-          dispatch(showSnackbar({ message: 'Google sign-in cancelled.', severity: 'warning' }));
-          return;
-        }
-
-        if (returnedState !== savedState) {
-          setLoading(false);
-          dispatch(showSnackbar({ message: 'Security check failed. Please try again.', severity: 'error' }));
-          return;
-        }
-
-        try {
-          const res = await api.post('/auth/google-code', { code, redirect_uri: REDIRECT_URI }, { timeout: 15000 });
-          dispatch(setCredentials(res.data));
-          navigate('/dashboard');
-        } catch (err) {
-          const msg = err?.message || err?.data?.message || 'Google sign-in failed. Please try again.';
-          dispatch(showSnackbar({ message: msg, severity: 'error' }));
-        } finally {
-          setLoading(false);
-        }
-
-      } catch {
-        // Still on Google's domain (cross-origin) — keep polling
+    // Detect if user manually closes the popup
+    const closedCheck = setInterval(() => {
+      if (popup.closed) {
+        clearInterval(closedCheck);
+        clearTimeout(timeoutRef.current);
+        setLoading(false);
       }
-    }, 200);
+    }, 500);
   };
 
   return (
