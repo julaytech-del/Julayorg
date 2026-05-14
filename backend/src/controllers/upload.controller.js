@@ -29,17 +29,19 @@ export const uploadFile = async (req, res, next) => {
   try {
     if (!req.file) return res.status(400).json({ success: false, message: 'No file provided' });
 
-    const orgId = req.user.organization._id || req.user.organization;
+    const orgRef = req.user?.organization;
+    const orgId = orgRef?._id ?? orgRef;
+    if (!orgId) { fs.unlinkSync(req.file.path); return res.status(400).json({ success: false, message: 'User has no organization' }); }
+
     const org = await Organization.findById(orgId);
     if (!org) { fs.unlinkSync(req.file.path); return res.status(404).json({ success: false, message: 'Organization not found' }); }
 
-    if (!org.subscription) org.subscription = {};
-    const plan = org.subscription.plan || 'free';
+    const plan = org.subscription?.plan || 'free';
     const limitGB = getLimit(plan, 'storage');
 
     if (!isUnlimited(plan, 'storage')) {
       const limitBytes = limitGB * 1024 * 1024 * 1024;
-      const usedBytes = org.subscription.storageUsedBytes || 0;
+      const usedBytes = org.subscription?.storageUsedBytes || 0;
       if (usedBytes + req.file.size > limitBytes) {
         fs.unlinkSync(req.file.path);
         return res.status(403).json({
@@ -52,8 +54,9 @@ export const uploadFile = async (req, res, next) => {
       }
     }
 
-    org.subscription.storageUsedBytes = (org.subscription.storageUsedBytes || 0) + req.file.size;
-    await org.save();
+    await Organization.findByIdAndUpdate(orgId, {
+      $inc: { 'subscription.storageUsedBytes': req.file.size },
+    });
 
     res.json({
       success: true,
