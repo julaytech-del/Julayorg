@@ -5,6 +5,7 @@ const inviteSchema = new mongoose.Schema({
   organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true },
   createdBy:    { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   token:        { type: String, required: true, unique: true },
+  roleLevel:    { type: String, default: 'member', enum: ['admin', 'manager', 'lead', 'member', 'viewer'] },
   expiresAt:    { type: Date, required: true },
   used:         { type: Boolean, default: false },
   usedAt:       { type: Date },

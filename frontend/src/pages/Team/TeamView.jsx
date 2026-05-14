@@ -74,6 +74,7 @@ export default function TeamView() {
   const [creating, setCreating] = useState(false);
   // Invite by email state
   const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteRoleLevel, setInviteRoleLevel] = useState('member');
   const [inviteLink, setInviteLink] = useState('');
   const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState(false);
@@ -104,6 +105,7 @@ export default function TeamView() {
     setForm({ ...BLANK_FORM, department: defaultDept });
     setDialogTab(1);
     setInviteEmail('');
+    setInviteRoleLevel('member');
     setInviteLink('');
     setCopied(false);
     setExistingEmailError(false);
@@ -114,7 +116,7 @@ export default function TeamView() {
     setInviting(true);
     setExistingEmailError(false);
     try {
-      const res = await api.post('/auth/invite', { email: inviteEmail });
+      const res = await api.post('/auth/invite', { email: inviteEmail, roleLevel: inviteRoleLevel });
       setInviteLink(res.data.inviteLink);
       dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
     } catch (e) {
@@ -408,6 +410,22 @@ export default function TeamView() {
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               {!inviteLink ? (
                 <>
+                  <FormControl fullWidth>
+                    <InputLabel>Role</InputLabel>
+                    <Select value={inviteRoleLevel} onChange={e => setInviteRoleLevel(e.target.value)} label="Role">
+                      {ROLE_LEVELS.map(r => (
+                        <MenuItem key={r.level} value={r.level}>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                            <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: r.color, flexShrink: 0 }} />
+                            <Box>
+                              <Typography fontSize="0.875rem" fontWeight={600}>{r.label}</Typography>
+                              <Typography fontSize="0.75rem" color="text.secondary">{r.desc}</Typography>
+                            </Box>
+                          </Box>
+                        </MenuItem>
+                      ))}
+                    </Select>
+                  </FormControl>
                   <TextField
                     label="Email Address" type="email" fullWidth autoFocus
                     value={inviteEmail}

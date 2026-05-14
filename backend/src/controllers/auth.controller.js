@@ -133,12 +133,14 @@ export const createInvite = async (req, res, next) => {
     const token = crypto.randomBytes(32).toString('hex');
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
+    const roleLevel = req.body.roleLevel || 'member';
     await Invite.create({
       email,
       organization: req.user.organization,
       createdBy: req.user._id,
       token,
       expiresAt,
+      roleLevel,
     });
 
     const baseUrl = process.env.FRONTEND_URL || 'https://julay.org';
@@ -179,8 +181,9 @@ export const acceptInvite = async (req, res, next) => {
     const existing = await User.findOne({ email: invite.email });
     if (existing) return res.status(409).json({ success: false, message: 'An account with this email already exists' });
 
-    // Get member role for this org
-    const memberRole = await Role.findOne({ organization: invite.organization._id, level: 'member' });
+    const targetLevel = invite.roleLevel || 'member';
+    const assignedRole = await Role.findOne({ organization: invite.organization._id, level: targetLevel })
+      || await Role.findOne({ organization: invite.organization._id, level: 'member' });
     const defaultDept = await Department.findOne({ organization: invite.organization._id });
 
     const user = await User.create({
@@ -188,9 +191,10 @@ export const acceptInvite = async (req, res, next) => {
       email: invite.email,
       password,
       organization: invite.organization._id,
-      role: memberRole?._id,
+      role: assignedRole?._id,
       department: defaultDept?._id,
       jobTitle: 'Team Member',
+      isAdmin: targetLevel === 'admin',
     });
 
     invite.used = true;
