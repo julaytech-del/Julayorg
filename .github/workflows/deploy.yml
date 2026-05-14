@@ -151,6 +151,25 @@ jobs:
             rm /tmp/analytics_index.html
           ENDSSH
 
+      - name: Deploy & start monitor agent
+        run: |
+          scp -i ~/.ssh/deploy_key monitor/monitor.js ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/julay_monitor.js
+          scp -i ~/.ssh/deploy_key monitor/package.json ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }}:/tmp/julay_monitor_pkg.json
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
+            set -e
+            mkdir -p /home/ubuntu/Julayorg/monitor
+            cp /tmp/julay_monitor.js /home/ubuntu/Julayorg/monitor/monitor.js
+            cp /tmp/julay_monitor_pkg.json /home/ubuntu/Julayorg/monitor/package.json
+            cd /home/ubuntu/Julayorg/monitor
+            npm install --production
+            pm2 delete julay-monitor 2>/dev/null || true
+            SMTP_HOST=smtp.gmail.com SMTP_PORT=587 SMTP_USER=julaytech@gmail.com SMTP_PASS=nxdczdhcgyyabyid \
+              pm2 start monitor.js --name julay-monitor --cwd /home/ubuntu/Julayorg/monitor
+            pm2 save
+            echo "=== Monitor started ==="
+            pm2 status julay-monitor
+          ENDSSH
+
       - name: Reload nginx & setup analytics subdomain SSL
         run: |
           ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
