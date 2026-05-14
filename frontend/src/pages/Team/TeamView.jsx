@@ -77,6 +77,8 @@ export default function TeamView() {
   const [inviteLink, setInviteLink] = useState('');
   const [inviting, setInviting] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [existingEmailError, setExistingEmailError] = useState(false);
+  const [addingExisting, setAddingExisting] = useState(false);
 
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
@@ -104,19 +106,39 @@ export default function TeamView() {
     setInviteEmail('');
     setInviteLink('');
     setCopied(false);
+    setExistingEmailError(false);
   };
 
   const handleInvite = async () => {
     if (!inviteEmail) return;
     setInviting(true);
+    setExistingEmailError(false);
     try {
       const res = await api.post('/auth/invite', { email: inviteEmail });
       setInviteLink(res.data.inviteLink);
       dispatch(showSnackbar({ message: `Invite link generated for ${inviteEmail}`, severity: 'success' }));
     } catch (e) {
-      dispatch(showSnackbar({ message: e.message || 'Failed to generate invite', severity: 'error' }));
+      if (e.message?.includes('already has an account')) {
+        setExistingEmailError(true);
+      } else {
+        dispatch(showSnackbar({ message: e.message || 'Failed to generate invite', severity: 'error' }));
+      }
     } finally {
       setInviting(false);
+    }
+  };
+
+  const handleAddExisting = async () => {
+    setAddingExisting(true);
+    try {
+      await api.post('/users/add-existing', { email: inviteEmail });
+      dispatch(showSnackbar({ message: `${inviteEmail} added to your team!`, severity: 'success' }));
+      loadUsers();
+      closeDialog();
+    } catch (e) {
+      dispatch(showSnackbar({ message: e.message || 'Failed to add user', severity: 'error' }));
+    } finally {
+      setAddingExisting(false);
     }
   };
 
@@ -388,10 +410,25 @@ export default function TeamView() {
                 <>
                   <TextField
                     label="Email Address" type="email" fullWidth autoFocus
-                    value={inviteEmail} onChange={e => setInviteEmail(e.target.value)}
+                    value={inviteEmail}
+                    onChange={e => { setInviteEmail(e.target.value); setExistingEmailError(false); }}
                     onKeyDown={e => e.key === 'Enter' && handleInvite()}
                     placeholder="example@email.com"
                   />
+                  {existingEmailError && (
+                    <Box sx={{ p: 2, borderRadius: 2, border: '1.5px solid #FDE68A', bgcolor: '#FFFBEB' }}>
+                      <Typography variant="body2" fontWeight={600} color="#92400E" mb={1}>
+                        This email already has an account.
+                      </Typography>
+                      <Typography variant="caption" color="text.secondary" display="block" mb={1.5}>
+                        Add them directly to your team without creating a new account.
+                      </Typography>
+                      <Button variant="contained" size="small" onClick={handleAddExisting} disabled={addingExisting}
+                        sx={{ bgcolor: '#F59E0B', '&:hover': { bgcolor: '#D97706' }, textTransform: 'none' }}>
+                        {addingExisting ? <CircularProgress size={16} color="inherit" /> : 'Add to My Team'}
+                      </Button>
+                    </Box>
+                  )}
                 </>
               ) : (
                 <Box>

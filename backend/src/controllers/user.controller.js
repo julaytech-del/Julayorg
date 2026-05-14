@@ -57,6 +57,35 @@ export const deleteUser = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+export const addExistingUser = async (req, res, next) => {
+  try {
+    const orgId = req.user.organization._id || req.user.organization;
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.status(404).json({ success: false, message: 'No account found with this email' });
+
+    if (user.organization?.toString() === orgId.toString()) {
+      return res.status(409).json({ success: false, message: 'This user is already in your organization' });
+    }
+
+    // Move user to this org with member role
+    const memberRole = await Role.findOne({ organization: orgId, level: 'member' });
+    const defaultDept = await Department.findOne({ organization: orgId, isDefault: true })
+      || await Department.findOne({ organization: orgId });
+
+    await User.findByIdAndUpdate(user._id, {
+      organization: orgId,
+      role: memberRole?._id,
+      department: defaultDept?._id,
+    });
+
+    const populated = await User.findById(user._id).populate('role', 'name level').populate('department', 'name color');
+    res.json({ success: true, data: populated });
+  } catch (err) { next(err); }
+};
+
 export const getRoles = async (req, res, next) => {
   try {
     const orgId = req.user.organization._id || req.user.organization;
