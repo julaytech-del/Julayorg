@@ -51,7 +51,7 @@ function PasswordForm() {
         fullWidth label={t('auth.login.password')}
         type={showPwd ? 'text' : 'password'}
         value={password} onChange={e => setPassword(e.target.value)}
-        required sx={{ mb: 3 }}
+        required sx={{ mb: 1 }}
         InputProps={{
           endAdornment: (
             <InputAdornment position="end">
@@ -63,6 +63,11 @@ function PasswordForm() {
           ),
         }}
       />
+      <Box sx={{ textAlign: 'right', mb: 2 }}>
+        <RouterLink to="/forgot-password" style={{ color: '#6366F1', fontSize: '0.8rem', textDecoration: 'none' }}>
+          Forgot password?
+        </RouterLink>
+      </Box>
       <Button
         fullWidth type="submit" variant="contained" size="large"
         disabled={loading}

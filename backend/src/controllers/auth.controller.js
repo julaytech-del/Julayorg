@@ -7,7 +7,8 @@ import Department from '../models/Department.js';
 import Invite from '../models/Invite.js';
 import OTP from '../models/OTP.js';
 import { sendOTPEmail } from '../utils/email.js';
-import { sendInvite } from '../services/email.service.js';
+import { sendInvite, sendPasswordReset } from '../services/email.service.js';
+import PasswordReset from '../models/PasswordReset.js';
 import { OAuth2Client } from 'google-auth-library';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
 
@@ -358,5 +359,46 @@ export const googleAuth = async (req, res, next) => {
     const token = signToken(user._id);
     const userData = await User.findById(user._id).populate('role').populate('department');
     res.status(201).json({ success: true, data: { token, user: userData } });
+  } catch (err) { next(err); }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    if (!email) return res.status(400).json({ success: false, message: 'Email is required' });
+
+    const user = await User.findOne({ email: email.toLowerCase() });
+    if (!user) return res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
+
+    await PasswordReset.deleteMany({ email: email.toLowerCase() });
+    const token = crypto.randomBytes(32).toString('hex');
+    await PasswordReset.create({ email: email.toLowerCase(), token, expiresAt: new Date(Date.now() + 60 * 60 * 1000) });
+
+    const baseUrl = process.env.FRONTEND_URL || 'https://julay.org';
+    sendPasswordReset(email, user.name, `${baseUrl}/reset-password/${token}`).catch(() => {});
+
+    res.json({ success: true, message: 'If an account exists, a reset link has been sent.' });
+  } catch (err) { next(err); }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const { token } = req.params;
+    const { password } = req.body;
+    if (!password || password.length < 6) return res.status(400).json({ success: false, message: 'Password must be at least 6 characters' });
+
+    const record = await PasswordReset.findOne({ token, used: false });
+    if (!record) return res.status(400).json({ success: false, message: 'Reset link is invalid or has expired' });
+    if (record.expiresAt < new Date()) return res.status(410).json({ success: false, message: 'Reset link has expired' });
+
+    const user = await User.findOne({ email: record.email });
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+
+    user.password = password;
+    await user.save();
+    record.used = true;
+    await record.save();
+
+    res.json({ success: true, message: 'Password reset successfully. You can now log in.' });
   } catch (err) { next(err); }
 };

@@ -78,6 +78,17 @@ export const sendInvite = async (toEmail, inviterName, orgName, token) => {
   `);
 };
 
+export const sendPasswordReset = async (toEmail, name, resetLink) => {
+  await send(toEmail, 'Reset your Julay password', `
+    <div style="font-family:Inter,sans-serif;max-width:520px;margin:0 auto;color:#1E293B">
+      <h2 style="color:#6366F1">Reset your password</h2>
+      <p>Hi ${name}, we received a request to reset your password.</p>
+      ${btn('Reset Password', resetLink)}
+      <p style="color:#94A3B8;font-size:12px;margin-top:24px">This link expires in 1 hour. If you didn't request this, ignore this email.</p>
+    </div>
+  `);
+};
+
 export const sendWelcome = async (toEmail, name) => {
   await send(toEmail, `Welcome to Julay, ${name}! 🎉`, `
     <div style="font-family:Inter,sans-serif;max-width:520px;margin:0 auto;color:#1E293B">
