@@ -34,7 +34,28 @@ function ProfileTab({ user }) {
     language: user?.language || 'en',
   });
   const [saving, setSaving] = useState(false);
+  const [uploading, setUploading] = useState(false);
+  const fileInputRef = React.useRef();
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const url = res.data?.url || res.url;
+      const fullUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
+      setForm(f => ({ ...f, avatar: fullUrl }));
+      dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to upload photo', severity: 'error' }));
+    } finally {
+      setUploading(false);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -53,18 +74,28 @@ function ProfileTab({ user }) {
     <Box sx={{ maxWidth: 560 }}>
       <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Profile Settings</Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, p: 2, borderRadius: 2, backgroundColor: '#F8FAFC', border: '1px solid', borderColor: 'divider' }}>
-        <Avatar sx={{ width: 64, height: 64, fontSize: '1.5rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
-          {form.avatar ? <img src={form.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : form.name?.[0]?.toUpperCase()}
-        </Avatar>
+        <Tooltip title="Click to change photo">
+          <Box sx={{ position: 'relative', cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
+            <Avatar sx={{ width: 72, height: 72, fontSize: '1.5rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
+              {form.avatar ? <img src={form.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : form.name?.[0]?.toUpperCase()}
+            </Avatar>
+            <Box sx={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24, borderRadius: '50%', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>
+              {uploading ? <CircularProgress size={12} sx={{ color: 'white' }} /> : <Edit sx={{ fontSize: 12, color: 'white' }} />}
+            </Box>
+          </Box>
+        </Tooltip>
         <Box sx={{ flex: 1 }}>
           <Typography fontWeight={600}>{form.name || 'Your Name'}</Typography>
           <Typography variant="caption" color="text.secondary">{form.jobTitle || 'Your Role'}</Typography>
+          <Typography variant="caption" color="#6366F1" sx={{ display: 'block', cursor: 'pointer', mt: 0.25 }} onClick={() => fileInputRef.current?.click()}>
+            Change photo
+          </Typography>
         </Box>
+        <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleAvatarUpload} />
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
-        <TextField label="Full Name"    value={form.name}     onChange={set('name')}     fullWidth />
-        <TextField label="Job Title"    value={form.jobTitle} onChange={set('jobTitle')} fullWidth />
-        <TextField label="Avatar URL"   value={form.avatar}   onChange={set('avatar')}   fullWidth placeholder="https://..." />
+        <TextField label="Full Name"  value={form.name}     onChange={set('name')}     fullWidth />
+        <TextField label="Job Title"  value={form.jobTitle} onChange={set('jobTitle')} fullWidth />
         <FormControl fullWidth>
           <InputLabel>Timezone</InputLabel>
           <Select value={form.timezone} label="Timezone" onChange={e => setForm(f => ({ ...f, timezone: e.target.value }))}>

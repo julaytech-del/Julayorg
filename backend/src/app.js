@@ -3,6 +3,10 @@ import cors from 'cors';
 import morgan from 'morgan';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import path from 'path';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 import authRoutes from './routes/auth.routes.js';
 import projectRoutes from './routes/project.routes.js';
 import taskRoutes from './routes/task.routes.js';
@@ -30,6 +34,7 @@ import twoFactorRoutes from './routes/twoFactor.routes.js';
 import integrationsRoutes from './routes/integrations.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import organizationRoutes from './routes/organization.routes.js';
+import uploadRoutes from './routes/upload.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -74,6 +79,8 @@ app.use('/api/2fa', twoFactorRoutes);
 app.use('/api/integrations', integrationsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/organization', organizationRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 app.use(notFound);
 app.use(errorHandler);
