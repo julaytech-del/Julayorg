@@ -45,8 +45,8 @@ function ProfileTab({ user }) {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
-      const url = res.data?.url || res.url;
+      const res = await api.post('/upload', fd);
+      const url = res.data?.url;
       const fullUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
       setForm(f => ({ ...f, avatar: fullUrl }));
       dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
