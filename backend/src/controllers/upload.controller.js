@@ -6,7 +6,8 @@ import Organization from '../models/Organization.js';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const UPLOADS_DIR = path.join(__dirname, '../../uploads');
+// Use /var/www/julay/uploads so nginx (www-data) can serve files directly
+const UPLOADS_DIR = process.env.UPLOADS_DIR || path.join(__dirname, '../../uploads');
 
 const ensureUploadsDir = () => {
   try { fs.mkdirSync(UPLOADS_DIR, { recursive: true }); } catch (e) { /* already exists */ }

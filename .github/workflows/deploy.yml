@@ -73,16 +73,17 @@ jobs:
             sudo mkdir -p /var/www/julay/frontend/dist
             sudo chown -R ubuntu:ubuntu /var/www/julay
 
-            echo "=== Ensure uploads directory persists ==="
-            mkdir -p /home/ubuntu/Julayorg/backend/uploads
-            chmod 755 /home/ubuntu/Julayorg/backend/uploads
+            echo "=== Ensure uploads directory persists (nginx-accessible path) ==="
+            sudo mkdir -p /var/www/julay/uploads
+            sudo chown ubuntu:ubuntu /var/www/julay/uploads
+            sudo chmod 755 /var/www/julay/uploads
 
             echo "=== Install & restart backend ==="
             cd backend
             rm -rf node_modules
             npm ci --production
             pm2 delete julay-backend 2>/dev/null || true
-            pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
+            UPLOADS_DIR=/var/www/julay/uploads pm2 start /home/ubuntu/Julayorg/backend/server.js --name julay-backend --cwd /home/ubuntu/Julayorg/backend
 
             echo "=== Wait 15s then check backend health ==="
             sleep 15
@@ -121,6 +122,9 @@ jobs:
             grep -q '^ANALYTICS_SECRET=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^ANALYTICS_SECRET=.*|ANALYTICS_SECRET=${{ secrets.ANALYTICS_SECRET }}|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'ANALYTICS_SECRET=${{ secrets.ANALYTICS_SECRET }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^UPLOADS_DIR=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^UPLOADS_DIR=.*|UPLOADS_DIR=/var/www/julay/uploads|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'UPLOADS_DIR=/var/www/julay/uploads' >> /home/ubuntu/Julayorg/backend/.env
             pm2 restart julay-backend
           ENDSSH
 
