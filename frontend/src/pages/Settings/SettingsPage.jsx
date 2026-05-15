@@ -67,7 +67,6 @@ function ProfileTab({ user }) {
       setForm(f => ({ ...f, avatar: serverUrl }));
       dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
     } catch (err) {
-      setAvatarPreview(null);
       dispatch(showSnackbar({ message: err?.message || 'Failed to upload photo', severity: 'error' }));
     } finally {
       setUploading(false);
