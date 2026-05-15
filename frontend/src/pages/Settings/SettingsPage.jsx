@@ -37,7 +37,9 @@ function ProfileTab({ user }) {
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(null);
+  const [photoMenuAnchor, setPhotoMenuAnchor] = useState(null);
   const fileInputRef = React.useRef();
+  const cameraInputRef = React.useRef();
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleAvatarUpload = (e) => {
@@ -95,7 +97,7 @@ function ProfileTab({ user }) {
       <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Profile Settings</Typography>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, p: 2, borderRadius: 2, backgroundColor: '#F8FAFC', border: '1px solid', borderColor: 'divider' }}>
         <Tooltip title="Click to change photo">
-          <Box sx={{ position: 'relative', cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
+          <Box sx={{ position: 'relative', cursor: 'pointer' }} onClick={(e) => setPhotoMenuAnchor(e.currentTarget)}>
             <Avatar
               src={avatarPreview || form.avatar || undefined}
               sx={{ width: 72, height: 72, fontSize: '1.5rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
@@ -110,11 +112,21 @@ function ProfileTab({ user }) {
         <Box sx={{ flex: 1 }}>
           <Typography fontWeight={600}>{form.name || 'Your Name'}</Typography>
           <Typography variant="caption" color="text.secondary">{form.jobTitle || 'Your Role'}</Typography>
-          <Typography variant="caption" color="#6366F1" sx={{ display: 'block', cursor: 'pointer', mt: 0.25 }} onClick={() => fileInputRef.current?.click()}>
+          <Typography variant="caption" color="#6366F1" sx={{ display: 'block', cursor: 'pointer', mt: 0.25 }} onClick={(e) => setPhotoMenuAnchor(e.currentTarget)}>
             Change photo
           </Typography>
         </Box>
         <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleAvatarUpload} />
+        <input ref={cameraInputRef} type="file" accept="image/*" capture="user" hidden onChange={handleAvatarUpload} />
+        <Menu anchorEl={photoMenuAnchor} open={Boolean(photoMenuAnchor)} onClose={() => setPhotoMenuAnchor(null)}
+          anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
+          <MenuItem onClick={() => { setPhotoMenuAnchor(null); fileInputRef.current?.click(); }} sx={{ gap: 1.5, fontSize: '0.85rem' }}>
+            <span style={{ fontSize: 16 }}>🖼️</span> Choose from gallery
+          </MenuItem>
+          <MenuItem onClick={() => { setPhotoMenuAnchor(null); cameraInputRef.current?.click(); }} sx={{ gap: 1.5, fontSize: '0.85rem' }}>
+            <span style={{ fontSize: 16 }}>📷</span> Take a photo
+          </MenuItem>
+        </Menu>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField label="Full Name"  value={form.name}     onChange={set('name')}     fullWidth />
