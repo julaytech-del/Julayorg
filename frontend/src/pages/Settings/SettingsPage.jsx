@@ -38,9 +38,51 @@ function ProfileTab({ user }) {
   const [uploading, setUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const [photoMenuAnchor, setPhotoMenuAnchor] = useState(null);
+  const [cameraOpen, setCameraOpen] = useState(false);
+  const [cameraReady, setCameraReady] = useState(false);
   const fileInputRef = React.useRef();
-  const cameraInputRef = React.useRef();
+  const videoRef = React.useRef();
+  const streamRef = React.useRef(null);
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  const openCamera = async () => {
+    setCameraOpen(true);
+    setCameraReady(false);
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+      streamRef.current = stream;
+      if (videoRef.current) {
+        videoRef.current.srcObject = stream;
+        videoRef.current.onloadedmetadata = () => { videoRef.current.play(); setCameraReady(true); };
+      }
+    } catch {
+      dispatch(showSnackbar({ message: 'Camera not available or permission denied', severity: 'error' }));
+      setCameraOpen(false);
+    }
+  };
+
+  const closeCamera = () => {
+    streamRef.current?.getTracks().forEach(t => t.stop());
+    streamRef.current = null;
+    setCameraOpen(false);
+    setCameraReady(false);
+  };
+
+  const capturePhoto = () => {
+    const video = videoRef.current;
+    if (!video) return;
+    const MAX = 256;
+    const ratio = Math.min(MAX / video.videoWidth, MAX / video.videoHeight, 1);
+    const canvas = document.createElement('canvas');
+    canvas.width = Math.round(video.videoWidth * ratio);
+    canvas.height = Math.round(video.videoHeight * ratio);
+    canvas.getContext('2d').drawImage(video, 0, 0, canvas.width, canvas.height);
+    const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+    closeCamera();
+    setAvatarPreview(dataUrl);
+    setForm(f => ({ ...f, avatar: dataUrl }));
+    dispatch(showSnackbar({ message: 'Photo captured — press Save Changes', severity: 'success' }));
+  };
 
   const handleAvatarUpload = (e) => {
     const file = e.target.files?.[0];
@@ -117,16 +159,33 @@ function ProfileTab({ user }) {
           </Typography>
         </Box>
         <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleAvatarUpload} />
-        <input ref={cameraInputRef} type="file" accept="image/*" capture="user" hidden onChange={handleAvatarUpload} />
         <Menu anchorEl={photoMenuAnchor} open={Boolean(photoMenuAnchor)} onClose={() => setPhotoMenuAnchor(null)}
           anchorOrigin={{ vertical: 'bottom', horizontal: 'left' }} transformOrigin={{ vertical: 'top', horizontal: 'left' }}>
           <MenuItem onClick={() => { setPhotoMenuAnchor(null); fileInputRef.current?.click(); }} sx={{ gap: 1.5, fontSize: '0.85rem' }}>
             <span style={{ fontSize: 16 }}>🖼️</span> Choose from gallery
           </MenuItem>
-          <MenuItem onClick={() => { setPhotoMenuAnchor(null); cameraInputRef.current?.click(); }} sx={{ gap: 1.5, fontSize: '0.85rem' }}>
+          <MenuItem onClick={() => { setPhotoMenuAnchor(null); openCamera(); }} sx={{ gap: 1.5, fontSize: '0.85rem' }}>
             <span style={{ fontSize: 16 }}>📷</span> Take a photo
           </MenuItem>
         </Menu>
+
+        {/* Camera dialog */}
+        <Dialog open={cameraOpen} onClose={closeCamera} maxWidth="sm" fullWidth>
+          <DialogTitle sx={{ pb: 1 }}>Take a Photo</DialogTitle>
+          <DialogContent sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 2, pb: 1 }}>
+            <Box sx={{ width: '100%', borderRadius: 2, overflow: 'hidden', background: '#000', minHeight: 240, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <video ref={videoRef} style={{ width: '100%', display: 'block' }} playsInline muted />
+            </Box>
+            {!cameraReady && <Typography variant="caption" color="text.secondary">Starting camera…</Typography>}
+          </DialogContent>
+          <DialogActions sx={{ px: 3, pb: 2, gap: 1 }}>
+            <Button onClick={closeCamera} color="inherit">Cancel</Button>
+            <Button onClick={capturePhoto} variant="contained" disabled={!cameraReady}
+              sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)' }}>
+              Capture
+            </Button>
+          </DialogActions>
+        </Dialog>
       </Box>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
         <TextField label="Full Name"  value={form.name}     onChange={set('name')}     fullWidth />
