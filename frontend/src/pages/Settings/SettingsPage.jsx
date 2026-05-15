@@ -35,12 +35,25 @@ function ProfileTab({ user }) {
   });
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState(null);
   const fileInputRef = React.useRef();
+  const blobUrlRef = React.useRef(null);
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
+
+  React.useEffect(() => {
+    return () => { if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current); };
+  }, []);
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+
+    // Show immediate local preview — no server needed
+    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
+    const blobUrl = URL.createObjectURL(file);
+    blobUrlRef.current = blobUrl;
+    setAvatarPreview(blobUrl);
+
     setUploading(true);
     try {
       const fd = new FormData();
@@ -56,10 +69,11 @@ function ProfileTab({ user }) {
       try { data = JSON.parse(text); } catch { throw new Error(`Server error (${response.status}): ${text.slice(0, 150)}`); }
       if (!response.ok) throw new Error(data?.message || 'Upload failed');
       const url = data?.data?.url;
-      const fullUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
-      setForm(f => ({ ...f, avatar: fullUrl }));
+      const serverUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
+      setForm(f => ({ ...f, avatar: serverUrl }));
       dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
     } catch (err) {
+      setAvatarPreview(null);
       dispatch(showSnackbar({ message: err?.message || 'Failed to upload photo', severity: 'error' }));
     } finally {
       setUploading(false);
@@ -86,10 +100,10 @@ function ProfileTab({ user }) {
         <Tooltip title="Click to change photo">
           <Box sx={{ position: 'relative', cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
             <Avatar
-              src={form.avatar || undefined}
+              src={avatarPreview || form.avatar || undefined}
               sx={{ width: 72, height: 72, fontSize: '1.5rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
             >
-              {!form.avatar && form.name?.[0]?.toUpperCase()}
+              {!avatarPreview && !form.avatar && form.name?.[0]?.toUpperCase()}
             </Avatar>
             <Box sx={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24, borderRadius: '50%', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>
               {uploading ? <CircularProgress size={12} sx={{ color: 'white' }} /> : <Edit sx={{ fontSize: 12, color: 'white' }} />}
