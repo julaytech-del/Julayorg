@@ -40,38 +40,37 @@ function ProfileTab({ user }) {
   const fileInputRef = React.useRef();
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
-  const handleAvatarUpload = async (e) => {
+  const handleAvatarUpload = (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-
-    // Immediate preview via data URL — CSP-safe (data: is allowed in img-src)
-    const reader = new FileReader();
-    reader.onloadend = () => setAvatarPreview(reader.result);
-    reader.readAsDataURL(file);
-
     setUploading(true);
-    try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const token = localStorage.getItem('julay_token');
-      const response = await fetch('/api/upload', {
-        method: 'POST',
-        headers: { Authorization: `Bearer ${token}` },
-        body: fd,
-      });
-      const text = await response.text();
-      let data;
-      try { data = JSON.parse(text); } catch { throw new Error(`Server error (${response.status}): ${text.slice(0, 150)}`); }
-      if (!response.ok) throw new Error(data?.message || 'Upload failed');
-      const url = data?.data?.url;
-      const serverUrl = url?.startsWith('http') ? url : `${window.location.origin}${url}`;
-      setForm(f => ({ ...f, avatar: serverUrl }));
-      dispatch(showSnackbar({ message: 'Photo uploaded', severity: 'success' }));
-    } catch (err) {
-      dispatch(showSnackbar({ message: err?.message || 'Failed to upload photo', severity: 'error' }));
-    } finally {
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const img = new Image();
+      img.onload = () => {
+        const MAX = 256;
+        const ratio = Math.min(MAX / img.width, MAX / img.height, 1);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        const dataUrl = canvas.toDataURL('image/jpeg', 0.85);
+        setAvatarPreview(dataUrl);
+        setForm(f => ({ ...f, avatar: dataUrl }));
+        setUploading(false);
+        dispatch(showSnackbar({ message: 'Photo ready — press Save Changes', severity: 'success' }));
+      };
+      img.onerror = () => {
+        setUploading(false);
+        dispatch(showSnackbar({ message: 'Failed to process photo', severity: 'error' }));
+      };
+      img.src = reader.result;
+    };
+    reader.onerror = () => {
       setUploading(false);
-    }
+      dispatch(showSnackbar({ message: 'Failed to read file', severity: 'error' }));
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSave = async () => {
