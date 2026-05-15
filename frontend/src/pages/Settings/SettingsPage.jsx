@@ -77,7 +77,7 @@ function ProfileTab({ user }) {
     setSaving(true);
     try {
       const res = await settingsAPI.updateProfile(form);
-      const updatedUser = res?.data?.data;
+      const updatedUser = res?.data;
       if (updatedUser) {
         dispatch(setCredentials({ user: updatedUser, token: localStorage.getItem('julay_token') }));
       }
