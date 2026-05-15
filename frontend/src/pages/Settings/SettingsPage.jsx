@@ -85,8 +85,11 @@ function ProfileTab({ user }) {
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3, p: 2, borderRadius: 2, backgroundColor: '#F8FAFC', border: '1px solid', borderColor: 'divider' }}>
         <Tooltip title="Click to change photo">
           <Box sx={{ position: 'relative', cursor: 'pointer' }} onClick={() => fileInputRef.current?.click()}>
-            <Avatar sx={{ width: 72, height: 72, fontSize: '1.5rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
-              {form.avatar ? <img src={form.avatar} alt="avatar" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: '50%' }} /> : form.name?.[0]?.toUpperCase()}
+            <Avatar
+              src={form.avatar || undefined}
+              sx={{ width: 72, height: 72, fontSize: '1.5rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}
+            >
+              {!form.avatar && form.name?.[0]?.toUpperCase()}
             </Avatar>
             <Box sx={{ position: 'absolute', bottom: 0, right: 0, width: 24, height: 24, borderRadius: '50%', background: '#6366F1', display: 'flex', alignItems: 'center', justifyContent: 'center', border: '2px solid white' }}>
               {uploading ? <CircularProgress size={12} sx={{ color: 'white' }} /> : <Edit sx={{ fontSize: 12, color: 'white' }} />}
