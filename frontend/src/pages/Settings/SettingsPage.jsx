@@ -37,22 +37,16 @@ function ProfileTab({ user }) {
   const [uploading, setUploading] = useState(false);
   const [avatarPreview, setAvatarPreview] = useState(null);
   const fileInputRef = React.useRef();
-  const blobUrlRef = React.useRef(null);
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
-
-  React.useEffect(() => {
-    return () => { if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current); };
-  }, []);
 
   const handleAvatarUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // Show immediate local preview — no server needed
-    if (blobUrlRef.current) URL.revokeObjectURL(blobUrlRef.current);
-    const blobUrl = URL.createObjectURL(file);
-    blobUrlRef.current = blobUrl;
-    setAvatarPreview(blobUrl);
+    // Immediate preview via data URL — CSP-safe (data: is allowed in img-src)
+    const reader = new FileReader();
+    reader.onloadend = () => setAvatarPreview(reader.result);
+    reader.readAsDataURL(file);
 
     setUploading(true);
     try {
