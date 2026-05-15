@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { setCredentials } from '../../store/slices/authSlice.js';
 import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI, organizationAPI } from '../../services/api.js';
 
 // ── Profile Tab ────────────────────────────────────────────────────────────
@@ -76,7 +77,11 @@ function ProfileTab({ user }) {
   const handleSave = async () => {
     setSaving(true);
     try {
-      await settingsAPI.updateProfile(form);
+      const res = await settingsAPI.updateProfile(form);
+      const updatedUser = res?.data?.data;
+      if (updatedUser) {
+        dispatch(setCredentials({ user: updatedUser, token: localStorage.getItem('julay_token') }));
+      }
       if (form.language !== i18n.language) i18n.changeLanguage(form.language);
       dispatch(showSnackbar({ message: 'Profile updated successfully', severity: 'success' }));
     } catch {
