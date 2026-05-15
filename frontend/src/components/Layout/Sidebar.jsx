@@ -156,7 +156,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
 
       {/* ── User footer ── */}
       <Box sx={{ p: 1.75 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 2, '&:hover': { backgroundColor: userHover }, transition: 'all 0.12s', cursor: 'default' }}>
+        <Box onClick={() => navigate('/dashboard/settings?tab=profile')} sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 2, '&:hover': { backgroundColor: userHover }, transition: 'all 0.12s', cursor: 'pointer' }}>
           <Avatar src={user?.avatar || undefined} sx={{ width: 30, height: 30, fontSize: '0.78rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>
             {!user?.avatar && user?.name?.[0]?.toUpperCase()}
           </Avatar>
