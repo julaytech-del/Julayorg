@@ -80,7 +80,8 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/organization', organizationRoutes);
 app.use('/api/upload', uploadRoutes);
-app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
+const UPLOADS_SERVE_DIR = process.env.UPLOADS_DIR || path.join(__dirname, '../uploads');
+app.use('/uploads', express.static(UPLOADS_SERVE_DIR));
 
 app.use(notFound);
 app.use(errorHandler);
