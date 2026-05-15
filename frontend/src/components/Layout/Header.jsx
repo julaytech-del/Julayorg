@@ -504,8 +504,8 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             backgroundColor: darkMode ? '#0F172A' : '#F8FAFC',
             '&:hover':{ backgroundColor: darkMode ? '#1E293B' : '#F1F5F9' }, transition:'all 0.15s',
           }}>
-            <Avatar sx={{ width:26, height:26, fontSize:'0.72rem', background:'linear-gradient(135deg,#4F46E5,#7C3AED)' }}>
-              {user?.name?.[0]?.toUpperCase()}
+            <Avatar src={user?.avatar || undefined} sx={{ width:26, height:26, fontSize:'0.72rem', background:'linear-gradient(135deg,#4F46E5,#7C3AED)' }}>
+              {!user?.avatar && user?.name?.[0]?.toUpperCase()}
             </Avatar>
             <Typography variant="caption" sx={{ fontWeight:600, color:'text.primary', display:{ xs:'none', sm:'block' }, maxWidth:100, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontSize:'0.78rem' }}>
               {user?.name?.split(' ')[0]}

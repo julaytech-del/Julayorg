@@ -157,8 +157,8 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       {/* ── User footer ── */}
       <Box sx={{ p: 1.75 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, p: 1.25, borderRadius: 2, '&:hover': { backgroundColor: userHover }, transition: 'all 0.12s', cursor: 'default' }}>
-          <Avatar sx={{ width: 30, height: 30, fontSize: '0.78rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>
-            {user?.name?.[0]?.toUpperCase()}
+          <Avatar src={user?.avatar || undefined} sx={{ width: 30, height: 30, fontSize: '0.78rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', flexShrink: 0 }}>
+            {!user?.avatar && user?.name?.[0]?.toUpperCase()}
           </Avatar>
           <Box sx={{ flex: 1, minWidth: 0 }}>
             <Typography sx={{ color: userName, fontWeight: 600, fontSize: '0.8rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{user?.name}</Typography>
