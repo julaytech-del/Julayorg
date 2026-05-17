@@ -297,7 +297,7 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
         alignItems: 'center',
         gap: 2,
         px: 2,
-        py: 1.25,
+        py: 0.7,
         cursor: 'pointer',
         transition: 'background 0.1s',
         borderBottom: '1px solid',
@@ -401,7 +401,7 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
 // ── SkeletonTask ──────────────────────────────────────────────────────────────
 function SkeletonTask() {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 1.25, borderBottom: '1px solid', borderColor: 'divider' }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 0.7, borderBottom: '1px solid', borderColor: 'divider' }}>
       <Skeleton width={90} height={24} sx={{ borderRadius: 1.5, flexShrink: 0 }} />
       <Box sx={{ flex: 1 }}>
         <Skeleton width="50%" height={16} />
