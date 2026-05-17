@@ -18,6 +18,7 @@ export default function DepartmentsView() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [form, setForm] = useState({ name: '', description: '', color: '#6366F1', logo: '' });
   const [uploading, setUploading] = useState(false);
+  const [logoPreview, setLogoPreview] = useState('');
 
   const COLORS = ['#6366F1','#10B981','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899','#14B8A6'];
 
@@ -30,23 +31,29 @@ export default function DepartmentsView() {
       ? { name: dept.name, description: dept.description || '', color: dept.color || '#6366F1', logo: dept.logo || '' }
       : { name: '', description: '', color: '#6366F1', logo: '' }
     );
+    setLogoPreview(dept?.logo || '');
     setDialogOpen(true);
   };
 
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
+    // Show local preview immediately
+    const localUrl = URL.createObjectURL(file);
+    setLogoPreview(localUrl);
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
       const res = await api.post('/upload', fd);
-      setForm(p => ({ ...p, logo: res.data.data?.url || res.data.url }));
+      const serverUrl = res.data.data?.url || res.data.url;
+      setForm(p => ({ ...p, logo: serverUrl }));
+      setLogoPreview(serverUrl);
     } catch {
+      setLogoPreview(form.logo || '');
       dispatch(showSnackbar({ message: 'Failed to upload logo', severity: 'error' }));
     } finally {
       setUploading(false);
-      e.target.value = '';
     }
   };
 
@@ -130,11 +137,11 @@ export default function DepartmentsView() {
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
             <Box sx={{ position: 'relative' }}>
               <Avatar
-                src={form.logo || undefined}
+                src={logoPreview || undefined}
                 sx={{ width: 80, height: 80, borderRadius: 3, backgroundColor: `${form.color}18`, border: `2px solid ${form.color}40`, cursor: 'pointer' }}
                 onClick={() => fileInputRef.current?.click()}
               >
-                {!form.logo && <Business sx={{ color: form.color, fontSize: 36 }} />}
+                {!logoPreview && <Business sx={{ color: form.color, fontSize: 36 }} />}
               </Avatar>
               <Box
                 onClick={() => fileInputRef.current?.click()}
