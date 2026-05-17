@@ -1,5 +1,6 @@
 import React, { useMemo } from 'react';
-import { ThemeProvider, createTheme, GlobalStyles } from '@mui/material/styles';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import GlobalStyles from '@mui/material/GlobalStyles';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import createCache from '@emotion/cache';
