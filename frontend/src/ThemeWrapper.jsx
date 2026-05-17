@@ -1,5 +1,5 @@
 import React, { useMemo } from 'react';
-import { ThemeProvider, createTheme } from '@mui/material/styles';
+import { ThemeProvider, createTheme, GlobalStyles } from '@mui/material/styles';
 import { useTranslation } from 'react-i18next';
 import { useSelector } from 'react-redux';
 import createCache from '@emotion/cache';
@@ -163,6 +163,14 @@ export default function ThemeWrapper({ children }) {
   return (
     <CacheProvider value={isRTL ? rtlCache : ltrCache}>
       <ThemeProvider theme={theme}>
+        <GlobalStyles styles={{
+          '.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+            borderColor: `${darkMode ? 'rgba(255,255,255,0.3)' : '#CBD5E1'} !important`,
+          },
+          '.MuiInputLabel-root.Mui-focused': {
+            color: `${darkMode ? 'rgba(255,255,255,0.5)' : '#64748B'} !important`,
+          },
+        }} />
         {children}
       </ThemeProvider>
     </CacheProvider>
