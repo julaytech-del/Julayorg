@@ -4,7 +4,6 @@ import { Add, Edit, Delete, Business, PhotoCamera } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { departmentsAPI } from '../../services/api.js';
-import api from '../../services/api.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 
@@ -17,6 +16,7 @@ export default function DepartmentsView() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [form, setForm] = useState({ name: '', description: '', color: '#6366F1', logo: '' });
   const [uploading, setUploading] = useState(false);
+  const MAX_LOGO_SIZE = 200; // px — resize before saving as base64
   const [logoPreview, setLogoPreview] = useState('');
 
   const COLORS = ['#6366F1','#10B981','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899','#14B8A6'];
@@ -35,26 +35,34 @@ export default function DepartmentsView() {
     setDialogOpen(true);
   };
 
+  const resizeToBase64 = (file) => new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const size = MAX_LOGO_SIZE;
+      const ratio = Math.min(size / img.width, size / img.height, 1);
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
+      const canvas = document.createElement('canvas');
+      canvas.width = w; canvas.height = h;
+      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL('image/webp', 0.85));
+    };
+    img.onerror = reject;
+    img.src = url;
+  });
+
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // CSP blocks blob: URLs, so use base64 data URL for instant preview
-    const reader = new FileReader();
-    reader.onloadend = () => setLogoPreview(reader.result);
-    reader.readAsDataURL(file);
     setUploading(true);
     try {
-      const fd = new FormData();
-      fd.append('file', file);
-      const res = await api.post('/upload', fd);
-      const serverUrl = res?.data?.url || res?.url;
-      if (serverUrl) {
-        setForm(p => ({ ...p, logo: serverUrl }));
-        setLogoPreview(serverUrl);
-      }
+      const base64 = await resizeToBase64(file);
+      setLogoPreview(base64);
+      setForm(p => ({ ...p, logo: base64 }));
     } catch {
-      dispatch(showSnackbar({ message: 'Failed to upload logo', severity: 'error' }));
-      setLogoPreview(form.logo || '');
+      dispatch(showSnackbar({ message: 'Failed to read image', severity: 'error' }));
     } finally {
       setUploading(false);
       e.target.value = '';
