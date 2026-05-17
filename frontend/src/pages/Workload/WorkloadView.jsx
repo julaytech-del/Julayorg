@@ -2,8 +2,11 @@ import React, { useEffect, useState, useCallback } from 'react';
 import {
   Box, Typography, Button, Avatar, MenuItem, Select, FormControl,
   InputLabel, CircularProgress, Tooltip, Drawer, Divider, IconButton,
-  Chip, TextField, Table, TableHead, TableBody, TableRow, TableCell
+  Chip, TextField, Table, TableHead, TableBody, TableRow, TableCell, Skeleton
 } from '@mui/material';
+
+// Module-level cache: survives re-renders and re-navigation within the same session
+let _workloadCache = null;
 import {
   AutoAwesome, Refresh, Close, CheckCircle, ArrowForward
 } from '@mui/icons-material';
@@ -79,8 +82,8 @@ export default function WorkloadView() {
   const [startDate, setStartDate] = useState(format(weekStart, 'yyyy-MM-dd'));
   const [endDate, setEndDate] = useState(format(weekEnd, 'yyyy-MM-dd'));
   const [selectedProjectId, setSelectedProjectId] = useState('');
-  const [workloadData, setWorkloadData] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [workloadData, setWorkloadData] = useState(_workloadCache || []);
+  const [loading, setLoading] = useState(!_workloadCache);
   const [aiDrawerOpen, setAiDrawerOpen] = useState(false);
   const [aiLoading, setAiLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState([]);
@@ -104,7 +107,9 @@ export default function WorkloadView() {
         projectId: selectedProjectId || undefined
       });
       const data = res?.data || res || [];
-      setWorkloadData(Array.isArray(data) ? data : []);
+      const workload = Array.isArray(data) ? data : [];
+      _workloadCache = workload;
+      setWorkloadData(workload);
     } catch {
       setWorkloadData([]);
     } finally {
@@ -238,11 +243,30 @@ export default function WorkloadView() {
             </TableHead>
             <TableBody>
               {loading ? (
-                <TableRow>
-                  <TableCell colSpan={days.length + 3} sx={{ borderColor: 'rgba(255,255,255,0.06)', py: 6, textAlign: 'center' }}>
-                    <CircularProgress size={28} sx={{ color: '#6366f1' }} />
-                  </TableCell>
-                </TableRow>
+                Array.from({ length: 4 }).map((_, i) => (
+                  <TableRow key={i}>
+                    <TableCell sx={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
+                        <Skeleton variant="circular" width={32} height={32} sx={{ bgcolor: 'rgba(255,255,255,0.08)', flexShrink: 0 }} />
+                        <Box>
+                          <Skeleton width={100} height={16} sx={{ bgcolor: 'rgba(255,255,255,0.08)' }} />
+                          <Skeleton width={70} height={12} sx={{ bgcolor: 'rgba(255,255,255,0.05)', mt: 0.4 }} />
+                        </Box>
+                      </Box>
+                    </TableCell>
+                    <TableCell sx={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                      <Skeleton width={40} height={16} sx={{ bgcolor: 'rgba(255,255,255,0.08)', mx: 'auto' }} />
+                    </TableCell>
+                    {days.map((_, di) => (
+                      <TableCell key={di} sx={{ borderColor: 'rgba(255,255,255,0.06)', p: 0.75 }}>
+                        <Skeleton variant="rectangular" height={52} sx={{ borderRadius: 1.5, bgcolor: 'rgba(255,255,255,0.06)' }} />
+                      </TableCell>
+                    ))}
+                    <TableCell sx={{ borderColor: 'rgba(255,255,255,0.06)' }}>
+                      <Skeleton width={32} height={16} sx={{ bgcolor: 'rgba(255,255,255,0.08)', mx: 'auto' }} />
+                    </TableCell>
+                  </TableRow>
+                ))
               ) : workloadData.length === 0 ? (
                 <TableRow>
                   <TableCell colSpan={days.length + 3} sx={{ borderColor: 'rgba(255,255,255,0.06)', py: 6, textAlign: 'center' }}>

@@ -4,8 +4,11 @@ import {
   Button, IconButton, Select, MenuItem, FormControl, InputLabel,
   LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions,
   TextField, Drawer, List, ListItem, ListItemText, ListItemButton,
-  Divider, Tooltip, Paper, Skeleton, Badge,
+  Divider, Tooltip, Paper, Skeleton, Badge, CircularProgress,
 } from '@mui/material';
+
+// Module-level cache: survives re-renders and re-navigation within the same session
+let _sprintProjectsCache = null;
 import {
   Add, Close, PlayArrow, CheckCircle, FilterTiltShift,
   FlagOutlined, PersonOutline, Speed, Event, Bolt,
@@ -192,12 +195,12 @@ function BurndownMini({ total, done }) {
 // ── main ───────────────────────────────────────────────────────────────────
 export default function SprintBoard() {
   const dispatch = useDispatch();
-  const [projects, setProjects]       = useState([]);
+  const [projects, setProjects]       = useState(_sprintProjectsCache || []);
   const [sprints, setSprints]         = useState([]);
-  const [selectedProject, setSelectedProject] = useState('');
+  const [selectedProject, setSelectedProject] = useState(_sprintProjectsCache?.[0]?._id || '');
   const [selectedSprint, setSelectedSprint]   = useState('');
   const [sprintTasks, setSprintTasks] = useState([]);
-  const [loadingProjects, setLoadingProjects] = useState(true);
+  const [loadingProjects, setLoadingProjects] = useState(!_sprintProjectsCache);
   const [loadingSprints, setLoadingSprints]   = useState(false);
   const [loadingTasks, setLoadingTasks]       = useState(false);
   const [createOpen, setCreateOpen]   = useState(false);
@@ -209,8 +212,9 @@ export default function SprintBoard() {
     projectsAPI.getAll()
       .then(res => {
         const list = Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : [];
+        _sprintProjectsCache = list;
         setProjects(list);
-        if (list.length > 0) setSelectedProject(list[0]._id);
+        if (list.length > 0 && !selectedProject) setSelectedProject(list[0]._id);
       })
       .catch(() => setProjects([]))
       .finally(() => setLoadingProjects(false));
@@ -383,8 +387,32 @@ export default function SprintBoard() {
       )}
 
       {/* Kanban board */}
-      {loadingTasks ? (
-        <Box sx={{ display: 'flex', justifyContent: 'center', py: 8 }}><CircularProgress /></Box>
+      {loadingProjects ? (
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {COLUMNS.map((col, i) => (
+            <Box key={i} sx={{ flex: 1, minWidth: 200, maxWidth: 280 }}>
+              <Skeleton width="60%" height={20} sx={{ mb: 1.5 }} />
+              <Box sx={{ minHeight: 400, backgroundColor: '#F8FAFC', borderRadius: 2, p: 1, border: '1px solid', borderColor: 'divider' }}>
+                {[1,2,3].map(j => (
+                  <Skeleton key={j} variant="rectangular" height={72} sx={{ borderRadius: 1.5, mb: 1 }} />
+                ))}
+              </Box>
+            </Box>
+          ))}
+        </Box>
+      ) : loadingTasks ? (
+        <Box sx={{ display: 'flex', gap: 2 }}>
+          {COLUMNS.map((col, i) => (
+            <Box key={i} sx={{ flex: 1, minWidth: 200, maxWidth: 280 }}>
+              <Skeleton width="60%" height={20} sx={{ mb: 1.5 }} />
+              <Box sx={{ minHeight: 400, backgroundColor: '#F8FAFC', borderRadius: 2, p: 1, border: '1px solid', borderColor: 'divider' }}>
+                {[1,2].map(j => (
+                  <Skeleton key={j} variant="rectangular" height={72} sx={{ borderRadius: 1.5, mb: 1 }} />
+                ))}
+              </Box>
+            </Box>
+          ))}
+        </Box>
       ) : !selectedSprint ? (
         <Box sx={{ textAlign: 'center', py: 12 }}>
           <FilterTiltShift sx={{ fontSize: 64, color: 'action.disabled', mb: 2 }} />

@@ -1,6 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Table, TableBody, TableRow, TableCell, Alert, IconButton, Tooltip } from '@mui/material';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, TextField, LinearProgress, Dialog, DialogTitle, DialogContent, DialogActions, InputAdornment, CircularProgress, FormControl, InputLabel, Select, MenuItem, Tabs, Tab, Table, TableBody, TableRow, TableCell, Alert, IconButton, Tooltip, Skeleton } from '@mui/material';
 import { Search, Group, TrendingUp, EmojiEvents, PersonAdd, Add, CheckCircle, Cancel, Email, ContentCopy } from '@mui/icons-material';
+
+// Module-level cache: survives re-renders and re-navigation within the same session
+let _teamCache = null;
 import { useTranslation } from 'react-i18next';
 import { useDispatch, useSelector } from 'react-redux';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -64,8 +67,8 @@ export default function TeamView() {
   const dispatch = useDispatch();
   const currentUser = useSelector(s => s.auth.user);
   const canManageTeam = ['admin', 'manager'].includes(currentUser?.role?.level);
-  const [users, setUsers] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [users, setUsers] = useState(_teamCache || []);
+  const [loading, setLoading] = useState(!_teamCache);
   const [search, setSearch] = useState('');
   const [selectedUser, setSelectedUser] = useState(null);
   const [changingRole, setChangingRole] = useState(false);
@@ -87,8 +90,11 @@ export default function TeamView() {
   const set = k => e => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const loadUsers = () => {
-    setLoading(true);
-    usersAPI.getAll().then(res => setUsers(res.data || [])).catch(() => {}).finally(() => setLoading(false));
+    usersAPI.getAll().then(res => {
+      const data = res.data || [];
+      _teamCache = data;
+      setUsers(data);
+    }).catch(() => {}).finally(() => setLoading(false));
   };
 
   useEffect(() => {
@@ -227,7 +233,21 @@ export default function TeamView() {
         sx={{ mb: 3, width: 280 }} />
 
       <Grid container spacing={2.5}>
-        {filtered.map(member => (
+        {loading && [1,2,3,4].map(i => (
+          <Grid item xs={12} sm={6} md={4} lg={3} key={`sk-${i}`}>
+            <Card>
+              <CardContent sx={{ textAlign: 'center', p: 3 }}>
+                <Skeleton variant="circular" width={64} height={64} sx={{ mx: 'auto', mb: 1.5 }} />
+                <Skeleton width="60%" height={22} sx={{ mx: 'auto' }} />
+                <Skeleton width="45%" height={16} sx={{ mx: 'auto', mb: 1 }} />
+                <Skeleton variant="rounded" width={80} height={22} sx={{ mx: 'auto', mb: 1.5 }} />
+                <Skeleton variant="rectangular" height={4} sx={{ borderRadius: 2, mb: 0.5 }} />
+                <Skeleton variant="rounded" width="100%" height={32} sx={{ mt: 1 }} />
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+        {!loading && filtered.map(member => (
           <Grid item xs={12} sm={6} md={4} lg={3} key={member._id}>
             <Card sx={{ transition: 'all 0.2s', '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 8px 25px rgb(0 0 0 / 0.1)' } }}>
               <CardContent sx={{ textAlign: 'center', p: 3 }}>

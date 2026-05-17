@@ -3,8 +3,11 @@ import {
   Box, Typography, Button, Card, CardContent, Chip, CircularProgress,
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem,
   Select, FormControl, InputLabel, IconButton, Tooltip, LinearProgress,
-  Divider, Avatar,
+  Divider, Avatar, Skeleton,
 } from '@mui/material';
+
+// Module-level cache: survives re-renders and re-navigation within the same session
+let _timeEntriesCache = null;
 import {
   PlayArrow, Stop, Add, Delete, AccessTime, CalendarToday,
   BarChart, Timer,
@@ -47,10 +50,10 @@ export default function TimeTrackingPage() {
   const startedAt                   = useRef(null);
 
   // Data
-  const [entries, setEntries]       = useState([]);
+  const [entries, setEntries]       = useState(_timeEntriesCache || []);
   const [tasks, setTasks]           = useState([]);
   const [report, setReport]         = useState(null);
-  const [loading, setLoading]       = useState(true);
+  const [loading, setLoading]       = useState(!_timeEntriesCache);
 
   // Manual entry dialog
   const [manualOpen, setManualOpen] = useState(false);
@@ -74,7 +77,11 @@ export default function TimeTrackingPage() {
         api.get('/time-entries/my-report'),
       ]);
       // axios: res.data = { success, data: [...] }  →  res.data.data = actual array
-      if (entriesRes.status === 'fulfilled') setEntries(Array.isArray(entriesRes.value?.data?.data) ? entriesRes.value.data.data : entriesRes.value?.data || []);
+      if (entriesRes.status === 'fulfilled') {
+        const entriesData = Array.isArray(entriesRes.value?.data?.data) ? entriesRes.value.data.data : entriesRes.value?.data || [];
+        _timeEntriesCache = entriesData;
+        setEntries(entriesData);
+      }
       if (tasksRes.status === 'fulfilled')   setTasks(tasksRes.value?.data?.data?.tasks || tasksRes.value?.data?.data || tasksRes.value?.data || []);
       if (reportRes.status === 'fulfilled')  setReport(reportRes.value?.data?.data || null);
     } catch {
@@ -303,7 +310,20 @@ export default function TimeTrackingPage() {
         <CardContent>
           <Typography fontWeight={700} sx={{ mb: 2 }}>Recent Time Entries</Typography>
           {loading ? (
-            <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Box>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 0.75 }}>
+              {[1,2,3,4].map(i => (
+                <Box key={i} sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 1 }}>
+                  <Skeleton variant="circular" width={32} height={32} />
+                  <Box sx={{ flex: 1 }}>
+                    <Skeleton width="40%" height={18} />
+                    <Skeleton width="25%" height={14} sx={{ mt: 0.4 }} />
+                  </Box>
+                  <Skeleton variant="rounded" width={60} height={22} />
+                  <Skeleton width={90} height={14} />
+                  <Skeleton variant="circular" width={24} height={24} />
+                </Box>
+              ))}
+            </Box>
           ) : entries.length === 0 ? (
             <Box sx={{ textAlign: 'center', py: 5 }}>
               <Timer sx={{ fontSize: 48, color: 'text.disabled', mb: 1 }} />

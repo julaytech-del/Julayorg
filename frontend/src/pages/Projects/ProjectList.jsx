@@ -4,8 +4,11 @@ import {
   Avatar, AvatarGroup, IconButton, Menu, MenuItem, Dialog, DialogTitle,
   DialogContent, DialogActions, TextField, MenuItem as MuiMenuItem,
   InputAdornment, Tabs, Tab, CircularProgress, Alert, Accordion,
-  AccordionSummary, AccordionDetails, Divider, Tooltip
+  AccordionSummary, AccordionDetails, Divider, Tooltip, Skeleton
 } from '@mui/material';
+
+// Module-level cache: survives re-renders and re-navigation within the same session
+let _projectsCache = null;
 import {
   Add, MoreVert, Search, AutoAwesome, FolderOff, Edit, Delete,
   OpenInNew, Psychology, CheckCircle, ExpandMore, Rocket,
@@ -484,13 +487,30 @@ export default function ProjectList() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
-  const { projects, loading } = useSelector(s => s.projects);
+  const { projects: reduxProjects, loading: reduxLoading } = useSelector(s => s.projects);
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
   const [deleteTarget, setDeleteTarget] = useState(null);
+  // Use cache for initial render to avoid blank flash
+  const [skeletonLoading, setSkeletonLoading] = useState(!_projectsCache);
 
-  useEffect(() => { dispatch(fetchProjects()); }, []);
+  useEffect(() => {
+    const fetchAndCache = async () => {
+      await dispatch(fetchProjects());
+      setSkeletonLoading(false);
+    };
+    fetchAndCache();
+  }, []);
+
+  // Keep cache in sync with redux
+  useEffect(() => {
+    if (reduxProjects.length > 0) _projectsCache = reduxProjects;
+  }, [reduxProjects]);
+
+  // Show cached projects immediately, then live redux data
+  const projects = skeletonLoading ? (_projectsCache || []) : reduxProjects;
+  const loading = skeletonLoading || reduxLoading;
 
   const filtered = projects.filter(p => {
     if (filter !== 'all' && p.status !== filter) return false;
@@ -573,7 +593,35 @@ export default function ProjectList() {
         </Box>
       </Box>
 
-      {filtered.length === 0 ? (
+      {skeletonLoading ? (
+        <Grid container spacing={2.5}>
+          {[1,2,3,4,5,6].map(i => (
+            <Grid item xs={12} sm={6} lg={4} key={`sk-${i}`}>
+              <Card>
+                <Skeleton variant="rectangular" height={4} />
+                <CardContent sx={{ p: 2.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 1.5 }}>
+                    <Box sx={{ flex: 1 }}>
+                      <Skeleton width="60%" height={22} />
+                      <Skeleton width="80%" height={16} sx={{ mt: 0.5 }} />
+                    </Box>
+                    <Skeleton variant="rounded" width={28} height={28} />
+                  </Box>
+                  <Box sx={{ display: 'flex', gap: 0.6, mb: 2 }}>
+                    <Skeleton variant="rounded" width={70} height={20} />
+                    <Skeleton variant="rounded" width={60} height={20} />
+                  </Box>
+                  <Skeleton variant="rectangular" height={6} sx={{ borderRadius: 99, mb: 0.75 }} />
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Skeleton variant="circular" width={24} height={24} />
+                    <Skeleton width={90} height={16} />
+                  </Box>
+                </CardContent>
+              </Card>
+            </Grid>
+          ))}
+        </Grid>
+      ) : filtered.length === 0 ? (
         <Box sx={{ textAlign: 'center', py: 10, px: 4 }}>
           {search || filter !== 'all' ? (
             <>
