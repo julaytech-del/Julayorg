@@ -1,20 +1,23 @@
-import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton } from '@mui/material';
-import { Add, Edit, Delete, Business } from '@mui/icons-material';
-import { useDispatch, useSelector } from 'react-redux';
+import React, { useEffect, useRef, useState } from 'react';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, CircularProgress } from '@mui/material';
+import { Add, Edit, Delete, Business, PhotoCamera } from '@mui/icons-material';
+import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { departmentsAPI } from '../../services/api.js';
+import api from '../../services/api.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 
 export default function DepartmentsView() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const fileInputRef = useRef(null);
   const [departments, setDepartments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
-  const [form, setForm] = useState({ name: '', description: '', color: '#6366F1' });
+  const [form, setForm] = useState({ name: '', description: '', color: '#6366F1', logo: '' });
+  const [uploading, setUploading] = useState(false);
 
   const COLORS = ['#6366F1','#10B981','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899','#14B8A6'];
 
@@ -23,8 +26,28 @@ export default function DepartmentsView() {
 
   const handleOpen = (dept = null) => {
     setEditing(dept);
-    setForm(dept ? { name: dept.name, description: dept.description || '', color: dept.color || '#6366F1' } : { name: '', description: '', color: '#6366F1' });
+    setForm(dept
+      ? { name: dept.name, description: dept.description || '', color: dept.color || '#6366F1', logo: dept.logo || '' }
+      : { name: '', description: '', color: '#6366F1', logo: '' }
+    );
     setDialogOpen(true);
+  };
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const fd = new FormData();
+      fd.append('file', file);
+      const res = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      setForm(p => ({ ...p, logo: res.data.url }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to upload logo', severity: 'error' }));
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
   };
 
   const handleSave = async () => {
@@ -61,9 +84,12 @@ export default function DepartmentsView() {
               <CardContent sx={{ p: 2.5 }}>
                 <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 1.5 }}>
                   <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
-                    <Box sx={{ width: 36, height: 36, borderRadius: 2, backgroundColor: `${dept.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                      <Business sx={{ color: dept.color, fontSize: 20 }} />
-                    </Box>
+                    <Avatar
+                      src={dept.logo || undefined}
+                      sx={{ width: 40, height: 40, borderRadius: 2, backgroundColor: `${dept.color}18`, border: `1px solid ${dept.color}30` }}
+                    >
+                      {!dept.logo && <Business sx={{ color: dept.color, fontSize: 22 }} />}
+                    </Avatar>
                     <Box>
                       <Typography variant="subtitle1" fontWeight={700}>{dept.name}</Typography>
                       <Chip label={t('departments.members', { count: dept.memberCount || 0 })} size="small" sx={{ height: 18, fontSize: '0.65rem' }} />
@@ -99,6 +125,33 @@ export default function DepartmentsView() {
       <Dialog open={dialogOpen} onClose={() => setDialogOpen(false)} maxWidth="xs" fullWidth>
         <DialogTitle fontWeight={700}>{editing ? t('departments.edit') : t('departments.new')}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
+
+          {/* Logo upload */}
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+            <Box sx={{ position: 'relative' }}>
+              <Avatar
+                src={form.logo || undefined}
+                sx={{ width: 80, height: 80, borderRadius: 3, backgroundColor: `${form.color}18`, border: `2px solid ${form.color}40`, cursor: 'pointer' }}
+                onClick={() => fileInputRef.current?.click()}
+              >
+                {!form.logo && <Business sx={{ color: form.color, fontSize: 36 }} />}
+              </Avatar>
+              <Box
+                onClick={() => fileInputRef.current?.click()}
+                sx={{
+                  position: 'absolute', bottom: -6, right: -6,
+                  width: 26, height: 26, borderRadius: '50%',
+                  backgroundColor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center',
+                  cursor: 'pointer', boxShadow: 2,
+                }}
+              >
+                {uploading ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <PhotoCamera sx={{ color: '#fff', fontSize: 14 }} />}
+              </Box>
+            </Box>
+            <Typography variant="caption" color="text.secondary">Click to upload logo</Typography>
+            <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleLogoUpload} />
+          </Box>
+
           <TextField label={t('departments.form.name')} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required fullWidth />
           <TextField label={t('departments.form.description')} value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} multiline rows={2} fullWidth />
           <Box>
@@ -110,7 +163,7 @@ export default function DepartmentsView() {
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
           <Button onClick={() => setDialogOpen(false)}>{t('departments.form.cancel')}</Button>
-          <Button variant="contained" onClick={handleSave} disabled={!form.name.trim()}>
+          <Button variant="contained" onClick={handleSave} disabled={!form.name.trim() || uploading}>
             {editing ? t('departments.form.save') : t('departments.form.create')}
           </Button>
         </DialogActions>

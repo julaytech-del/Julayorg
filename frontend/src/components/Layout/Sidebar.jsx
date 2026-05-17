@@ -93,10 +93,16 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       <Box sx={{ p: 2, pb: 1.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1.5, borderRadius: 2.5, backgroundColor: orgBg, border: `1px solid ${orgBorder}` }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
-            <Box sx={{
-              width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
-              backgroundColor: user?.department?.color || '#6366F1'
-            }} />
+            <Avatar
+              src={user?.department?.logo || undefined}
+              sx={{
+                width: 24, height: 24, borderRadius: 1, flexShrink: 0,
+                backgroundColor: user?.department?.color || '#6366F1',
+                fontSize: '0.65rem', fontWeight: 700,
+              }}
+            >
+              {!user?.department?.logo && (user?.department?.name?.[0]?.toUpperCase() || 'W')}
+            </Avatar>
             <Typography sx={{
               color: orgName, fontSize: '0.82rem', fontWeight: 700,
               overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'

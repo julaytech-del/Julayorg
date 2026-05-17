@@ -8,6 +8,7 @@ const departmentSchema = new mongoose.Schema({
   color: { type: String, default: '#2196F3' },
   icon: { type: String, default: 'work' },
   memberCount: { type: Number, default: 0 },
+  logo: { type: String },
   isDefault: { type: Boolean, default: false }
 }, { timestamps: true });
 
