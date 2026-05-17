@@ -27,7 +27,7 @@ function StandupCard({ projects }) {
     <Card sx={{ height: '100%' }}>
       <CardContent>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
-          <Box sx={{ width: 32, height: 32, borderRadius: 2, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <Box sx={{ width: 32, height: 32, borderRadius: 2, background: `linear-gradient(135deg,${accent},${accent}BB)`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <CheckCircle sx={{ color: 'white', fontSize: 18 }} />
           </Box>
           <Typography variant="subtitle1" fontWeight={700}>{t('ai.tools.standup.title')}</Typography>
@@ -129,6 +129,7 @@ export default function AIStudio() {
   const { loading, result, error } = useSelector(s => s.ai);
   const { projects } = useSelector(s => s.projects);
   const user = useSelector(s => s.auth.user);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [prompt, setPrompt] = useState('');
   const [startDate, setStartDate] = useState('');
   const [step, setStep] = useState(0);
@@ -141,7 +142,7 @@ export default function AIStudio() {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '70vh', px: 3 }}>
         <Box sx={{ textAlign: 'center', maxWidth: 460 }}>
-          <Box sx={{ width: 72, height: 72, borderRadius: 3, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
+          <Box sx={{ width: 72, height: 72, borderRadius: 3, background: `linear-gradient(135deg,${accent},${accent}BB)`, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
             <Lock sx={{ color: 'white', fontSize: 36 }} />
           </Box>
           <Typography variant="h5" fontWeight={800} gutterBottom>AI Features — Paid Plan Only</Typography>
@@ -152,7 +153,7 @@ export default function AIStudio() {
             variant="contained"
             size="large"
             onClick={() => navigate('/pricing')}
-            sx={{ borderRadius: 3, px: 5, py: 1.5, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', fontWeight: 700, textTransform: 'none' }}
+            sx={{ borderRadius: 3, px: 5, py: 1.5, background: `linear-gradient(135deg,${accent},${accent}BB)`, fontWeight: 700, textTransform: 'none' }}
           >
             View Plans & Upgrade
           </Button>
@@ -205,7 +206,7 @@ export default function AIStudio() {
     return (
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '60vh' }}>
         <Card sx={{ maxWidth: 480, width: '100%', textAlign: 'center', p: 4 }}>
-          <Box sx={{ width: 72, height: 72, borderRadius: '50%', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
+          <Box sx={{ width: 72, height: 72, borderRadius: '50%', background: `linear-gradient(135deg,${accent},${accent}BB)`, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
             <Lock sx={{ color: 'white', fontSize: 36 }} />
           </Box>
           <Typography variant="h5" fontWeight={700} mb={1}>AI Studio</Typography>
@@ -215,11 +216,11 @@ export default function AIStudio() {
           <Box sx={{ background: '#F5F3FF', borderRadius: 2, p: 2, mb: 3, textAlign: 'right' }}>
             {['توليد خطط مشاريع كاملة بالـ AI', 'Daily Standup تلقائي', 'تحليل أداء الفريق', 'إعادة جدولة تلقائية'].map(f => (
               <Typography key={f} variant="body2" sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-                <CheckCircle sx={{ color: '#6366F1', fontSize: 16 }} /> {f}
+                <CheckCircle sx={{ color: accent, fontSize: 16 }} /> {f}
               </Typography>
             ))}
           </Box>
-          <Button variant="contained" size="large" fullWidth sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', py: 1.5, fontSize: 16, fontWeight: 700 }}
+          <Button variant="contained" size="large" fullWidth sx={{ background: `linear-gradient(135deg,${accent},${accent}BB)`, py: 1.5, fontSize: 16, fontWeight: 700 }}
             onClick={async () => {
               try {
                 const { default: api } = await import('../../services/api.js');
@@ -272,7 +273,7 @@ export default function AIStudio() {
               {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 
               {loading && (
-                <Box sx={{ mb: 2, p: 2, backgroundColor: '#EEF2FF', borderRadius: 2 }}>
+                <Box sx={{ mb: 2, p: 2, backgroundColor: `${accent}18`, borderRadius: 2 }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                     <CircularProgress size={16} />
                     <Typography variant="body2" fontWeight={600} color="primary.main">{STEPS[step]}</Typography>
@@ -283,7 +284,7 @@ export default function AIStudio() {
 
               <Button fullWidth size="large" variant="contained" disabled={loading || !prompt.trim()} onClick={handleGenerate}
                 startIcon={loading ? <CircularProgress size={18} color="inherit" /> : <AutoAwesome />}
-                sx={{ py: 1.5, background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', fontWeight: 700, fontSize: '1rem' }}>
+                sx={{ py: 1.5, background: `linear-gradient(135deg,${accent},${accent}BB)`, fontWeight: 700, fontSize: '1rem' }}>
                 {loading ? t('ai.generate.generating') : t('ai.generate.generate')}
               </Button>
             </CardContent>
@@ -307,7 +308,7 @@ export default function AIStudio() {
                 <Box sx={{ display: 'flex', gap: 1.5, mb: 2, flexWrap: 'wrap' }}>
                   <Chip label={t('projects.aiCreate.stats.industry', { value: result.planAnalysis?.industry })} size="small" variant="outlined" />
                   <Chip label={result.planAnalysis?.complexity} size="small" variant="outlined" />
-                  <Chip label={t('projects.aiCreate.stats.goals', { count: result.stats?.goalsCreated })} size="small" sx={{ bgcolor: '#EEF2FF', color: '#6366F1' }} />
+                  <Chip label={t('projects.aiCreate.stats.goals', { count: result.stats?.goalsCreated })} size="small" sx={{ bgcolor: `${accent}18`, color: accent }} />
                   <Chip label={t('projects.aiCreate.stats.tasks', { count: result.stats?.tasksCreated })} size="small" sx={{ bgcolor: '#ECFDF5', color: '#10B981' }} />
                   <Chip label={t('projects.aiCreate.stats.assigned', { count: result.stats?.teamAssigned })} size="small" sx={{ bgcolor: '#FFF7ED', color: '#EA580C' }} />
                 </Box>

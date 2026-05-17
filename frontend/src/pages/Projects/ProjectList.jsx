@@ -36,6 +36,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
   const { t } = useTranslation();
   const user = useSelector(s => s.auth.user);
   const { loading: aiLoading } = useSelector(s => s.ai);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [tab, setTab] = useState(0);
   const [step, setStep] = useState(0);
   const [aiResult, setAiResult] = useState(null);
@@ -157,7 +158,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
               transition: 'all 0.15s'
             }}
           >
-            <Typography variant="caption" fontWeight={700} sx={{ color: tab === 1 ? '#4F46E5' : '#64748B', fontSize: '0.78rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+            <Typography variant="caption" fontWeight={700} sx={{ color: tab === 1 ? accent : '#64748B', fontSize: '0.78rem', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
               <AutoAwesome sx={{ fontSize: 14 }} /> {t('projects.create.ai')}
             </Typography>
           </Box>
@@ -213,7 +214,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
           <Button
             fullWidth variant="contained" size="large"
             onClick={() => { setLimitDialog({ open: false, message: '' }); onClose(); navigate('/pricing'); }}
-            sx={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', fontWeight: 700, mb: 1.5 }}
+            sx={{ background: `linear-gradient(135deg, ${accent}, ${accent}BB)`, fontWeight: 700, mb: 1.5 }}
           >
             View Plans & Upgrade
           </Button>
@@ -240,7 +241,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
                       size="small"
                       onClick={() => setPrompt(ex)}
                       variant="outlined"
-                      sx={{ fontSize: '0.72rem', cursor: 'pointer', borderColor: '#E2E8F0', color: '#475569', '&:hover': { backgroundColor: '#EEF2FF', borderColor: '#6366F1', color: '#4F46E5' }, transition: 'all 0.12s' }}
+                      sx={{ fontSize: '0.72rem', cursor: 'pointer', borderColor: '#E2E8F0', color: '#475569', '&:hover': { backgroundColor: `${accent}18`, borderColor: accent, color: accent }, transition: 'all 0.12s' }}
                     />
                   ))}
                 </Box>
@@ -265,14 +266,14 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
               />
 
               {aiLoading && (
-                <Box sx={{ p: 2, backgroundColor: '#EEF2FF', borderRadius: 2.5, border: '1px solid #C7D2FE' }}>
+                <Box sx={{ p: 2, backgroundColor: `${accent}18`, borderRadius: 2.5, border: `1px solid ${accent}44` }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
-                    <CircularProgress size={16} sx={{ color: '#4F46E5' }} />
+                    <CircularProgress size={16} sx={{ color: accent }} />
                     <Typography variant="body2" fontWeight={600} color="primary.main" sx={{ fontSize: '0.82rem' }}>
                       {AI_STEPS[step]}
                     </Typography>
                   </Box>
-                  <LinearProgress sx={{ borderRadius: 99, backgroundColor: '#C7D2FE', '& .MuiLinearProgress-bar': { backgroundColor: '#4F46E5' } }} />
+                  <LinearProgress sx={{ borderRadius: 99, backgroundColor: `${accent}44`, '& .MuiLinearProgress-bar': { backgroundColor: accent } }} />
                   <Typography variant="caption" color="text.secondary" sx={{ mt: 1, display: 'block', fontSize: '0.72rem' }}>
                     {t('projects.aiCreate.loadingMsg')}
                   </Typography>
@@ -286,7 +287,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
                   disabled={aiLoading || !prompt.trim()}
                   onClick={handleAIGenerate}
                   startIcon={aiLoading ? <CircularProgress size={16} color="inherit" /> : <AutoAwesome />}
-                  sx={{ py: 1.25, background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', fontWeight: 700, boxShadow: '0 4px 12px rgba(79,70,229,0.3)', '&:hover': { boxShadow: '0 6px 16px rgba(79,70,229,0.4)' } }}
+                  sx={{ py: 1.25, background: `linear-gradient(135deg, ${accent}, ${accent}BB)`, fontWeight: 700, boxShadow: `0 4px 12px ${accent}4D`, '&:hover': { boxShadow: `0 6px 16px ${accent}66` } }}
                 >
                   {aiLoading ? t('projects.aiCreate.generating') : t('projects.aiCreate.generate')}
                 </Button>
@@ -304,7 +305,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
               </Box>
 
               <Box sx={{ display: 'flex', gap: 0.75, flexWrap: 'wrap', mb: 2 }}>
-                <Chip label={t('projects.aiCreate.stats.industry', { value: aiResult.planAnalysis?.industry || 'Technology' })} size="small" sx={{ backgroundColor: '#EEF2FF', color: '#4F46E5', fontWeight: 600, fontSize: '0.72rem' }} />
+                <Chip label={t('projects.aiCreate.stats.industry', { value: aiResult.planAnalysis?.industry || 'Technology' })} size="small" sx={{ backgroundColor: `${accent}18`, color: accent, fontWeight: 600, fontSize: '0.72rem' }} />
                 <Chip label={t('projects.aiCreate.stats.goals', { count: aiResult.stats?.goalsCreated || 0 })} size="small" sx={{ backgroundColor: '#F0FDF4', color: '#059669', fontWeight: 600, fontSize: '0.72rem' }} />
                 <Chip label={t('projects.aiCreate.stats.tasks', { count: aiResult.stats?.tasksCreated || 0 })} size="small" sx={{ backgroundColor: '#FFF7ED', color: '#D97706', fontWeight: 600, fontSize: '0.72rem' }} />
                 <Chip label={t('projects.aiCreate.stats.assigned', { count: aiResult.stats?.teamAssigned || 0 })} size="small" sx={{ backgroundColor: '#F5F3FF', color: '#7C3AED', fontWeight: 600, fontSize: '0.72rem' }} />
@@ -316,7 +317,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 1.5, py: 1, backgroundColor: '#F8FAFC' }}>
                       <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: goal.color || '#4F46E5', flexShrink: 0 }} />
                       <Typography variant="body2" fontWeight={600} flex={1} sx={{ fontSize: '0.82rem' }}>{goal.title}</Typography>
-                      <Chip label={`${goal.tasks?.length || 0} tasks`} size="small" sx={{ height: 18, fontSize: '0.65rem', backgroundColor: '#EEF2FF', color: '#4F46E5' }} />
+                      <Chip label={`${goal.tasks?.length || 0} tasks`} size="small" sx={{ height: 18, fontSize: '0.65rem', backgroundColor: `${accent}18`, color: accent }} />
                     </Box>
                     <Box sx={{ px: 1.5, py: 0.5 }}>
                       {(goal.tasks || []).slice(0, 3).map((task, j) => (
@@ -341,7 +342,7 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
                 <Button
                   variant="contained"
                   startIcon={<OpenInNew />}
-                  sx={{ flex: 1, background: 'linear-gradient(135deg, #4F46E5, #7C3AED)' }}
+                  sx={{ flex: 1, background: `linear-gradient(135deg, ${accent}, ${accent}BB)` }}
                   onClick={() => { handleClose(); }}
                 >
                   {t('projects.aiCreate.viewProject')}
@@ -359,10 +360,11 @@ function ProjectCard({ project, onDelete }) {
   const [menuAnchor, setMenuAnchor] = useState(null);
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const accentColor = project.color || '#4F46E5';
 
   const progress = project.progress?.percentage || 0;
-  const progressColor = progress >= 75 ? '#10B981' : progress >= 40 ? '#F59E0B' : '#4F46E5';
+  const progressColor = progress >= 75 ? '#10B981' : progress >= 40 ? '#F59E0B' : accent;
 
   return (
     <Card
@@ -409,7 +411,7 @@ function ProjectCard({ project, onDelete }) {
               label={t('projects.card.ai')}
               size="small"
               icon={<AutoAwesome sx={{ fontSize: '11px !important' }} />}
-              sx={{ backgroundColor: '#EEF2FF', color: '#4F46E5', fontWeight: 700, fontSize: '0.68rem', height: 20 }}
+              sx={{ backgroundColor: `${accent}18`, color: accent, fontWeight: 700, fontSize: '0.68rem', height: 20 }}
             />
           )}
         </Box>
@@ -488,6 +490,7 @@ export default function ProjectList() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const { projects: reduxProjects, loading: reduxLoading } = useSelector(s => s.projects);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
@@ -543,7 +546,7 @@ export default function ProjectList() {
             variant="outlined"
             startIcon={<AutoAwesome />}
             onClick={() => setCreateOpen(true)}
-            sx={{ borderColor: '#C7D2FE', color: '#4F46E5', backgroundColor: '#EEF2FF', '&:hover': { backgroundColor: '#E0E7FF', borderColor: '#A5B4FC' } }}
+            sx={{ borderColor: `${accent}44`, color: accent, backgroundColor: `${accent}18`, '&:hover': { backgroundColor: `${accent}28`, borderColor: `${accent}88` } }}
           >
             {t('projects.aiGenerate')}
           </Button>
@@ -582,10 +585,10 @@ export default function ProjectList() {
                 sx={{
                   fontWeight: 600,
                   fontSize: '0.75rem',
-                  backgroundColor: filter === val ? '#4F46E5' : 'transparent',
-                  borderColor: filter === val ? '#4F46E5' : '#E2E8F0',
+                  backgroundColor: filter === val ? accent : 'transparent',
+                  borderColor: filter === val ? accent : '#E2E8F0',
                   color: filter === val ? 'white' : '#475569',
-                  '&:hover': { backgroundColor: filter === val ? '#4338CA' : '#F1F5F9' }
+                  '&:hover': { backgroundColor: filter === val ? `${accent}CC` : '#F1F5F9' }
                 }}
               />
             );
@@ -632,7 +635,7 @@ export default function ProjectList() {
             </>
           ) : (
             <>
-              <Box sx={{ width: 72, height: 72, borderRadius: 4, background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
+              <Box sx={{ width: 72, height: 72, borderRadius: 4, background: `linear-gradient(135deg, ${accent}, ${accent}BB)`, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 3 }}>
                 <Rocket sx={{ fontSize: 34, color: 'white' }} />
               </Box>
               <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>{t('projects.empty.start')}</Typography>
@@ -644,7 +647,7 @@ export default function ProjectList() {
                 <Button
                   variant="contained" startIcon={<AutoAwesome />} size="large"
                   onClick={() => setCreateOpen(true)}
-                  sx={{ background: 'linear-gradient(135deg, #4F46E5, #7C3AED)', boxShadow: '0 4px 12px rgba(79,70,229,0.3)' }}
+                  sx={{ background: `linear-gradient(135deg, ${accent}, ${accent}BB)`, boxShadow: `0 4px 12px ${accent}4D` }}
                 >
                   {t('projects.aiGenerate')}
                 </Button>

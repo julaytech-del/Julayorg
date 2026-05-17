@@ -125,6 +125,7 @@ function StatCard({ label, value, sublabel, sublabelColor, icon: Icon, color, lo
 
 // ── MiniCalendar ──────────────────────────────────────────────────────────────
 function MiniCalendar({ tasks }) {
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [cursor, setCursor] = useState(new Date());
   const year  = cursor.getFullYear();
   const month = cursor.getMonth();
@@ -163,9 +164,9 @@ function MiniCalendar({ tasks }) {
           const isT  = cellDate.toDateString() === todayStr;
           const hasT = taskDateSet.has(cellDate.toDateString());
           return (
-            <Box key={day} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 0.5, borderRadius: 1.5, backgroundColor: isT ? '#6366F1' : 'transparent' }}>
+            <Box key={day} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 0.5, borderRadius: 1.5, backgroundColor: isT ? accent : 'transparent' }}>
               <Typography sx={{ fontSize: '0.73rem', fontWeight: isT ? 700 : 400, color: isT ? '#fff' : 'text.primary', lineHeight: 1.4 }}>{day}</Typography>
-              {hasT && !isT && <Box sx={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#6366F1', mt: 0.15 }} />}
+              {hasT && !isT && <Box sx={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: accent, mt: 0.15 }} />}
             </Box>
           );
         })}
@@ -280,6 +281,7 @@ const ROW_GRID = '32px 26px minmax(120px,1fr) 130px 100px 95px 115px 72px 30px';
 
 // ── TaskRow ───────────────────────────────────────────────────────────────────
 function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [hovered, setHovered] = useState(false);
   const projName = typeof task.project === 'object' ? task.project?.name : null;
   const pColor   = projectColor(projName || '');
@@ -379,7 +381,7 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
           <>
             {task.assignees.slice(0, 2).map((a, i) => (
               <Tooltip key={i} title={a?.name || a?.email || 'Unknown'}>
-                <Avatar src={a?.avatar || undefined} sx={{ width: 28, height: 28, fontSize: '0.68rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', border: '2px solid white', ml: i > 0 ? -1 : 0 }}>
+                <Avatar src={a?.avatar || undefined} sx={{ width: 28, height: 28, fontSize: '0.68rem', background: `linear-gradient(135deg, ${accent}, ${accent}BB)`, border: '2px solid white', ml: i > 0 ? -1 : 0 }}>
                   {!a?.avatar && (a?.name?.[0] || '?').toUpperCase()}
                 </Avatar>
               </Tooltip>
@@ -394,7 +396,7 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
       </Box>
 
       <Tooltip title="Open task">
-        <IconButton size="small" onClick={e => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.5, color: '#CBD5E1', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+        <IconButton size="small" onClick={e => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.5, color: '#CBD5E1', '&:hover': { color: accent, bgcolor: `${accent}18` } }}>
           <MoreHoriz sx={{ fontSize: 17 }} />
         </IconButton>
       </Tooltip>
@@ -443,6 +445,7 @@ export default function MyTasksPage() {
   const user             = useSelector(s => s.auth.user);
   const dashboardRefresh = useSelector(s => s.ui.dashboardRefresh);
   const activeTimers     = useSelector(s => s.ui.activeTimers);
+  const accent           = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [tick, setTick]  = useState(0);
 
   useEffect(() => {
@@ -607,7 +610,7 @@ export default function MyTasksPage() {
 
       {/* Stat cards */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <StatCard label="My Tasks" value={stats.total} icon={Assignment} color="#6366F1"
+        <StatCard label="My Tasks" value={stats.total} icon={Assignment} color={accent}
           sublabel={stats.dueToday > 0 ? `↑ ${stats.dueToday} due today` : undefined}
           sublabelColor="#F59E0B" loading={statsLoading} />
         <StatCard label="In Progress" value={inProgressCount} icon={AccessTime} color="#3B82F6"
@@ -636,19 +639,19 @@ export default function MyTasksPage() {
                   size="small"
                   onDelete={() => { setFilterStatus([]); setFilterPriority([]); }}
                   deleteIcon={<Close sx={{ fontSize: '14px !important' }} />}
-                  sx={{ height: 22, fontSize: '0.68rem', fontWeight: 600, bgcolor: '#EEF2FF', color: '#6366F1', '& .MuiChip-deleteIcon': { color: '#6366F1' } }}
+                  sx={{ height: 22, fontSize: '0.68rem', fontWeight: 600, bgcolor: `${accent}18`, color: accent, '& .MuiChip-deleteIcon': { color: accent } }}
                 />
               )}
             </Box>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
               <Button size="small" startIcon={<FilterList sx={{ fontSize: 15 }} />}
                 onClick={e => setFilterAnchor(e.currentTarget)}
-                sx={{ textTransform: 'none', fontSize: '0.78rem', color: hasActiveFilter ? '#6366F1' : 'text.secondary', border: '1px solid', borderColor: hasActiveFilter ? '#6366F1' : 'divider', bgcolor: hasActiveFilter ? '#EEF2FF' : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}>
+                sx={{ textTransform: 'none', fontSize: '0.78rem', color: hasActiveFilter ? accent : 'text.secondary', border: '1px solid', borderColor: hasActiveFilter ? accent : 'divider', bgcolor: hasActiveFilter ? `${accent}18` : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: accent, borderColor: accent, bgcolor: `${accent}18` } }}>
                 Filter
               </Button>
               <Button size="small" startIcon={<Sort sx={{ fontSize: 15 }} />}
                 onClick={e => setSortAnchor(e.currentTarget)}
-                sx={{ textTransform: 'none', fontSize: '0.78rem', color: sortKey !== 'smart' ? '#6366F1' : 'text.secondary', border: '1px solid', borderColor: sortKey !== 'smart' ? '#6366F1' : 'divider', bgcolor: sortKey !== 'smart' ? '#EEF2FF' : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}>
+                sx={{ textTransform: 'none', fontSize: '0.78rem', color: sortKey !== 'smart' ? accent : 'text.secondary', border: '1px solid', borderColor: sortKey !== 'smart' ? accent : 'divider', bgcolor: sortKey !== 'smart' ? `${accent}18` : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: accent, borderColor: accent, bgcolor: `${accent}18` } }}>
                 Sort
               </Button>
               <IconButton size="small" onClick={e => setMoreAnchor(e.currentTarget)} sx={{ color: 'text.secondary', p: 0.5 }}>
@@ -729,7 +732,7 @@ export default function MyTasksPage() {
                 sx={{ '& .MuiOutlinedInput-root': { fontSize: '0.87rem', borderRadius: 1.5 } }}
               />
               <Button size="small" variant="contained" disabled={!addTitle.trim() || addLoading} onClick={handleAddTask}
-                sx={{ textTransform: 'none', fontSize: '0.8rem', px: 1.75, borderRadius: 1.5, flexShrink: 0, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: 'none' }}>
+                sx={{ textTransform: 'none', fontSize: '0.8rem', px: 1.75, borderRadius: 1.5, flexShrink: 0, background: `linear-gradient(135deg, ${accent}, ${accent}BB)`, boxShadow: 'none' }}>
                 {addLoading ? 'Saving…' : 'Save'}
               </Button>
               <Button size="small" onClick={() => { setAddOpen(false); setAddTitle(''); }}
@@ -740,7 +743,7 @@ export default function MyTasksPage() {
           ) : (
             <Box sx={{ px: 2, py: 0.75 }}>
               <Button startIcon={<Add sx={{ fontSize: 16 }} />} onClick={() => setAddOpen(true)}
-                sx={{ color: 'text.disabled', fontSize: '0.8rem', textTransform: 'none', fontWeight: 400, px: 1, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', backgroundColor: '#EEF2FF' } }}>
+                sx={{ color: 'text.disabled', fontSize: '0.8rem', textTransform: 'none', fontWeight: 400, px: 1, py: 0.5, borderRadius: 1.5, '&:hover': { color: accent, backgroundColor: `${accent}18` } }}>
                 Add new task
               </Button>
             </Box>
@@ -789,9 +792,9 @@ export default function MyTasksPage() {
         </Box>
         {SORT_OPTIONS.map(s => (
           <MenuItem key={s.key} selected={sortKey === s.key} onClick={() => { setSortKey(s.key); setSortDir('asc'); setSortAnchor(null); }}
-            sx={{ fontSize: '0.84rem', gap: 1, '&.Mui-selected': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+            sx={{ fontSize: '0.84rem', gap: 1, '&.Mui-selected': { color: accent, bgcolor: `${accent}18` } }}>
             {s.label}
-            {sortKey === s.key && <CheckCircle sx={{ fontSize: 14, ml: 'auto', color: '#6366F1' }} />}
+            {sortKey === s.key && <CheckCircle sx={{ fontSize: 14, ml: 'auto', color: accent }} />}
           </MenuItem>
         ))}
         {sortKey !== 'smart' && (

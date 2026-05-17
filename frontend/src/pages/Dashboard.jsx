@@ -128,6 +128,7 @@ function MyTaskCard({ task, onClick }) {
 export default function Dashboard() {
   const user = useSelector(s => s.auth.user);
   const dashboardRefresh = useSelector(s => s.ui.dashboardRefresh);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const navigate = useNavigate();
   const { t } = useTranslation();
   const [searchParams] = useSearchParams();
@@ -149,11 +150,12 @@ export default function Dashboard() {
   const hour = new Date().getHours();
   const greeting = hour < 12 ? t('dashboard.greeting.morning') : hour < 17 ? t('dashboard.greeting.afternoon') : t('dashboard.greeting.evening');
 
+  const pieColors = [accent,'#0EA5E9','#F59E0B','#10B981','#EF4444'];
   const taskBarData = stats
     ? Object.entries(stats.tasks.byStatus||{}).map(([k,v]) => ({ name:k.replace('_',' '), value:v, fill:STATUS_COLORS[k]||'#94A3B8' }))
     : [];
   const projectPieData = stats
-    ? Object.entries(stats.projects.byStatus||{}).filter(([,v])=>v>0).map(([k,v],i)=>({ name:k.replace('_',' '), value:v, color:PIE_COLORS[i] }))
+    ? Object.entries(stats.projects.byStatus||{}).filter(([,v])=>v>0).map(([k,v],i)=>({ name:k.replace('_',' '), value:v, color:pieColors[i] }))
     : [];
 
   const pendingTasks = myTasks.filter(t => t.status !== 'done');
@@ -171,7 +173,7 @@ export default function Dashboard() {
       {/* ── Welcome Banner ── */}
       <Box sx={{
         mb:3, p:3, borderRadius:3,
-        background:'linear-gradient(135deg, #1E1B4B 0%, #312E81 45%, #4C1D95 100%)',
+        background:`linear-gradient(135deg, ${accent}DD 0%, ${accent} 45%, ${accent}BB 100%)`,
         color:'white', position:'relative', overflow:'hidden',
       }}>
         <Box sx={{ position:'absolute', top:-60, right:-60, width:220, height:220, borderRadius:'50%', background:'rgba(255,255,255,0.03)' }}/>
@@ -206,13 +208,13 @@ export default function Dashboard() {
       <Box sx={{ mb:3 }}>
         <Box sx={{ display:'flex', justifyContent:'space-between', alignItems:'center', mb:1.5 }}>
           <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-            <Box sx={{ width:3, height:18, bgcolor:'#6366F1', borderRadius:2 }}/>
+            <Box sx={{ width:3, height:18, bgcolor:accent, borderRadius:2 }}/>
             <Typography sx={{ fontWeight:800, fontSize:'0.95rem', color:'#0F172A' }}>
               My Work
             </Typography>
             {pendingTasks.length > 0 && (
-              <Box sx={{ bgcolor:'#EEF2FF', border:'1px solid #C7D2FE', borderRadius:'6px', px:0.9, py:0.15 }}>
-                <Typography sx={{ fontSize:'0.7rem', fontWeight:700, color:'#6366F1' }}>{pendingTasks.length}</Typography>
+              <Box sx={{ bgcolor:`${accent}18`, border:`1px solid ${accent}44`, borderRadius:'6px', px:0.9, py:0.15 }}>
+                <Typography sx={{ fontSize:'0.7rem', fontWeight:700, color:accent }}>{pendingTasks.length}</Typography>
               </Box>
             )}
             {todayDone > 0 && (
@@ -223,7 +225,7 @@ export default function Dashboard() {
           </Box>
           <Button size="small" endIcon={<ArrowForward sx={{ fontSize:13 }}/>}
             onClick={() => navigate('/dashboard/my-tasks')}
-            sx={{ color:'#6366F1', fontWeight:600, fontSize:'0.75rem', textTransform:'none' }}>
+            sx={{ color:accent, fontWeight:600, fontSize:'0.75rem', textTransform:'none' }}>
             View all
           </Button>
         </Box>
@@ -257,7 +259,7 @@ export default function Dashboard() {
                 border:'1.5px dashed #E2E8F0', display:'flex', flexDirection:'column',
                 alignItems:'center', justifyContent:'center', gap:0.5,
                 cursor:'pointer', color:'#94A3B8',
-                '&:hover':{ borderColor:'#6366F1', color:'#6366F1', bgcolor:'#FAFBFF' },
+                '&:hover':{ borderColor:accent, color:accent, bgcolor:`${accent}08` },
                 transition:'all 0.15s',
               }}
             >
@@ -273,7 +275,7 @@ export default function Dashboard() {
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard title={t('dashboard.stats.totalProjects')} value={stats?.projects.total}
             subtitle={t('dashboard.stats.activeCompleted', { active:stats?.projects.active||0, completed:stats?.projects.completed||0 })}
-            icon={<TrendingUp/>} color="#4F46E5" loading={loading}
+            icon={<TrendingUp/>} color={accent} loading={loading}
             badge={stats?.projects.active ? t('dashboard.stats.running',{ count:stats.projects.active }) : null}/>
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
@@ -469,7 +471,7 @@ export default function Dashboard() {
           </Box>
           <Button size="small" endIcon={<ArrowForward sx={{ fontSize:14 }}/>}
             onClick={() => navigate('/dashboard/projects')}
-            sx={{ color:'#4F46E5', fontWeight:600, fontSize:'0.78rem' }}>
+            sx={{ color:accent, fontWeight:600, fontSize:'0.78rem' }}>
             {t('dashboard.recentProjects.viewAll')}
           </Button>
         </Box>

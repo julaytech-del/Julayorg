@@ -66,6 +66,7 @@ export default function TeamView() {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const currentUser = useSelector(s => s.auth.user);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const canManageTeam = ['admin', 'manager'].includes(currentUser?.role?.level);
   const [users, setUsers] = useState(_teamCache || []);
   const [loading, setLoading] = useState(!_teamCache);
@@ -202,7 +203,7 @@ export default function TeamView() {
         <Typography variant="h5" fontWeight={700}>{t('team.title')}</Typography>
         {canManageTeam && (
           <Button variant="contained" startIcon={<PersonAdd />} onClick={() => setAddOpen(true)}
-            sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', borderRadius: 2 }}>
+            sx={{ bgcolor: accent, '&:hover': { bgcolor: `${accent}CC` }, textTransform: 'none', borderRadius: 2 }}>
             Add Member
           </Button>
         )}
@@ -210,7 +211,7 @@ export default function TeamView() {
 
       <Grid container spacing={2} sx={{ mb: 3 }}>
         {[
-          { labelKey: 'team.stats.total', value: users.length, icon: <Group />, color: '#6366F1' },
+          { labelKey: 'team.stats.total', value: users.length, icon: <Group />, color: accent },
           { labelKey: 'team.stats.active', value: users.filter(u => u.status === 'active').length, icon: <TrendingUp />, color: '#10B981' },
           { labelKey: 'team.stats.avgPerformance', value: `${avgPerf}%`, icon: <EmojiEvents />, color: '#F59E0B' }
         ].map(s => (
@@ -389,7 +390,7 @@ export default function TeamView() {
                   </TableBody>
                 </Table>
               </Box>
-              <Button variant="contained" sx={{ mt: 2.5, bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none' }}
+              <Button variant="contained" sx={{ mt: 2.5, bgcolor: accent, '&:hover': { bgcolor: `${accent}CC` }, textTransform: 'none' }}
                 onClick={() => setDialogTab(1)}>
                 Create New Member →
               </Button>
@@ -421,7 +422,7 @@ export default function TeamView() {
                           <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: d.color }} />
                           {d.name}
                           {d.isDefault && (
-                            <Chip label="Default" size="small" sx={{ ml: 0.5, height: 16, fontSize: '0.62rem', bgcolor: '#EEF2FF', color: '#6366F1', fontWeight: 700 }} />
+                            <Chip label="Default" size="small" sx={{ ml: 0.5, height: 16, fontSize: '0.62rem', bgcolor: `${accent}18`, color: accent, fontWeight: 700 }} />
                           )}
                         </Box>
                       </MenuItem>
@@ -537,14 +538,14 @@ export default function TeamView() {
           {dialogTab === 1 && (
             <Button variant="contained" onClick={handleCreate}
               disabled={!form.name || !form.email || !form.password || creating}
-              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 130 }}>
+              sx={{ bgcolor: accent, '&:hover': { bgcolor: `${accent}CC` }, textTransform: 'none', minWidth: 130 }}>
               {creating ? <CircularProgress size={18} color="inherit" /> : 'Create Member'}
             </Button>
           )}
           {dialogTab === 2 && !inviteLink && (
             <Button variant="contained" onClick={handleInvite}
               disabled={!inviteEmail || inviting}
-              sx={{ bgcolor: '#6366F1', '&:hover': { bgcolor: '#4F46E5' }, textTransform: 'none', minWidth: 130 }}>
+              sx={{ bgcolor: accent, '&:hover': { bgcolor: `${accent}CC` }, textTransform: 'none', minWidth: 130 }}>
               {inviting ? <CircularProgress size={18} color="inherit" /> : 'Generate Link'}
             </Button>
           )}
