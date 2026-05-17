@@ -223,10 +223,17 @@ function TaskDonut({ tasks, loading }) {
 // ── UpcomingTasksList ─────────────────────────────────────────────────────────
 function UpcomingTasksList({ tasks, onSelect }) {
   const upcoming = useMemo(() => {
+    const now  = new Date();
     const in30 = new Date(); in30.setDate(in30.getDate() + 30);
     return tasks
-      .filter(t => t.dueDate && !['done','cancelled','deployed'].includes(t.status) && new Date(t.dueDate) >= new Date() && new Date(t.dueDate) <= in30)
-      .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
+      .filter(t => {
+        if (['done','cancelled','deployed'].includes(t.status)) return false;
+        const date = t.startDate || t.dueDate;
+        if (!date) return false;
+        const d = new Date(date);
+        return d >= now && d <= in30;
+      })
+      .sort((a, b) => new Date(a.startDate || a.dueDate) - new Date(b.startDate || b.dueDate))
       .slice(0, 6);
   }, [tasks]);
 
@@ -242,8 +249,9 @@ function UpcomingTasksList({ tasks, onSelect }) {
   return (
     <Box>
       {upcoming.map(task => {
-        const sc  = STATUS_DOT[task.status] || STATUS_DOT.planned;
-        const due = formatDueDate(task.dueDate);
+        const sc       = STATUS_DOT[task.status] || STATUS_DOT.planned;
+        const dateKey  = task.startDate || task.dueDate;
+        const due      = formatDueDate(dateKey);
         return (
           <Box key={task._id} onClick={() => onSelect(task)}
             sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, py: 1.1, borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' }, borderRadius: 1, px: 0.5 }}
