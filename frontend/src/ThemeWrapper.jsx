@@ -99,7 +99,7 @@ export default function ThemeWrapper({ children }) {
               borderRadius: 9,
               '& .MuiOutlinedInput-notchedOutline': { borderColor: dark ? 'rgba(255,255,255,0.12)' : '#E2E8F0', borderWidth: '1.5px' },
               '&:hover .MuiOutlinedInput-notchedOutline': { borderColor: dark ? 'rgba(255,255,255,0.25)' : '#CBD5E1' },
-              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: accent, borderWidth: '1.5px' },
+              '&.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor: dark ? 'rgba(255,255,255,0.3)' : '#94A3B8', borderWidth: '1.5px' },
             }
           }
         },
