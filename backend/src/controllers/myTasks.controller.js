@@ -30,6 +30,7 @@ export const getMyTasks = async (req, res) => {
 
     const tasks = await Task.find(filter)
       .populate('project', 'name color')
+      .populate('assignees', 'name email avatar')
       .sort({ dueDate: 1 });
 
     // Compute counts
