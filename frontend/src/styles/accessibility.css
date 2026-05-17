@@ -20,19 +20,15 @@
   top: 0;
 }
 
-/* ─── Focus indicators — WCAG 2.1 AA (2px min, 3:1 contrast) ──────────────── */
+/* ─── Focus indicators ──────────────────────────────────────────────────────── */
 *:focus-visible {
-  outline: 2px solid #6366F1 !important;
-  outline-offset: 2px !important;
-  border-radius: 3px;
+  outline: none !important;
 }
 
-/* Remove default outline only when focus-visible is supported */
 *:focus:not(:focus-visible) {
   outline: none !important;
 }
 
-/* MUI components sometimes suppress focus — restore it */
 .MuiButtonBase-root:focus-visible,
 .MuiTab-root:focus-visible,
 .MuiMenuItem-root:focus-visible,
@@ -42,8 +38,7 @@
 .MuiSwitch-root:focus-visible,
 .MuiSelect-select:focus-visible,
 .MuiAccordionSummary-root:focus-visible {
-  outline: 2px solid #6366F1 !important;
-  outline-offset: 2px !important;
+  outline: none !important;
 }
 
 /* ─── Screen-reader only utility ────────────────────────────────────────────── */
