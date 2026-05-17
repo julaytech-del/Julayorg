@@ -316,6 +316,7 @@ export default function MyTasksPage() {
               {[
                 { label: 'Task',        key: 'title' },
                 { label: 'Status',      key: 'status' },
+                { label: 'Assigned To', key: null },
                 { label: 'Project',     key: null },
                 { label: 'Created',     key: null },
                 { label: 'Start Date',  key: null },
@@ -352,7 +353,7 @@ export default function MyTasksPage() {
           <TableBody>
             {loading ? <SkeletonRows /> : filteredTasks.length === 0 ? (
               <TableRow>
-                <TableCell colSpan={8} sx={{ border: 0 }}>
+                <TableCell colSpan={9} sx={{ border: 0 }}>
                   <EmptyState tab={tab} />
                 </TableCell>
               </TableRow>
@@ -413,6 +414,25 @@ export default function MyTasksPage() {
                   {/* Status */}
                   <TableCell>
                     <Chip label={STATUS_LABELS[task.status] || task.status || 'Planned'} size="small" color={STATUS_COLORS[task.status] || 'default'} sx={{ fontSize: '0.72rem' }} />
+                  </TableCell>
+                  {/* Assigned To */}
+                  <TableCell>
+                    {task.assignees?.length > 0 ? (
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, flexWrap: 'wrap' }}>
+                        {task.assignees.slice(0, 3).map((a, i) => (
+                          <Tooltip key={i} title={a?.name || a?.email || 'Unknown'}>
+                            <Avatar src={a?.avatar || undefined} sx={{ width: 24, height: 24, fontSize: '0.65rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', border: '1.5px solid white' }}>
+                              {!a?.avatar && (a?.name?.[0] || '?').toUpperCase()}
+                            </Avatar>
+                          </Tooltip>
+                        ))}
+                        {task.assignees.length > 3 && (
+                          <Typography variant="caption" color="text.secondary">+{task.assignees.length - 3}</Typography>
+                        )}
+                      </Box>
+                    ) : (
+                      <Typography variant="body2" color="text.disabled">—</Typography>
+                    )}
                   </TableCell>
                   {/* Project */}
                   <TableCell>
