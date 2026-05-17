@@ -38,15 +38,15 @@ export default function DepartmentsView() {
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // Show local blob preview immediately — no network wait
-    const localUrl = URL.createObjectURL(file);
-    setLogoPreview(localUrl);
+    // CSP blocks blob: URLs, so use base64 data URL for instant preview
+    const reader = new FileReader();
+    reader.onloadend = () => setLogoPreview(reader.result);
+    reader.readAsDataURL(file);
     setUploading(true);
     try {
       const fd = new FormData();
       fd.append('file', file);
       const res = await api.post('/upload', fd);
-      // interceptor returns res.data, so res = { success, data: { url } }
       const serverUrl = res?.data?.url || res?.url;
       if (serverUrl) {
         setForm(p => ({ ...p, logo: serverUrl }));
