@@ -89,14 +89,21 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const content = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: bg, borderRight: `1px solid ${border}` }}>
 
-      {/* ── Org badge ── */}
+      {/* ── Dept badge ── */}
       <Box sx={{ p: 2, pb: 1.5 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', p: 1.5, borderRadius: 2.5, backgroundColor: orgBg, border: `1px solid ${orgBorder}` }}>
-          <Box component="img"
-            src="/julay-logo-full.png"
-            alt="Julay.org"
-            sx={{ height: 24, objectFit: 'contain', filter: darkMode ? 'brightness(0) invert(1)' : 'none' }}
-          />
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 0 }}>
+            <Box sx={{
+              width: 8, height: 8, borderRadius: '50%', flexShrink: 0,
+              backgroundColor: user?.department?.color || '#6366F1'
+            }} />
+            <Typography sx={{
+              color: orgName, fontSize: '0.82rem', fontWeight: 700,
+              overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap'
+            }}>
+              {user?.department?.name || org?.name || 'Workspace'}
+            </Typography>
+          </Box>
           <Typography sx={{ color: orgSub, fontSize: '0.68rem', textTransform: 'capitalize', flexShrink: 0 }}>
             {user?.role?.name || 'Admin'}
           </Typography>
