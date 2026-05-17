@@ -267,8 +267,12 @@ function UpcomingTasksList({ tasks, onSelect }) {
   );
 }
 
+// column grid: checkbox | star | task(flex) | project | priority | duedate | status | assignee | menu
+const ROW_GRID = '32px 28px 1fr 125px 100px 95px 110px 70px 32px';
+
 // ── TaskRow ───────────────────────────────────────────────────────────────────
 function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
+  const [hovered, setHovered] = useState(false);
   const projName = typeof task.project === 'object' ? task.project?.name : null;
   const pColor   = projectColor(projName || '');
   const done     = ['done', 'cancelled', 'deployed'].includes(task.status);
@@ -279,21 +283,31 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
   const due      = task.dueDate ? formatDueDate(task.dueDate) : null;
 
   return (
-    <Box onClick={onOpen} sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, cursor: 'pointer', transition: 'background 0.1s', borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, '&:hover': { backgroundColor: '#F8FAFF' }, '&:hover .star-btn': { opacity: 1 } }}>
-      <Checkbox size="small" checked={done} onClick={e => e.stopPropagation()} sx={{ p: 0.5, color: '#CBD5E1', '&.Mui-checked': { color: '#10B981' }, flexShrink: 0 }} />
+    <Box
+      onClick={onOpen}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
+      sx={{
+        display: 'grid', gridTemplateColumns: ROW_GRID,
+        alignItems: 'center', px: 1.5, py: 0.65,
+        cursor: 'pointer', transition: 'background 0.1s',
+        borderBottom: '1px solid', borderColor: 'divider',
+        '&:last-child': { borderBottom: 'none' },
+        backgroundColor: hovered ? '#F8FAFF' : 'transparent',
+      }}
+    >
+      {/* Checkbox */}
+      <Checkbox size="small" checked={done} onClick={e => e.stopPropagation()}
+        sx={{ p: 0.5, color: '#CBD5E1', '&.Mui-checked': { color: '#10B981' } }} />
 
       {/* Star */}
-      <IconButton
-        className="star-btn"
-        size="small"
-        onClick={e => onToggleFav(task._id, e)}
-        sx={{ p: 0.3, mr: 0.5, flexShrink: 0, color: isFav ? '#F59E0B' : '#CBD5E1', opacity: isFav ? 1 : 0, transition: 'opacity 0.15s, color 0.15s', '&:hover': { color: '#F59E0B', bgcolor: 'transparent' } }}
-      >
+      <IconButton size="small" onClick={e => onToggleFav(task._id, e)}
+        sx={{ p: 0.3, color: isFav ? '#F59E0B' : '#D1D5DB', opacity: hovered || isFav ? 1 : 0.25, transition: 'opacity 0.15s, color 0.15s', '&:hover': { color: '#F59E0B', bgcolor: 'transparent' } }}>
         {isFav ? <Star sx={{ fontSize: 14 }} /> : <StarBorder sx={{ fontSize: 14 }} />}
       </IconButton>
 
       {/* Task title */}
-      <Box sx={{ flex: 1, minWidth: 0, mr: 1 }}>
+      <Box sx={{ minWidth: 0, pr: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           <Typography noWrap sx={{ fontSize: '0.87rem', fontWeight: done ? 400 : 600, color: done ? 'text.disabled' : 'text.primary', textDecoration: done ? 'line-through' : 'none' }}>
             {task.title}
@@ -311,16 +325,16 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
       </Box>
 
       {/* Project */}
-      <Box sx={{ width: 130, flexShrink: 0, mr: 1.5 }}>
+      <Box sx={{ minWidth: 0, pr: 1 }}>
         {projName ? (
-          <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1.1, py: 0.3, borderRadius: 1.5, backgroundColor: `${pColor}15`, border: `1px solid ${pColor}35`, maxWidth: '100%', overflow: 'hidden' }}>
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1, py: 0.3, borderRadius: 1.5, backgroundColor: `${pColor}15`, border: `1px solid ${pColor}35`, maxWidth: '100%', overflow: 'hidden' }}>
             <Typography noWrap sx={{ fontSize: '0.72rem', fontWeight: 600, color: pColor }}>{projName}</Typography>
           </Box>
         ) : <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>}
       </Box>
 
       {/* Priority */}
-      <Box sx={{ width: 90, flexShrink: 0, mr: 1.5 }}>
+      <Box sx={{ minWidth: 0 }}>
         {pc ? (
           <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3, px: 0.9, py: 0.3, borderRadius: 1.5, backgroundColor: pc.bg }}>
             <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, color: pc.color, lineHeight: 1 }}>{pc.icon}</Typography>
@@ -330,7 +344,7 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
       </Box>
 
       {/* Due date */}
-      <Box sx={{ width: 100, flexShrink: 0, mr: 1.5 }}>
+      <Box sx={{ minWidth: 0 }}>
         {due ? (
           <Box>
             <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.primary', lineHeight: 1.3 }}>{due.monthDay}</Typography>
@@ -340,10 +354,10 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
       </Box>
 
       {/* Status */}
-      <Box sx={{ width: 105, flexShrink: 0, mr: 1.5 }}>
+      <Box sx={{ minWidth: 0 }}>
         <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
           <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: sc.color, flexShrink: 0 }} />
-          <Typography sx={{ fontSize: '0.73rem', color: sc.color, fontWeight: 500, whiteSpace: 'nowrap' }}>{sc.label}</Typography>
+          <Typography noWrap sx={{ fontSize: '0.73rem', color: sc.color, fontWeight: 500 }}>{sc.label}</Typography>
         </Box>
       </Box>
 
@@ -660,16 +674,16 @@ export default function MyTasksPage() {
 
           {/* Column headers */}
           {!loading && filteredTasks.length > 0 && (
-            <Box sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'action.hover' }}>
-              <Box sx={{ width: 34, flexShrink: 0 }} />
-              <Box sx={{ width: 26, flexShrink: 0, mr: 0.5 }} />
-              <Typography sx={{ flex: 1, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1 }}>Task</Typography>
-              <Typography sx={{ width: 130, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Project</Typography>
-              <Typography sx={{ width: 90,  fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Priority</Typography>
-              <Typography sx={{ width: 100, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Due Date</Typography>
-              <Typography sx={{ width: 105, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Status</Typography>
-              <Typography sx={{ width: 72,  fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>Assignee</Typography>
-              <Box sx={{ width: 32, flexShrink: 0 }} />
+            <Box sx={{ display: 'grid', gridTemplateColumns: ROW_GRID, alignItems: 'center', px: 1.5, py: 0.6, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'action.hover' }}>
+              <Box />{/* checkbox */}
+              <Box />{/* star */}
+              <Typography sx={{ fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Task</Typography>
+              <Typography sx={{ fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Project</Typography>
+              <Typography sx={{ fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Priority</Typography>
+              <Typography sx={{ fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Due Date</Typography>
+              <Typography sx={{ fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Status</Typography>
+              <Typography sx={{ fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em' }}>Assignee</Typography>
+              <Box />
             </Box>
           )}
 
