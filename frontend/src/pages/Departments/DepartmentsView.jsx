@@ -1,6 +1,9 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, CircularProgress } from '@mui/material';
+import React, { useEffect, useState } from 'react';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, CircularProgress, Skeleton } from '@mui/material';
 import { Add, Edit, Delete, Business, PhotoCamera } from '@mui/icons-material';
+
+// Module-level cache: survives re-renders and re-navigation within the same session
+let _deptCache = null;
 import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { departmentsAPI } from '../../services/api.js';
@@ -11,7 +14,8 @@ import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 export default function DepartmentsView() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const [departments, setDepartments] = useState([]);
+  const [departments, setDepartments] = useState(_deptCache || []);
+  const [loading, setLoading] = useState(!_deptCache);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -23,7 +27,15 @@ export default function DepartmentsView() {
   const COLORS = ['#6366F1','#10B981','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899','#14B8A6'];
   const UPLOAD_INPUT_ID = 'dept-logo-file-input';
 
-  const load = () => departmentsAPI.getAll().then(res => setDepartments(res.data || [])).catch(() => {});
+  const load = async () => {
+    try {
+      const res = await departmentsAPI.getAll();
+      const data = res.data || [];
+      _deptCache = data;
+      setDepartments(data);
+    } catch {}
+    setLoading(false);
+  };
   useEffect(() => { load(); }, []);
 
   const handleOpen = (dept = null) => {
@@ -113,7 +125,24 @@ export default function DepartmentsView() {
       </Box>
 
       <Grid container spacing={2.5}>
-        {departments.map(dept => (
+        {loading && [1,2,3].map(i => (
+          <Grid item xs={12} sm={6} md={4} key={`sk-${i}`}>
+            <Card>
+              <Skeleton variant="rectangular" height={6} sx={{ borderRadius: '12px 12px 0 0' }} />
+              <CardContent sx={{ p: 2.5 }}>
+                <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center', mb: 1.5 }}>
+                  <Skeleton variant="rounded" width={40} height={40} />
+                  <Box sx={{ flex: 1 }}>
+                    <Skeleton variant="text" width="60%" height={22} />
+                    <Skeleton variant="text" width="40%" height={18} />
+                  </Box>
+                </Box>
+                <Skeleton variant="text" width="80%" />
+              </CardContent>
+            </Card>
+          </Grid>
+        ))}
+        {!loading && departments.map(dept => (
           <Grid item xs={12} sm={6} md={4} key={dept._id}>
             <Card>
               <Box sx={{ height: 6, backgroundColor: dept.color || '#6366F1', borderRadius: '12px 12px 0 0' }} />
@@ -147,7 +176,7 @@ export default function DepartmentsView() {
             </Card>
           </Grid>
         ))}
-        {departments.length === 0 && (
+        {!loading && departments.length === 0 && (
           <Grid item xs={12}>
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Business sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
