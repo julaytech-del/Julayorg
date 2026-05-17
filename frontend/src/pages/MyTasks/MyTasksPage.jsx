@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react'
 import {
   Box, Typography, Card, CardContent, Chip, Table, TableBody,
   TableCell, TableContainer, TableHead, TableRow, Paper, Tabs, Tab,
-  Skeleton, Tooltip, IconButton,
+  Skeleton, Tooltip, IconButton, Avatar,
 } from '@mui/material';
 import {
   CheckCircle, Assignment, Warning, Today, CalendarToday,
