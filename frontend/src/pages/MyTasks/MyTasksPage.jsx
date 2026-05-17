@@ -7,8 +7,8 @@ import {
 import { PieChart, Pie, Cell, Tooltip as RTooltip, ResponsiveContainer } from 'recharts';
 import {
   CheckCircle, Assignment, Warning, Today, CalendarToday,
-  AccessTime, Inbox, OpenInNew, Add, ChevronLeft, ChevronRight,
-  MoreHoriz, FilterList, Sort, Close,
+  AccessTime, Inbox, Add, ChevronLeft, ChevronRight,
+  MoreHoriz, FilterList, Sort, Close, StarBorder, Star,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { myTasksAPI, tasksAPI } from '../../services/api.js';
@@ -268,7 +268,7 @@ function UpcomingTasksList({ tasks, onSelect }) {
 }
 
 // ── TaskRow ───────────────────────────────────────────────────────────────────
-function TaskRow({ task, onOpen, activeTimers, tick }) {
+function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
   const projName = typeof task.project === 'object' ? task.project?.name : null;
   const pColor   = projectColor(projName || '');
   const done     = ['done', 'cancelled', 'deployed'].includes(task.status);
@@ -279,11 +279,21 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
   const due      = task.dueDate ? formatDueDate(task.dueDate) : null;
 
   return (
-    <Box onClick={onOpen} sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, cursor: 'pointer', transition: 'background 0.1s', borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, '&:hover': { backgroundColor: '#F8FAFF' } }}>
+    <Box onClick={onOpen} sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, cursor: 'pointer', transition: 'background 0.1s', borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, '&:hover': { backgroundColor: '#F8FAFF' }, '&:hover .star-btn': { opacity: 1 } }}>
       <Checkbox size="small" checked={done} onClick={e => e.stopPropagation()} sx={{ p: 0.5, color: '#CBD5E1', '&.Mui-checked': { color: '#10B981' }, flexShrink: 0 }} />
 
+      {/* Star */}
+      <IconButton
+        className="star-btn"
+        size="small"
+        onClick={e => onToggleFav(task._id, e)}
+        sx={{ p: 0.3, mr: 0.5, flexShrink: 0, color: isFav ? '#F59E0B' : '#CBD5E1', opacity: isFav ? 1 : 0, transition: 'opacity 0.15s, color 0.15s', '&:hover': { color: '#F59E0B', bgcolor: 'transparent' } }}
+      >
+        {isFav ? <Star sx={{ fontSize: 14 }} /> : <StarBorder sx={{ fontSize: 14 }} />}
+      </IconButton>
+
       {/* Task title */}
-      <Box sx={{ flex: 1, minWidth: 0, mr: 2 }}>
+      <Box sx={{ flex: 1, minWidth: 0, mr: 1 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           <Typography noWrap sx={{ fontSize: '0.87rem', fontWeight: done ? 400 : 600, color: done ? 'text.disabled' : 'text.primary', textDecoration: done ? 'line-through' : 'none' }}>
             {task.title}
@@ -423,6 +433,18 @@ export default function MyTasksPage() {
   const [statsLoading, setStatsLoading] = useState(true);
   const [sortKey, setSortKey]           = useState('smart');
   const [sortDir, setSortDir]           = useState('asc');
+
+  // Favorites (local state)
+  const [favorites, setFavorites] = useState(new Set());
+  const toggleFavorite = useCallback((taskId, e) => {
+    e.stopPropagation();
+    setFavorites(prev => {
+      const next = new Set(prev);
+      if (next.has(taskId)) next.delete(taskId);
+      else next.add(taskId);
+      return next;
+    });
+  }, []);
 
   // Add task
   const [addOpen, setAddOpen]     = useState(false);
@@ -640,7 +662,8 @@ export default function MyTasksPage() {
           {!loading && filteredTasks.length > 0 && (
             <Box sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'action.hover' }}>
               <Box sx={{ width: 34, flexShrink: 0 }} />
-              <Typography sx={{ flex: 1, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 2 }}>Task</Typography>
+              <Box sx={{ width: 26, flexShrink: 0, mr: 0.5 }} />
+              <Typography sx={{ flex: 1, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1 }}>Task</Typography>
               <Typography sx={{ width: 130, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Project</Typography>
               <Typography sx={{ width: 90,  fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Priority</Typography>
               <Typography sx={{ width: 100, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Due Date</Typography>
@@ -657,7 +680,7 @@ export default function MyTasksPage() {
               : filteredTasks.length === 0
               ? <EmptyState tab={tab} />
               : filteredTasks.map(task => (
-                  <TaskRow key={task._id} task={task} onOpen={() => setSelectedTask(task)} activeTimers={activeTimers} tick={tick} />
+                  <TaskRow key={task._id} task={task} onOpen={() => setSelectedTask(task)} activeTimers={activeTimers} tick={tick} isFav={favorites.has(task._id)} onToggleFav={toggleFavorite} />
                 ))
             }
           </Box>
