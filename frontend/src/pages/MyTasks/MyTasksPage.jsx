@@ -1,16 +1,17 @@
-import React, { useState, useEffect, useCallback, useMemo } from 'react';
+import React, { useState, useEffect, useCallback, useMemo, useRef } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Skeleton, Tooltip, Avatar,
   IconButton, Tabs, Tab, Button, Divider, Checkbox,
+  Menu, MenuItem, Popover, TextField,
 } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip as RTooltip, ResponsiveContainer } from 'recharts';
 import {
   CheckCircle, Assignment, Warning, Today, CalendarToday,
   AccessTime, Inbox, OpenInNew, Add, ChevronLeft, ChevronRight,
-  MoreHoriz, FilterList, Sort,
+  MoreHoriz, FilterList, Sort, Close,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
-import { myTasksAPI } from '../../services/api.js';
+import { myTasksAPI, tasksAPI } from '../../services/api.js';
 import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 
 function fmtSecs(s) {
@@ -40,9 +41,8 @@ const isUpcoming = (due) => due && new Date(due) > new Date() && !isThisWeek(due
 const formatDueDate = (d) => {
   if (!d) return null;
   const dt   = new Date(d);
-  const now  = new Date();
+  const nowD = new Date(); nowD.setHours(0,0,0,0);
   const dtD  = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
-  const nowD = new Date(now.getFullYear(), now.getMonth(), now.getDate());
   const diff = Math.round((dtD - nowD) / 86400000);
   const monthDay = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
   let relative = '';
@@ -85,7 +85,6 @@ const urgencyOf = (task) => {
   if (isThisWeek(task.dueDate)) return 2;
   return 3;
 };
-
 const smartSort = (a, b) => {
   const ua = urgencyOf(a), ub = urgencyOf(b);
   if (ua !== ub) return ua - ub;
@@ -139,7 +138,6 @@ function MiniCalendar({ tasks }) {
   const firstDay    = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
   const todayStr    = new Date().toDateString();
-
   const cells = [];
   for (let i = 0; i < firstDay; i++) cells.push(null);
   for (let d = 1; d <= daysInMonth; d++) cells.push(d);
@@ -150,18 +148,14 @@ function MiniCalendar({ tasks }) {
         <IconButton size="small" onClick={() => setCursor(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))} sx={{ p: 0.5 }}>
           <ChevronLeft sx={{ fontSize: 18 }} />
         </IconButton>
-        <Typography fontWeight={700} sx={{ fontSize: '0.9rem' }}>
-          {MONTHS_LONG[month]} {year}
-        </Typography>
+        <Typography fontWeight={700} sx={{ fontSize: '0.9rem' }}>{MONTHS_LONG[month]} {year}</Typography>
         <IconButton size="small" onClick={() => setCursor(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))} sx={{ p: 0.5 }}>
           <ChevronRight sx={{ fontSize: 18 }} />
         </IconButton>
       </Box>
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.25 }}>
         {DAYS_SHORT.map(d => (
-          <Typography key={d} align="center" sx={{ fontSize: '0.65rem', color: 'text.disabled', fontWeight: 700, py: 0.4 }}>
-            {d}
-          </Typography>
+          <Typography key={d} align="center" sx={{ fontSize: '0.65rem', color: 'text.disabled', fontWeight: 700, py: 0.4 }}>{d}</Typography>
         ))}
         {cells.map((day, i) => {
           if (!day) return <Box key={`e-${i}`} />;
@@ -170,9 +164,7 @@ function MiniCalendar({ tasks }) {
           const hasT = taskDateSet.has(cellDate.toDateString());
           return (
             <Box key={day} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 0.5, borderRadius: 1.5, backgroundColor: isT ? '#6366F1' : 'transparent' }}>
-              <Typography sx={{ fontSize: '0.73rem', fontWeight: isT ? 700 : 400, color: isT ? '#fff' : 'text.primary', lineHeight: 1.4 }}>
-                {day}
-              </Typography>
+              <Typography sx={{ fontSize: '0.73rem', fontWeight: isT ? 700 : 400, color: isT ? '#fff' : 'text.primary', lineHeight: 1.4 }}>{day}</Typography>
               {hasT && !isT && <Box sx={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#6366F1', mt: 0.15 }} />}
             </Box>
           );
@@ -184,7 +176,6 @@ function MiniCalendar({ tasks }) {
 
 // ── TaskDonut ─────────────────────────────────────────────────────────────────
 const DONUT_EMPTY = [{ name: 'No tasks', value: 1, color: '#E2E8F0' }];
-
 function TaskDonut({ tasks, loading }) {
   const data = useMemo(() => {
     if (!tasks.length) return DONUT_EMPTY;
@@ -218,9 +209,7 @@ function TaskDonut({ tasks, loading }) {
         {data.filter(d => d.color !== '#E2E8F0').map(g => (
           <Box key={g.name} sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.9 }}>
             <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: g.color, flexShrink: 0 }} />
-            <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontWeight: 500 }}>
-              {g.value} {g.name}
-            </Typography>
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontWeight: 500 }}>{g.value} {g.name}</Typography>
           </Box>
         ))}
         <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary', mt: 0.5, pt: 0.5, borderTop: '1px solid', borderColor: 'divider' }}>
@@ -256,9 +245,7 @@ function UpcomingTasksList({ tasks, onSelect }) {
         const sc  = STATUS_DOT[task.status] || STATUS_DOT.planned;
         const due = formatDueDate(task.dueDate);
         return (
-          <Box
-            key={task._id}
-            onClick={() => onSelect(task)}
+          <Box key={task._id} onClick={() => onSelect(task)}
             sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, py: 1.1, borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' }, borderRadius: 1, px: 0.5 }}
           >
             <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: isOverdue(task.dueDate) ? '#EF4444' : sc.color, flexShrink: 0, mt: 0.55 }} />
@@ -292,34 +279,13 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
   const due      = task.dueDate ? formatDueDate(task.dueDate) : null;
 
   return (
-    <Box
-      sx={{
-        display: 'flex', alignItems: 'center',
-        px: 1.5, py: 0.6,
-        cursor: 'pointer',
-        transition: 'background 0.1s',
-        borderBottom: '1px solid', borderColor: 'divider',
-        '&:last-child': { borderBottom: 'none' },
-        '&:hover': { backgroundColor: '#F8FAFF' },
-      }}
-      onClick={onOpen}
-    >
-      {/* Checkbox */}
-      <Checkbox
-        size="small"
-        checked={done}
-        onClick={e => e.stopPropagation()}
-        sx={{ p: 0.5, color: '#CBD5E1', '&.Mui-checked': { color: '#10B981' }, flexShrink: 0 }}
-      />
+    <Box onClick={onOpen} sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, cursor: 'pointer', transition: 'background 0.1s', borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, '&:hover': { backgroundColor: '#F8FAFF' } }}>
+      <Checkbox size="small" checked={done} onClick={e => e.stopPropagation()} sx={{ p: 0.5, color: '#CBD5E1', '&.Mui-checked': { color: '#10B981' }, flexShrink: 0 }} />
 
-      {/* TASK — title + project subtitle */}
+      {/* Task title */}
       <Box sx={{ flex: 1, minWidth: 0, mr: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-          <Typography noWrap sx={{
-            fontSize: '0.87rem', fontWeight: done ? 400 : 600,
-            color: done ? 'text.disabled' : 'text.primary',
-            textDecoration: done ? 'line-through' : 'none',
-          }}>
+          <Typography noWrap sx={{ fontSize: '0.87rem', fontWeight: done ? 400 : 600, color: done ? 'text.disabled' : 'text.primary', textDecoration: done ? 'line-through' : 'none' }}>
             {task.title}
           </Typography>
           {timer && (
@@ -331,59 +297,47 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
             </Box>
           )}
         </Box>
-        {projName && (
-          <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary', mt: 0.1 }}>{projName}</Typography>
-        )}
+        {projName && <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary', mt: 0.1 }}>{projName}</Typography>}
       </Box>
 
-      {/* PROJECT badge */}
+      {/* Project */}
       <Box sx={{ width: 130, flexShrink: 0, mr: 1.5 }}>
         {projName ? (
           <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1.1, py: 0.3, borderRadius: 1.5, backgroundColor: `${pColor}15`, border: `1px solid ${pColor}35`, maxWidth: '100%', overflow: 'hidden' }}>
             <Typography noWrap sx={{ fontSize: '0.72rem', fontWeight: 600, color: pColor }}>{projName}</Typography>
           </Box>
-        ) : (
-          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
-        )}
+        ) : <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>}
       </Box>
 
-      {/* PRIORITY */}
+      {/* Priority */}
       <Box sx={{ width: 90, flexShrink: 0, mr: 1.5 }}>
         {pc ? (
           <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3, px: 0.9, py: 0.3, borderRadius: 1.5, backgroundColor: pc.bg }}>
             <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, color: pc.color, lineHeight: 1 }}>{pc.icon}</Typography>
             <Typography sx={{ fontSize: '0.72rem', fontWeight: 600, color: pc.color }}>{pc.label}</Typography>
           </Box>
-        ) : (
-          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
-        )}
+        ) : <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>}
       </Box>
 
-      {/* DUE DATE */}
+      {/* Due date */}
       <Box sx={{ width: 100, flexShrink: 0, mr: 1.5 }}>
         {due ? (
           <Box>
             <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.primary', lineHeight: 1.3 }}>{due.monthDay}</Typography>
-            <Typography sx={{ fontSize: '0.68rem', color: due.isOverdue ? '#EF4444' : due.isToday ? '#F59E0B' : 'text.secondary', fontWeight: due.isOverdue || due.isToday ? 600 : 400, lineHeight: 1.3 }}>
-              {due.relative}
-            </Typography>
+            <Typography sx={{ fontSize: '0.68rem', color: due.isOverdue ? '#EF4444' : due.isToday ? '#F59E0B' : 'text.secondary', fontWeight: due.isOverdue || due.isToday ? 600 : 400, lineHeight: 1.3 }}>{due.relative}</Typography>
           </Box>
-        ) : (
-          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
-        )}
+        ) : <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>}
       </Box>
 
-      {/* STATUS */}
+      {/* Status */}
       <Box sx={{ width: 105, flexShrink: 0, mr: 1.5 }}>
         <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
           <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: sc.color, flexShrink: 0 }} />
-          <Typography sx={{ fontSize: '0.73rem', color: sc.color, fontWeight: 500, whiteSpace: 'nowrap' }}>
-            {sc.label}
-          </Typography>
+          <Typography sx={{ fontSize: '0.73rem', color: sc.color, fontWeight: 500, whiteSpace: 'nowrap' }}>{sc.label}</Typography>
         </Box>
       </Box>
 
-      {/* ASSIGNEE */}
+      {/* Assignee */}
       <Box sx={{ width: 72, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
         {task.assignees?.length > 0 ? (
           <>
@@ -400,12 +354,9 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
               </Avatar>
             )}
           </>
-        ) : (
-          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
-        )}
+        ) : <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>}
       </Box>
 
-      {/* Menu */}
       <Tooltip title="Open task">
         <IconButton size="small" onClick={e => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.5, color: '#CBD5E1', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
           <MoreHoriz sx={{ fontSize: 17 }} />
@@ -429,7 +380,6 @@ function SkeletonTask() {
       <Skeleton width={70}  height={30} sx={{ borderRadius: 0.5 }} />
       <Skeleton width={85}  height={22} sx={{ borderRadius: 1.5 }} />
       <Skeleton variant="circular" width={28} height={28} />
-      <Skeleton variant="circular" width={24} height={24} />
     </Box>
   );
 }
@@ -474,6 +424,21 @@ export default function MyTasksPage() {
   const [sortKey, setSortKey]           = useState('smart');
   const [sortDir, setSortDir]           = useState('asc');
 
+  // Add task
+  const [addOpen, setAddOpen]     = useState(false);
+  const [addTitle, setAddTitle]   = useState('');
+  const [addLoading, setAddLoading] = useState(false);
+  const addInputRef = useRef(null);
+
+  // Menus
+  const [sortAnchor,   setSortAnchor]   = useState(null);
+  const [filterAnchor, setFilterAnchor] = useState(null);
+  const [moreAnchor,   setMoreAnchor]   = useState(null);
+
+  // Filters
+  const [filterStatus,   setFilterStatus]   = useState([]);
+  const [filterPriority, setFilterPriority] = useState([]);
+
   const fetchData = useCallback(async () => {
     setLoading(true);
     try {
@@ -497,10 +462,10 @@ export default function MyTasksPage() {
       const d   = res?.data?.data || res?.data || {};
       setStats(prev => ({
         ...prev,
-        overdue:        d.overdueTasks      ?? 0,
-        completedMonth: d.tasksCompleted    ?? 0,
+        overdue:        d.overdueTasks   ?? 0,
+        completedMonth: d.tasksCompleted ?? 0,
       }));
-    } catch { /* derive from tasks */ }
+    } catch { }
     finally { setStatsLoading(false); }
   }, []);
 
@@ -516,15 +481,37 @@ export default function MyTasksPage() {
     }
   }, [loading, tasks]);
 
+  // Add task handler
+  const handleAddTask = async () => {
+    if (!addTitle.trim() || addLoading) return;
+    setAddLoading(true);
+    try {
+      await tasksAPI.create({ title: addTitle.trim(), assignees: [user._id], status: 'planned' });
+      setAddTitle('');
+      setAddOpen(false);
+      await fetchData();
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setAddLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (addOpen) setTimeout(() => addInputRef.current?.focus(), 50);
+  }, [addOpen]);
+
   const filteredTasks = useMemo(() => {
-    const base = tasks.filter(t => {
-      if (tab === 'all')       return true;
+    let base = tasks.filter(t => {
       if (tab === 'today')     return isToday(t.dueDate);
       if (tab === 'this_week') return isThisWeek(t.dueDate);
       if (tab === 'overdue')   return isOverdue(t.dueDate) && t.status !== 'done';
       if (tab === 'upcoming')  return isUpcoming(t.dueDate);
       return true;
     });
+    if (filterStatus.length > 0)   base = base.filter(t => filterStatus.includes(t.status));
+    if (filterPriority.length > 0) base = base.filter(t => filterPriority.includes(t.priority));
+
     const dir = sortDir === 'asc' ? 1 : -1;
     return [...base].sort((a, b) => {
       if (sortKey === 'smart')    return smartSort(a, b) * dir;
@@ -538,7 +525,7 @@ export default function MyTasksPage() {
       }
       return 0;
     });
-  }, [tasks, tab, sortKey, sortDir]);
+  }, [tasks, tab, sortKey, sortDir, filterStatus, filterPriority]);
 
   const TAB_COUNTS = {
     all:       tasks.length,
@@ -548,70 +535,75 @@ export default function MyTasksPage() {
     upcoming:  tasks.filter(t => isUpcoming(t.dueDate)).length,
   };
 
-  const overdueCount = tasks.filter(t => isOverdue(t.dueDate) && !['done','cancelled','deployed'].includes(t.status)).length;
+  const inProgressCount = tasks.filter(t => t.status === 'in_progress').length;
+  const overdueCount    = tasks.filter(t => isOverdue(t.dueDate) && !['done','cancelled','deployed'].includes(t.status)).length;
+  const hasActiveFilter = filterStatus.length > 0 || filterPriority.length > 0;
+
+  const SORT_OPTIONS = [
+    { key: 'smart',    label: 'Smart (urgency + priority)' },
+    { key: 'dueDate',  label: 'Due Date' },
+    { key: 'priority', label: 'Priority' },
+    { key: 'title',    label: 'Name (A–Z)' },
+  ];
 
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1400, mx: 'auto' }}>
 
-      {/* ── Page header ── */}
+      {/* Header */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight={800} sx={{ fontSize: { xs: '1.6rem', md: '1.9rem' }, letterSpacing: '-0.5px' }}>
-          My Tasks
-        </Typography>
+        <Typography variant="h4" fontWeight={800} sx={{ fontSize: { xs: '1.6rem', md: '1.9rem' }, letterSpacing: '-0.5px' }}>My Tasks</Typography>
         <Typography color="text.secondary" sx={{ mt: 0.4, fontSize: '0.9rem' }}>
           {getGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋
         </Typography>
       </Box>
 
-      {/* ── Stat cards ── */}
+      {/* Stat cards */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <StatCard
-          label="My Tasks" value={stats.total} icon={Assignment} color="#6366F1"
+        <StatCard label="My Tasks" value={stats.total} icon={Assignment} color="#6366F1"
           sublabel={stats.dueToday > 0 ? `↑ ${stats.dueToday} due today` : undefined}
-          sublabelColor="#F59E0B" loading={statsLoading}
-        />
-        <StatCard
-          label="In Progress"
-          value={tasks.filter(t => t.status === 'in_progress').length}
-          icon={AccessTime} color="#3B82F6"
-          sublabel={`${tasks.filter(t => t.status === 'in_progress' && t.project).length > 0 ? tasks.filter(t => t.status === 'in_progress').length + ' tasks' : undefined}`}
-          loading={statsLoading}
-        />
-        <StatCard
-          label="Completed" value={stats.completedMonth} icon={CheckCircle} color="#10B981"
-          sublabel="This month" sublabelColor="#6B7280" loading={statsLoading}
-        />
-        <StatCard
-          label="Overdue" value={overdueCount} icon={Warning} color="#EF4444"
+          sublabelColor="#F59E0B" loading={statsLoading} />
+        <StatCard label="In Progress" value={inProgressCount} icon={AccessTime} color="#3B82F6"
+          sublabel={inProgressCount > 0 ? `${inProgressCount} active` : undefined}
+          sublabelColor="#64748B" loading={statsLoading} />
+        <StatCard label="Completed" value={stats.completedMonth} icon={CheckCircle} color="#10B981"
+          sublabel="This month" sublabelColor="#6B7280" loading={statsLoading} />
+        <StatCard label="Overdue" value={overdueCount} icon={Warning} color="#EF4444"
           sublabel={overdueCount > 0 ? 'Needs attention' : 'All caught up'}
-          sublabelColor={overdueCount > 0 ? '#EF4444' : '#10B981'} loading={statsLoading}
-        />
+          sublabelColor={overdueCount > 0 ? '#EF4444' : '#10B981'} loading={statsLoading} />
       </Box>
 
-      {/* ── Two-column layout ── */}
+      {/* Two-column layout */}
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 300px' }, gap: 3, alignItems: 'start' }}>
 
-        {/* ── LEFT: Task list card ── */}
+        {/* LEFT: Task list */}
         <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
 
           {/* Card header */}
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.75, borderBottom: '1px solid', borderColor: 'divider' }}>
-            <Typography fontWeight={700} sx={{ fontSize: '1.05rem' }}>My Tasks</Typography>
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              <Button
-                size="small" startIcon={<FilterList sx={{ fontSize: 15 }} />}
-                sx={{ textTransform: 'none', fontSize: '0.78rem', color: 'text.secondary', borderColor: 'divider', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, border: '1px solid', borderColor: 'divider', '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}
-              >
+              <Typography fontWeight={700} sx={{ fontSize: '1.05rem' }}>My Tasks</Typography>
+              {hasActiveFilter && (
+                <Chip
+                  label={`${filterStatus.length + filterPriority.length} filter${filterStatus.length + filterPriority.length > 1 ? 's' : ''}`}
+                  size="small"
+                  onDelete={() => { setFilterStatus([]); setFilterPriority([]); }}
+                  deleteIcon={<Close sx={{ fontSize: '14px !important' }} />}
+                  sx={{ height: 22, fontSize: '0.68rem', fontWeight: 600, bgcolor: '#EEF2FF', color: '#6366F1', '& .MuiChip-deleteIcon': { color: '#6366F1' } }}
+                />
+              )}
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+              <Button size="small" startIcon={<FilterList sx={{ fontSize: 15 }} />}
+                onClick={e => setFilterAnchor(e.currentTarget)}
+                sx={{ textTransform: 'none', fontSize: '0.78rem', color: hasActiveFilter ? '#6366F1' : 'text.secondary', border: '1px solid', borderColor: hasActiveFilter ? '#6366F1' : 'divider', bgcolor: hasActiveFilter ? '#EEF2FF' : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}>
                 Filter
               </Button>
-              <Button
-                size="small" startIcon={<Sort sx={{ fontSize: 15 }} />}
-                onClick={() => setSortKey(k => k === 'smart' ? 'dueDate' : 'smart')}
-                sx={{ textTransform: 'none', fontSize: '0.78rem', color: sortKey !== 'smart' ? '#6366F1' : 'text.secondary', border: '1px solid', borderColor: sortKey !== 'smart' ? '#6366F1' : 'divider', bgcolor: sortKey !== 'smart' ? '#EEF2FF' : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}
-              >
+              <Button size="small" startIcon={<Sort sx={{ fontSize: 15 }} />}
+                onClick={e => setSortAnchor(e.currentTarget)}
+                sx={{ textTransform: 'none', fontSize: '0.78rem', color: sortKey !== 'smart' ? '#6366F1' : 'text.secondary', border: '1px solid', borderColor: sortKey !== 'smart' ? '#6366F1' : 'divider', bgcolor: sortKey !== 'smart' ? '#EEF2FF' : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}>
                 Sort
               </Button>
-              <IconButton size="small" sx={{ color: 'text.secondary', p: 0.5 }}>
+              <IconButton size="small" onClick={e => setMoreAnchor(e.currentTarget)} sx={{ color: 'text.secondary', p: 0.5 }}>
                 <MoreHoriz sx={{ fontSize: 18 }} />
               </IconButton>
             </Box>
@@ -619,11 +611,8 @@ export default function MyTasksPage() {
 
           {/* Tabs */}
           <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 2 }}>
-            <Tabs
-              value={tab} onChange={(_, v) => setTab(v)}
-              variant="scrollable" scrollButtons="auto"
-              sx={{ minHeight: 42, '& .MuiTab-root': { minHeight: 42, py: 0, fontSize: '0.82rem', textTransform: 'none', fontWeight: 500 } }}
-            >
+            <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="scrollable" scrollButtons="auto"
+              sx={{ minHeight: 42, '& .MuiTab-root': { minHeight: 42, py: 0, fontSize: '0.82rem', textTransform: 'none', fontWeight: 500 } }}>
               {[
                 { value: 'all',       label: 'All' },
                 { value: 'today',     label: 'Today' },
@@ -653,10 +642,10 @@ export default function MyTasksPage() {
               <Box sx={{ width: 34, flexShrink: 0 }} />
               <Typography sx={{ flex: 1, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 2 }}>Task</Typography>
               <Typography sx={{ width: 130, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Project</Typography>
-              <Typography sx={{ width: 90, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Priority</Typography>
+              <Typography sx={{ width: 90,  fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Priority</Typography>
               <Typography sx={{ width: 100, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Due Date</Typography>
               <Typography sx={{ width: 105, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Status</Typography>
-              <Typography sx={{ width: 72, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>Assignee</Typography>
+              <Typography sx={{ width: 72,  fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>Assignee</Typography>
               <Box sx={{ width: 32, flexShrink: 0 }} />
             </Box>
           )}
@@ -675,36 +664,54 @@ export default function MyTasksPage() {
 
           {/* Add task */}
           <Divider />
-          <Box sx={{ px: 2, py: 0.75 }}>
-            <Button
-              startIcon={<Add sx={{ fontSize: 16 }} />}
-              sx={{ color: 'text.disabled', fontSize: '0.8rem', textTransform: 'none', fontWeight: 400, px: 1, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', backgroundColor: '#EEF2FF' } }}
-            >
-              Add new task
-            </Button>
-          </Box>
+          {addOpen ? (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 2, py: 1 }}>
+              <Checkbox size="small" disabled sx={{ p: 0.5, color: '#CBD5E1', flexShrink: 0 }} />
+              <TextField
+                inputRef={addInputRef}
+                size="small" fullWidth
+                placeholder="Task name…"
+                value={addTitle}
+                onChange={e => setAddTitle(e.target.value)}
+                onKeyDown={e => {
+                  if (e.key === 'Enter')  handleAddTask();
+                  if (e.key === 'Escape') { setAddOpen(false); setAddTitle(''); }
+                }}
+                sx={{ '& .MuiOutlinedInput-root': { fontSize: '0.87rem', borderRadius: 1.5 } }}
+              />
+              <Button size="small" variant="contained" disabled={!addTitle.trim() || addLoading} onClick={handleAddTask}
+                sx={{ textTransform: 'none', fontSize: '0.8rem', px: 1.75, borderRadius: 1.5, flexShrink: 0, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: 'none' }}>
+                {addLoading ? 'Saving…' : 'Save'}
+              </Button>
+              <Button size="small" onClick={() => { setAddOpen(false); setAddTitle(''); }}
+                sx={{ textTransform: 'none', fontSize: '0.8rem', color: 'text.secondary', flexShrink: 0, borderRadius: 1.5 }}>
+                Cancel
+              </Button>
+            </Box>
+          ) : (
+            <Box sx={{ px: 2, py: 0.75 }}>
+              <Button startIcon={<Add sx={{ fontSize: 16 }} />} onClick={() => setAddOpen(true)}
+                sx={{ color: 'text.disabled', fontSize: '0.8rem', textTransform: 'none', fontWeight: 400, px: 1, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', backgroundColor: '#EEF2FF' } }}>
+                Add new task
+              </Button>
+            </Box>
+          )}
         </Card>
 
-        {/* ── RIGHT: Sidebar ── */}
+        {/* RIGHT: Sidebar */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-
-          {/* Calendar */}
           <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
             <CardContent sx={{ p: '18px !important' }}>
               <Typography fontWeight={700} sx={{ fontSize: '0.95rem', mb: 1.5 }}>Calendar</Typography>
               <MiniCalendar tasks={tasks} />
             </CardContent>
           </Card>
-
-          {/* Task Summary */}
           <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
             <CardContent sx={{ p: '18px !important' }}>
               <Typography fontWeight={700} sx={{ fontSize: '0.95rem', mb: 1.5 }}>Tasks Summary</Typography>
               <TaskDonut tasks={tasks} loading={loading} />
             </CardContent>
           </Card>
-
-          {/* Upcoming */}
           <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
             <CardContent sx={{ p: '18px !important' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
@@ -715,10 +722,7 @@ export default function MyTasksPage() {
                 ? Array.from({ length: 3 }).map((_, i) => (
                     <Box key={i} sx={{ display: 'flex', gap: 1, mb: 1.25 }}>
                       <Skeleton variant="circular" width={8} height={8} sx={{ mt: 0.5, flexShrink: 0 }} />
-                      <Box sx={{ flex: 1 }}>
-                        <Skeleton width="70%" height={14} />
-                        <Skeleton width="45%" height={11} sx={{ mt: 0.4 }} />
-                      </Box>
+                      <Box sx={{ flex: 1 }}><Skeleton width="70%" height={14} /><Skeleton width="45%" height={11} sx={{ mt: 0.4 }} /></Box>
                     </Box>
                   ))
                 : <UpcomingTasksList tasks={tasks} onSelect={setSelectedTask} />
@@ -727,6 +731,80 @@ export default function MyTasksPage() {
           </Card>
         </Box>
       </Box>
+
+      {/* ── Sort Menu ── */}
+      <Menu anchorEl={sortAnchor} open={Boolean(sortAnchor)} onClose={() => setSortAnchor(null)}
+        PaperProps={{ sx: { borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.12)', minWidth: 210 } }}>
+        <Box sx={{ px: 2, py: 1, borderBottom: '1px solid', borderColor: 'divider' }}>
+          <Typography fontWeight={700} sx={{ fontSize: '0.82rem' }}>Sort by</Typography>
+        </Box>
+        {SORT_OPTIONS.map(s => (
+          <MenuItem key={s.key} selected={sortKey === s.key} onClick={() => { setSortKey(s.key); setSortDir('asc'); setSortAnchor(null); }}
+            sx={{ fontSize: '0.84rem', gap: 1, '&.Mui-selected': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+            {s.label}
+            {sortKey === s.key && <CheckCircle sx={{ fontSize: 14, ml: 'auto', color: '#6366F1' }} />}
+          </MenuItem>
+        ))}
+        {sortKey !== 'smart' && (
+          <Box sx={{ px: 1, pb: 0.5, pt: 0.25 }}>
+            <Button size="small" fullWidth onClick={() => { setSortKey('smart'); setSortDir('asc'); setSortAnchor(null); }}
+              sx={{ textTransform: 'none', fontSize: '0.78rem', color: 'text.secondary', borderRadius: 1.5 }}>
+              Reset to default
+            </Button>
+          </Box>
+        )}
+      </Menu>
+
+      {/* ── Filter Popover ── */}
+      <Popover anchorEl={filterAnchor} open={Boolean(filterAnchor)} onClose={() => setFilterAnchor(null)}
+        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
+        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
+        PaperProps={{ sx: { borderRadius: 2.5, boxShadow: '0 4px 20px rgba(0,0,0,0.12)', width: 260, mt: 0.5 } }}>
+        <Box sx={{ px: 2, py: 1.25, borderBottom: '1px solid', borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+          <Typography fontWeight={700} sx={{ fontSize: '0.88rem' }}>Filters</Typography>
+          {hasActiveFilter && (
+            <Button size="small" onClick={() => { setFilterStatus([]); setFilterPriority([]); }}
+              sx={{ textTransform: 'none', fontSize: '0.73rem', color: '#EF4444', p: 0, minWidth: 0 }}>
+              Clear all
+            </Button>
+          )}
+        </Box>
+        <Box sx={{ p: 1.5 }}>
+          <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', mb: 0.75, px: 0.5 }}>Status</Typography>
+          {Object.entries(STATUS_DOT).slice(0, 8).map(([key, val]) => (
+            <Box key={key} onClick={() => setFilterStatus(prev => prev.includes(key) ? prev.filter(s => s !== key) : [...prev, key])}
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.3, px: 0.5, borderRadius: 1.5, cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}>
+              <Checkbox size="small" checked={filterStatus.includes(key)} sx={{ p: 0.25 }} />
+              <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: val.color, flexShrink: 0 }} />
+              <Typography sx={{ fontSize: '0.82rem' }}>{val.label}</Typography>
+            </Box>
+          ))}
+          <Divider sx={{ my: 1 }} />
+          <Typography sx={{ fontSize: '0.72rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', mb: 0.75, px: 0.5 }}>Priority</Typography>
+          {Object.entries(PRIORITY_CONFIG).map(([key, val]) => (
+            <Box key={key} onClick={() => setFilterPriority(prev => prev.includes(key) ? prev.filter(p => p !== key) : [...prev, key])}
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.3, px: 0.5, borderRadius: 1.5, cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' } }}>
+              <Checkbox size="small" checked={filterPriority.includes(key)} sx={{ p: 0.25 }} />
+              <Typography sx={{ fontSize: '0.82rem', color: val.color, fontWeight: 600 }}>{val.icon} {val.label}</Typography>
+            </Box>
+          ))}
+        </Box>
+      </Popover>
+
+      {/* ── More Menu ── */}
+      <Menu anchorEl={moreAnchor} open={Boolean(moreAnchor)} onClose={() => setMoreAnchor(null)}
+        PaperProps={{ sx: { borderRadius: 2, boxShadow: '0 4px 20px rgba(0,0,0,0.12)', minWidth: 180 } }}>
+        <MenuItem onClick={() => { fetchData(); fetchStats(); setMoreAnchor(null); }} sx={{ fontSize: '0.84rem', gap: 1 }}>
+          Refresh
+        </MenuItem>
+        <MenuItem onClick={() => { setFilterStatus([]); setFilterPriority([]); setSortKey('smart'); setSortDir('asc'); setMoreAnchor(null); }} sx={{ fontSize: '0.84rem', gap: 1 }}>
+          Reset all filters & sort
+        </MenuItem>
+        <Divider />
+        <MenuItem onClick={() => { setTab('overdue'); setMoreAnchor(null); }} sx={{ fontSize: '0.84rem', gap: 1, color: '#EF4444' }}>
+          Show overdue only
+        </MenuItem>
+      </Menu>
 
       {selectedTask && (
         <TaskDetailModal task={selectedTask} onClose={() => setSelectedTask(null)} onUpdate={fetchData} />
