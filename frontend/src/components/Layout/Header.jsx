@@ -35,6 +35,7 @@ const PRESET_TAGS = ['Design','Frontend','Backend','Bug','Feature','Research','M
 function QuickAddModal({ open, onClose }) {
   const dispatch = useDispatch();
   const user = useSelector(s => s.auth.user);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [title,    setTitle]    = useState('');
   const [project,  setProject]  = useState('');
   const [priority, setPriority] = useState('medium');
@@ -95,8 +96,8 @@ function QuickAddModal({ open, onClose }) {
       {/* Header */}
       <Box sx={{ display:'flex', alignItems:'center', justifyContent:'space-between', px:3, pt:2.5, pb:0 }}>
         <Box sx={{ display:'flex', alignItems:'center', gap:1 }}>
-          <Box sx={{ width:28, height:28, borderRadius:'8px', bgcolor:'#EEF2FF', display:'flex', alignItems:'center', justifyContent:'center' }}>
-            <Add sx={{ fontSize:18, color:'#6366F1' }}/>
+          <Box sx={{ width:28, height:28, borderRadius:'8px', bgcolor:`${accent}18`, display:'flex', alignItems:'center', justifyContent:'center' }}>
+            <Add sx={{ fontSize:18, color:accent }}/>
           </Box>
           <Typography sx={{ fontWeight:700, fontSize:'0.95rem', color:'#0F172A' }}>New Task</Typography>
         </Box>
@@ -114,7 +115,7 @@ function QuickAddModal({ open, onClose }) {
           onChange={e => setTitle(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && title.trim()) { e.preventDefault(); handleSave(); } }}
           variant="outlined"
-          sx={{ mb:2, '& .MuiOutlinedInput-root': { fontSize:'0.95rem', fontWeight:500, borderRadius:'10px', '&:hover fieldset':{ borderColor:'#A5B4FC' }, '&.Mui-focused fieldset':{ borderColor:'#6366F1' } } }}
+          sx={{ mb:2, '& .MuiOutlinedInput-root': { fontSize:'0.95rem', fontWeight:500, borderRadius:'10px' } }}
         />
 
         {/* Row 1: Project + Priority */}
@@ -173,9 +174,9 @@ function QuickAddModal({ open, onClose }) {
               <Box key={t} onClick={() => removeTag(t)} sx={{
                 display:'flex', alignItems:'center', gap:0.4,
                 px:1, py:0.25, borderRadius:'999px',
-                bgcolor:'#EEF2FF', border:'1px solid #C7D2FE',
-                fontSize:'0.72rem', fontWeight:600, color:'#6366F1',
-                cursor:'pointer', '&:hover':{ bgcolor:'#E0E7FF' },
+                bgcolor:`${accent}18`, border:`1px solid ${accent}44`,
+                fontSize:'0.72rem', fontWeight:600, color:accent,
+                cursor:'pointer', '&:hover':{ bgcolor:`${accent}28` },
               }}>
                 {t} <Close sx={{ fontSize:11 }}/>
               </Box>
@@ -189,7 +190,7 @@ function QuickAddModal({ open, onClose }) {
                 px:1, py:0.25, borderRadius:'999px',
                 bgcolor:'#F8FAFC', border:'1px solid #E2E8F0',
                 fontSize:'0.72rem', color:'#64748B', cursor:'pointer',
-                '&:hover':{ bgcolor:'#EEF2FF', borderColor:'#C7D2FE', color:'#6366F1' },
+                '&:hover':{ bgcolor:`${accent}18`, borderColor:`${accent}44`, color:accent },
                 transition:'all 0.1s',
               }}>
                 + {t}
@@ -205,7 +206,7 @@ function QuickAddModal({ open, onClose }) {
         </Button>
         <Button
           variant="contained" onClick={handleSave} disabled={!title.trim() || saving}
-          sx={{ borderRadius:'8px', textTransform:'none', fontWeight:700, bgcolor:'#6366F1', '&:hover':{ bgcolor:'#4F46E5' }, boxShadow:'0 2px 8px rgba(99,102,241,0.35)', px:2.5 }}>
+          sx={{ borderRadius:'8px', textTransform:'none', fontWeight:700, bgcolor:accent, '&:hover':{ bgcolor:accent, opacity:0.88 }, boxShadow:`0 2px 8px ${accent}55`, px:2.5 }}>
           {saving ? 'Creating…' : 'Create Task'}
         </Button>
       </DialogActions>
@@ -328,6 +329,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
   const location    = useLocation();
   const user        = useSelector(s => s.auth.user);
   const darkMode    = useSelector(s => s.ui.darkMode);
+  const accent      = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const activeTimers = useSelector(s => s.ui.activeTimers);
   const { canCreateTask, canCreateProject, canUseAI } = usePermissions();
   const canCreate   = canCreateTask || canCreateProject;
@@ -374,7 +376,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             backgroundColor: darkMode ? '#0F172A' : '#F8FAFC',
             border:`1.5px solid ${darkMode ? 'rgba(255,255,255,0.08)' : '#E2E8F0'}`,
             borderRadius:2.5, px:1.5, py:0.6, gap:1, cursor:'pointer', transition:'all 0.15s',
-            '&:hover':{ borderColor:'#6366F1', backgroundColor: darkMode ? '#1E293B' : '#FEFEFF', boxShadow:'0 0 0 3px rgba(99,102,241,0.08)' },
+            '&:hover':{ borderColor:accent, backgroundColor: darkMode ? '#1E293B' : '#FEFEFF', boxShadow:`0 0 0 3px ${accent}14` },
           }}>
             <Search sx={{ color:'#94A3B8', fontSize:16 }}/>
             <InputBase placeholder={t('header.search')} readOnly sx={{ fontSize:'0.82rem', flex:1, color:'text.primary', pointerEvents:'none', '& input::placeholder':{ color:'#94A3B8' } }}/>
@@ -444,15 +446,15 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
           {canCreate && <>
             <Box onClick={e => setNewMenuAnchor(e.currentTarget)} sx={{
               display:'flex', alignItems:'center', gap:0.75,
-              bgcolor: darkMode ? 'rgba(99,102,241,0.15)' : '#EEF2FF',
-              border:`1.5px solid ${darkMode ? 'rgba(99,102,241,0.3)' : '#C7D2FE'}`,
+              bgcolor: `${accent}18`,
+              border:`1.5px solid ${accent}44`,
               borderRadius:'10px', px:1.25, py:0.6, cursor:'pointer',
               transition:'all 0.15s',
-              '&:hover':{ bgcolor: darkMode ? 'rgba(99,102,241,0.25)' : '#E0E7FF', transform:'translateY(-1px)', boxShadow:'0 4px 12px rgba(99,102,241,0.2)' },
+              '&:hover':{ bgcolor: `${accent}28`, transform:'translateY(-1px)', boxShadow:`0 4px 12px ${accent}30` },
             }}>
-              <Add sx={{ fontSize:16, color:'#6366F1' }}/>
-              <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:'#6366F1', display:{ xs:'none', sm:'block' } }}>New</Typography>
-              <KeyboardArrowDown sx={{ fontSize:14, color:'#6366F1' }}/>
+              <Add sx={{ fontSize:16, color:accent }}/>
+              <Typography sx={{ fontSize:'0.78rem', fontWeight:700, color:accent, display:{ xs:'none', sm:'block' } }}>New</Typography>
+              <KeyboardArrowDown sx={{ fontSize:14, color:accent }}/>
             </Box>
             <Menu anchorEl={newMenuAnchor} open={Boolean(newMenuAnchor)} onClose={() => setNewMenuAnchor(null)}
               transformOrigin={{ horizontal:'left', vertical:'top' }} anchorOrigin={{ horizontal:'left', vertical:'bottom' }}
@@ -460,8 +462,8 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
               <MenuItem onClick={() => { setNewMenuAnchor(null); setQuickAdd(true); }}
                 sx={{ borderRadius:1.5, mx:0.5, my:0.25, gap:1.5 }}>
                 <ListItemIcon sx={{ minWidth:0 }}>
-                  <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:'#EEF2FF',display:'flex',alignItems:'center',justifyContent:'center' }}>
-                    <Task sx={{ fontSize:15, color:'#6366F1' }}/>
+                  <Box sx={{ width:28,height:28,borderRadius:'8px',bgcolor:`${accent}18`,display:'flex',alignItems:'center',justifyContent:'center' }}>
+                    <Task sx={{ fontSize:15, color:accent }}/>
                   </Box>
                 </ListItemIcon>
                 <Box>
@@ -484,7 +486,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             </Menu>
             {canUseAI && <Chip icon={<AutoAwesome sx={{ fontSize:'14px !important' }}/>} label={t('header.aiGenerate')}
               onClick={() => navigate('/dashboard/ai')} size="small"
-              sx={{ background:'linear-gradient(135deg,#4F46E5 0%,#7C3AED 100%)', color:'white', fontWeight:700, fontSize:'0.75rem', px:0.5, cursor:'pointer', '& .MuiChip-icon':{ color:'white' }, '&:hover':{ opacity:0.88, transform:'translateY(-1px)' }, transition:'all 0.15s', boxShadow:'0 2px 8px rgba(79,70,229,0.35)' }} />}
+              sx={{ background:`linear-gradient(135deg,${accent} 0%,${accent}BB 100%)`, color:'white', fontWeight:700, fontSize:'0.75rem', px:0.5, cursor:'pointer', '& .MuiChip-icon':{ color:'white' }, '&:hover':{ opacity:0.88, transform:'translateY(-1px)' }, transition:'all 0.15s', boxShadow:`0 2px 8px ${accent}55` }} />}
           </>}
 
           {/* Dark mode */}
@@ -504,7 +506,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             backgroundColor: darkMode ? '#0F172A' : '#F8FAFC',
             '&:hover':{ backgroundColor: darkMode ? '#1E293B' : '#F1F5F9' }, transition:'all 0.15s',
           }}>
-            <Avatar src={user?.avatar || undefined} sx={{ width:26, height:26, fontSize:'0.72rem', background:'linear-gradient(135deg,#4F46E5,#7C3AED)' }}>
+            <Avatar src={user?.avatar || undefined} sx={{ width:26, height:26, fontSize:'0.72rem', background:`linear-gradient(135deg,${accent},${accent}BB)` }}>
               {!user?.avatar && user?.name?.[0]?.toUpperCase()}
             </Avatar>
             <Typography variant="caption" sx={{ fontWeight:600, color:'text.primary', display:{ xs:'none', sm:'block' }, maxWidth:100, overflow:'hidden', textOverflow:'ellipsis', whiteSpace:'nowrap', fontSize:'0.78rem' }}>
@@ -519,7 +521,7 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
             <Box sx={{ px:2, py:1.5 }}>
               <Typography variant="subtitle2" fontWeight={700} sx={{ fontSize:'0.85rem' }}>{user?.name}</Typography>
               <Typography variant="caption" color="text.secondary" sx={{ fontSize:'0.75rem' }}>{user?.email}</Typography>
-              <Box sx={{ mt:0.5 }}><Chip label={user?.role?.name||'Member'} size="small" sx={{ fontSize:'0.68rem', height:18, backgroundColor:'#EEF2FF', color:'#4F46E5', fontWeight:600 }}/></Box>
+              <Box sx={{ mt:0.5 }}><Chip label={user?.role?.name||'Member'} size="small" sx={{ fontSize:'0.68rem', height:18, backgroundColor:`${accent}18`, color:accent, fontWeight:600 }}/></Box>
             </Box>
             <Divider sx={{ my:0.5 }}/>
             <MenuItem onClick={() => { setAnchorEl(null); navigate('/dashboard/settings?tab=profile'); }}><Person sx={{ mr:1.5, fontSize:17, color:'text.secondary' }}/><Typography variant="body2">{t('header.profile')}</Typography></MenuItem>
