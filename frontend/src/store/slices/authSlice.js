@@ -41,6 +41,14 @@ const authSlice = createSlice({
       state.token = action.payload.token;
       state.initialized = true;
       localStorage.setItem('julay_token', action.payload.token);
+    },
+    patchUserDepartment(state, action) {
+      if (state.user) {
+        state.user = {
+          ...state.user,
+          department: { ...(state.user.department || {}), ...action.payload }
+        };
+      }
     }
   },
   extraReducers: builder => {
@@ -66,5 +74,5 @@ const authSlice = createSlice({
   }
 });
 
-export const { logout, clearError, setCredentials } = authSlice.actions;
+export const { logout, clearError, setCredentials, patchUserDepartment } = authSlice.actions;
 export default authSlice.reducer;

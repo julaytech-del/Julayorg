@@ -8,12 +8,14 @@ import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { departmentsAPI } from '../../services/api.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
-import { fetchCurrentUser } from '../../store/slices/authSlice.js';
+import { patchUserDepartment } from '../../store/slices/authSlice.js';
+import { useSelector } from 'react-redux';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 
 export default function DepartmentsView() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
+  const currentUser = useSelector(s => s.auth.user);
   const [departments, setDepartments] = useState(_deptCache || []);
   const [loading, setLoading] = useState(!_deptCache);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -92,7 +94,11 @@ export default function DepartmentsView() {
       dispatch(showSnackbar({ message: editing ? t('departments.form.save') : t('departments.form.create') }));
       setDialogOpen(false);
       load();
-      dispatch(fetchCurrentUser()); // refresh user so sidebar shows updated dept logo
+      // If user belongs to this department, update Redux immediately (no async roundtrip)
+      const userDeptId = currentUser?.department?._id || currentUser?.department;
+      if (editing && String(userDeptId) === String(editing._id)) {
+        dispatch(patchUserDepartment({ name: form.name, color: form.color, logo: form.logo }));
+      }
     } catch { dispatch(showSnackbar({ message: t('errors.generic'), severity: 'error' })); }
   };
 

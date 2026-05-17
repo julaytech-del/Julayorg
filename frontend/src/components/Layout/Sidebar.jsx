@@ -15,6 +15,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const dispatch  = useDispatch();
   const user      = useSelector(s => s.auth.user);
   const darkMode  = useSelector(s => s.ui.darkMode);
+  const accent    = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const { t }     = useTranslation();
   const org       = user?.organization;
   const { canUseAI, canViewReports, canManageDepartment, isAdmin } = usePermissions();
@@ -72,19 +73,19 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const sectionLbl = darkMode ? 'rgba(255,255,255,0.28)'    : '#9CA3AF';
   const iconInact  = darkMode ? 'rgba(255,255,255,0.38)'    : '#9CA3AF';
   const txtInact   = darkMode ? 'rgba(255,255,255,0.55)'    : '#6B7280';
-  const iconAct    = darkMode ? '#A5B4FC'                   : '#6366F1';
-  const txtAct     = darkMode ? '#E0E7FF'                   : '#4F46E5';
-  const activeBg   = darkMode ? 'rgba(99,102,241,0.18)'     : '#EEF2FF';
-  const hoverBg    = darkMode ? 'rgba(255,255,255,0.05)'    : '#F5F5FF';
-  const activeBar  = darkMode ? '#818CF8'                   : '#6366F1';
+  const iconAct    = accent;
+  const txtAct     = accent;
+  const activeBg   = `${accent}18`;
+  const hoverBg    = darkMode ? 'rgba(255,255,255,0.05)'    : `${accent}08`;
+  const activeBar  = accent;
   const divCol     = darkMode ? 'rgba(255,255,255,0.07)'    : '#F1F5F9';
   const userHover  = darkMode ? 'rgba(255,255,255,0.05)'    : '#F5F5FF';
   const userName   = darkMode ? 'rgba(255,255,255,0.9)'     : '#111827';
   const userEmail  = darkMode ? 'rgba(255,255,255,0.3)'     : '#9CA3AF';
-  const scrollThumb= darkMode ? 'rgba(255,255,255,0.1)'     : 'rgba(99,102,241,0.15)';
-  const badgeBg    = darkMode ? 'rgba(99,102,241,0.3)'      : 'rgba(99,102,241,0.1)';
-  const badgeBorder= darkMode ? 'rgba(99,102,241,0.4)'      : 'rgba(99,102,241,0.25)';
-  const badgeTxt   = darkMode ? '#A5B4FC'                   : '#6366F1';
+  const scrollThumb= darkMode ? 'rgba(255,255,255,0.1)'     : `${accent}25`;
+  const badgeBg    = `${accent}22`;
+  const badgeBorder= `${accent}44`;
+  const badgeTxt   = accent;
 
   const content = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: bg, borderRight: `1px solid ${border}` }}>
