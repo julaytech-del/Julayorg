@@ -87,17 +87,17 @@ const DAYS_SHORT  = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 // ── StatCard ──────────────────────────────────────────────────────────────────
 function StatCard({ label, value, icon: Icon, color, loading }) {
   return (
-    <Card sx={{ flex: 1, minWidth: 140, borderRadius: 2.5, boxShadow: '0 1px 6px rgba(0,0,0,0.07)', border: '1px solid', borderColor: 'divider' }}>
-      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 1.75, py: '14px !important', px: 2 }}>
-        <Box sx={{ width: 42, height: 42, borderRadius: 2, backgroundColor: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <Icon sx={{ color, fontSize: 21 }} />
+    <Card sx={{ flex: 1, minWidth: 140, borderRadius: 2.5, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid', borderColor: 'divider', borderTop: `3px solid ${color}`, overflow: 'hidden' }}>
+      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 1.75, py: '16px !important', px: 2.25 }}>
+        <Box sx={{ width: 44, height: 44, borderRadius: 2.5, background: `linear-gradient(135deg, ${color}22, ${color}10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <Icon sx={{ color, fontSize: 22 }} />
         </Box>
         <Box>
           {loading
-            ? <Skeleton width={36} height={26} />
-            : <Typography variant="h5" fontWeight={700} sx={{ lineHeight: 1, fontSize: '1.45rem' }}>{value}</Typography>
+            ? <Skeleton width={36} height={28} />
+            : <Typography fontWeight={800} sx={{ lineHeight: 1, fontSize: '1.55rem', letterSpacing: '-0.5px' }}>{value}</Typography>
           }
-          <Typography sx={{ fontSize: '0.72rem', color: 'text.secondary', mt: 0.3 }}>{label}</Typography>
+          <Typography sx={{ fontSize: '0.73rem', color: 'text.secondary', mt: 0.4, fontWeight: 500 }}>{label}</Typography>
         </Box>
       </CardContent>
     </Card>
@@ -263,6 +263,21 @@ function UpcomingTasksList({ tasks, onSelect }) {
   );
 }
 
+// status config for pill
+const STATUS_CONFIG = {
+  done:        { label: 'Done',        bg: '#DCFCE7', color: '#16A34A', dot: '#22C55E' },
+  deployed:    { label: 'Done',        bg: '#DCFCE7', color: '#16A34A', dot: '#22C55E' },
+  in_progress: { label: 'In Progress', bg: '#EEF2FF', color: '#4F46E5', dot: '#6366F1' },
+  review:      { label: 'Review',      bg: '#FEF9C3', color: '#854D0E', dot: '#EAB308' },
+  testing:     { label: 'Testing',     bg: '#F0FDF4', color: '#15803D', dot: '#16A34A' },
+  blocked:     { label: 'Blocked',     bg: '#FEE2E2', color: '#DC2626', dot: '#EF4444' },
+  on_hold:     { label: 'On Hold',     bg: '#FEF3C7', color: '#92400E', dot: '#F59E0B' },
+  cancelled:   { label: 'Cancelled',   bg: '#F1F5F9', color: '#94A3B8', dot: '#CBD5E1' },
+  planned:     { label: 'Planned',     bg: '#F1F5F9', color: '#64748B', dot: '#94A3B8' },
+  todo:        { label: 'To Do',       bg: '#F1F5F9', color: '#64748B', dot: '#94A3B8' },
+  backlog:     { label: 'Backlog',     bg: '#F1F5F9', color: '#64748B', dot: '#94A3B8' },
+};
+
 // ── TaskRow ───────────────────────────────────────────────────────────────────
 function TaskRow({ task, onOpen, activeTimers, tick }) {
   const projName = typeof task.project === 'object' ? task.project?.name : null;
@@ -270,6 +285,9 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
   const done     = ['done', 'cancelled', 'deployed'].includes(task.status);
   const overdue  = isOverdue(task.dueDate) && !done;
   const timer    = activeTimers.find(t => t.taskId === task._id);
+  const sc       = overdue
+    ? { label: 'Overdue', bg: '#FEE2E2', color: '#DC2626', dot: '#EF4444' }
+    : (STATUS_CONFIG[task.status] || STATUS_CONFIG.planned);
 
   return (
     <Box
@@ -277,39 +295,38 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
       sx={{
         display: 'flex',
         alignItems: 'center',
-        gap: 1.25,
-        px: 1.75,
-        py: 1.1,
-        borderRadius: 1.5,
+        gap: 2,
+        px: 2,
+        py: 1.25,
         cursor: 'pointer',
-        transition: 'background 0.12s',
-        backgroundColor: overdue ? '#FFF5F5' : 'transparent',
-        borderLeft: `3px solid ${overdue ? '#EF4444' : 'transparent'}`,
-        '&:hover': { backgroundColor: overdue ? '#FEE2E2' : 'action.hover' },
+        transition: 'background 0.1s',
+        borderBottom: '1px solid',
+        borderColor: 'divider',
+        '&:last-child': { borderBottom: 'none' },
+        '&:hover': { backgroundColor: overdue ? '#FFF5F5' : '#F8FAFF' },
       }}
     >
-      {/* Status indicator */}
-      {done
-        ? <CheckCircle sx={{ fontSize: 19, color: '#10B981', flexShrink: 0 }} />
-        : <RadioButtonUnchecked sx={{ fontSize: 19, color: overdue ? '#EF4444' : '#CBD5E1', flexShrink: 0 }} />
-      }
+      {/* Status pill */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1, py: 0.35, borderRadius: 1.5, backgroundColor: sc.bg, flexShrink: 0, minWidth: 90 }}>
+        <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: sc.dot, flexShrink: 0 }} />
+        <Typography sx={{ fontSize: '0.66rem', fontWeight: 700, color: sc.color, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
+          {sc.label}
+        </Typography>
+      </Box>
 
       {/* Title + project */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75, flexWrap: 'nowrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           <Typography noWrap sx={{
-            fontSize: '0.84rem', fontWeight: done ? 400 : 600,
-            color: done ? 'text.disabled' : overdue ? '#DC2626' : 'text.primary',
+            fontSize: '0.87rem',
+            fontWeight: done ? 400 : 500,
+            color: done ? 'text.disabled' : 'text.primary',
             textDecoration: done ? 'line-through' : 'none',
-            maxWidth: { xs: 160, sm: 240, md: 300 },
           }}>
             {task.title}
           </Typography>
-          {overdue && (
-            <Chip label="Overdue" size="small" sx={{ height: 15, fontSize: '0.58rem', fontWeight: 700, bgcolor: '#FEE2E2', color: '#DC2626', flexShrink: 0, px: 0.25 }} />
-          )}
           {timer && (
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 0.6, py: 0.15, borderRadius: '6px', bgcolor: '#FEF2F2', border: '1px solid #FECACA', flexShrink: 0 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 0.6, py: 0.1, borderRadius: '6px', bgcolor: '#FEF2F2', border: '1px solid #FECACA', flexShrink: 0 }}>
               <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#EF4444', animation: 'blink 1s ease-in-out infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } } }} />
               <Typography sx={{ fontSize: '0.66rem', fontWeight: 700, color: '#EF4444', fontFamily: 'monospace' }}>
                 {fmtSecs(Math.floor((Date.now() - timer.startedAt) / 1000))}
@@ -318,49 +335,62 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
           )}
         </Box>
         {projName && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.2 }}>
-            <Box sx={{ width: 7, height: 7, borderRadius: 0.5, backgroundColor: pColor, flexShrink: 0 }} />
-            <Typography noWrap sx={{ fontSize: '0.68rem', color: 'text.secondary', maxWidth: 200 }}>{projName}</Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}>
+            <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: pColor, flexShrink: 0 }} />
+            <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>{projName}</Typography>
           </Box>
         )}
       </Box>
 
       {/* Right metadata */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, flexShrink: 0 }}>
-        {task.dueDate && (
-          <Typography sx={{ fontSize: '0.72rem', color: dueDateColor(task.dueDate), fontWeight: overdue || isToday(task.dueDate) ? 600 : 400, whiteSpace: 'nowrap' }}>
-            {formatDate(task.dueDate)}
-          </Typography>
-        )}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
 
-        {task.priority && (
-          <Box sx={{ px: 0.75, py: 0.15, borderRadius: 1, backgroundColor: PRIORITY_BG[task.priority] || '#F1F5F9', flexShrink: 0 }}>
-            <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: PRIORITY_TXT[task.priority] || '#64748B', textTransform: 'capitalize' }}>
+        {/* Due date */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, minWidth: 72 }}>
+          <CalendarToday sx={{ fontSize: 11, color: overdue ? '#EF4444' : isToday(task.dueDate) ? '#F59E0B' : '#CBD5E1', flexShrink: 0 }} />
+          <Typography sx={{ fontSize: '0.72rem', color: task.dueDate ? dueDateColor(task.dueDate) : 'text.disabled', fontWeight: overdue || isToday(task.dueDate) ? 600 : 400, whiteSpace: 'nowrap' }}>
+            {task.dueDate ? formatDate(task.dueDate) : 'No date'}
+          </Typography>
+        </Box>
+
+        {/* Priority */}
+        {task.priority ? (
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 0.85, py: 0.3, borderRadius: 1.5, backgroundColor: PRIORITY_BG[task.priority] || '#F1F5F9', border: `1px solid ${PRIORITY_TXT[task.priority]}30`, flexShrink: 0 }}>
+            <Box sx={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: PRIORITY_TXT[task.priority] || '#94A3B8' }} />
+            <Typography sx={{ fontSize: '0.67rem', fontWeight: 700, color: PRIORITY_TXT[task.priority] || '#64748B', textTransform: 'capitalize' }}>
               {task.priority}
             </Typography>
           </Box>
+        ) : (
+          <Box sx={{ width: 64 }} />
         )}
 
-        {task.assignees?.length > 0 && (
-          <Box sx={{ display: 'flex', alignItems: 'center' }}>
-            {task.assignees.slice(0, 3).map((a, i) => (
-              <Tooltip key={i} title={a?.name || a?.email || 'Unknown'}>
-                <Avatar src={a?.avatar || undefined} sx={{ width: 22, height: 22, fontSize: '0.6rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', border: '1.5px solid white', ml: i > 0 ? -0.75 : 0 }}>
-                  {!a?.avatar && (a?.name?.[0] || '?').toUpperCase()}
+        {/* Assignees */}
+        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 52 }}>
+          {task.assignees?.length > 0 ? (
+            <>
+              {task.assignees.slice(0, 3).map((a, i) => (
+                <Tooltip key={i} title={a?.name || a?.email || 'Unknown'}>
+                  <Avatar src={a?.avatar || undefined} sx={{ width: 26, height: 26, fontSize: '0.65rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', border: '2px solid white', ml: i > 0 ? -0.9 : 0 }}>
+                    {!a?.avatar && (a?.name?.[0] || '?').toUpperCase()}
+                  </Avatar>
+                </Tooltip>
+              ))}
+              {task.assignees.length > 3 && (
+                <Avatar sx={{ width: 26, height: 26, fontSize: '0.6rem', bgcolor: '#E2E8F0', color: '#64748B', border: '2px solid white', ml: -0.9 }}>
+                  +{task.assignees.length - 3}
                 </Avatar>
-              </Tooltip>
-            ))}
-            {task.assignees.length > 3 && (
-              <Avatar sx={{ width: 22, height: 22, fontSize: '0.58rem', bgcolor: '#E2E8F0', color: '#64748B', border: '1.5px solid white', ml: -0.75 }}>
-                +{task.assignees.length - 3}
-              </Avatar>
-            )}
-          </Box>
-        )}
+              )}
+            </>
+          ) : (
+            <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
+          )}
+        </Box>
 
+        {/* Open */}
         <Tooltip title="Open task">
-          <IconButton size="small" onClick={(e) => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.4, color: '#94A3B8', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
-            <OpenInNew sx={{ fontSize: 13 }} />
+          <IconButton size="small" onClick={(e) => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.5, color: '#CBD5E1', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+            <OpenInNew sx={{ fontSize: 14 }} />
           </IconButton>
         </Tooltip>
       </Box>
@@ -371,14 +401,16 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
 // ── SkeletonTask ──────────────────────────────────────────────────────────────
 function SkeletonTask() {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25, px: 1.75, py: 1.1 }}>
-      <Skeleton variant="circular" width={19} height={19} sx={{ flexShrink: 0 }} />
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 1.25, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Skeleton width={90} height={24} sx={{ borderRadius: 1.5, flexShrink: 0 }} />
       <Box sx={{ flex: 1 }}>
-        <Skeleton width="55%" height={16} />
-        <Skeleton width="30%" height={12} sx={{ mt: 0.5 }} />
+        <Skeleton width="50%" height={16} />
+        <Skeleton width="25%" height={12} sx={{ mt: 0.5 }} />
       </Box>
-      <Skeleton width={60} height={14} />
-      <Skeleton width={48} height={20} sx={{ borderRadius: 1 }} />
+      <Skeleton width={64} height={14} />
+      <Skeleton width={56} height={22} sx={{ borderRadius: 1.5 }} />
+      <Skeleton variant="circular" width={26} height={26} />
+      <Skeleton variant="circular" width={24} height={24} />
     </Box>
   );
 }
@@ -604,8 +636,20 @@ export default function MyTasksPage() {
               </Box>
             </Box>
 
+            {/* Column headers */}
+            {!loading && filteredTasks.length > 0 && (
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 0.75, backgroundColor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider' }}>
+                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 90 }}>Status</Typography>
+                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', flex: 1 }}>Task</Typography>
+                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 72 }}>Due Date</Typography>
+                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 64 }}>Priority</Typography>
+                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 52 }}>Assignee</Typography>
+                <Box sx={{ width: 30 }} />
+              </Box>
+            )}
+
             {/* Task rows */}
-            <Box sx={{ py: 0.5 }}>
+            <Box>
               {loading
                 ? Array.from({ length: 6 }).map((_, i) => <SkeletonTask key={i} />)
                 : filteredTasks.length === 0
