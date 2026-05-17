@@ -1,25 +1,23 @@
 import React, { useState, useEffect, useCallback, useMemo } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Skeleton, Tooltip, Avatar,
-  IconButton, Tabs, Tab, Button, Divider,
+  IconButton, Tabs, Tab, Button, Divider, Checkbox,
 } from '@mui/material';
 import { PieChart, Pie, Cell, Tooltip as RTooltip, ResponsiveContainer } from 'recharts';
 import {
   CheckCircle, Assignment, Warning, Today, CalendarToday,
   AccessTime, Inbox, OpenInNew, Add, ChevronLeft, ChevronRight,
-  RadioButtonUnchecked,
+  MoreHoriz, FilterList, Sort,
 } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import { myTasksAPI } from '../../services/api.js';
 import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 
-// ── timer fmt ─────────────────────────────────────────────────────────────────
 function fmtSecs(s) {
   const h = Math.floor(s / 3600), m = Math.floor((s % 3600) / 60), sec = s % 60;
   return [h, m, sec].map(v => String(v).padStart(2, '0')).join(':');
 }
 
-// ── helpers ───────────────────────────────────────────────────────────────────
 const getGreeting = () => {
   const h = new Date().getHours();
   if (h < 12) return 'Good morning';
@@ -39,28 +37,45 @@ const isThisWeek = (due) => {
 };
 const isUpcoming = (due) => due && new Date(due) > new Date() && !isThisWeek(due);
 
-const dueDateColor = (due) => {
-  if (!due) return 'text.secondary';
-  if (isOverdue(due)) return 'error.main';
-  if (isToday(due))   return 'warning.main';
-  return 'text.secondary';
+const formatDueDate = (d) => {
+  if (!d) return null;
+  const dt   = new Date(d);
+  const now  = new Date();
+  const dtD  = new Date(dt.getFullYear(), dt.getMonth(), dt.getDate());
+  const nowD = new Date(now.getFullYear(), now.getMonth(), now.getDate());
+  const diff = Math.round((dtD - nowD) / 86400000);
+  const monthDay = dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  let relative = '';
+  if (diff < -1)     relative = `${Math.abs(diff)} days ago`;
+  else if (diff === -1) relative = 'Yesterday';
+  else if (diff === 0)  relative = 'Today';
+  else if (diff === 1)  relative = 'Tomorrow';
+  else                  relative = `In ${diff} days`;
+  return { monthDay, relative, isOverdue: diff < 0, isToday: diff === 0 };
 };
 
-const formatDate = (d) => {
-  if (!d) return '—';
-  const dt = new Date(d);
-  const now = new Date();
-  const diffDays = Math.round((dt - now) / 86400000);
-  if (isToday(d)) return 'Today';
-  if (diffDays === 1) return 'Tomorrow';
-  if (diffDays === -1) return 'Yesterday';
-  return dt.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+const PRIORITY_WEIGHT = { critical: 4, high: 3, medium: 2, low: 1 };
+
+const PRIORITY_CONFIG = {
+  critical: { label: 'Critical', color: '#DC2626', bg: '#FEE2E2', icon: '↑' },
+  high:     { label: 'High',     color: '#EA580C', bg: '#FFEDD5', icon: '↑' },
+  medium:   { label: 'Medium',   color: '#D97706', bg: '#FEF3C7', icon: '↔' },
+  low:      { label: 'Low',      color: '#16A34A', bg: '#DCFCE7', icon: '↓' },
 };
 
-const PRIORITY_COLORS  = { critical: 'error', high: 'error', medium: 'warning', low: 'success' };
-const PRIORITY_BG      = { critical: '#FEE2E2', high: '#FEE2E2', medium: '#FEF9C3', low: '#DCFCE7' };
-const PRIORITY_TXT     = { critical: '#DC2626', high: '#DC2626', medium: '#92400E', low: '#166534' };
-const PRIORITY_WEIGHT  = { critical: 4, high: 3, medium: 2, low: 1 };
+const STATUS_DOT = {
+  done:        { label: 'Done',        color: '#16A34A' },
+  deployed:    { label: 'Deployed',    color: '#16A34A' },
+  in_progress: { label: 'In Progress', color: '#6366F1' },
+  review:      { label: 'In Review',   color: '#EAB308' },
+  testing:     { label: 'Testing',     color: '#16A34A' },
+  blocked:     { label: 'Blocked',     color: '#EF4444' },
+  on_hold:     { label: 'On Hold',     color: '#F59E0B' },
+  cancelled:   { label: 'Cancelled',   color: '#94A3B8' },
+  planned:     { label: 'Planned',     color: '#6366F1' },
+  todo:        { label: 'To Do',       color: '#94A3B8' },
+  backlog:     { label: 'Backlog',     color: '#94A3B8' },
+};
 
 const urgencyOf = (task) => {
   if (['done', 'cancelled', 'deployed'].includes(task.status)) return 5;
@@ -85,19 +100,24 @@ const MONTHS_LONG = ['January','February','March','April','May','June','July','A
 const DAYS_SHORT  = ['Su','Mo','Tu','We','Th','Fr','Sa'];
 
 // ── StatCard ──────────────────────────────────────────────────────────────────
-function StatCard({ label, value, icon: Icon, color, loading }) {
+function StatCard({ label, value, sublabel, sublabelColor, icon: Icon, color, loading }) {
   return (
-    <Card sx={{ flex: 1, minWidth: 140, borderRadius: 2.5, boxShadow: '0 2px 8px rgba(0,0,0,0.06)', border: '1px solid', borderColor: 'divider', borderTop: `3px solid ${color}`, overflow: 'hidden' }}>
-      <CardContent sx={{ display: 'flex', alignItems: 'center', gap: 1.75, py: '16px !important', px: 2.25 }}>
-        <Box sx={{ width: 44, height: 44, borderRadius: 2.5, background: `linear-gradient(135deg, ${color}22, ${color}10)`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-          <Icon sx={{ color, fontSize: 22 }} />
-        </Box>
-        <Box>
-          {loading
-            ? <Skeleton width={36} height={28} />
-            : <Typography fontWeight={800} sx={{ lineHeight: 1, fontSize: '1.55rem', letterSpacing: '-0.5px' }}>{value}</Typography>
-          }
-          <Typography sx={{ fontSize: '0.73rem', color: 'text.secondary', mt: 0.4, fontWeight: 500 }}>{label}</Typography>
+    <Card elevation={0} sx={{ flex: 1, minWidth: 150, borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
+      <CardContent sx={{ p: '20px !important' }}>
+        <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
+          <Box sx={{ width: 46, height: 46, borderRadius: 2.5, backgroundColor: color, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <Icon sx={{ color: '#fff', fontSize: 23 }} />
+          </Box>
+          <Box sx={{ minWidth: 0 }}>
+            {loading
+              ? <Skeleton width={40} height={32} />
+              : <Typography fontWeight={800} sx={{ fontSize: '1.9rem', lineHeight: 1, letterSpacing: '-1px' }}>{value}</Typography>
+            }
+            <Typography sx={{ fontSize: '0.78rem', color: 'text.secondary', mt: 0.25, fontWeight: 500 }}>{label}</Typography>
+            {sublabel && (
+              <Typography sx={{ fontSize: '0.72rem', color: sublabelColor || color, fontWeight: 600, mt: 0.5 }}>{sublabel}</Typography>
+            )}
+          </Box>
         </Box>
       </CardContent>
     </Card>
@@ -130,22 +150,21 @@ function MiniCalendar({ tasks }) {
         <IconButton size="small" onClick={() => setCursor(d => new Date(d.getFullYear(), d.getMonth() - 1, 1))} sx={{ p: 0.5 }}>
           <ChevronLeft sx={{ fontSize: 18 }} />
         </IconButton>
-        <Typography fontWeight={700} sx={{ fontSize: '0.88rem' }}>
+        <Typography fontWeight={700} sx={{ fontSize: '0.9rem' }}>
           {MONTHS_LONG[month]} {year}
         </Typography>
         <IconButton size="small" onClick={() => setCursor(d => new Date(d.getFullYear(), d.getMonth() + 1, 1))} sx={{ p: 0.5 }}>
           <ChevronRight sx={{ fontSize: 18 }} />
         </IconButton>
       </Box>
-
       <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(7, 1fr)', gap: 0.25 }}>
         {DAYS_SHORT.map(d => (
-          <Typography key={d} align="center" sx={{ fontSize: '0.64rem', color: 'text.disabled', fontWeight: 700, py: 0.4, textTransform: 'uppercase' }}>
+          <Typography key={d} align="center" sx={{ fontSize: '0.65rem', color: 'text.disabled', fontWeight: 700, py: 0.4 }}>
             {d}
           </Typography>
         ))}
         {cells.map((day, i) => {
-          if (!day) return <Box key={`empty-${i}`} />;
+          if (!day) return <Box key={`e-${i}`} />;
           const cellDate = new Date(year, month, day);
           const isT  = cellDate.toDateString() === todayStr;
           const hasT = taskDateSet.has(cellDate.toDateString());
@@ -154,9 +173,7 @@ function MiniCalendar({ tasks }) {
               <Typography sx={{ fontSize: '0.73rem', fontWeight: isT ? 700 : 400, color: isT ? '#fff' : 'text.primary', lineHeight: 1.4 }}>
                 {day}
               </Typography>
-              {hasT && !isT && (
-                <Box sx={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#6366F1', mt: 0.15 }} />
-              )}
+              {hasT && !isT && <Box sx={{ width: 4, height: 4, borderRadius: '50%', backgroundColor: '#6366F1', mt: 0.15 }} />}
             </Box>
           );
         })}
@@ -166,56 +183,55 @@ function MiniCalendar({ tasks }) {
 }
 
 // ── TaskDonut ─────────────────────────────────────────────────────────────────
-const DONUT_DATA_EMPTY = [{ name: 'No tasks', value: 1, color: '#E2E8F0' }];
+const DONUT_EMPTY = [{ name: 'No tasks', value: 1, color: '#E2E8F0' }];
 
 function TaskDonut({ tasks, loading }) {
   const data = useMemo(() => {
-    if (!tasks.length) return DONUT_DATA_EMPTY;
-    const done   = tasks.filter(t => ['done','deployed'].includes(t.status)).length;
-    const inProg = tasks.filter(t => t.status === 'in_progress').length;
-    const todo   = tasks.filter(t => ['planned','todo','backlog'].includes(t.status)).length;
-    const other  = tasks.length - done - inProg - todo;
+    if (!tasks.length) return DONUT_EMPTY;
+    const done    = tasks.filter(t => ['done','deployed'].includes(t.status)).length;
+    const inProg  = tasks.filter(t => t.status === 'in_progress').length;
+    const todo    = tasks.filter(t => ['planned','todo','backlog'].includes(t.status)).length;
+    const overdue = tasks.filter(t => isOverdue(t.dueDate) && !['done','cancelled','deployed'].includes(t.status)).length;
     return [
-      { name: 'Done',        value: done,   color: '#10B981' },
-      { name: 'In Progress', value: inProg, color: '#6366F1' },
-      { name: 'To Do',       value: todo,   color: '#F59E0B' },
-      { name: 'Other',       value: other,  color: '#94A3B8' },
+      { name: 'To Do',       value: todo,    color: '#6366F1' },
+      { name: 'In Progress', value: inProg,  color: '#3B82F6' },
+      { name: 'Completed',   value: done,    color: '#10B981' },
+      { name: 'Overdue',     value: overdue, color: '#EF4444' },
     ].filter(d => d.value > 0);
   }, [tasks]);
 
-  if (loading) return <Skeleton variant="circular" width={120} height={120} sx={{ mx: 'auto' }} />;
-
-  const total = tasks.length;
+  if (loading) return <Skeleton variant="circular" width={110} height={110} sx={{ mx: 'auto' }} />;
 
   return (
-    <Box>
-      <Box sx={{ position: 'relative', height: 150 }}>
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+      <Box sx={{ position: 'relative', width: 130, height: 130, flexShrink: 0 }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart>
-            <Pie data={data} cx="50%" cy="50%" innerRadius={44} outerRadius={64} paddingAngle={2} dataKey="value" stroke="none">
+            <Pie data={data} cx="50%" cy="50%" innerRadius={40} outerRadius={60} paddingAngle={2} dataKey="value" stroke="none">
               {data.map((entry, i) => <Cell key={i} fill={entry.color} />)}
             </Pie>
             <RTooltip formatter={(val, name) => [`${val} task${val !== 1 ? 's' : ''}`, name]} />
           </PieChart>
         </ResponsiveContainer>
-        <Box sx={{ position: 'absolute', top: '50%', left: '50%', transform: 'translate(-50%, -50%)', textAlign: 'center', pointerEvents: 'none' }}>
-          <Typography fontWeight={700} sx={{ fontSize: '1.35rem', lineHeight: 1 }}>{total}</Typography>
-          <Typography sx={{ fontSize: '0.62rem', color: 'text.secondary' }}>tasks</Typography>
-        </Box>
       </Box>
-      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, justifyContent: 'center', mt: 0.5 }}>
+      <Box sx={{ flex: 1 }}>
         {data.filter(d => d.color !== '#E2E8F0').map(g => (
-          <Box key={g.name} sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-            <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: g.color, flexShrink: 0 }} />
-            <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary' }}>{g.name} <Box component="span" fontWeight={600} color="text.primary">({g.value})</Box></Typography>
+          <Box key={g.name} sx={{ display: 'flex', alignItems: 'center', gap: 0.75, mb: 0.9 }}>
+            <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: g.color, flexShrink: 0 }} />
+            <Typography sx={{ fontSize: '0.75rem', color: 'text.primary', fontWeight: 500 }}>
+              {g.value} {g.name}
+            </Typography>
           </Box>
         ))}
+        <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary', mt: 0.5, pt: 0.5, borderTop: '1px solid', borderColor: 'divider' }}>
+          Total: {tasks.length} tasks
+        </Typography>
       </Box>
     </Box>
   );
 }
 
-// ── UpcomingTasksList (sidebar) ───────────────────────────────────────────────
+// ── UpcomingTasksList ─────────────────────────────────────────────────────────
 function UpcomingTasksList({ tasks, onSelect }) {
   const upcoming = useMemo(() => {
     const in7 = new Date(); in7.setDate(in7.getDate() + 7);
@@ -228,55 +244,41 @@ function UpcomingTasksList({ tasks, onSelect }) {
   if (!upcoming.length) {
     return (
       <Box sx={{ textAlign: 'center', py: 2 }}>
-        <CalendarToday sx={{ fontSize: 32, color: 'action.disabled', mb: 0.5 }} />
+        <CalendarToday sx={{ fontSize: 28, color: 'action.disabled', mb: 0.5 }} />
         <Typography sx={{ fontSize: '0.78rem', color: 'text.secondary' }}>Nothing due soon</Typography>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+    <Box>
       {upcoming.map(task => {
-        const projName = typeof task.project === 'object' ? task.project?.name : null;
-        const pColor   = projectColor(projName || '');
-        const overdue  = isOverdue(task.dueDate);
+        const sc  = STATUS_DOT[task.status] || STATUS_DOT.planned;
+        const due = formatDueDate(task.dueDate);
         return (
           <Box
             key={task._id}
             onClick={() => onSelect(task)}
-            sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, p: 1, borderRadius: 1.5, cursor: 'pointer', transition: 'background 0.12s', '&:hover': { backgroundColor: 'action.hover' } }}
+            sx={{ display: 'flex', alignItems: 'flex-start', gap: 1.25, py: 1.1, borderBottom: '1px solid', borderColor: 'divider', '&:last-child': { borderBottom: 'none' }, cursor: 'pointer', '&:hover': { backgroundColor: 'action.hover' }, borderRadius: 1, px: 0.5 }}
           >
-            <Box sx={{ width: 3, height: '100%', minHeight: 36, borderRadius: 4, backgroundColor: overdue ? '#EF4444' : pColor, flexShrink: 0, mt: 0.25 }} />
+            <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: isOverdue(task.dueDate) ? '#EF4444' : sc.color, flexShrink: 0, mt: 0.55 }} />
             <Box sx={{ flex: 1, minWidth: 0 }}>
-              <Typography noWrap sx={{ fontSize: '0.78rem', fontWeight: 600, color: overdue ? 'error.main' : 'text.primary' }}>{task.title}</Typography>
-              {projName && (
-                <Typography noWrap sx={{ fontSize: '0.65rem', color: 'text.secondary', mt: 0.2 }}>{projName}</Typography>
+              <Typography noWrap sx={{ fontSize: '0.8rem', fontWeight: 600, color: 'text.primary' }}>{task.title}</Typography>
+              {due && (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, mt: 0.25 }}>
+                  <CalendarToday sx={{ fontSize: 11, color: 'text.disabled' }} />
+                  <Typography sx={{ fontSize: '0.68rem', color: due.isOverdue ? '#EF4444' : due.isToday ? '#F59E0B' : 'text.secondary', fontWeight: due.isOverdue || due.isToday ? 600 : 400 }}>
+                    {due.monthDay} · {due.relative}
+                  </Typography>
+                </Box>
               )}
             </Box>
-            <Typography sx={{ fontSize: '0.65rem', color: overdue ? 'error.main' : 'text.secondary', fontWeight: overdue ? 600 : 400, flexShrink: 0, pt: 0.2 }}>
-              {formatDate(task.dueDate)}
-            </Typography>
           </Box>
         );
       })}
     </Box>
   );
 }
-
-// status config for pill
-const STATUS_CONFIG = {
-  done:        { label: 'Done',        bg: '#DCFCE7', color: '#16A34A', dot: '#22C55E' },
-  deployed:    { label: 'Done',        bg: '#DCFCE7', color: '#16A34A', dot: '#22C55E' },
-  in_progress: { label: 'In Progress', bg: '#EEF2FF', color: '#4F46E5', dot: '#6366F1' },
-  review:      { label: 'Review',      bg: '#FEF9C3', color: '#854D0E', dot: '#EAB308' },
-  testing:     { label: 'Testing',     bg: '#F0FDF4', color: '#15803D', dot: '#16A34A' },
-  blocked:     { label: 'Blocked',     bg: '#FEE2E2', color: '#DC2626', dot: '#EF4444' },
-  on_hold:     { label: 'On Hold',     bg: '#FEF3C7', color: '#92400E', dot: '#F59E0B' },
-  cancelled:   { label: 'Cancelled',   bg: '#F1F5F9', color: '#94A3B8', dot: '#CBD5E1' },
-  planned:     { label: 'Planned',     bg: '#F1F5F9', color: '#64748B', dot: '#94A3B8' },
-  todo:        { label: 'To Do',       bg: '#F1F5F9', color: '#64748B', dot: '#94A3B8' },
-  backlog:     { label: 'Backlog',     bg: '#F1F5F9', color: '#64748B', dot: '#94A3B8' },
-};
 
 // ── TaskRow ───────────────────────────────────────────────────────────────────
 function TaskRow({ task, onOpen, activeTimers, tick }) {
@@ -285,41 +287,36 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
   const done     = ['done', 'cancelled', 'deployed'].includes(task.status);
   const overdue  = isOverdue(task.dueDate) && !done;
   const timer    = activeTimers.find(t => t.taskId === task._id);
-  const sc       = overdue
-    ? { label: 'Overdue', bg: '#FEE2E2', color: '#DC2626', dot: '#EF4444' }
-    : (STATUS_CONFIG[task.status] || STATUS_CONFIG.planned);
+  const pc       = PRIORITY_CONFIG[task.priority];
+  const sc       = overdue ? { label: 'Overdue', color: '#EF4444' } : (STATUS_DOT[task.status] || STATUS_DOT.planned);
+  const due      = task.dueDate ? formatDueDate(task.dueDate) : null;
 
   return (
     <Box
-      onClick={onOpen}
       sx={{
-        display: 'flex',
-        alignItems: 'center',
-        gap: 2,
-        px: 2,
-        py: 0.7,
+        display: 'flex', alignItems: 'center',
+        px: 1.5, py: 0.6,
         cursor: 'pointer',
         transition: 'background 0.1s',
-        borderBottom: '1px solid',
-        borderColor: 'divider',
+        borderBottom: '1px solid', borderColor: 'divider',
         '&:last-child': { borderBottom: 'none' },
-        '&:hover': { backgroundColor: overdue ? '#FFF5F5' : '#F8FAFF' },
+        '&:hover': { backgroundColor: '#F8FAFF' },
       }}
+      onClick={onOpen}
     >
-      {/* Status pill */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, px: 1, py: 0.35, borderRadius: 1.5, backgroundColor: sc.bg, flexShrink: 0, minWidth: 90 }}>
-        <Box sx={{ width: 6, height: 6, borderRadius: '50%', backgroundColor: sc.dot, flexShrink: 0 }} />
-        <Typography sx={{ fontSize: '0.66rem', fontWeight: 700, color: sc.color, textTransform: 'uppercase', letterSpacing: '0.04em', whiteSpace: 'nowrap' }}>
-          {sc.label}
-        </Typography>
-      </Box>
+      {/* Checkbox */}
+      <Checkbox
+        size="small"
+        checked={done}
+        onClick={e => e.stopPropagation()}
+        sx={{ p: 0.5, color: '#CBD5E1', '&.Mui-checked': { color: '#10B981' }, flexShrink: 0 }}
+      />
 
-      {/* Title + project */}
-      <Box sx={{ flex: 1, minWidth: 0 }}>
+      {/* TASK — title + project subtitle */}
+      <Box sx={{ flex: 1, minWidth: 0, mr: 2 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           <Typography noWrap sx={{
-            fontSize: '0.87rem',
-            fontWeight: done ? 400 : 500,
+            fontSize: '0.87rem', fontWeight: done ? 400 : 600,
             color: done ? 'text.disabled' : 'text.primary',
             textDecoration: done ? 'line-through' : 'none',
           }}>
@@ -328,72 +325,92 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
           {timer && (
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 0.6, py: 0.1, borderRadius: '6px', bgcolor: '#FEF2F2', border: '1px solid #FECACA', flexShrink: 0 }}>
               <Box sx={{ width: 4, height: 4, borderRadius: '50%', bgcolor: '#EF4444', animation: 'blink 1s ease-in-out infinite', '@keyframes blink': { '0%,100%': { opacity: 1 }, '50%': { opacity: 0.2 } } }} />
-              <Typography sx={{ fontSize: '0.66rem', fontWeight: 700, color: '#EF4444', fontFamily: 'monospace' }}>
+              <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: '#EF4444', fontFamily: 'monospace' }}>
                 {fmtSecs(Math.floor((Date.now() - timer.startedAt) / 1000))}
               </Typography>
             </Box>
           )}
         </Box>
         {projName && (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mt: 0.25 }}>
-            <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: pColor, flexShrink: 0 }} />
-            <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary' }}>{projName}</Typography>
-          </Box>
+          <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary', mt: 0.1 }}>{projName}</Typography>
         )}
       </Box>
 
-      {/* Right metadata */}
-      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, flexShrink: 0 }}>
+      {/* PROJECT badge */}
+      <Box sx={{ width: 130, flexShrink: 0, mr: 1.5 }}>
+        {projName ? (
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', px: 1.1, py: 0.3, borderRadius: 1.5, backgroundColor: `${pColor}15`, border: `1px solid ${pColor}35`, maxWidth: '100%', overflow: 'hidden' }}>
+            <Typography noWrap sx={{ fontSize: '0.72rem', fontWeight: 600, color: pColor }}>{projName}</Typography>
+          </Box>
+        ) : (
+          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
+        )}
+      </Box>
 
-        {/* Due date */}
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, minWidth: 72 }}>
-          <CalendarToday sx={{ fontSize: 11, color: overdue ? '#EF4444' : isToday(task.dueDate) ? '#F59E0B' : '#CBD5E1', flexShrink: 0 }} />
-          <Typography sx={{ fontSize: '0.72rem', color: task.dueDate ? dueDateColor(task.dueDate) : 'text.disabled', fontWeight: overdue || isToday(task.dueDate) ? 600 : 400, whiteSpace: 'nowrap' }}>
-            {task.dueDate ? formatDate(task.dueDate) : 'No date'}
-          </Typography>
-        </Box>
+      {/* PRIORITY */}
+      <Box sx={{ width: 90, flexShrink: 0, mr: 1.5 }}>
+        {pc ? (
+          <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.3, px: 0.9, py: 0.3, borderRadius: 1.5, backgroundColor: pc.bg }}>
+            <Typography sx={{ fontSize: '0.72rem', fontWeight: 800, color: pc.color, lineHeight: 1 }}>{pc.icon}</Typography>
+            <Typography sx={{ fontSize: '0.72rem', fontWeight: 600, color: pc.color }}>{pc.label}</Typography>
+          </Box>
+        ) : (
+          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
+        )}
+      </Box>
 
-        {/* Priority */}
-        {task.priority ? (
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.4, px: 0.85, py: 0.3, borderRadius: 1.5, backgroundColor: PRIORITY_BG[task.priority] || '#F1F5F9', border: `1px solid ${PRIORITY_TXT[task.priority]}30`, flexShrink: 0 }}>
-            <Box sx={{ width: 5, height: 5, borderRadius: '50%', backgroundColor: PRIORITY_TXT[task.priority] || '#94A3B8' }} />
-            <Typography sx={{ fontSize: '0.67rem', fontWeight: 700, color: PRIORITY_TXT[task.priority] || '#64748B', textTransform: 'capitalize' }}>
-              {task.priority}
+      {/* DUE DATE */}
+      <Box sx={{ width: 100, flexShrink: 0, mr: 1.5 }}>
+        {due ? (
+          <Box>
+            <Typography sx={{ fontSize: '0.75rem', fontWeight: 500, color: 'text.primary', lineHeight: 1.3 }}>{due.monthDay}</Typography>
+            <Typography sx={{ fontSize: '0.68rem', color: due.isOverdue ? '#EF4444' : due.isToday ? '#F59E0B' : 'text.secondary', fontWeight: due.isOverdue || due.isToday ? 600 : 400, lineHeight: 1.3 }}>
+              {due.relative}
             </Typography>
           </Box>
         ) : (
-          <Box sx={{ width: 64 }} />
+          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
         )}
-
-        {/* Assignees */}
-        <Box sx={{ display: 'flex', alignItems: 'center', minWidth: 52 }}>
-          {task.assignees?.length > 0 ? (
-            <>
-              {task.assignees.slice(0, 3).map((a, i) => (
-                <Tooltip key={i} title={a?.name || a?.email || 'Unknown'}>
-                  <Avatar src={a?.avatar || undefined} sx={{ width: 26, height: 26, fontSize: '0.65rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', border: '2px solid white', ml: i > 0 ? -0.9 : 0 }}>
-                    {!a?.avatar && (a?.name?.[0] || '?').toUpperCase()}
-                  </Avatar>
-                </Tooltip>
-              ))}
-              {task.assignees.length > 3 && (
-                <Avatar sx={{ width: 26, height: 26, fontSize: '0.6rem', bgcolor: '#E2E8F0', color: '#64748B', border: '2px solid white', ml: -0.9 }}>
-                  +{task.assignees.length - 3}
-                </Avatar>
-              )}
-            </>
-          ) : (
-            <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
-          )}
-        </Box>
-
-        {/* Open */}
-        <Tooltip title="Open task">
-          <IconButton size="small" onClick={(e) => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.5, color: '#CBD5E1', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
-            <OpenInNew sx={{ fontSize: 14 }} />
-          </IconButton>
-        </Tooltip>
       </Box>
+
+      {/* STATUS */}
+      <Box sx={{ width: 105, flexShrink: 0, mr: 1.5 }}>
+        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+          <Box sx={{ width: 7, height: 7, borderRadius: '50%', backgroundColor: sc.color, flexShrink: 0 }} />
+          <Typography sx={{ fontSize: '0.73rem', color: sc.color, fontWeight: 500, whiteSpace: 'nowrap' }}>
+            {sc.label}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* ASSIGNEE */}
+      <Box sx={{ width: 72, flexShrink: 0, display: 'flex', alignItems: 'center' }}>
+        {task.assignees?.length > 0 ? (
+          <>
+            {task.assignees.slice(0, 2).map((a, i) => (
+              <Tooltip key={i} title={a?.name || a?.email || 'Unknown'}>
+                <Avatar src={a?.avatar || undefined} sx={{ width: 28, height: 28, fontSize: '0.68rem', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', border: '2px solid white', ml: i > 0 ? -1 : 0 }}>
+                  {!a?.avatar && (a?.name?.[0] || '?').toUpperCase()}
+                </Avatar>
+              </Tooltip>
+            ))}
+            {task.assignees.length > 2 && (
+              <Avatar sx={{ width: 28, height: 28, fontSize: '0.62rem', bgcolor: '#E2E8F0', color: '#64748B', border: '2px solid white', ml: -1 }}>
+                +{task.assignees.length - 2}
+              </Avatar>
+            )}
+          </>
+        ) : (
+          <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>—</Typography>
+        )}
+      </Box>
+
+      {/* Menu */}
+      <Tooltip title="Open task">
+        <IconButton size="small" onClick={e => { e.stopPropagation(); onOpen(); }} sx={{ p: 0.5, color: '#CBD5E1', '&:hover': { color: '#6366F1', bgcolor: '#EEF2FF' } }}>
+          <MoreHoriz sx={{ fontSize: 17 }} />
+        </IconButton>
+      </Tooltip>
     </Box>
   );
 }
@@ -401,15 +418,17 @@ function TaskRow({ task, onOpen, activeTimers, tick }) {
 // ── SkeletonTask ──────────────────────────────────────────────────────────────
 function SkeletonTask() {
   return (
-    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 0.7, borderBottom: '1px solid', borderColor: 'divider' }}>
-      <Skeleton width={90} height={24} sx={{ borderRadius: 1.5, flexShrink: 0 }} />
+    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, px: 1.5, py: 0.8, borderBottom: '1px solid', borderColor: 'divider' }}>
+      <Skeleton variant="rectangular" width={16} height={16} sx={{ borderRadius: 0.5, flexShrink: 0 }} />
       <Box sx={{ flex: 1 }}>
-        <Skeleton width="50%" height={16} />
-        <Skeleton width="25%" height={12} sx={{ mt: 0.5 }} />
+        <Skeleton width="45%" height={16} />
+        <Skeleton width="25%" height={12} sx={{ mt: 0.4 }} />
       </Box>
-      <Skeleton width={64} height={14} />
-      <Skeleton width={56} height={22} sx={{ borderRadius: 1.5 }} />
-      <Skeleton variant="circular" width={26} height={26} />
+      <Skeleton width={80}  height={22} sx={{ borderRadius: 1.5 }} />
+      <Skeleton width={72}  height={22} sx={{ borderRadius: 1.5 }} />
+      <Skeleton width={70}  height={30} sx={{ borderRadius: 0.5 }} />
+      <Skeleton width={85}  height={22} sx={{ borderRadius: 1.5 }} />
+      <Skeleton variant="circular" width={28} height={28} />
       <Skeleton variant="circular" width={24} height={24} />
     </Box>
   );
@@ -423,11 +442,10 @@ const EMPTY_MSGS = {
   overdue:   { icon: CheckCircle,   text: "You're all caught up — no overdue tasks!" },
   upcoming:  { icon: AccessTime,    text: 'No upcoming tasks scheduled.' },
 };
-
 function EmptyState({ tab }) {
   const { icon: Icon, text } = EMPTY_MSGS[tab] || EMPTY_MSGS.all;
   return (
-    <Box sx={{ textAlign: 'center', py: 7 }}>
+    <Box sx={{ textAlign: 'center', py: 8 }}>
       <Icon sx={{ fontSize: 48, color: 'action.disabled', mb: 1.5 }} />
       <Typography color="text.secondary" sx={{ fontSize: '0.88rem' }}>{text}</Typography>
     </Box>
@@ -468,11 +486,8 @@ export default function MyTasksPage() {
         const fresh = list.find(t => t._id === prev._id);
         return fresh || prev;
       });
-    } catch {
-      setTasks([]);
-    } finally {
-      setLoading(false);
-    }
+    } catch { setTasks([]); }
+    finally { setLoading(false); }
   }, []);
 
   const fetchStats = useCallback(async () => {
@@ -485,11 +500,8 @@ export default function MyTasksPage() {
         overdue:        d.overdueTasks      ?? 0,
         completedMonth: d.tasksCompleted    ?? 0,
       }));
-    } catch {
-      // derive from tasks
-    } finally {
-      setStatsLoading(false);
-    }
+    } catch { /* derive from tasks */ }
+    finally { setStatsLoading(false); }
   }, []);
 
   useEffect(() => { fetchData(); fetchStats(); }, [dashboardRefresh]);
@@ -536,186 +548,176 @@ export default function MyTasksPage() {
     upcoming:  tasks.filter(t => isUpcoming(t.dueDate)).length,
   };
 
+  const overdueCount = tasks.filter(t => isOverdue(t.dueDate) && !['done','cancelled','deployed'].includes(t.status)).length;
+
   return (
     <Box sx={{ p: { xs: 2, md: 3 }, maxWidth: 1400, mx: 'auto' }}>
 
-      {/* ── Header ── */}
+      {/* ── Page header ── */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" fontWeight={700} sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontSize: { xs: '1.5rem', md: '1.85rem' } }}>
+        <Typography variant="h4" fontWeight={800} sx={{ fontSize: { xs: '1.6rem', md: '1.9rem' }, letterSpacing: '-0.5px' }}>
           My Tasks
         </Typography>
-        <Typography color="text.secondary" sx={{ mt: 0.5, fontSize: '0.9rem' }}>
+        <Typography color="text.secondary" sx={{ mt: 0.4, fontSize: '0.9rem' }}>
           {getGreeting()}, {user?.name?.split(' ')[0] || 'there'} 👋
         </Typography>
       </Box>
 
-      {/* ── Stats cards ── */}
+      {/* ── Stat cards ── */}
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
-        <StatCard label="Total Tasks"       value={stats.total}          icon={Assignment}  color="#6366F1" loading={statsLoading} />
-        <StatCard label="Due Today"         value={stats.dueToday}       icon={Today}       color="#F59E0B" loading={statsLoading} />
-        <StatCard label="Overdue"           value={stats.overdue}        icon={Warning}     color="#EF4444" loading={statsLoading} />
-        <StatCard label="Completed (Month)" value={stats.completedMonth} icon={CheckCircle} color="#10B981" loading={statsLoading} />
+        <StatCard
+          label="My Tasks" value={stats.total} icon={Assignment} color="#6366F1"
+          sublabel={stats.dueToday > 0 ? `↑ ${stats.dueToday} due today` : undefined}
+          sublabelColor="#F59E0B" loading={statsLoading}
+        />
+        <StatCard
+          label="In Progress"
+          value={tasks.filter(t => t.status === 'in_progress').length}
+          icon={AccessTime} color="#3B82F6"
+          sublabel={`${tasks.filter(t => t.status === 'in_progress' && t.project).length > 0 ? tasks.filter(t => t.status === 'in_progress').length + ' tasks' : undefined}`}
+          loading={statsLoading}
+        />
+        <StatCard
+          label="Completed" value={stats.completedMonth} icon={CheckCircle} color="#10B981"
+          sublabel="This month" sublabelColor="#6B7280" loading={statsLoading}
+        />
+        <StatCard
+          label="Overdue" value={overdueCount} icon={Warning} color="#EF4444"
+          sublabel={overdueCount > 0 ? 'Needs attention' : 'All caught up'}
+          sublabelColor={overdueCount > 0 ? '#EF4444' : '#10B981'} loading={statsLoading}
+        />
       </Box>
 
       {/* ── Two-column layout ── */}
-      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 290px' }, gap: 3, alignItems: 'start' }}>
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 300px' }, gap: 3, alignItems: 'start' }}>
 
-        {/* ── Left: Task List ── */}
-        <Box>
-          <Card sx={{ borderRadius: 2.5, boxShadow: '0 1px 6px rgba(0,0,0,0.07)', border: '1px solid', borderColor: 'divider', overflow: 'hidden' }}>
+        {/* ── LEFT: Task list card ── */}
+        <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)', overflow: 'hidden' }}>
 
-            {/* Filter tabs */}
-            <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 2 }}>
-              <Tabs
-                value={tab}
-                onChange={(_, v) => setTab(v)}
-                variant="scrollable"
-                scrollButtons="auto"
-                sx={{ minHeight: 44, '& .MuiTab-root': { minHeight: 44, py: 0, fontSize: '0.8rem', textTransform: 'none' } }}
-              >
-                {[
-                  { value: 'all',       label: 'All' },
-                  { value: 'today',     label: 'Today' },
-                  { value: 'this_week', label: 'This Week' },
-                  { value: 'overdue',   label: 'Overdue' },
-                  { value: 'upcoming',  label: 'Upcoming' },
-                ].map(({ value, label }) => (
-                  <Tab
-                    key={value}
-                    value={value}
-                    label={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
-                        {label}
-                        {!loading && TAB_COUNTS[value] > 0 && (
-                          <Box sx={{
-                            px: 0.7, py: 0.05, borderRadius: 1, minWidth: 18, textAlign: 'center',
-                            backgroundColor: value === 'overdue' && TAB_COUNTS.overdue > 0 ? '#FEE2E2' : 'action.selected',
-                          }}>
-                            <Typography component="span" sx={{ fontSize: '0.64rem', fontWeight: 700, color: value === 'overdue' && TAB_COUNTS.overdue > 0 ? '#EF4444' : 'text.secondary' }}>
-                              {TAB_COUNTS[value]}
-                            </Typography>
-                          </Box>
-                        )}
-                      </Box>
-                    }
-                  />
-                ))}
-              </Tabs>
-            </Box>
-
-            {/* Sort bar */}
-            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2, py: 1, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'action.hover' }}>
-              <Typography sx={{ fontSize: '0.72rem', color: 'text.disabled' }}>
-                {filteredTasks.length} task{filteredTasks.length !== 1 ? 's' : ''}
-              </Typography>
-              <Box sx={{ display: 'flex', gap: 0.5 }}>
-                {[
-                  { key: 'smart',    label: 'Smart' },
-                  { key: 'dueDate',  label: 'Due Date' },
-                  { key: 'priority', label: 'Priority' },
-                  { key: 'title',    label: 'Name' },
-                ].map(s => (
-                  <Box
-                    key={s.key}
-                    onClick={() => {
-                      if (sortKey === s.key) setSortDir(d => d === 'asc' ? 'desc' : 'asc');
-                      else { setSortKey(s.key); setSortDir('asc'); }
-                    }}
-                    sx={{
-                      px: 1, py: 0.3, borderRadius: 1, cursor: 'pointer',
-                      backgroundColor: sortKey === s.key ? '#EEF2FF' : 'transparent',
-                      color: sortKey === s.key ? '#6366F1' : 'text.secondary',
-                      fontSize: '0.7rem', fontWeight: sortKey === s.key ? 700 : 400,
-                      transition: 'all 0.12s',
-                      '&:hover': { backgroundColor: sortKey === s.key ? '#EEF2FF' : 'action.selected' },
-                    }}
-                  >
-                    {s.label}{sortKey === s.key ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}
-                  </Box>
-                ))}
-              </Box>
-            </Box>
-
-            {/* Column headers */}
-            {!loading && filteredTasks.length > 0 && (
-              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, px: 2, py: 0.75, backgroundColor: 'action.hover', borderBottom: '1px solid', borderColor: 'divider' }}>
-                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 90 }}>Status</Typography>
-                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', flex: 1 }}>Task</Typography>
-                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 72 }}>Due Date</Typography>
-                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 64 }}>Priority</Typography>
-                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.06em', minWidth: 52 }}>Assignee</Typography>
-                <Box sx={{ width: 30 }} />
-              </Box>
-            )}
-
-            {/* Task rows */}
-            <Box>
-              {loading
-                ? Array.from({ length: 6 }).map((_, i) => <SkeletonTask key={i} />)
-                : filteredTasks.length === 0
-                ? <EmptyState tab={tab} />
-                : filteredTasks.map(task => (
-                    <TaskRow
-                      key={task._id}
-                      task={task}
-                      onOpen={() => setSelectedTask(task)}
-                      activeTimers={activeTimers}
-                      tick={tick}
-                    />
-                  ))
-              }
-            </Box>
-
-            {/* Add task button */}
-            <Divider />
-            <Box sx={{ px: 1.75, py: 1 }}>
+          {/* Card header */}
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: 2.5, py: 1.75, borderBottom: '1px solid', borderColor: 'divider' }}>
+            <Typography fontWeight={700} sx={{ fontSize: '1.05rem' }}>My Tasks</Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <Button
-                startIcon={<Add sx={{ fontSize: 16 }} />}
-                sx={{
-                  color: 'text.disabled', fontSize: '0.8rem', textTransform: 'none', fontWeight: 400,
-                  '&:hover': { color: '#6366F1', backgroundColor: '#EEF2FF' },
-                  px: 1, py: 0.5, borderRadius: 1.5,
-                }}
+                size="small" startIcon={<FilterList sx={{ fontSize: 15 }} />}
+                sx={{ textTransform: 'none', fontSize: '0.78rem', color: 'text.secondary', borderColor: 'divider', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, border: '1px solid', borderColor: 'divider', '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}
               >
-                Add new task
+                Filter
               </Button>
+              <Button
+                size="small" startIcon={<Sort sx={{ fontSize: 15 }} />}
+                onClick={() => setSortKey(k => k === 'smart' ? 'dueDate' : 'smart')}
+                sx={{ textTransform: 'none', fontSize: '0.78rem', color: sortKey !== 'smart' ? '#6366F1' : 'text.secondary', border: '1px solid', borderColor: sortKey !== 'smart' ? '#6366F1' : 'divider', bgcolor: sortKey !== 'smart' ? '#EEF2FF' : 'transparent', minWidth: 0, px: 1.25, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', borderColor: '#6366F1', bgcolor: '#EEF2FF' } }}
+              >
+                Sort
+              </Button>
+              <IconButton size="small" sx={{ color: 'text.secondary', p: 0.5 }}>
+                <MoreHoriz sx={{ fontSize: 18 }} />
+              </IconButton>
             </Box>
-          </Card>
-        </Box>
+          </Box>
 
-        {/* ── Right: Sidebar ── */}
+          {/* Tabs */}
+          <Box sx={{ borderBottom: '1px solid', borderColor: 'divider', px: 2 }}>
+            <Tabs
+              value={tab} onChange={(_, v) => setTab(v)}
+              variant="scrollable" scrollButtons="auto"
+              sx={{ minHeight: 42, '& .MuiTab-root': { minHeight: 42, py: 0, fontSize: '0.82rem', textTransform: 'none', fontWeight: 500 } }}
+            >
+              {[
+                { value: 'all',       label: 'All' },
+                { value: 'today',     label: 'Today' },
+                { value: 'this_week', label: 'This Week' },
+                { value: 'overdue',   label: 'Overdue' },
+                { value: 'upcoming',  label: 'Upcoming' },
+              ].map(({ value, label }) => (
+                <Tab key={value} value={value} label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.6 }}>
+                    {label}
+                    {!loading && TAB_COUNTS[value] > 0 && (
+                      <Box sx={{ px: 0.65, borderRadius: 1, backgroundColor: value === 'overdue' && TAB_COUNTS.overdue > 0 ? '#FEE2E2' : 'action.selected' }}>
+                        <Typography component="span" sx={{ fontSize: '0.64rem', fontWeight: 700, color: value === 'overdue' && TAB_COUNTS.overdue > 0 ? '#EF4444' : 'text.secondary' }}>
+                          {TAB_COUNTS[value]}
+                        </Typography>
+                      </Box>
+                    )}
+                  </Box>
+                } />
+              ))}
+            </Tabs>
+          </Box>
+
+          {/* Column headers */}
+          {!loading && filteredTasks.length > 0 && (
+            <Box sx={{ display: 'flex', alignItems: 'center', px: 1.5, py: 0.6, borderBottom: '1px solid', borderColor: 'divider', backgroundColor: 'action.hover' }}>
+              <Box sx={{ width: 34, flexShrink: 0 }} />
+              <Typography sx={{ flex: 1, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 2 }}>Task</Typography>
+              <Typography sx={{ width: 130, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Project</Typography>
+              <Typography sx={{ width: 90, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Priority</Typography>
+              <Typography sx={{ width: 100, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Due Date</Typography>
+              <Typography sx={{ width: 105, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', mr: 1.5, flexShrink: 0 }}>Status</Typography>
+              <Typography sx={{ width: 72, fontSize: '0.64rem', fontWeight: 700, color: 'text.disabled', textTransform: 'uppercase', letterSpacing: '0.07em', flexShrink: 0 }}>Assignee</Typography>
+              <Box sx={{ width: 32, flexShrink: 0 }} />
+            </Box>
+          )}
+
+          {/* Rows */}
+          <Box>
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => <SkeletonTask key={i} />)
+              : filteredTasks.length === 0
+              ? <EmptyState tab={tab} />
+              : filteredTasks.map(task => (
+                  <TaskRow key={task._id} task={task} onOpen={() => setSelectedTask(task)} activeTimers={activeTimers} tick={tick} />
+                ))
+            }
+          </Box>
+
+          {/* Add task */}
+          <Divider />
+          <Box sx={{ px: 2, py: 0.75 }}>
+            <Button
+              startIcon={<Add sx={{ fontSize: 16 }} />}
+              sx={{ color: 'text.disabled', fontSize: '0.8rem', textTransform: 'none', fontWeight: 400, px: 1, py: 0.5, borderRadius: 1.5, '&:hover': { color: '#6366F1', backgroundColor: '#EEF2FF' } }}
+            >
+              Add new task
+            </Button>
+          </Box>
+        </Card>
+
+        {/* ── RIGHT: Sidebar ── */}
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
 
-          {/* Mini Calendar */}
-          <Card sx={{ borderRadius: 2.5, boxShadow: '0 1px 6px rgba(0,0,0,0.07)', border: '1px solid', borderColor: 'divider' }}>
-            <CardContent sx={{ p: '16px !important' }}>
-              <Typography fontWeight={700} sx={{ fontSize: '0.88rem', mb: 1.5 }}>Calendar</Typography>
+          {/* Calendar */}
+          <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
+            <CardContent sx={{ p: '18px !important' }}>
+              <Typography fontWeight={700} sx={{ fontSize: '0.95rem', mb: 1.5 }}>Calendar</Typography>
               <MiniCalendar tasks={tasks} />
             </CardContent>
           </Card>
 
-          {/* Task Summary donut */}
-          <Card sx={{ borderRadius: 2.5, boxShadow: '0 1px 6px rgba(0,0,0,0.07)', border: '1px solid', borderColor: 'divider' }}>
-            <CardContent sx={{ p: '16px !important' }}>
-              <Typography fontWeight={700} sx={{ fontSize: '0.88rem', mb: 0.5 }}>Task Summary</Typography>
+          {/* Task Summary */}
+          <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
+            <CardContent sx={{ p: '18px !important' }}>
+              <Typography fontWeight={700} sx={{ fontSize: '0.95rem', mb: 1.5 }}>Tasks Summary</Typography>
               <TaskDonut tasks={tasks} loading={loading} />
             </CardContent>
           </Card>
 
-          {/* Upcoming tasks */}
-          <Card sx={{ borderRadius: 2.5, boxShadow: '0 1px 6px rgba(0,0,0,0.07)', border: '1px solid', borderColor: 'divider' }}>
-            <CardContent sx={{ p: '16px !important' }}>
+          {/* Upcoming */}
+          <Card elevation={0} sx={{ borderRadius: 3, border: '1px solid', borderColor: 'divider', boxShadow: '0 1px 8px rgba(0,0,0,0.06)' }}>
+            <CardContent sx={{ p: '18px !important' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
-                <Typography fontWeight={700} sx={{ fontSize: '0.88rem' }}>Upcoming</Typography>
+                <Typography fontWeight={700} sx={{ fontSize: '0.95rem' }}>Upcoming</Typography>
                 <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary' }}>next 7 days</Typography>
               </Box>
               {loading
                 ? Array.from({ length: 3 }).map((_, i) => (
-                    <Box key={i} sx={{ display: 'flex', gap: 1, mb: 1 }}>
-                      <Skeleton width={3} height={36} sx={{ borderRadius: 4 }} />
+                    <Box key={i} sx={{ display: 'flex', gap: 1, mb: 1.25 }}>
+                      <Skeleton variant="circular" width={8} height={8} sx={{ mt: 0.5, flexShrink: 0 }} />
                       <Box sx={{ flex: 1 }}>
                         <Skeleton width="70%" height={14} />
-                        <Skeleton width="40%" height={11} sx={{ mt: 0.4 }} />
+                        <Skeleton width="45%" height={11} sx={{ mt: 0.4 }} />
                       </Box>
                     </Box>
                   ))
@@ -727,11 +729,7 @@ export default function MyTasksPage() {
       </Box>
 
       {selectedTask && (
-        <TaskDetailModal
-          task={selectedTask}
-          onClose={() => setSelectedTask(null)}
-          onUpdate={fetchData}
-        />
+        <TaskDetailModal task={selectedTask} onClose={() => setSelectedTask(null)} onUpdate={fetchData} />
       )}
     </Box>
   );
