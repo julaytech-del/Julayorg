@@ -253,7 +253,7 @@ export default function TeamView() {
             <Card sx={{ transition: 'all 0.2s', '&:hover': { transform: 'translateY(-3px)', boxShadow: '0 8px 25px rgb(0 0 0 / 0.1)' } }}>
               <CardContent sx={{ textAlign: 'center', p: 3 }}>
                 <Box sx={{ position: 'relative', display: 'inline-block', mb: 1.5 }}>
-                  <Avatar sx={{ width: 64, height: 64, fontSize: '1.5rem', bgcolor: 'primary.main', mx: 'auto' }}>{member.name?.[0]}</Avatar>
+                  <Avatar src={member.avatar || undefined} sx={{ width: 64, height: 64, fontSize: '1.5rem', bgcolor: 'primary.main', mx: 'auto' }}>{!member.avatar && member.name?.[0]}</Avatar>
                   <Box sx={{ position: 'absolute', bottom: 2, right: 2, width: 12, height: 12, borderRadius: '50%', backgroundColor: STATUS_COLORS[member.status] || '#94A3B8', border: '2px solid white' }} />
                 </Box>
                 <Typography variant="subtitle1" fontWeight={700}>{member.name}</Typography>

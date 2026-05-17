@@ -325,7 +325,7 @@ export default function ProjectDetail() {
                       </Box>
                       <Box sx={{ display: 'flex', gap: 0.75, alignItems: 'center' }}>
                         <PriorityChip priority={task.priority} />
-                        {task.assignees?.[0] && <Avatar sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'secondary.main' }}>{task.assignees[0].name?.[0]}</Avatar>}
+                        {task.assignees?.[0] && <Avatar src={task.assignees[0].avatar || undefined} sx={{ width: 22, height: 22, fontSize: '0.65rem', bgcolor: 'secondary.main' }}>{!task.assignees[0].avatar && task.assignees[0].name?.[0]}</Avatar>}
                         {task.dueDate && <Typography variant="caption" color="text.secondary">{format(new Date(task.dueDate), 'MMM dd')}</Typography>}
                       </Box>
                     </Box>

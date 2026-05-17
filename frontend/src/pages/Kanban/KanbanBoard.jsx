@@ -190,8 +190,8 @@ function TaskCard({ task, index, onClick }) {
               }}>
                 {(task.assignees || []).map(a => (
                   <Tooltip key={a._id} title={a.name}>
-                    <Avatar sx={{ bgcolor: stringToColor(a.name) }}>
-                      {a.name?.[0]?.toUpperCase()}
+                    <Avatar src={a.avatar || undefined} sx={{ bgcolor: stringToColor(a.name) }}>
+                      {!a.avatar && a.name?.[0]?.toUpperCase()}
                     </Avatar>
                   </Tooltip>
                 ))}

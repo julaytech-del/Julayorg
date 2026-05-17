@@ -103,8 +103,8 @@ function TaskCard({ task, onClick }) {
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <AvatarGroup max={3} sx={{ '& .MuiAvatar-root': { width: 22, height: 22, fontSize: '0.6rem', border: '1.5px solid white' } }}>
           {(task.assignees || []).map((a, i) => (
-            <Avatar key={i} sx={{ background: avatarColor(a.name || '') }}>
-              {(a.name || '?')[0].toUpperCase()}
+            <Avatar key={i} src={a.avatar || undefined} sx={{ background: avatarColor(a.name || '') }}>
+              {!a.avatar && (a.name || '?')[0].toUpperCase()}
             </Avatar>
           ))}
         </AvatarGroup>
@@ -266,7 +266,7 @@ export default function ExecutionBoard() {
       (t.assignees || []).forEach(a => {
         const id   = a._id || a;
         const name = a.name || 'Unknown';
-        if (!map[id]) map[id] = { name, count: 0 };
+        if (!map[id]) map[id] = { name, avatar: a.avatar || null, count: 0 };
         map[id].count++;
       });
     });
@@ -518,8 +518,8 @@ export default function ExecutionBoard() {
                     <Box key={member.name} sx={{ mb: 1.5 }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 0.5 }}>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
-                          <Avatar sx={{ width: 24, height: 24, fontSize: '0.65rem', background: avatarColor(member.name) }}>
-                            {member.name[0]}
+                          <Avatar src={member.avatar || undefined} sx={{ width: 24, height: 24, fontSize: '0.65rem', background: avatarColor(member.name) }}>
+                            {!member.avatar && member.name[0]}
                           </Avatar>
                           <Typography sx={{ fontSize: '0.78rem', fontWeight: 600 }}>{member.name}</Typography>
                         </Box>
