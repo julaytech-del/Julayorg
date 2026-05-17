@@ -5,6 +5,7 @@ import { useDispatch } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { departmentsAPI } from '../../services/api.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { fetchCurrentUser } from '../../store/slices/authSlice.js';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 
 export default function DepartmentsView() {
@@ -79,6 +80,7 @@ export default function DepartmentsView() {
       dispatch(showSnackbar({ message: editing ? t('departments.form.save') : t('departments.form.create') }));
       setDialogOpen(false);
       load();
+      dispatch(fetchCurrentUser()); // refresh user so sidebar shows updated dept logo
     } catch { dispatch(showSnackbar({ message: t('errors.generic'), severity: 'error' })); }
   };
 
