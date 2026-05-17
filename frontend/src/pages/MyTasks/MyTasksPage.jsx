@@ -267,8 +267,8 @@ function UpcomingTasksList({ tasks, onSelect }) {
   );
 }
 
-// column grid: checkbox | star | task(flex) | project | priority | duedate | status | assignee | menu
-const ROW_GRID = '32px 28px 1fr 125px 100px 95px 110px 70px 32px';
+// column grid: checkbox | star | task | project | priority | duedate | status | assignee | menu
+const ROW_GRID = '32px 26px minmax(120px,1fr) 130px 100px 95px 115px 72px 30px';
 
 // ── TaskRow ───────────────────────────────────────────────────────────────────
 function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
@@ -302,8 +302,8 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
 
       {/* Star */}
       <IconButton size="small" onClick={e => onToggleFav(task._id, e)}
-        sx={{ p: 0.3, color: isFav ? '#F59E0B' : '#D1D5DB', opacity: hovered || isFav ? 1 : 0.25, transition: 'opacity 0.15s, color 0.15s', '&:hover': { color: '#F59E0B', bgcolor: 'transparent' } }}>
-        {isFav ? <Star sx={{ fontSize: 14 }} /> : <StarBorder sx={{ fontSize: 14 }} />}
+        sx={{ p: 0.3, color: isFav ? '#F59E0B' : hovered ? '#9CA3AF' : '#D1D5DB', transition: 'color 0.15s', '&:hover': { color: '#F59E0B', bgcolor: 'transparent' } }}>
+        {isFav ? <Star sx={{ fontSize: 15 }} /> : <StarBorder sx={{ fontSize: 15 }} />}
       </IconButton>
 
       {/* Task title */}
