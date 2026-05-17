@@ -13,6 +13,7 @@ const uiSlice = createSlice({
     snackbar: { open: false, message: '', severity: 'success' },
     modals: {},
     darkMode: localStorage.getItem('julay_dark') === 'true',
+    accentColor: localStorage.getItem('julay_accent') || '#4F46E5',
     dashboardRefresh: 0,
     activeTimers: loadTimers(),  // [{ taskId, taskTitle, startedAt }]
   },
@@ -26,6 +27,10 @@ const uiSlice = createSlice({
     toggleDarkMode(s) {
       s.darkMode = !s.darkMode;
       localStorage.setItem('julay_dark', String(s.darkMode));
+    },
+    setAccentColor(s, a) {
+      s.accentColor = a.payload;
+      localStorage.setItem('julay_accent', a.payload);
     },
     triggerDashboardRefresh(s) { s.dashboardRefresh += 1; },
     startGlobalTimer(s, a) {
@@ -46,7 +51,7 @@ const uiSlice = createSlice({
 
 export const {
   toggleSidebar, setSidebar, showSnackbar, hideSnackbar,
-  openModal, closeModal, toggleDarkMode, triggerDashboardRefresh,
+  openModal, closeModal, toggleDarkMode, setAccentColor, triggerDashboardRefresh,
   startGlobalTimer, stopGlobalTimer,
 } = uiSlice.actions;
 export default uiSlice.reducer;

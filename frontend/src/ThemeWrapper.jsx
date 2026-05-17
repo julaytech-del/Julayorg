@@ -14,14 +14,17 @@ export default function ThemeWrapper({ children }) {
   const { i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
   const darkMode = useSelector(s => s.ui.darkMode);
+  const accentColor = useSelector(s => s.ui.accentColor) || '#4F46E5';
 
   const theme = useMemo(() => {
     const dark = darkMode;
+    // Derive light/dark variants from accent color
+    const accent = accentColor;
     return createTheme({
       ...baseTheme,
       palette: dark ? {
         mode: 'dark',
-        primary: { main: '#818CF8', light: '#A5B4FC', dark: '#6366F1', contrastText: '#fff' },
+        primary: { main: accent, light: accent, dark: accent, contrastText: '#fff' },
         secondary: { main: '#38BDF8', light: '#7DD3FC', dark: '#0284C7', contrastText: '#fff' },
         success: { main: '#10B981', light: '#34D399', dark: '#059669' },
         error: { main: '#F87171', light: '#FCA5A5', dark: '#EF4444' },
@@ -30,7 +33,11 @@ export default function ThemeWrapper({ children }) {
         text: { primary: '#F1F5F9', secondary: '#94A3B8' },
         divider: 'rgba(255,255,255,0.08)',
         grey: { 50: '#1E293B', 100: '#334155', 200: '#475569', 300: '#64748B', 400: '#94A3B8', 500: '#CBD5E1', 600: '#E2E8F0', 700: '#F1F5F9', 800: '#F8FAFC', 900: '#FFFFFF' },
-      } : baseTheme.palette,
+      } : {
+        ...baseTheme.palette,
+        primary: { main: accent, light: accent, dark: accent, contrastText: '#fff' },
+        info: { main: accent },
+      },
       direction: isRTL ? 'rtl' : 'ltr',
       components: {
         ...baseTheme.components,
@@ -137,7 +144,7 @@ export default function ThemeWrapper({ children }) {
         },
       }
     });
-  }, [isRTL, darkMode]);
+  }, [isRTL, darkMode, accentColor]);
 
   React.useEffect(() => {
     document.dir = isRTL ? 'rtl' : 'ltr';

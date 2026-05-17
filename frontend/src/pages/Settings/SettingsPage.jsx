@@ -16,7 +16,7 @@ import {
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { showSnackbar, setAccentColor } from '../../store/slices/uiSlice.js';
 import { setCredentials } from '../../store/slices/authSlice.js';
 import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI, organizationAPI } from '../../services/api.js';
 
@@ -24,9 +24,23 @@ import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrations
 const TIMEZONES = ['UTC', 'America/New_York', 'America/Chicago', 'America/Los_Angeles', 'Europe/London', 'Europe/Paris', 'Asia/Dubai', 'Asia/Riyadh', 'Asia/Tokyo'];
 const LANGUAGES = [{ code: 'en', label: 'English' }, { code: 'ar', label: 'العربية' }, { code: 'fr', label: 'Français' }];
 
+const ACCENT_COLORS = [
+  { label: 'Indigo',  value: '#4F46E5' },
+  { label: 'Violet',  value: '#7C3AED' },
+  { label: 'Blue',    value: '#2563EB' },
+  { label: 'Cyan',    value: '#0891B2' },
+  { label: 'Emerald', value: '#059669' },
+  { label: 'Rose',    value: '#E11D48' },
+  { label: 'Orange',  value: '#EA580C' },
+  { label: 'Amber',   value: '#D97706' },
+  { label: 'Pink',    value: '#DB2777' },
+  { label: 'Slate',   value: '#475569' },
+];
+
 function ProfileTab({ user }) {
   const dispatch = useDispatch();
   const { i18n } = useTranslation();
+  const currentAccent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [form, setForm] = useState({
     name: user?.name || '',
     jobTitle: user?.jobTitle || '',
@@ -202,8 +216,33 @@ function ProfileTab({ user }) {
             {LANGUAGES.map(l => <MenuItem key={l.code} value={l.code}>{l.label}</MenuItem>)}
           </Select>
         </FormControl>
+        {/* Accent Color */}
+        <Box>
+          <Typography variant="body2" fontWeight={600} sx={{ mb: 1 }}>Theme Color</Typography>
+          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+            {ACCENT_COLORS.map(c => (
+              <Tooltip key={c.value} title={c.label} placement="top">
+                <Box
+                  onClick={() => dispatch(setAccentColor(c.value))}
+                  sx={{
+                    width: 32, height: 32, borderRadius: '50%',
+                    backgroundColor: c.value, cursor: 'pointer',
+                    border: currentAccent === c.value ? '3px solid #0F172A' : '2px solid transparent',
+                    boxShadow: currentAccent === c.value ? `0 0 0 2px ${c.value}` : 'none',
+                    transition: 'all 0.15s',
+                    '&:hover': { transform: 'scale(1.15)' },
+                  }}
+                />
+              </Tooltip>
+            ))}
+          </Box>
+          <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5, display: 'block' }}>
+            Changes apply instantly across the entire app
+          </Typography>
+        </Box>
+
         <Button variant="contained" onClick={handleSave} disabled={saving}
-          sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)', alignSelf: 'flex-start', px: 4 }}>
+          sx={{ alignSelf: 'flex-start', px: 4 }}>
           {saving ? 'Saving…' : 'Save Changes'}
         </Button>
       </Box>
