@@ -84,6 +84,8 @@ function QuickAddModal({ open, onClose }) {
 
   const fieldSx = {
     '& .MuiOutlinedInput-root': { borderRadius:'10px', fontSize:'0.82rem' },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor:'#CBD5E1' },
+    '& .MuiInputLabel-root.Mui-focused': { color:'#64748B' },
   };
 
   const isOverdue = dueDate && new Date(dueDate) < new Date();
@@ -115,7 +117,7 @@ function QuickAddModal({ open, onClose }) {
           onChange={e => setTitle(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey && title.trim()) { e.preventDefault(); handleSave(); } }}
           variant="outlined"
-          sx={{ mb:2, '& .MuiOutlinedInput-root': { fontSize:'0.95rem', fontWeight:500, borderRadius:'10px' } }}
+          sx={{ mb:2, '& .MuiOutlinedInput-root': { fontSize:'0.95rem', fontWeight:500, borderRadius:'10px' }, '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': { borderColor:'#CBD5E1' } }}
         />
 
         {/* Row 1: Project + Priority */}
