@@ -11,7 +11,6 @@ import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
 export default function DepartmentsView() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
-  const fileInputRef = useRef(null);
   const [departments, setDepartments] = useState([]);
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editing, setEditing] = useState(null);
@@ -21,6 +20,7 @@ export default function DepartmentsView() {
   const [logoPreview, setLogoPreview] = useState('');
 
   const COLORS = ['#6366F1','#10B981','#F59E0B','#EF4444','#3B82F6','#8B5CF6','#EC4899','#14B8A6'];
+  const UPLOAD_INPUT_ID = 'dept-logo-file-input';
 
   const load = () => departmentsAPI.getAll().then(res => setDepartments(res.data || [])).catch(() => {});
   useEffect(() => { load(); }, []);
@@ -38,7 +38,7 @@ export default function DepartmentsView() {
   const handleLogoUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
-    // Show local preview immediately
+    // Show local blob preview immediately — no network wait
     const localUrl = URL.createObjectURL(file);
     setLogoPreview(localUrl);
     setUploading(true);
@@ -46,14 +46,18 @@ export default function DepartmentsView() {
       const fd = new FormData();
       fd.append('file', file);
       const res = await api.post('/upload', fd);
-      const serverUrl = res.data.data?.url || res.data.url;
-      setForm(p => ({ ...p, logo: serverUrl }));
-      setLogoPreview(serverUrl);
+      // interceptor returns res.data, so res = { success, data: { url } }
+      const serverUrl = res?.data?.url || res?.url;
+      if (serverUrl) {
+        setForm(p => ({ ...p, logo: serverUrl }));
+        setLogoPreview(serverUrl);
+      }
     } catch {
-      setLogoPreview(form.logo || '');
       dispatch(showSnackbar({ message: 'Failed to upload logo', severity: 'error' }));
+      setLogoPreview(form.logo || '');
     } finally {
       setUploading(false);
+      e.target.value = '';
     }
   };
 
@@ -78,6 +82,18 @@ export default function DepartmentsView() {
 
   return (
     <Box>
+      {/*
+        File input lives OUTSIDE the MUI Dialog portal so programmatic
+        clicks work reliably across all browsers.
+      */}
+      <input
+        id={UPLOAD_INPUT_ID}
+        type="file"
+        accept="image/*"
+        style={{ display: 'none' }}
+        onChange={handleLogoUpload}
+      />
+
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" fontWeight={700}>{t('departments.title')}</Typography>
         <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>{t('departments.new')}</Button>
@@ -133,30 +149,36 @@ export default function DepartmentsView() {
         <DialogTitle fontWeight={700}>{editing ? t('departments.edit') : t('departments.new')}</DialogTitle>
         <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: 2 }}>
 
-          {/* Logo upload */}
+          {/* Logo upload — label wraps Avatar, htmlFor links to input OUTSIDE portal */}
           <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
             <Box sx={{ position: 'relative' }}>
-              <Avatar
-                src={logoPreview || undefined}
-                sx={{ width: 80, height: 80, borderRadius: 3, backgroundColor: `${form.color}18`, border: `2px solid ${form.color}40`, cursor: 'pointer' }}
-                onClick={() => fileInputRef.current?.click()}
-              >
-                {!logoPreview && <Business sx={{ color: form.color, fontSize: 36 }} />}
-              </Avatar>
+              <label htmlFor={UPLOAD_INPUT_ID} style={{ cursor: uploading ? 'wait' : 'pointer', display: 'block' }}>
+                <Avatar
+                  src={logoPreview || undefined}
+                  sx={{ width: 80, height: 80, borderRadius: 3, backgroundColor: `${form.color}18`, border: `2px solid ${form.color}40` }}
+                >
+                  {!logoPreview && <Business sx={{ color: form.color, fontSize: 36 }} />}
+                </Avatar>
+              </label>
               <Box
-                onClick={() => fileInputRef.current?.click()}
+                component="label"
+                htmlFor={UPLOAD_INPUT_ID}
                 sx={{
                   position: 'absolute', bottom: -6, right: -6,
                   width: 26, height: 26, borderRadius: '50%',
                   backgroundColor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: 'pointer', boxShadow: 2,
+                  cursor: uploading ? 'wait' : 'pointer', boxShadow: 2,
                 }}
               >
-                {uploading ? <CircularProgress size={14} sx={{ color: '#fff' }} /> : <PhotoCamera sx={{ color: '#fff', fontSize: 14 }} />}
+                {uploading
+                  ? <CircularProgress size={14} sx={{ color: '#fff' }} />
+                  : <PhotoCamera sx={{ color: '#fff', fontSize: 14 }} />
+                }
               </Box>
             </Box>
-            <Typography variant="caption" color="text.secondary">Click to upload logo</Typography>
-            <input ref={fileInputRef} type="file" accept="image/*" hidden onChange={handleLogoUpload} />
+            <Typography variant="caption" color="text.secondary">
+              {uploading ? 'Uploading…' : 'Click to upload logo'}
+            </Typography>
           </Box>
 
           <TextField label={t('departments.form.name')} value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required fullWidth />
@@ -164,7 +186,9 @@ export default function DepartmentsView() {
           <Box>
             <Typography variant="caption" color="text.secondary" display="block" mb={0.75}>{t('departments.form.color')}</Typography>
             <Box sx={{ display: 'flex', gap: 1 }}>
-              {COLORS.map(c => <Box key={c} onClick={() => setForm(p => ({ ...p, color: c }))} sx={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: c, cursor: 'pointer', border: form.color === c ? '3px solid #1E293B' : '2px solid transparent', transition: 'all 0.1s' }} />)}
+              {COLORS.map(c => (
+                <Box key={c} onClick={() => setForm(p => ({ ...p, color: c }))} sx={{ width: 28, height: 28, borderRadius: '50%', backgroundColor: c, cursor: 'pointer', border: form.color === c ? '3px solid #1E293B' : '2px solid transparent', transition: 'all 0.1s' }} />
+              ))}
             </Box>
           </Box>
         </DialogContent>
