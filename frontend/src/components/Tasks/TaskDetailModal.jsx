@@ -466,6 +466,21 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
 
             <Divider sx={{ my: 0.25, borderColor: '#F8FAFC' }} />
 
+            {/* Start Date */}
+            <PropRow label="Start Date">
+              <TextField
+                type="date"
+                variant="standard"
+                value={localTask.startDate ? format(new Date(localTask.startDate), 'yyyy-MM-dd') : ''}
+                onChange={e => updateField('startDate', e.target.value)}
+                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
+                inputProps={{ style: { fontSize: '0.85rem', fontWeight: 500, padding: 0 } }}
+                InputLabelProps={{ shrink: true }}
+              />
+            </PropRow>
+
+            <Divider sx={{ my: 0.25, borderColor: '#F8FAFC' }} />
+
             {/* Due Date */}
             <PropRow label="Due Date">
               <TextField
@@ -481,21 +496,6 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                     padding: 0,
                   },
                 }}
-                InputLabelProps={{ shrink: true }}
-              />
-            </PropRow>
-
-            <Divider sx={{ my: 0.25, borderColor: '#F8FAFC' }} />
-
-            {/* Start Date */}
-            <PropRow label="Start Date">
-              <TextField
-                type="date"
-                variant="standard"
-                value={localTask.startDate ? format(new Date(localTask.startDate), 'yyyy-MM-dd') : ''}
-                onChange={e => updateField('startDate', e.target.value)}
-                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
-                inputProps={{ style: { fontSize: '0.85rem', fontWeight: 500, padding: 0 } }}
                 InputLabelProps={{ shrink: true }}
               />
             </PropRow>
