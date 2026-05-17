@@ -321,7 +321,11 @@ function TaskRow({ task, onOpen, activeTimers, tick, isFav, onToggleFav }) {
             </Box>
           )}
         </Box>
-        {projName && <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary', mt: 0.1 }}>{projName}</Typography>}
+        {(task.description || projName) && (
+          <Typography noWrap sx={{ fontSize: '0.7rem', color: 'text.secondary', mt: 0.1 }}>
+            {task.description || projName}
+          </Typography>
+        )}
       </Box>
 
       {/* Project */}
