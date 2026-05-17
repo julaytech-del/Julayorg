@@ -36,21 +36,24 @@ export default function DepartmentsView() {
   };
 
   const resizeToBase64 = (file) => new Promise((resolve, reject) => {
-    const img = new Image();
-    const url = URL.createObjectURL(file);
-    img.onload = () => {
-      const size = MAX_LOGO_SIZE;
-      const ratio = Math.min(size / img.width, size / img.height, 1);
-      const w = Math.round(img.width * ratio);
-      const h = Math.round(img.height * ratio);
-      const canvas = document.createElement('canvas');
-      canvas.width = w; canvas.height = h;
-      canvas.getContext('2d').drawImage(img, 0, 0, w, h);
-      URL.revokeObjectURL(url);
-      resolve(canvas.toDataURL('image/webp', 0.85));
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onloadend = () => {
+      const img = new Image();
+      img.onload = () => {
+        const size = MAX_LOGO_SIZE;
+        const ratio = Math.min(size / img.width, size / img.height, 1);
+        const w = Math.round(img.width * ratio);
+        const h = Math.round(img.height * ratio);
+        const canvas = document.createElement('canvas');
+        canvas.width = w; canvas.height = h;
+        canvas.getContext('2d').drawImage(img, 0, 0, w, h);
+        resolve(canvas.toDataURL('image/webp', 0.85));
+      };
+      img.onerror = reject;
+      img.src = reader.result; // data: URL allowed by CSP
     };
-    img.onerror = reject;
-    img.src = url;
+    reader.readAsDataURL(file);
   });
 
   const handleLogoUpload = async (e) => {
