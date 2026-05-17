@@ -223,11 +223,11 @@ function TaskDonut({ tasks, loading }) {
 // ── UpcomingTasksList ─────────────────────────────────────────────────────────
 function UpcomingTasksList({ tasks, onSelect }) {
   const upcoming = useMemo(() => {
-    const in7 = new Date(); in7.setDate(in7.getDate() + 7);
+    const in30 = new Date(); in30.setDate(in30.getDate() + 30);
     return tasks
-      .filter(t => t.dueDate && !['done','cancelled','deployed'].includes(t.status) && new Date(t.dueDate) <= in7)
+      .filter(t => t.dueDate && !['done','cancelled','deployed'].includes(t.status) && new Date(t.dueDate) >= new Date() && new Date(t.dueDate) <= in30)
       .sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))
-      .slice(0, 5);
+      .slice(0, 6);
   }, [tasks]);
 
   if (!upcoming.length) {
@@ -757,7 +757,7 @@ export default function MyTasksPage() {
             <CardContent sx={{ p: '18px !important' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
                 <Typography fontWeight={700} sx={{ fontSize: '0.95rem' }}>Upcoming</Typography>
-                <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary' }}>next 7 days</Typography>
+                <Typography sx={{ fontSize: '0.68rem', color: 'text.secondary' }}>next 30 days</Typography>
               </Box>
               {loading
                 ? Array.from({ length: 3 }).map((_, i) => (
