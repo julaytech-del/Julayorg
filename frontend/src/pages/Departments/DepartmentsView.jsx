@@ -40,7 +40,7 @@ export default function DepartmentsView() {
     try {
       const fd = new FormData();
       fd.append('file', file);
-      const res = await api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' } });
+      const res = await api.post('/upload', fd);
       setForm(p => ({ ...p, logo: res.data.data?.url || res.data.url }));
     } catch {
       dispatch(showSnackbar({ message: 'Failed to upload logo', severity: 'error' }));
