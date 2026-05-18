@@ -67,14 +67,14 @@ function ProjectCard({ project }) {
   const [showTasks, setShowTasks] = useState(false);
   const health = HEALTH_CONFIG[project.health || 'on_track'] || HEALTH_CONFIG.on_track;
   const HealthIcon = health.icon;
-  const members = Array.isArray(project.members) ? project.members : [];
+  const members = Array.isArray(project.members) ? project.members : (Array.isArray(project.team) ? project.team.map(t => t.user || t) : []);
   const pColor = projectColor(project.name);
   const taskList = Array.isArray(project.taskList) ? project.taskList : [];
 
-  const tasks = project.tasks || {};
-  const totalTasks = project.totalTasks || (tasks.todo || 0) + (tasks.inProgress || 0) + (tasks.done || 0);
-  const doneTasks  = project.completedTasks || tasks.done || 0;
-  const progress   = totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0;
+  const tc = project.taskCounts || {};
+  const totalTasks = tc.total || project.totalTasks || 0;
+  const doneTasks  = tc.done  || project.completedTasks || 0;
+  const progress   = project.completionPercentage ?? (totalTasks > 0 ? Math.round((doneTasks / totalTasks) * 100) : 0);
 
   return (
     <Card elevation={0} sx={{ height: '100%', border: '1px solid', borderColor: 'divider', borderRadius: 2, transition: 'all 0.2s', '&:hover': { boxShadow: '0 4px 20px rgba(0,0,0,0.1)', transform: 'translateY(-2px)', borderColor: pColor } }}>
@@ -113,7 +113,7 @@ function ProjectCard({ project }) {
         {/* Task breakdown */}
         <Box sx={{ mb: 2 }}>
           <Typography variant="caption" color="text.secondary" sx={{ mb: 0.5, display: 'block' }}>Task Breakdown</Typography>
-          <TaskBreakdownBar todo={tasks.todo || 0} inProgress={tasks.inProgress || 0} done={doneTasks} />
+          <TaskBreakdownBar todo={(tc.planned || 0)} inProgress={(tc.in_progress || 0) + (tc.review || 0) + (tc.blocked || 0)} done={doneTasks} />
         </Box>
 
         {/* Stats row */}

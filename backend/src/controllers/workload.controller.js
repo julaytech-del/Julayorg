@@ -1,5 +1,6 @@
 import Task from '../models/Task.js';
 import User from '../models/User.js';
+import Project from '../models/Project.js';
 import Anthropic from '@anthropic-ai/sdk';
 
 const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
@@ -11,12 +12,21 @@ export const getWorkload = async (req, res, next) => {
     const startDate = start ? new Date(start) : new Date(Date.now() - 7 * 86400000);
     const endDate = end ? new Date(end) : new Date(Date.now() + 7 * 86400000);
 
-    const taskFilter = { organization: orgId, status: { $nin: ['done', 'cancelled'] } };
+    // Cover tasks created before organization field was added (lookup by project)
+    const orgProjects = await Project.find({ organization: orgId }).select('_id').lean();
+    const orgProjectIds = orgProjects.map(p => p._id);
+
+    const taskFilter = {
+      status: { $nin: ['done', 'cancelled'] },
+      $and: [
+        { $or: [{ organization: orgId }, { project: { $in: orgProjectIds } }] },
+        { $or: [
+          { startDate: { $lte: endDate }, dueDate: { $gte: startDate } },
+          { dueDate: { $gte: startDate, $lte: endDate } }
+        ]}
+      ]
+    };
     if (projectId) taskFilter.project = projectId;
-    taskFilter.$or = [
-      { startDate: { $lte: endDate }, dueDate: { $gte: startDate } },
-      { dueDate: { $gte: startDate, $lte: endDate } }
-    ];
 
     const tasks = await Task.find(taskFilter)
       .populate('assignees', 'name avatar availability')

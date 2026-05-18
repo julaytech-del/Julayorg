@@ -243,6 +243,8 @@ export default function App() {
           <Route path="execution-board" element={
             <Suspense fallback={<PageLoader />}><ExecutionBoard /></Suspense>
           } />
+          <Route path="ai-studio"   element={<Navigate to="/dashboard/ai"          replace />} />
+          <Route path="form-views"  element={<Navigate to="/dashboard/views/forms" replace />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

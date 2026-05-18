@@ -60,7 +60,8 @@ export const getTasks = async (req, res, next) => {
 
 export const createTask = async (req, res, next) => {
   try {
-    const body = { ...req.body, createdBy: req.user._id };
+    const orgId = req.user.organization?._id || req.user.organization;
+    const body = { ...req.body, createdBy: req.user._id, organization: orgId };
     // Auto-assign creator if no assignees provided
     if (!body.assignees || body.assignees.length === 0) {
       body.assignees = [req.user._id];
