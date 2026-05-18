@@ -374,13 +374,13 @@ function WidgetCard({ widget, stats, loading, editMode, onRemove, dispatch }) {
 
 // ─── Widget Picker Dialog ────────────────────────────────────────────────────
 
-function AddWidgetDialog({ open, onClose, onAdd, currentTypes }) {
+function AddWidgetDialog({ open, onClose, onAdd, onRemove, currentTypes }) {
   return (
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { bgcolor: '#0F172A', border: '1px solid rgba(255,255,255,0.1)' } }}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'rgba(255,255,255,0.9)' }}>Add Widget</Typography>
-          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>Select a widget to add to your dashboard</Typography>
+          <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'rgba(255,255,255,0.9)' }}>Manage Widgets</Typography>
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>Click to add or remove widgets from your dashboard</Typography>
         </Box>
         <IconButton onClick={onClose} size="small" sx={{ color: 'rgba(255,255,255,0.5)' }}>
           <Close sx={{ fontSize: 16 }} />
@@ -390,29 +390,32 @@ function AddWidgetDialog({ open, onClose, onAdd, currentTypes }) {
       <DialogContent sx={{ pt: 2 }}>
         <Grid container spacing={1.5}>
           {WIDGET_CATALOG.map((wc) => {
-            const alreadyAdded = currentTypes.includes(wc.type);
+            const isAdded = currentTypes.includes(wc.type);
             const IconComp = wc.icon;
             return (
               <Grid item xs={6} key={wc.type}>
                 <Box
-                  onClick={() => !alreadyAdded && onAdd(wc)}
+                  onClick={() => isAdded ? onRemove(wc.type) : onAdd(wc)}
                   sx={{
                     p: 1.75, borderRadius: 2,
-                    border: alreadyAdded ? '1px solid rgba(255,255,255,0.05)' : '1px solid rgba(255,255,255,0.1)',
-                    bgcolor: alreadyAdded ? 'rgba(255,255,255,0.02)' : 'rgba(255,255,255,0.04)',
-                    cursor: alreadyAdded ? 'default' : 'pointer',
-                    opacity: alreadyAdded ? 0.5 : 1,
+                    border: isAdded ? '1px solid rgba(99,102,241,0.4)' : '1px solid rgba(255,255,255,0.1)',
+                    bgcolor: isAdded ? 'rgba(99,102,241,0.12)' : 'rgba(255,255,255,0.04)',
+                    cursor: 'pointer',
                     transition: 'all 0.15s',
-                    '&:hover': !alreadyAdded ? { bgcolor: 'rgba(99,102,241,0.1)', borderColor: 'rgba(99,102,241,0.4)' } : {},
+                    '&:hover': isAdded
+                      ? { bgcolor: 'rgba(239,68,68,0.1)', borderColor: 'rgba(239,68,68,0.4)' }
+                      : { bgcolor: 'rgba(99,102,241,0.1)', borderColor: 'rgba(99,102,241,0.4)' },
                     display: 'flex', gap: 1.25, alignItems: 'center',
                   }}
                 >
-                  <Box sx={{ width: 32, height: 32, borderRadius: 1.5, bgcolor: 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                  <Box sx={{ width: 32, height: 32, borderRadius: 1.5, bgcolor: isAdded ? 'rgba(99,102,241,0.25)' : 'rgba(99,102,241,0.15)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <IconComp sx={{ fontSize: 16, color: '#6366f1' }} />
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
                     <Typography variant="caption" fontWeight={600} noWrap sx={{ display: 'block', fontSize: '0.78rem', color: 'rgba(255,255,255,0.85)' }}>{wc.label}</Typography>
-                    {alreadyAdded && <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)' }}>Already added</Typography>}
+                    <Typography variant="caption" sx={{ fontSize: '0.68rem', color: isAdded ? 'rgba(99,102,241,0.8)' : 'rgba(255,255,255,0.3)' }}>
+                      {isAdded ? '✓ On dashboard — click to remove' : 'Click to add'}
+                    </Typography>
                   </Box>
                 </Box>
               </Grid>
@@ -465,7 +468,11 @@ export default function CustomDashboard() {
   const handleAddWidget = (wc) => {
     const newWidget = { id: `w_${Date.now()}`, type: wc.type, cols: wc.cols };
     saveLayout([...layout, newWidget]);
-    setAddDialogOpen(false);
+  };
+
+  const handleRemoveByType = (type) => {
+    const idx = layout.findIndex(w => w.type === type);
+    if (idx !== -1) saveLayout(layout.filter((_, i) => i !== idx));
   };
 
   const handleResetLayout = () => {
@@ -541,6 +548,7 @@ export default function CustomDashboard() {
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
         onAdd={handleAddWidget}
+        onRemove={handleRemoveByType}
         currentTypes={layout.map(w => w.type)}
       />
     </Box>
