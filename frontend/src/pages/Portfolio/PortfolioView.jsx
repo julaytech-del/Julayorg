@@ -3,10 +3,11 @@ import {
   Box, Typography, Card, CardContent, Chip, Avatar, AvatarGroup,
   Button, TextField, InputAdornment, Select, MenuItem, FormControl,
   InputLabel, LinearProgress, Tooltip, Skeleton, Grid, Divider,
+  Collapse, IconButton, Table, TableBody, TableCell, TableRow,
 } from '@mui/material';
 import {
   Search, FolderOpen, Group, CheckCircle, Warning, Error as ErrorIcon,
-  ArrowForward, TrendingUp,
+  ArrowForward, TrendingUp, ExpandMore, ExpandLess, Flag,
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { portfolioAPI } from '../../services/api.js';
@@ -24,6 +25,21 @@ const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-US', { month: '
 
 const PROJECT_PALETTE = ['#6366F1','#8B5CF6','#EC4899','#F59E0B','#10B981','#3B82F6','#EF4444','#14B8A6'];
 const projectColor = (name = '') => PROJECT_PALETTE[name.charCodeAt(0) % PROJECT_PALETTE.length];
+
+const PRIORITY_CONFIG = {
+  critical: { label: 'Critical', color: '#EF4444' },
+  high:     { label: 'High',     color: '#F59E0B' },
+  medium:   { label: 'Medium',   color: '#6366F1' },
+  low:      { label: 'Low',      color: '#94A3B8' },
+};
+
+const STATUS_TASK_CONFIG = {
+  planned:     { label: 'Planned',     bg: '#F1F5F9', color: '#64748B' },
+  in_progress: { label: 'In Progress', bg: '#EEF2FF', color: '#6366F1' },
+  review:      { label: 'Review',      bg: '#FFF7ED', color: '#F59E0B' },
+  blocked:     { label: 'Blocked',     bg: '#FEE2E2', color: '#EF4444' },
+  done:        { label: 'Done',        bg: '#D1FAE5', color: '#10B981' },
+};
 
 // ── task breakdown mini bar ────────────────────────────────────────────────
 function TaskBreakdownBar({ todo = 0, inProgress = 0, done = 0 }) {
@@ -48,10 +64,12 @@ function TaskBreakdownBar({ todo = 0, inProgress = 0, done = 0 }) {
 // ── project card ───────────────────────────────────────────────────────────
 function ProjectCard({ project }) {
   const navigate = useNavigate();
+  const [showTasks, setShowTasks] = useState(false);
   const health = HEALTH_CONFIG[project.health || 'on_track'] || HEALTH_CONFIG.on_track;
   const HealthIcon = health.icon;
   const members = Array.isArray(project.members) ? project.members : [];
   const pColor = projectColor(project.name);
+  const taskList = Array.isArray(project.taskList) ? project.taskList : [];
 
   const tasks = project.tasks || {};
   const totalTasks = project.totalTasks || (tasks.todo || 0) + (tasks.inProgress || 0) + (tasks.done || 0);
@@ -113,6 +131,63 @@ function ProjectCard({ project }) {
         <Typography variant="caption" color="text.disabled" sx={{ mb: 2, display: 'block' }}>
           Due: {formatDate(project.dueDate || project.endDate)}
         </Typography>
+
+        {/* Tasks toggle */}
+        {taskList.length > 0 && (
+          <Box sx={{ mb: 1.5 }}>
+            <Box
+              onClick={() => setShowTasks(v => !v)}
+              sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', cursor: 'pointer', py: 0.75, px: 1, borderRadius: 1, '&:hover': { bgcolor: '#F8FAFC' } }}
+            >
+              <Typography variant="caption" fontWeight={700} color="text.secondary">
+                Tasks ({taskList.length})
+              </Typography>
+              {showTasks ? <ExpandLess sx={{ fontSize: 16, color: 'text.disabled' }} /> : <ExpandMore sx={{ fontSize: 16, color: 'text.disabled' }} />}
+            </Box>
+            <Collapse in={showTasks}>
+              <Box sx={{ mt: 0.5, border: '1px solid #F1F5F9', borderRadius: 1.5, overflow: 'hidden' }}>
+                {taskList.map((task, idx) => {
+                  const sc = STATUS_TASK_CONFIG[task.status] || STATUS_TASK_CONFIG.planned;
+                  const pc = PRIORITY_CONFIG[task.priority];
+                  const assignee = Array.isArray(task.assignees) ? task.assignees[0] : null;
+                  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && task.status !== 'done';
+                  return (
+                    <Box key={task._id || idx} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.25, py: 0.75, borderBottom: idx < taskList.length - 1 ? '1px solid #F1F5F9' : 'none', '&:hover': { bgcolor: '#FAFBFF' } }}>
+                      {/* Status dot */}
+                      <Box sx={{ width: 8, height: 8, borderRadius: '50%', bgcolor: sc.color, flexShrink: 0 }} />
+                      {/* Title */}
+                      <Typography variant="caption" sx={{ flex: 1, minWidth: 0, fontSize: '0.75rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', textDecoration: task.status === 'done' ? 'line-through' : 'none', color: task.status === 'done' ? 'text.disabled' : 'text.primary' }}>
+                        {task.title}
+                      </Typography>
+                      {/* Priority */}
+                      {pc && (
+                        <Tooltip title={pc.label}>
+                          <Flag sx={{ fontSize: 12, color: pc.color, flexShrink: 0 }} />
+                        </Tooltip>
+                      )}
+                      {/* Due date */}
+                      {task.dueDate && (
+                        <Typography variant="caption" sx={{ fontSize: '0.68rem', color: isOverdue ? '#EF4444' : 'text.disabled', flexShrink: 0 }}>
+                          {new Date(task.dueDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+                        </Typography>
+                      )}
+                      {/* Assignee */}
+                      {assignee && (
+                        <Tooltip title={assignee.name || ''}>
+                          <Avatar src={assignee.avatar} sx={{ width: 18, height: 18, fontSize: '0.6rem', flexShrink: 0 }}>
+                            {assignee.name?.[0]?.toUpperCase()}
+                          </Avatar>
+                        </Tooltip>
+                      )}
+                      {/* Status chip */}
+                      <Chip label={sc.label} size="small" sx={{ height: 16, fontSize: '0.6rem', fontWeight: 700, bgcolor: sc.bg, color: sc.color, flexShrink: 0, '& .MuiChip-label': { px: 0.75 } }} />
+                    </Box>
+                  );
+                })}
+              </Box>
+            </Collapse>
+          </Box>
+        )}
 
         {/* Team avatars */}
         <Box sx={{ flex: 1 }} />

@@ -21,7 +21,10 @@ export const getPortfolio = async (req, res) => {
     const now = new Date();
 
     const enriched = await Promise.all(projects.map(async (project) => {
-      const allTasks = await Task.find({ project: project._id }).select('status dueDate').lean();
+      const allTasks = await Task.find({ project: project._id })
+        .select('title status priority dueDate assignees tags')
+        .populate('assignees', 'name avatar')
+        .lean();
 
       const taskCounts = {
         total: allTasks.length,
@@ -49,7 +52,8 @@ export const getPortfolio = async (req, res) => {
         ...project,
         taskCounts,
         completionPercentage,
-        health
+        health,
+        taskList: allTasks
       };
     }));
 
