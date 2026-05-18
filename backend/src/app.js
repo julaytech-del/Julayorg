@@ -38,6 +38,7 @@ import uploadRoutes from './routes/upload.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
+app.set('trust proxy', 1);
 
 const allowedOrigins = ['https://julay.org', 'https://www.julay.org', 'https://analytics.julay.org', 'http://localhost:3000', 'http://localhost:5173'];
 app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(origin)) cb(null, true); else cb(null, false); }, credentials: true }));
