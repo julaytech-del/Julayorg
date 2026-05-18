@@ -379,10 +379,10 @@ function AddWidgetDialog({ open, onClose, onAdd, currentTypes }) {
     <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth PaperProps={{ sx: { bgcolor: '#0F172A', border: '1px solid rgba(255,255,255,0.1)' } }}>
       <DialogTitle sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <Box>
-          <Typography variant="subtitle1" fontWeight={700}>Add Widget</Typography>
-          <Typography variant="caption" color="text.secondary">Select a widget to add to your dashboard</Typography>
+          <Typography variant="subtitle1" fontWeight={700} sx={{ color: 'rgba(255,255,255,0.9)' }}>Add Widget</Typography>
+          <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }}>Select a widget to add to your dashboard</Typography>
         </Box>
-        <IconButton onClick={onClose} size="small" sx={{ color: 'text.secondary' }}>
+        <IconButton onClick={onClose} size="small" sx={{ color: 'rgba(255,255,255,0.5)' }}>
           <Close sx={{ fontSize: 16 }} />
         </IconButton>
       </DialogTitle>
@@ -411,8 +411,8 @@ function AddWidgetDialog({ open, onClose, onAdd, currentTypes }) {
                     <IconComp sx={{ fontSize: 16, color: '#6366f1' }} />
                   </Box>
                   <Box sx={{ flex: 1, minWidth: 0 }}>
-                    <Typography variant="caption" fontWeight={600} noWrap sx={{ display: 'block', fontSize: '0.78rem' }}>{wc.label}</Typography>
-                    {alreadyAdded && <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.68rem' }}>Already added</Typography>}
+                    <Typography variant="caption" fontWeight={600} noWrap sx={{ display: 'block', fontSize: '0.78rem', color: 'rgba(255,255,255,0.85)' }}>{wc.label}</Typography>
+                    {alreadyAdded && <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.3)' }}>Already added</Typography>}
                   </Box>
                 </Box>
               </Grid>
