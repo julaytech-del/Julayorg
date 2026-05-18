@@ -106,8 +106,8 @@ export default function WorkloadView() {
         end: new Date(endDate).toISOString(),
         projectId: selectedProjectId || undefined
       });
-      const data = res?.data || res || [];
-      const workload = Array.isArray(data) ? data : [];
+      const data = res?.data || res || {};
+      const workload = Array.isArray(data) ? data : (data?.users || []);
       _workloadCache = workload;
       setWorkloadData(workload);
     } catch {
@@ -275,18 +275,20 @@ export default function WorkloadView() {
                 </TableRow>
               ) : (
                 workloadData.map((member, mi) => {
-                  const dailyCapacity = member.availability?.hoursPerDay || 8;
+                  const dailyCapacity = member.hoursPerDay || member.availability?.hoursPerDay || 8;
+                  const dayMap = {};
+                  (member.dailyLoad || member.days || []).forEach(d => { if (d.date) dayMap[d.date] = d; });
                   let totalHours = 0;
                   return (
                     <TableRow key={mi} sx={{ '&:hover': { backgroundColor: 'rgba(255,255,255,0.02)' }, '& .MuiTableCell-root': { borderColor: 'rgba(255,255,255,0.04)', py: 1 } }}>
                       <TableCell>
                         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.25 }}>
-                          <Avatar sx={{ width: 32, height: 32, fontSize: '0.78rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', flexShrink: 0 }}>
-                            {member.user?.name?.[0]?.toUpperCase() || member.name?.[0]?.toUpperCase() || '?'}
+                          <Avatar src={member.avatar || undefined} sx={{ width: 32, height: 32, fontSize: '0.78rem', background: 'linear-gradient(135deg, #6366f1, #a855f7)', flexShrink: 0 }}>
+                            {!member.avatar && (member.name?.[0]?.toUpperCase() || '?')}
                           </Avatar>
                           <Box>
-                            <Typography sx={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.82rem', fontWeight: 500 }}>{member.user?.name || member.name || 'Unknown'}</Typography>
-                            <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.68rem' }}>{member.user?.email || member.email || ''}</Typography>
+                            <Typography sx={{ color: 'rgba(255,255,255,0.85)', fontSize: '0.82rem', fontWeight: 500 }}>{member.name || 'Unknown'}</Typography>
+                            <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.68rem' }}>{member.email || ''}</Typography>
                           </Box>
                         </Box>
                       </TableCell>
@@ -295,7 +297,7 @@ export default function WorkloadView() {
                       </TableCell>
                       {days.map((d, di) => {
                         const dayStr = format(d, 'yyyy-MM-dd');
-                        const dayEntry = (member.days || {})[dayStr] || { hours: 0, tasks: [] };
+                        const dayEntry = dayMap[dayStr] || { hours: 0, tasks: [] };
                         totalHours += dayEntry.hours || 0;
                         return (
                           <TableCell key={di} sx={{ p: 0.75 }}>
