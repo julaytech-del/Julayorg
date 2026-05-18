@@ -15,6 +15,7 @@ import {
 } from 'date-fns';
 import { useSelector, useDispatch } from 'react-redux';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
+import { fetchProjects } from '../../store/slices/projectSlice.js';
 import { workloadAPI } from '../../services/api.js';
 
 const cardBase = {
@@ -74,6 +75,8 @@ function WorkloadCell({ hours, capacity, tasks }) {
 export default function WorkloadView() {
   const dispatch = useDispatch();
   const { projects } = useSelector(s => s.projects);
+
+  useEffect(() => { if (!projects?.length) dispatch(fetchProjects()); }, []);
 
   const today = new Date();
   const weekStart = startOfWeek(today, { weekStartsOn: 1 });
