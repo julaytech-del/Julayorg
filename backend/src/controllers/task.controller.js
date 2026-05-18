@@ -72,7 +72,6 @@ export const createTask = async (req, res, next) => {
       await Project.findByIdAndUpdate(task.project, { $inc: { 'progress.totalTasks': 1 } });
     }
     if (task.goal) await recalcGoalProgress(task.goal);
-    const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'created', entityType: 'task', entityId: task._id, entityName: task.title });
     const project = await Project.findById(task.project).select('name');
     triggerSlack(orgId, 'created', task, project?.name || '', req.user.name);
