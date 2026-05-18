@@ -101,7 +101,7 @@ export default function WorkloadView() {
   const loadWorkload = useCallback(async () => {
     setLoading(true);
     try {
-      const res = await workloadAPI.get({
+      const res = await workloadAPI.getWorkload({
         start: new Date(startDate).toISOString(),
         end: new Date(endDate).toISOString(),
         projectId: selectedProjectId || undefined
