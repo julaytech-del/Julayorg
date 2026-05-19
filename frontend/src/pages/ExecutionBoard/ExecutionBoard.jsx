@@ -70,7 +70,7 @@ function avatarColor(name = '') {
 }
 
 // ── Task Card ─────────────────────────────────────────────────────────────────
-function TaskCard({ task, onClick }) {
+function TaskCard({ task, onClick, onDragStart }) {
   const overdue = task.dueDate && new Date(task.dueDate) < new Date() && !['done','deployed','cancelled'].includes(task.status);
   const subs    = task.subtasks || [];
   const done    = subs.filter(s => s.status === 'done').length;
@@ -80,12 +80,15 @@ function TaskCard({ task, onClick }) {
 
   return (
     <Box
+      draggable
+      onDragStart={onDragStart}
       onClick={onClick}
       sx={{
         bgcolor: 'white', borderRadius: 2, p: 1.5, mb: 1.25,
-        border: '1px solid #E2E8F0', cursor: 'pointer',
+        border: '1px solid #E2E8F0', cursor: 'grab',
         transition: 'all 0.15s',
         '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.10)', transform: 'translateY(-1px)', borderColor: '#C7D2FE' },
+        '&:active': { cursor: 'grabbing' },
         ...(overdue ? { borderLeft: '3px solid #EF4444', bgcolor: '#FFFAFA' } : {}),
       }}
     >
@@ -176,6 +179,8 @@ export default function ExecutionBoard() {
   const [users,       setUsers]       = useState([]);
   const [projects,    setProjects]    = useState([]);
   const [hoveredCol,  setHoveredCol]  = useState(null);
+  const [dragTaskId,  setDragTaskId]  = useState(null);
+  const [dragOverCol, setDragOverCol] = useState(null);
 
   const load = async () => {
     setLoading(true);
@@ -192,6 +197,25 @@ export default function ExecutionBoard() {
     api.get('/users').then(r => setUsers(r.data?.data || r.data || [])).catch(() => {});
     api.get('/projects').then(r => setProjects(r.data?.data?.projects || r.data?.data || r.data || [])).catch(() => {});
   }, []);
+
+  const handleDrop = async (colId) => {
+    setDragOverCol(null);
+    if (!dragTaskId) return;
+    const col = COLUMNS.find(c => c.id === colId);
+    if (!col) return;
+    const task = tasks.find(t => t._id === dragTaskId);
+    if (!task || col.statuses.includes(task.status)) { setDragTaskId(null); return; }
+    const newStatus = col.defaultStatus;
+    setTasks(prev => prev.map(t => t._id === dragTaskId ? { ...t, status: newStatus } : t));
+    setDragTaskId(null);
+    try {
+      await api.put(`/tasks/${dragTaskId}`, { status: newStatus });
+      dispatch(showSnackbar({ message: `Moved to ${col.label}`, severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to move task', severity: 'error' }));
+      load();
+    }
+  };
 
   const openCreate = (defaultStatus = 'todo') => {
     // pre-assign to current user so task shows up in My Tasks
@@ -333,18 +357,23 @@ export default function ExecutionBoard() {
               {columns.map(col => {
                 const isEmpty   = col.tasks.length === 0;
                 const isHovered = hoveredCol === col.id;
-                const collapsed = isEmpty && !isHovered;
+                const isDragOver = dragOverCol === col.id;
+                const collapsed = isEmpty && !isHovered && !isDragOver;
 
                 return (
                   <Box
                     key={col.id}
                     onMouseEnter={() => setHoveredCol(col.id)}
                     onMouseLeave={() => setHoveredCol(null)}
+                    onDragOver={e => { e.preventDefault(); setDragOverCol(col.id); }}
+                    onDragLeave={e => { if (!e.currentTarget.contains(e.relatedTarget)) setDragOverCol(null); }}
+                    onDrop={() => handleDrop(col.id)}
                     sx={{
                       flexShrink: 0,
                       width: collapsed ? 48 : 230,
                       transition: 'width 0.22s cubic-bezier(0.4,0,0.2,1)',
                       overflow: 'hidden',
+                      ...(isDragOver && { outline: `2px dashed ${col.color}`, outlineOffset: -2, borderRadius: 2 }),
                     }}
                   >
                     {collapsed ? (
@@ -410,7 +439,7 @@ export default function ExecutionBoard() {
 
                         <Box sx={{ minHeight: 80 }}>
                           {col.tasks.map(task => (
-                            <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} />
+                            <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} onDragStart={() => setDragTaskId(task._id)} />
                           ))}
                           {isEmpty && (
                             <Box

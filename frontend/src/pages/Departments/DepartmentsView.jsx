@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, CircularProgress, Skeleton } from '@mui/material';
-import { Add, Edit, Delete, Business, PhotoCamera } from '@mui/icons-material';
+import { Box, Grid, Card, CardContent, Typography, Avatar, Chip, Button, Dialog, DialogTitle, DialogContent, DialogActions, TextField, IconButton, CircularProgress, Skeleton, Divider, List, ListItem, ListItemAvatar, ListItemText } from '@mui/material';
+import { Add, Edit, Delete, Business, PhotoCamera, People } from '@mui/icons-material';
+import api from '../../services/api.js';
 
 // Module-level cache: survives re-renders and re-navigation within the same session
 let _deptCache = null;
@@ -23,6 +24,9 @@ export default function DepartmentsView() {
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [form, setForm] = useState({ name: '', description: '', color: '#6366F1', logo: '' });
   const [uploading, setUploading] = useState(false);
+  const [membersDialogDept, setMembersDialogDept] = useState(null);
+  const [deptMembers, setDeptMembers] = useState([]);
+  const [loadingMembers, setLoadingMembers] = useState(false);
   const MAX_LOGO_SIZE = 200; // px — resize before saving as base64
   const [logoPreview, setLogoPreview] = useState('');
 
@@ -102,6 +106,21 @@ export default function DepartmentsView() {
     } catch { dispatch(showSnackbar({ message: t('errors.generic'), severity: 'error' })); }
   };
 
+  const openMembers = async (dept) => {
+    setMembersDialogDept(dept);
+    setDeptMembers([]);
+    setLoadingMembers(true);
+    try {
+      const res = await api.get('/users');
+      const all = res.data?.data || res.data || [];
+      setDeptMembers(all.filter(u => {
+        const dId = u.department?._id || u.department;
+        return dId && String(dId) === String(dept._id);
+      }));
+    } catch {}
+    setLoadingMembers(false);
+  };
+
   const handleDelete = async () => {
     try {
       await departmentsAPI.delete(deleteTarget._id);
@@ -173,11 +192,18 @@ export default function DepartmentsView() {
                 </Box>
                 {dept.description && <Typography variant="body2" color="text.secondary" mb={1.5}>{dept.description}</Typography>}
                 {dept.head && (
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
                     <Avatar sx={{ width: 24, height: 24, fontSize: '0.7rem', bgcolor: dept.color }}>{dept.head.name?.[0]}</Avatar>
                     <Typography variant="caption" color="text.secondary">{t('departments.head', { name: dept.head.name })}</Typography>
                   </Box>
                 )}
+                <Button
+                  size="small" variant="outlined" fullWidth startIcon={<People sx={{ fontSize: 14 }} />}
+                  onClick={() => openMembers(dept)}
+                  sx={{ borderColor: `${dept.color}40`, color: dept.color, '&:hover': { borderColor: dept.color, bgcolor: `${dept.color}10` }, textTransform: 'none', fontSize: '0.78rem' }}
+                >
+                  View Members
+                </Button>
               </CardContent>
             </Card>
           </Grid>
@@ -255,6 +281,62 @@ export default function DepartmentsView() {
         onConfirm={handleDelete}
         onCancel={() => setDeleteTarget(null)}
       />
+
+      {/* Members Dialog */}
+      <Dialog open={Boolean(membersDialogDept)} onClose={() => setMembersDialogDept(null)} maxWidth="xs" fullWidth>
+        {membersDialogDept && (
+          <>
+            <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <Box sx={{ width: 36, height: 36, borderRadius: 2, bgcolor: `${membersDialogDept.color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <Business sx={{ color: membersDialogDept.color, fontSize: 20 }} />
+              </Box>
+              <Box>
+                <Typography variant="subtitle1" fontWeight={700}>{membersDialogDept.name}</Typography>
+                <Typography variant="caption" color="text.secondary">{deptMembers.length} member{deptMembers.length !== 1 ? 's' : ''}</Typography>
+              </Box>
+            </DialogTitle>
+            <Divider />
+            <DialogContent sx={{ p: 0 }}>
+              {loadingMembers ? (
+                <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}>
+                  <CircularProgress size={28} sx={{ color: membersDialogDept.color }} />
+                </Box>
+              ) : deptMembers.length === 0 ? (
+                <Box sx={{ textAlign: 'center', py: 5 }}>
+                  <People sx={{ fontSize: 40, color: 'grey.300', mb: 1 }} />
+                  <Typography variant="body2" color="text.secondary">No members in this department</Typography>
+                </Box>
+              ) : (
+                <List disablePadding>
+                  {deptMembers.map((u, i) => (
+                    <React.Fragment key={u._id}>
+                      {i > 0 && <Divider component="li" />}
+                      <ListItem>
+                        <ListItemAvatar>
+                          <Avatar src={u.avatar || undefined} sx={{ bgcolor: membersDialogDept.color, width: 36, height: 36, fontSize: '0.85rem' }}>
+                            {!u.avatar && u.name?.[0]}
+                          </Avatar>
+                        </ListItemAvatar>
+                        <ListItemText
+                          primary={<Typography variant="body2" fontWeight={600}>{u.name}</Typography>}
+                          secondary={<Typography variant="caption" color="text.secondary">{u.jobTitle || u.role?.label || 'Member'}</Typography>}
+                        />
+                        <Chip label={u.status || 'active'} size="small"
+                          sx={{ fontSize: '0.65rem', height: 20, textTransform: 'capitalize',
+                            bgcolor: u.status === 'active' ? 'rgba(16,185,129,0.1)' : 'rgba(148,163,184,0.1)',
+                            color: u.status === 'active' ? '#10B981' : '#94A3B8' }} />
+                      </ListItem>
+                    </React.Fragment>
+                  ))}
+                </List>
+              )}
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setMembersDialogDept(null)}>Close</Button>
+            </DialogActions>
+          </>
+        )}
+      </Dialog>
     </Box>
   );
 }

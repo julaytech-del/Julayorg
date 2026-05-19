@@ -367,7 +367,11 @@ export default function PortfolioView() {
             {[
               { label: 'Total Tasks',   value: projects.reduce((s, p) => s + (p.taskCounts?.total || p.totalTasks || 0), 0) },
               { label: 'Completed',     value: projects.reduce((s, p) => s + (p.taskCounts?.done  || p.completedTasks || 0), 0) },
-              { label: 'Total Members', value: [...new Set(projects.flatMap(p => (Array.isArray(p.team) ? p.team.map(t => (t.user?._id || t.user || t._id || t).toString()) : (p.members || []).map(m => (typeof m === 'object' ? m._id : m).toString()))))].length },
+              { label: 'Total Members', value: [...new Set(projects.flatMap(p => {
+                  const teamIds = Array.isArray(p.team) && p.team.length > 0 ? p.team.map(t => (t.user?._id || t.user || t._id || t).toString()) : null;
+                  if (teamIds) return teamIds;
+                  return (Array.isArray(p.taskList) ? p.taskList : []).flatMap(t => (t.assignees || []).map(a => (a._id || a).toString()));
+                }))].length },
               { label: 'Avg. Progress', value: `${Math.round(projects.reduce((s, p) => s + (p.completionPercentage || 0), 0) / projects.length)}%` },
             ].map(({ label, value }) => (
               <Box key={label}>

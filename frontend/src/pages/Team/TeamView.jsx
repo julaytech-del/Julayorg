@@ -257,7 +257,7 @@ export default function TeamView() {
                   <Box sx={{ position: 'absolute', bottom: 2, right: 2, width: 12, height: 12, borderRadius: '50%', backgroundColor: STATUS_COLORS[member.status] || '#94A3B8', border: '2px solid white' }} />
                 </Box>
                 <Typography variant="subtitle1" fontWeight={700}>{member.name}</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1}>{member.jobTitle || 'Team Member'}</Typography>
+                <Typography variant="caption" color="text.secondary" display="block" mb={1}>{member.jobTitle || ROLE_LEVELS.find(r => r.level === member.role?.level)?.label || 'Member'}</Typography>
                 {member.department && <Chip label={member.department.name} size="small" sx={{ mb: 1.5, backgroundColor: `${member.department.color}18`, color: member.department.color, fontWeight: 600 }} />}
                 <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap', mb: 1.5 }}>
                   {(member.skills || []).slice(0, 3).map((s, i) => <Chip key={i} label={s.name} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 20 }} />)}
