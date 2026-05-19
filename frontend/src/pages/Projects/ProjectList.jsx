@@ -22,6 +22,7 @@ import { fetchProjects, createProject, deleteProject } from '../../store/slices/
 import { generatePlan } from '../../store/slices/aiSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import { usersAPI } from '../../services/api.js';
+import { usePermissions } from '../../hooks/usePermissions.js';
 import StatusChip from '../../components/common/StatusChip.jsx';
 import PriorityChip from '../../components/common/PriorityChip.jsx';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
@@ -362,6 +363,7 @@ function ProjectCard({ project, onDelete }) {
   const { t } = useTranslation();
   const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const accentColor = project.color || '#4F46E5';
+  const { canDeleteProject } = usePermissions();
 
   const progress = project.progress?.percentage || 0;
   const progressColor = progress >= 75 ? '#10B981' : progress >= 40 ? '#F59E0B' : accent;
@@ -476,10 +478,12 @@ function ProjectCard({ project, onDelete }) {
           <Typography variant="body2">{t('projects.menu.edit')}</Typography>
         </MenuItem>
         <Divider sx={{ my: 0.5 }} />
-        <MenuItem onClick={() => { onDelete(project); setMenuAnchor(null); }} sx={{ color: 'error.main' }}>
-          <Delete sx={{ mr: 1.5, fontSize: 16 }} />
-          <Typography variant="body2" fontWeight={600}>{t('projects.menu.delete')}</Typography>
-        </MenuItem>
+        {canDeleteProject && (
+          <MenuItem onClick={() => { onDelete(project); setMenuAnchor(null); }} sx={{ color: 'error.main' }}>
+            <Delete sx={{ mr: 1.5, fontSize: 16 }} />
+            <Typography variant="body2" fontWeight={600}>{t('projects.menu.delete')}</Typography>
+          </MenuItem>
+        )}
       </Menu>
     </Card>
   );
@@ -491,6 +495,7 @@ export default function ProjectList() {
   const { t } = useTranslation();
   const { projects: reduxProjects, loading: reduxLoading } = useSelector(s => s.projects);
   const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
+  const { canCreateProject, canDeleteProject } = usePermissions();
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
@@ -541,19 +546,21 @@ export default function ProjectList() {
             {t('projects.subtitle', { total: projects.length, active: projects.filter(p => p.status === 'active').length })}
           </Typography>
         </Box>
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            variant="outlined"
-            startIcon={<AutoAwesome />}
-            onClick={() => setCreateOpen(true)}
-            sx={{ borderColor: `${accent}44`, color: accent, backgroundColor: `${accent}18`, '&:hover': { backgroundColor: `${accent}28`, borderColor: `${accent}88` } }}
-          >
-            {t('projects.aiGenerate')}
-          </Button>
-          <Button variant="contained" startIcon={<Add />} onClick={() => setCreateOpen(true)}>
-            {t('projects.newProject')}
-          </Button>
-        </Box>
+        {canCreateProject && (
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button
+              variant="outlined"
+              startIcon={<AutoAwesome />}
+              onClick={() => setCreateOpen(true)}
+              sx={{ borderColor: `${accent}44`, color: accent, backgroundColor: `${accent}18`, '&:hover': { backgroundColor: `${accent}28`, borderColor: `${accent}88` } }}
+            >
+              {t('projects.aiGenerate')}
+            </Button>
+            <Button variant="contained" startIcon={<Add />} onClick={() => setCreateOpen(true)}>
+              {t('projects.newProject')}
+            </Button>
+          </Box>
+        )}
       </Box>
 
       <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap', alignItems: 'center', p: 2, backgroundColor: 'white', borderRadius: 3, border: '1px solid #E2E8F0' }}>

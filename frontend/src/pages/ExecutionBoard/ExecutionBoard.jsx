@@ -16,6 +16,7 @@ import {
 } from 'recharts';
 import { format, subDays, startOfDay } from 'date-fns';
 import { useDispatch, useSelector } from 'react-redux';
+import { usePermissions } from '../../hooks/usePermissions.js';
 import api from '../../services/api.js';
 import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -70,7 +71,7 @@ function avatarColor(name = '') {
 }
 
 // ── Task Card ─────────────────────────────────────────────────────────────────
-function TaskCard({ task, onClick, onDragStart }) {
+function TaskCard({ task, onClick, onDragStart = null }) {
   const overdue = task.dueDate && new Date(task.dueDate) < new Date() && !['done','deployed','cancelled'].includes(task.status);
   const subs    = task.subtasks || [];
   const done    = subs.filter(s => s.status === 'done').length;
@@ -80,12 +81,12 @@ function TaskCard({ task, onClick, onDragStart }) {
 
   return (
     <Box
-      draggable
-      onDragStart={onDragStart}
+      draggable={!!onDragStart}
+      onDragStart={onDragStart || undefined}
       onClick={onClick}
       sx={{
         bgcolor: 'white', borderRadius: 2, p: 1.5, mb: 1.25,
-        border: '1px solid #E2E8F0', cursor: 'grab',
+        border: '1px solid #E2E8F0', cursor: onDragStart ? 'grab' : 'pointer',
         transition: 'all 0.15s',
         '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.10)', transform: 'translateY(-1px)', borderColor: '#C7D2FE' },
         '&:active': { cursor: 'grabbing' },
@@ -170,6 +171,7 @@ const BLANK_FORM = { title: '', status: 'todo', priority: 'medium', dueDate: '',
 export default function ExecutionBoard() {
   const dispatch  = useDispatch();
   const currentUser = useSelector(s => s.auth.user);
+  const { canCreateTask, canEditTask } = usePermissions();
   const [tasks,       setTasks]       = useState([]);
   const [loading,     setLoading]     = useState(true);
   const [selected,    setSelected]    = useState(null);
@@ -324,10 +326,12 @@ export default function ExecutionBoard() {
             sx={{ borderRadius: 2, textTransform: 'none' }}>
             Refresh
           </Button>
-          <Button variant="contained" startIcon={<Add />} size="small" onClick={() => openCreate()}
-            sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2, textTransform: 'none', fontWeight: 700, boxShadow: '0 4px 12px rgba(99,102,241,0.35)' }}>
-            New Task
-          </Button>
+          {canCreateTask && (
+            <Button variant="contained" startIcon={<Add />} size="small" onClick={() => openCreate()}
+              sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2, textTransform: 'none', fontWeight: 700, boxShadow: '0 4px 12px rgba(99,102,241,0.35)' }}>
+              New Task
+            </Button>
+          )}
         </Box>
       </Box>
 
@@ -429,19 +433,21 @@ export default function ExecutionBoard() {
                               {col.tasks.length}
                             </Box>
                           </Box>
-                          <Tooltip title={`Add to ${col.label}`}>
-                            <IconButton size="small" onClick={() => openCreate(col.defaultStatus)}
-                              sx={{ color: col.color, opacity: 0.6, '&:hover': { opacity: 1, bgcolor: `${col.color}18` } }}>
-                              <Add sx={{ fontSize: 15 }} />
-                            </IconButton>
-                          </Tooltip>
+                          {canCreateTask && (
+                            <Tooltip title={`Add to ${col.label}`}>
+                              <IconButton size="small" onClick={() => openCreate(col.defaultStatus)}
+                                sx={{ color: col.color, opacity: 0.6, '&:hover': { opacity: 1, bgcolor: `${col.color}18` } }}>
+                                <Add sx={{ fontSize: 15 }} />
+                              </IconButton>
+                            </Tooltip>
+                          )}
                         </Box>
 
                         <Box sx={{ minHeight: 80 }}>
                           {col.tasks.map(task => (
-                            <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} onDragStart={() => setDragTaskId(task._id)} />
+                            <TaskCard key={task._id} task={task} onClick={() => setSelected(task)} onDragStart={canEditTask ? () => setDragTaskId(task._id) : undefined} />
                           ))}
-                          {isEmpty && (
+                          {isEmpty && canCreateTask && (
                             <Box
                               onClick={() => openCreate(col.defaultStatus)}
                               sx={{

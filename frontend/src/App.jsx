@@ -3,6 +3,7 @@ import { Routes, Route, Navigate, useLocation, useParams } from 'react-router-do
 import { useDispatch, useSelector } from 'react-redux';
 import { Box, CircularProgress, LinearProgress, Typography, Button } from '@mui/material';
 import { fetchCurrentUser } from './store/slices/authSlice.js';
+import { usePermissions } from './hooks/usePermissions.js';
 
 class ErrorBoundary extends React.Component {
   constructor(props) { super(props); this.state = { hasError: false }; }
@@ -113,6 +114,18 @@ function PublicRoute({ children }) {
   return children;
 }
 
+function PermissionRoute({ permKey, children }) {
+  const { initialized } = useSelector(s => s.auth);
+  const perms = usePermissions();
+  if (!initialized) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress size={24} sx={{ color: '#6366F1' }} />
+    </Box>
+  );
+  if (!perms[permKey]) return <Navigate to="/dashboard" replace />;
+  return children;
+}
+
 function ProjectRedirect() {
   const { id } = useParams();
   return <Navigate to={`/dashboard/projects/${id}`} replace />;
@@ -181,7 +194,9 @@ export default function App() {
             <Suspense fallback={<PageLoader />}><GanttView /></Suspense>
           } />
           <Route path="ai" element={
-            <Suspense fallback={<PageLoader />}><AIStudio /></Suspense>
+            <PermissionRoute permKey="canUseAI">
+              <Suspense fallback={<PageLoader />}><AIStudio /></Suspense>
+            </PermissionRoute>
           } />
           <Route path="team" element={
             <Suspense fallback={<PageLoader />}><TeamView /></Suspense>
@@ -211,7 +226,9 @@ export default function App() {
             <Suspense fallback={<PageLoader />}><AutomationsPage /></Suspense>
           } />
           <Route path="reports" element={
-            <Suspense fallback={<PageLoader />}><ReportsPage /></Suspense>
+            <PermissionRoute permKey="canViewReports">
+              <Suspense fallback={<PageLoader />}><ReportsPage /></Suspense>
+            </PermissionRoute>
           } />
           <Route path="settings/webhooks" element={
             <Suspense fallback={<PageLoader />}><WebhooksPage /></Suspense>
