@@ -472,6 +472,7 @@ export default function CustomDashboard() {
       try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
       return next;
     });
+    setAddDialogOpen(false);
   };
 
   const handleRemoveByType = (type) => {

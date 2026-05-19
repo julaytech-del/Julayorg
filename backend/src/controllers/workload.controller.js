@@ -15,11 +15,13 @@ export const getWorkload = async (req, res, next) => {
     const orgProjects = await Project.find({ organization: orgId }).select('_id').lean();
     const orgProjectIds = orgProjects.map(p => p._id);
 
-    // Simple flat filter: tasks in org's projects, not done, with dueDate in range
+    // Match tasks belonging to org (by org field OR by project), with dueDate in range
     const taskFilter = {
-      project: { $in: orgProjectIds },
+      $and: [
+        { $or: [{ organization: orgId }, { project: { $in: orgProjectIds } }] },
+        { dueDate: { $gte: startDate, $lte: endDate } },
+      ],
       status: { $nin: ['done', 'cancelled'] },
-      dueDate: { $gte: startDate, $lte: endDate },
     };
     if (projectId) taskFilter.project = projectId;
 

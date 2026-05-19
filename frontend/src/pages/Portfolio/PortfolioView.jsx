@@ -67,9 +67,13 @@ function ProjectCard({ project }) {
   const [showTasks, setShowTasks] = useState(false);
   const health = HEALTH_CONFIG[project.health || 'on_track'] || HEALTH_CONFIG.on_track;
   const HealthIcon = health.icon;
-  const members = Array.isArray(project.members) ? project.members : (Array.isArray(project.team) ? project.team.map(t => t.user || t) : []);
-  const pColor = projectColor(project.name);
   const taskList = Array.isArray(project.taskList) ? project.taskList : [];
+  const pColor = projectColor(project.name);
+
+  // Derive members from project.team, fallback to unique assignees from tasks
+  const teamMembers = Array.isArray(project.team) ? project.team.map(t => t.user || t).filter(Boolean) : [];
+  const taskAssignees = [...new Map(taskList.flatMap(t => t.assignees || []).filter(a => a?._id).map(a => [a._id.toString(), a])).values()];
+  const members = teamMembers.length > 0 ? teamMembers : taskAssignees;
 
   const tc = project.taskCounts || {};
   const totalTasks = tc.total || project.totalTasks || 0;
