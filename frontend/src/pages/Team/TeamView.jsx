@@ -257,8 +257,9 @@ export default function TeamView() {
                   <Box sx={{ position: 'absolute', bottom: 2, right: 2, width: 12, height: 12, borderRadius: '50%', backgroundColor: STATUS_COLORS[member.status] || '#94A3B8', border: '2px solid white' }} />
                 </Box>
                 <Typography variant="subtitle1" fontWeight={700}>{member.name}</Typography>
-                <Typography variant="caption" color="text.secondary" display="block" mb={1}>{member.jobTitle || ROLE_LEVELS.find(r => r.level === member.role?.level)?.label || 'Member'}</Typography>
-                {member.department && <Chip label={member.department.name} size="small" sx={{ mb: 1.5, backgroundColor: `${member.department.color}18`, color: member.department.color, fontWeight: 600 }} />}
+                <Typography variant="caption" color="text.secondary" display="block" mb={0.75}>{member.jobTitle || 'Team Member'}</Typography>
+                {(() => { const r = ROLE_LEVELS.find(rl => rl.level === member.role?.level); return r ? <Chip label={r.label} size="small" sx={{ mb: 1, height: 18, fontSize: '0.65rem', backgroundColor: `${r.color}18`, color: r.color, fontWeight: 700, border: `1px solid ${r.color}30` }} /> : null; })()}
+                {member.department && <Chip label={member.department.name} size="small" sx={{ mb: 1.5, ml: member.role?.level ? 0.5 : 0, backgroundColor: `${member.department.color}18`, color: member.department.color, fontWeight: 600 }} />}
                 <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'center', flexWrap: 'wrap', mb: 1.5 }}>
                   {(member.skills || []).slice(0, 3).map((s, i) => <Chip key={i} label={s.name} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 20 }} />)}
                   {(member.skills || []).length > 3 && <Chip label={`+${member.skills.length - 3}`} size="small" variant="outlined" sx={{ fontSize: '0.65rem', height: 20 }} />}

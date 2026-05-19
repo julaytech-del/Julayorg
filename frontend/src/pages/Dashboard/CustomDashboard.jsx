@@ -466,18 +466,13 @@ export default function CustomDashboard() {
   };
 
   const handleAddWidget = (wc) => {
-    const newWidget = { id: `w_${Date.now()}`, type: wc.type, cols: wc.cols };
-    setLayout(prev => {
-      const next = [...prev, newWidget];
-      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
-      return next;
-    });
+    if (layout.some(w => w.type === wc.type)) { setAddDialogOpen(false); return; }
+    saveLayout([...layout, { id: `w_${Date.now()}`, type: wc.type, cols: wc.cols }]);
     setAddDialogOpen(false);
   };
 
   const handleRemoveByType = (type) => {
-    const idx = layout.findIndex(w => w.type === type);
-    if (idx !== -1) saveLayout(layout.filter((_, i) => i !== idx));
+    saveLayout(layout.filter(w => w.type !== type));
   };
 
   const handleResetLayout = () => {
