@@ -361,12 +361,10 @@ export default function PortfolioView() {
           <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Portfolio Summary</Typography>
           <Box sx={{ display: 'flex', gap: 4, flexWrap: 'wrap' }}>
             {[
-              { label: 'Total Tasks', value: projects.reduce((s, p) => s + (p.totalTasks || 0), 0) },
-              { label: 'Completed',   value: projects.reduce((s, p) => s + (p.completedTasks || 0), 0) },
-              { label: 'Total Members', value: [...new Set(projects.flatMap(p => (p.members || []).map(m => (typeof m === 'object' ? m._id : m))))].length },
-              { label: 'Avg. Progress', value: projects.length > 0 ? `${Math.round(projects.reduce((s, p) => {
-                  const t = p.totalTasks || 1; return s + ((p.completedTasks || 0) / t) * 100;
-                }, 0) / projects.length)}%` : '0%' },
+              { label: 'Total Tasks',   value: projects.reduce((s, p) => s + (p.taskCounts?.total || p.totalTasks || 0), 0) },
+              { label: 'Completed',     value: projects.reduce((s, p) => s + (p.taskCounts?.done  || p.completedTasks || 0), 0) },
+              { label: 'Total Members', value: [...new Set(projects.flatMap(p => (Array.isArray(p.team) ? p.team.map(t => (t.user?._id || t.user || t._id || t).toString()) : (p.members || []).map(m => (typeof m === 'object' ? m._id : m).toString()))))].length },
+              { label: 'Avg. Progress', value: `${Math.round(projects.reduce((s, p) => s + (p.completionPercentage || 0), 0) / projects.length)}%` },
             ].map(({ label, value }) => (
               <Box key={label}>
                 <Typography variant="h5" fontWeight={800} sx={{ color: '#6366F1', lineHeight: 1 }}>{value}</Typography>

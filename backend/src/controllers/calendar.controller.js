@@ -10,27 +10,20 @@ export const getCalendarTasks = async (req, res, next) => {
     const { start, end, projectId, userId } = req.query;
     const orgId = req.user.organization._id || req.user.organization;
 
-    // Get all project IDs for this org (covers tasks created before org field was added)
     const orgProjects = await Project.find({ organization: orgId }).select('_id').lean();
     const orgProjectIds = orgProjects.map(p => p._id);
 
-    const filter = {
-      $or: [
-        { organization: orgId },
-        { project: { $in: orgProjectIds } }
-      ]
-    };
+    // Simple flat filter: tasks belonging to org projects
+    const filter = { project: { $in: orgProjectIds } };
     if (projectId) filter.project = projectId;
     if (userId) filter.assignees = userId;
-    if (start || end) {
-      filter.$and = [
-        {
-          $or: [
-            { dueDate: { $gte: new Date(start), $lte: new Date(end) } },
-            { startDate: { $gte: new Date(start), $lte: new Date(end) } },
-            { startDate: { $lte: new Date(start) }, dueDate: { $gte: new Date(end) } }
-          ]
-        }
+    if (start && end) {
+      const s = new Date(start);
+      const e = new Date(end);
+      filter.$or = [
+        { dueDate: { $gte: s, $lte: e } },
+        { startDate: { $gte: s, $lte: e } },
+        { startDate: { $lte: s }, dueDate: { $gte: e } },
       ];
     }
     const tasks = await Task.find(filter)

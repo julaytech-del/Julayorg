@@ -79,7 +79,7 @@ const CustomTooltip = ({ active, payload, label }) => {
 // ── My Work card ──────────────────────────────────────────────────────────────
 function MyTaskCard({ task, onClick }) {
   const isDone   = task.status === 'done';
-  const isOverdue = task.dueDate && new Date(task.dueDate) < new Date() && !isDone;
+  const isOverdue = task.dueDate && new Date(task.dueDate).setHours(0,0,0,0) < new Date().setHours(0,0,0,0) && !isDone;
   const pColor   = PRIORITY_COLOR[task.priority] || '#94A3B8';
   return (
     <Box

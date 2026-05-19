@@ -9,50 +9,95 @@ export const generateReport = async (req, res, next) => {
   try {
     const orgId = req.user.organization._id || req.user.organization;
     const { type = 'tasks', filters = {}, groupBy = 'status' } = req.body;
-    let data = {};
+
+    const orgProjects = await Project.find({ organization: orgId }).select('_id name status priority startDate endDate progress').lean();
+    const orgProjectIds = orgProjects.map(p => p._id);
+
+    let rows = [];
+    let summary = [];
 
     if (type === 'tasks') {
-      const filter = { organization: orgId };
-      if (filters.projectId) filter.project = filters.projectId;
+      const filter = { project: { $in: orgProjectIds } };
+      if (filters.project) filter.project = filters.project;
       if (filters.status) filter.status = filters.status;
       if (filters.priority) filter.priority = filters.priority;
-      if (filters.assigneeId) filter.assignees = filters.assigneeId;
-      if (filters.dateRange?.start) filter.createdAt = { $gte: new Date(filters.dateRange.start) };
-      if (filters.dateRange?.end) filter.createdAt = { ...filter.createdAt, $lte: new Date(filters.dateRange.end) };
+      if (filters.dateFrom) filter.createdAt = { $gte: new Date(filters.dateFrom) };
+      if (filters.dateTo) filter.createdAt = { ...filter.createdAt, $lte: new Date(filters.dateTo) };
 
-      const tasks = await Task.find(filter).populate('assignees', 'name').populate('project', 'name').select('title status priority type estimatedHours dueDate createdAt assignees project');
+      const tasks = await Task.find(filter)
+        .populate('assignees', 'name')
+        .populate('project', 'name')
+        .select('title status priority estimatedHours dueDate createdAt assignees project');
+
+      rows = tasks.map(t => ({
+        title:    t.title,
+        project:  t.project?.name || '—',
+        status:   t.status,
+        priority: t.priority,
+        assignee: t.assignees?.[0]?.name || 'Unassigned',
+        dueDate:  t.dueDate,
+      }));
+
       const grouped = {};
-      tasks.forEach(t => {
-        const key = groupBy === 'assignee' ? (t.assignees?.[0]?.name || 'Unassigned') : groupBy === 'priority' ? t.priority : t.status;
-        if (!grouped[key]) grouped[key] = [];
-        grouped[key].push(t);
+      rows.forEach(r => {
+        const key = groupBy === 'assignee' ? r.assignee : groupBy === 'priority' ? r.priority : r.status;
+        grouped[key] = (grouped[key] || 0) + 1;
       });
-      const summary = Object.entries(grouped).map(([key, items]) => ({ label: key, count: items.length, totalHours: items.reduce((s, t) => s + (t.estimatedHours || 0), 0), overdue: items.filter(t => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'done').length }));
-      data = { tasks, summary, total: tasks.length, groupBy };
+      summary = Object.entries(grouped).map(([label, count]) => ({ label, count }));
     }
 
     if (type === 'projects') {
-      const projects = await Project.find({ organization: orgId }).select('name status priority startDate endDate progress');
-      const tasks = await Task.find({ organization: orgId }).select('project status');
-      data.projects = projects.map(p => {
-        const pTasks = tasks.filter(t => t.project?.toString() === p._id.toString());
+      const allTasks = await Task.find({ project: { $in: orgProjectIds } }).select('project status dueDate').lean();
+      rows = orgProjects.map(p => {
+        const pTasks = allTasks.filter(t => t.project?.toString() === p._id.toString());
         const done = pTasks.filter(t => t.status === 'done').length;
-        return { ...p.toObject(), taskCount: pTasks.length, completionRate: pTasks.length > 0 ? Math.round(done / pTasks.length * 100) : 0 };
+        return {
+          name:       p.name,
+          status:     p.status,
+          progress:   pTasks.length > 0 ? Math.round(done / pTasks.length * 100) : 0,
+          tasksTotal: pTasks.length,
+          tasksDone:  done,
+          endDate:    p.endDate,
+        };
       });
     }
 
     if (type === 'team') {
-      const users = await User.find({ organization: orgId }).select('name email performance jobTitle department');
-      const tasks = await Task.find({ organization: orgId }).select('assignees status dueDate');
-      data.team = users.map(u => {
-        const uTasks = tasks.filter(t => t.assignees?.some(a => a.toString() === u._id.toString()));
+      const users = await User.find({ organization: orgId }).select('name department jobTitle').lean();
+      const allTasks = await Task.find({ project: { $in: orgProjectIds } }).select('assignees status dueDate').lean();
+      const now = new Date();
+      rows = users.map(u => {
+        const uTasks = allTasks.filter(t => t.assignees?.some(a => a.toString() === u._id.toString()));
         const done = uTasks.filter(t => t.status === 'done').length;
-        const overdue = uTasks.filter(t => t.dueDate && new Date(t.dueDate) < new Date() && t.status !== 'done').length;
-        return { ...u.toObject(), assignedTasks: uTasks.length, completedTasks: done, overdueTasks: overdue, completionRate: uTasks.length > 0 ? Math.round(done / uTasks.length * 100) : 0 };
+        const overdue = uTasks.filter(t => t.dueDate && new Date(t.dueDate) < now && t.status !== 'done').length;
+        const inProgress = uTasks.filter(t => t.status === 'in_progress').length;
+        return {
+          name:            u.name,
+          department:      u.department || u.jobTitle || '—',
+          tasksCompleted:  done,
+          tasksOverdue:    overdue,
+          tasksInProgress: inProgress,
+          score:           uTasks.length > 0 ? Math.round(done / uTasks.length * 100) : 0,
+        };
       });
     }
 
-    res.json({ success: true, data });
+    if (type === 'timeline') {
+      const tasks = await Task.find({ project: { $in: orgProjectIds } })
+        .populate('project', 'name')
+        .select('title project startDate dueDate status createdAt').lean();
+      rows = tasks.map(t => ({
+        title:        t.title,
+        project:      t.project?.name || '—',
+        plannedStart: t.startDate || t.createdAt,
+        actualStart:  t.startDate || t.createdAt,
+        plannedEnd:   t.dueDate,
+        actualEnd:    t.status === 'done' ? t.dueDate : null,
+        variance:     t.dueDate ? Math.ceil((new Date(t.dueDate) - new Date(t.startDate || t.createdAt)) / 86400000) : '—',
+      }));
+    }
+
+    res.json({ success: true, data: { rows, summary, total: rows.length } });
   } catch (err) { next(err); }
 };
 

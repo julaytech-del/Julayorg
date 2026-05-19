@@ -467,7 +467,11 @@ export default function CustomDashboard() {
 
   const handleAddWidget = (wc) => {
     const newWidget = { id: `w_${Date.now()}`, type: wc.type, cols: wc.cols };
-    saveLayout([...layout, newWidget]);
+    setLayout(prev => {
+      const next = [...prev, newWidget];
+      try { localStorage.setItem(STORAGE_KEY, JSON.stringify(next)); } catch {}
+      return next;
+    });
   };
 
   const handleRemoveByType = (type) => {
