@@ -363,14 +363,14 @@ function ProjectCard({ project, onDelete }) {
   const { t } = useTranslation();
   const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const accentColor = project.color || '#4F46E5';
-  const { canDeleteProject } = usePermissions();
+  const { canDeleteProject, canEditProject } = usePermissions();
 
   const progress = project.progress?.percentage || 0;
   const progressColor = progress >= 75 ? '#10B981' : progress >= 40 ? '#F59E0B' : accent;
 
   return (
     <Card
-      onClick={() => navigate(`/projects/${project._id}`)}
+      onClick={() => { if (menuAnchor) return; navigate(`/projects/${project._id}`); }}
       sx={{
         cursor: 'pointer',
         transition: 'all 0.18s ease',
@@ -473,17 +473,19 @@ function ProjectCard({ project, onDelete }) {
           <OpenInNew sx={{ mr: 1.5, fontSize: 16, color: 'text.secondary' }} />
           <Typography variant="body2">{t('projects.menu.open')}</Typography>
         </MenuItem>
-        <MenuItem onClick={() => setMenuAnchor(null)}>
-          <Edit sx={{ mr: 1.5, fontSize: 16, color: 'text.secondary' }} />
-          <Typography variant="body2">{t('projects.menu.edit')}</Typography>
-        </MenuItem>
-        <Divider sx={{ my: 0.5 }} />
-        {canDeleteProject && (
-          <MenuItem onClick={() => { onDelete(project); setMenuAnchor(null); }} sx={{ color: 'error.main' }}>
+        {canEditProject && (
+          <MenuItem onClick={() => setMenuAnchor(null)}>
+            <Edit sx={{ mr: 1.5, fontSize: 16, color: 'text.secondary' }} />
+            <Typography variant="body2">{t('projects.menu.edit')}</Typography>
+          </MenuItem>
+        )}
+        {canDeleteProject && [
+          <Divider key="div" sx={{ my: 0.5 }} />,
+          <MenuItem key="del" onClick={() => { onDelete(project); setMenuAnchor(null); }} sx={{ color: 'error.main' }}>
             <Delete sx={{ mr: 1.5, fontSize: 16 }} />
             <Typography variant="body2" fontWeight={600}>{t('projects.menu.delete')}</Typography>
           </MenuItem>
-        )}
+        ]}
       </Menu>
     </Card>
   );
