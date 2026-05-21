@@ -17,11 +17,12 @@ router.get('/', async (req, res, next) => {
 router.put('/', async (req, res, next) => {
   try {
     const orgId = req.user.organization?._id || req.user.organization;
-    const { name, industry, description } = req.body;
+    const { name, industry, description, logo } = req.body;
     if (!name?.trim()) return res.status(400).json({ success: false, message: 'Organization name is required' });
     const updates = { name: name.trim() };
     if (industry) updates.industry = industry;
     if (description !== undefined) updates.description = description;
+    if (logo !== undefined) updates.logo = logo;
     const org = await Organization.findByIdAndUpdate(orgId, updates, { new: true, runValidators: true })
       .select('name industry description logo settings');
     if (!org) return res.status(404).json({ success: false, message: 'Organization not found' });

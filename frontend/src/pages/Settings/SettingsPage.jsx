@@ -1026,7 +1026,10 @@ const INDUSTRIES = [
 
 function WorkspaceTab() {
   const dispatch = useDispatch();
-  const [form, setForm] = useState({ name: '', industry: 'technology', description: '' });
+  const user = useSelector(s => s.auth.user);
+  const [form, setForm] = useState({ name: '', industry: 'technology', description: '', logo: '' });
+  const [logoPreview, setLogoPreview] = useState('');
+  const [uploading, setUploading] = useState(false);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
@@ -1035,16 +1038,56 @@ function WorkspaceTab() {
     organizationAPI.get()
       .then(res => {
         const org = res.data || res;
-        setForm({ name: org.name || '', industry: org.industry || 'technology', description: org.description || '' });
+        setForm({ name: org.name || '', industry: org.industry || 'technology', description: org.description || '', logo: org.logo || '' });
+        setLogoPreview(org.logo || '');
       })
       .catch(() => {})
       .finally(() => setLoading(false));
   }, []);
 
+  const resizeToBase64 = (file) => new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onerror = reject;
+    reader.onloadend = () => {
+      const img = new Image();
+      img.onload = () => {
+        const size = 256;
+        const ratio = Math.min(size / img.width, size / img.height, 1);
+        const canvas = document.createElement('canvas');
+        canvas.width = Math.round(img.width * ratio);
+        canvas.height = Math.round(img.height * ratio);
+        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+        resolve(canvas.toDataURL('image/webp', 0.85));
+      };
+      img.onerror = reject;
+      img.src = reader.result;
+    };
+    reader.readAsDataURL(file);
+  });
+
+  const handleLogoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    setUploading(true);
+    try {
+      const base64 = await resizeToBase64(file);
+      setLogoPreview(base64);
+      setForm(f => ({ ...f, logo: base64 }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to read image', severity: 'error' }));
+    } finally {
+      setUploading(false);
+      e.target.value = '';
+    }
+  };
+
   const handleSave = async () => {
     setSaving(true);
     try {
-      await organizationAPI.update(form);
+      const updated = await organizationAPI.update(form);
+      const org = updated.data || updated;
+      // Update Redux so sidebar logo refreshes immediately
+      dispatch(setCredentials({ user: { ...user, organization: { ...user.organization, ...org, logo: form.logo } }, token: localStorage.getItem('julay_token') }));
       dispatch(showSnackbar({ message: 'Workspace settings saved', severity: 'success' }));
     } catch (err) {
       dispatch(showSnackbar({ message: err?.message || 'Failed to save', severity: 'error' }));
@@ -1059,6 +1102,32 @@ function WorkspaceTab() {
     <Box sx={{ maxWidth: 560 }}>
       <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>Workspace Settings</Typography>
       <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+
+        {/* Logo upload */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <input id="org-logo-input" type="file" accept="image/*" style={{ display: 'none' }} onChange={handleLogoUpload} />
+          <Box sx={{ position: 'relative', display: 'inline-flex' }}>
+            <Avatar src={logoPreview || undefined} sx={{ width: 72, height: 72, borderRadius: 2, fontSize: '1.6rem', fontWeight: 700, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)' }}>
+              {!logoPreview && (form.name?.[0]?.toUpperCase() || 'W')}
+            </Avatar>
+            <label htmlFor="org-logo-input" style={{ position: 'absolute', bottom: -4, right: -4, cursor: uploading ? 'wait' : 'pointer' }}>
+              <Box sx={{ width: 22, height: 22, borderRadius: '50%', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 2 }}>
+                {uploading ? <CircularProgress size={12} sx={{ color: 'white' }} /> : <Edit sx={{ fontSize: 12, color: 'white' }} />}
+              </Box>
+            </label>
+          </Box>
+          <Box>
+            <Typography fontWeight={600} fontSize="0.9rem">Organization Logo</Typography>
+            <Typography fontSize="0.78rem" color="text.secondary">Click the icon to upload · PNG, JPG, WebP</Typography>
+            {logoPreview && (
+              <Button size="small" sx={{ mt: 0.5, p: 0, fontSize: '0.72rem', color: 'error.main', minWidth: 0 }}
+                onClick={() => { setLogoPreview(''); setForm(f => ({ ...f, logo: '' })); }}>
+                Remove
+              </Button>
+            )}
+          </Box>
+        </Box>
+
         <TextField label="Organization Name" value={form.name} onChange={set('name')} fullWidth required />
         <FormControl fullWidth>
           <InputLabel>Industry</InputLabel>
