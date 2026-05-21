@@ -20,10 +20,11 @@ const ACTION_TYPES = [
 ];
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'review', 'done', 'blocked'];
+const STATUS_LABELS = { todo: 'To Do', in_progress: 'In Progress', review: 'Review', done: 'Done', blocked: 'Blocked' };
 
 const defaultRule = {
   name: '',
-  trigger: { event: 'task.status_changed', conditions: [] },
+  trigger: { event: 'task.status_changed', conditions: {} },
   actions: [{ type: 'notify_user', params: { message: '' } }],
 };
 
@@ -119,6 +120,9 @@ export default function AutomationsPage() {
                     <Typography fontWeight={600} fontSize="0.9rem">{rule.name}</Typography>
                     <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
                       <Chip label={`When: ${TRIGGER_EVENTS.find(e => e.value === rule.trigger?.event)?.label || rule.trigger?.event}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#EEF2FF', color: '#4F46E5' }} />
+                      {rule.trigger?.conditions?.status && (
+                        <Chip label={`→ ${STATUS_LABELS[rule.trigger.conditions.status] || rule.trigger.conditions.status}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#FEF3C7', color: '#D97706' }} />
+                      )}
                       {rule.actions?.map((a, i) => (
                         <Chip key={i} label={ACTION_TYPES.find(t => t.value === a.type)?.label || a.type} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#F0FDF4', color: '#16A34A' }} />
                       ))}
@@ -147,10 +151,25 @@ export default function AutomationsPage() {
             <TextField label="Rule Name" value={form.name} onChange={e => setForm(f => ({ ...f, name: e.target.value }))} fullWidth size="small" />
             <FormControl fullWidth size="small">
               <InputLabel>Trigger Event</InputLabel>
-              <Select value={form.trigger.event} label="Trigger Event" onChange={e => setForm(f => ({ ...f, trigger: { ...f.trigger, event: e.target.value } }))}>
+              <Select value={form.trigger.event} label="Trigger Event" onChange={e => setForm(f => ({ ...f, trigger: { event: e.target.value, conditions: {} } }))}>
                 {TRIGGER_EVENTS.map(ev => <MenuItem key={ev.value} value={ev.value}>{ev.label}</MenuItem>)}
               </Select>
             </FormControl>
+
+            {form.trigger.event === 'task.status_changed' && (
+              <FormControl fullWidth size="small">
+                <InputLabel>Only when status changes to (optional)</InputLabel>
+                <Select
+                  value={form.trigger.conditions?.status || ''}
+                  label="Only when status changes to (optional)"
+                  onChange={e => setForm(f => ({ ...f, trigger: { ...f.trigger, conditions: e.target.value ? { status: e.target.value } : {} } }))}
+                >
+                  <MenuItem value=""><em>Any status</em></MenuItem>
+                  {STATUS_OPTIONS.map(s => <MenuItem key={s} value={s}>{STATUS_LABELS[s]}</MenuItem>)}
+                </Select>
+              </FormControl>
+            )}
+
             <Divider><Typography variant="caption" color="text.secondary">ACTIONS</Typography></Divider>
             {form.actions.map((action, idx) => (
               <Box key={idx} sx={{ p: 2, border: '1px solid #E2E8F0', borderRadius: 2 }}>
