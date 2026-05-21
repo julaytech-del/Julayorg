@@ -71,6 +71,7 @@ const ActivityLogPage     = React.lazy(() => import('./pages/Activity/ActivityLo
 const SettingsPage        = React.lazy(() => import('./pages/Settings/SettingsPage.jsx'));
 const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTrackingPage.jsx'));
 const ExecutionBoard      = React.lazy(() => import('./pages/ExecutionBoard/ExecutionBoard.jsx'));
+const NotificationsPage   = React.lazy(() => import('./pages/Notifications/NotificationsPage.jsx'));
 
 // ─── Page loading fallback ────────────────────────────────────────────────────
 function PageLoader() {
@@ -163,8 +164,9 @@ export default function App() {
         <Route path="/team"           element={<Navigate to="/dashboard/team"     replace />} />
         <Route path="/kanban"         element={<Navigate to="/dashboard/kanban"   replace />} />
         <Route path="/calendar"       element={<Navigate to="/dashboard/calendar" replace />} />
-        <Route path="/reports"        element={<Navigate to="/dashboard/reports"  replace />} />
-        <Route path="/settings"       element={<Navigate to="/dashboard/settings" replace />} />
+        <Route path="/reports"         element={<Navigate to="/dashboard/reports"        replace />} />
+        <Route path="/settings"        element={<Navigate to="/dashboard/settings"       replace />} />
+        <Route path="/notifications"   element={<Navigate to="/dashboard/notifications"  replace />} />
 
         {/* ── Public form renderer (no auth) ── */}
         <Route path="/forms/:token" element={<FormViewRenderer />} />
@@ -259,6 +261,9 @@ export default function App() {
           } />
           <Route path="execution-board" element={
             <Suspense fallback={<PageLoader />}><ExecutionBoard /></Suspense>
+          } />
+          <Route path="notifications" element={
+            <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense>
           } />
           <Route path="ai-studio"   element={<Navigate to="/dashboard/ai"          replace />} />
           <Route path="form-views"  element={<Navigate to="/dashboard/views/forms" replace />} />
