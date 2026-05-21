@@ -48,11 +48,15 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 const isTest = process.env.NODE_ENV === 'test';
-const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 20, message: { success: false, message: 'Too many attempts, please try again later.' } });
+// Strict limit for login/register/OTP (brute-force protection); skip /me which is called on every page load
+const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 20, skip: req => req.path === '/me', message: { success: false, message: 'Too many attempts, please try again later.' } });
+// Relaxed limit for /auth/me — checked on every React page mount, high limit prevents false logouts
+const meLimiter   = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 500, message: { success: false, message: 'Too many requests.' } });
 const aiLimiter   = rateLimit({ windowMs: 60 * 1000,      max: isTest ? 10000 : 20, message: { success: false, message: 'Too many AI requests, please slow down.' } });
 
 app.get(['/health', '/api/health'], (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
+app.get('/api/auth/me', meLimiter);
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/projects', projectRoutes);
 app.use('/api/tasks', taskRoutes);
