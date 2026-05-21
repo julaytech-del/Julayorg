@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Box, Typography, Breadcrumbs, Link, Card, CardContent, LinearProgress, AvatarGroup, Avatar, Chip, Button, Tabs, Tab, Grid, Accordion, AccordionSummary, AccordionDetails, IconButton, Checkbox, CircularProgress, Dialog, DialogTitle, DialogContent, DialogActions, TextField, MenuItem, Menu, Select, FormControl, InputLabel, Autocomplete } from '@mui/material';
-import { useParams, useNavigate, Link as RouterLink } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams, Link as RouterLink } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit, PersonAdd, Delete } from '@mui/icons-material';
@@ -17,6 +17,7 @@ import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 
 export default function ProjectDetail() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -71,6 +72,14 @@ export default function ProjectDetail() {
       setNewMemberForm(f => ({ ...f, department: defaultDept }));
     }).catch(() => {});
   }, [id]);
+
+  // Auto-open task from notification link (?task=<id>)
+  useEffect(() => {
+    const taskId = searchParams.get('task');
+    if (!taskId || !tasks.length) return;
+    const found = tasks.find(t => t._id === taskId);
+    if (found) setSelectedTask(found);
+  }, [searchParams, tasks]);
 
   const project = currentProject;
   if (loading || !project) return <LoadingSpinner fullPage message={t('common.loading')} />;
