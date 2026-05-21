@@ -64,7 +64,7 @@ export const register = async (req, res, next) => {
     const user = await User.create({ name, email, password, organization: org._id, role: adminRole._id, department: dept._id, isAdmin: true, jobTitle: 'Administrator' });
 
     const token = signToken(user._id);
-    const userData = await User.findById(user._id).populate('role').populate('department');
+    const userData = await User.findById(user._id).populate('role').populate('department').populate('organization');
 
     res.status(201).json({ success: true, data: { token, user: userData } });
   } catch (err) {
