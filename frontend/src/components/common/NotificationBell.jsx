@@ -249,7 +249,7 @@ export default function NotificationBell() {
         <Box sx={{ px: 2.5, py: 1.25, display: 'flex', justifyContent: 'center', flexShrink: 0 }}>
           <Button
             size="small"
-            onClick={() => { handleClose(); navigate('/notifications'); }}
+            onClick={() => { handleClose(); navigate('/dashboard/notifications'); }}
             sx={{ color: 'primary.main', fontWeight: 600, fontSize: '0.75rem' }}
           >
             View all notifications

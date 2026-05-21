@@ -27,7 +27,7 @@ const ACTION_TYPES = [
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'review', 'done', 'blocked'];
 const STATUS_LABELS = { todo: 'To Do', in_progress: 'In Progress', review: 'Review', done: 'Done', blocked: 'Blocked' };
-const PRIORITY_OPTIONS = ['low', 'medium', 'high', 'urgent'];
+const PRIORITY_OPTIONS = ['low', 'medium', 'high', 'critical'];
 
 const defaultRule = {
   name: '',
