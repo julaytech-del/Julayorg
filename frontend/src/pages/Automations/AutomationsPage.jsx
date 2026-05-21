@@ -154,12 +154,21 @@ export default function AutomationsPage() {
             <Divider><Typography variant="caption" color="text.secondary">ACTIONS</Typography></Divider>
             {form.actions.map((action, idx) => (
               <Box key={idx} sx={{ p: 2, border: '1px solid #E2E8F0', borderRadius: 2 }}>
-                <FormControl fullWidth size="small" sx={{ mb: 1.5 }}>
-                  <InputLabel>Action Type</InputLabel>
-                  <Select value={action.type} label="Action Type" onChange={e => setActionType(idx, e.target.value)}>
-                    {ACTION_TYPES.map(a => <MenuItem key={a.value} value={a.value}>{a.label}</MenuItem>)}
-                  </Select>
-                </FormControl>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <FormControl fullWidth size="small">
+                    <InputLabel>Action Type</InputLabel>
+                    <Select value={action.type} label="Action Type" onChange={e => setActionType(idx, e.target.value)}>
+                      {ACTION_TYPES.map(a => <MenuItem key={a.value} value={a.value}>{a.label}</MenuItem>)}
+                    </Select>
+                  </FormControl>
+                  {form.actions.length > 1 && (
+                    <Tooltip title="Remove action">
+                      <IconButton size="small" onClick={() => setForm(f => ({ ...f, actions: f.actions.filter((_, i) => i !== idx) }))} sx={{ color: '#EF4444', flexShrink: 0 }}>
+                        <Delete sx={{ fontSize: 16 }} />
+                      </IconButton>
+                    </Tooltip>
+                  )}
+                </Box>
                 {action.type === 'notify_user' && (
                   <TextField label="Notification Message" value={action.params.message || ''} onChange={e => updateAction(idx, 'message', e.target.value)} fullWidth size="small" multiline rows={2} />
                 )}
