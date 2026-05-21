@@ -54,24 +54,24 @@ function NotificationItem({ notif, onRead, onNavigate }) {
       {/* Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1, mb: 0.25 }}>
-          <Typography variant="caption" fontWeight={notif.read ? 500 : 700} sx={{ fontSize: '0.78rem', lineHeight: 1.4, color: notif.read ? 'rgba(255,255,255,0.55)' : '#F1F5F9' }} noWrap>
+          <Typography variant="caption" fontWeight={notif.read ? 500 : 700} sx={{ fontSize: '0.78rem', lineHeight: 1.4, color: notif.read ? 'rgba(255,255,255,0.78)' : '#FFFFFF' }} noWrap>
             {notif.title}
           </Typography>
           {!notif.read && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: cfg.color, flexShrink: 0, mt: 0.5 }} />}
         </Box>
         {notif.body && (
-          <Typography variant="caption" sx={{ fontSize: '0.72rem', lineHeight: 1.45, display: 'block', color: 'rgba(255,255,255,0.6)' }} noWrap>
+          <Typography variant="caption" sx={{ fontSize: '0.72rem', lineHeight: 1.45, display: 'block', color: 'rgba(255,255,255,0.88)' }} noWrap>
             {notif.body}
           </Typography>
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
           <Chip label={cfg.label} size="small" sx={{ height: 16, fontSize: '0.62rem', fontWeight: 700, bgcolor: `${cfg.color}18`, color: cfg.color, px: 0.25 }} />
           {notif.projectName && (
-            <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.35)' }} noWrap>
+            <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.6)' }} noWrap>
               {notif.projectName}
             </Typography>
           )}
-          <Typography variant="caption" sx={{ fontSize: '0.66rem', color: 'rgba(255,255,255,0.35)', ml: 'auto', flexShrink: 0 }}>
+          <Typography variant="caption" sx={{ fontSize: '0.66rem', color: 'rgba(255,255,255,0.58)', ml: 'auto', flexShrink: 0 }}>
             {notif.createdAt ? formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }) : ''}
           </Typography>
         </Box>
@@ -227,7 +227,7 @@ export default function NotificationBell() {
             Object.entries(grouped).map(([group, items], gi) => (
               <Box key={gi}>
                 <Box sx={{ px: 2.5, py: 1, bgcolor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <Typography variant="caption" fontWeight={700} sx={{ color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', fontSize: '0.64rem', letterSpacing: '0.08em' }}>
+                  <Typography variant="caption" fontWeight={700} sx={{ color: 'rgba(255,255,255,0.55)', textTransform: 'uppercase', fontSize: '0.64rem', letterSpacing: '0.08em' }}>
                     {group}
                   </Typography>
                 </Box>
