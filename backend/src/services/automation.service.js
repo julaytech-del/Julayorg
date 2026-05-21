@@ -32,7 +32,7 @@ async function executeAction(action, context, orgId) {
 
   if (type === 'notify_user' && task) {
     const User = (await import('../models/User.js')).default;
-    const title = params?.title || 'Automation triggered';
+    const title = task.title || 'Automation triggered';
     const body = params?.message || `Task "${task.title}" triggered an automation.`;
     const projectId = task.project?._id || task.project;
     const link = projectId
