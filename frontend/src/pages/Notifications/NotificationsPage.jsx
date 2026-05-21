@@ -3,7 +3,7 @@ import { Box, Typography, Button, Chip, List, ListItem, Divider, CircularProgres
 import { Assignment, AutoAwesome, Comment, DoneAll, NotificationsNone, Schedule, SwapHoriz, Warning, Delete } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { notificationsAPI } from '../../services/api.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 
@@ -143,9 +143,11 @@ export default function NotificationsPage() {
                         {notif.projectName && (
                           <Typography variant="caption" color="text.secondary" fontSize="0.75rem">{notif.projectName}</Typography>
                         )}
-                        <Typography variant="caption" color="text.disabled" fontSize="0.72rem" sx={{ ml: 'auto' }}>
-                          {notif.createdAt ? formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }) : ''}
-                        </Typography>
+                        <Tooltip title={notif.createdAt ? format(new Date(notif.createdAt), 'MMM d, yyyy · HH:mm') : ''} placement="top">
+                          <Typography variant="caption" color="text.disabled" fontSize="0.72rem" sx={{ ml: 'auto', cursor: 'default' }}>
+                            {notif.createdAt ? `${format(new Date(notif.createdAt), 'MMM d · HH:mm')}` : ''}
+                          </Typography>
+                        </Tooltip>
                       </Box>
                     </Box>
                     {!notif.read && (

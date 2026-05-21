@@ -9,7 +9,7 @@ import {
 } from '@mui/icons-material';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNow, format } from 'date-fns';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
 import { notificationsAPI } from '../../services/api.js';
 
@@ -72,7 +72,7 @@ function NotificationItem({ notif, onRead, onNavigate }) {
             </Typography>
           )}
           <Typography variant="caption" sx={{ fontSize: '0.66rem', color: 'rgba(255,255,255,0.58)', ml: 'auto', flexShrink: 0 }}>
-            {notif.createdAt ? formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }) : ''}
+            {notif.createdAt ? format(new Date(notif.createdAt), 'MMM d · HH:mm') : ''}
           </Typography>
         </Box>
       </Box>
