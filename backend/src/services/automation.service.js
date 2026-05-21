@@ -34,7 +34,10 @@ async function executeAction(action, context, orgId) {
     const User = (await import('../models/User.js')).default;
     const title = params?.title || 'Automation triggered';
     const body = params?.message || `Task "${task.title}" triggered an automation.`;
-    const link = `/dashboard/projects/${task.project}?task=${task._id}`;
+    const projectId = task.project?._id || task.project;
+    const link = projectId
+      ? `/dashboard/projects/${projectId}?task=${task._id}`
+      : `/dashboard/execution-board`;
     if (params?.userId) {
       // notify specific user
       await createNotification(params.userId, orgId, 'automation_triggered', { title, body, link, entityId: task._id, entityType: 'task' });
