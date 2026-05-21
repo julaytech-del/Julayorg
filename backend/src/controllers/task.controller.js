@@ -128,6 +128,10 @@ export const updateTask = async (req, res, next) => {
       evaluateRules(orgId, 'task.assigned', { task, userId: req.user._id });
     }
 
+    if (oldTask.priority !== task.priority) {
+      evaluateRules(orgId, 'task.priority_changed', { task, userId: req.user._id, newPriority: task.priority });
+    }
+
     res.json({ success: true, data: task });
   } catch (err) { next(err); }
 };
@@ -185,6 +189,7 @@ export const addComment = async (req, res, next) => {
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
     const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'commented', entityType: 'task', entityId: task._id, entityName: task.title });
+    evaluateRules(orgId, 'task.comment_added', { task, userId: req.user._id });
     res.json({ success: true, data: task.comments });
   } catch (err) { next(err); }
 };

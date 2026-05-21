@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Card, CardContent, Switch, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Stack, Alert, CircularProgress, Divider, Tooltip } from '@mui/material';
-import { Add, Delete, Edit, PlayArrow, FlashOn, Bolt } from '@mui/icons-material';
+import { Add, Delete, Edit, FlashOn, Bolt } from '@mui/icons-material';
 import { automationsAPI } from '../../services/api.js';
 
 const TRIGGER_EVENTS = [
@@ -10,6 +10,8 @@ const TRIGGER_EVENTS = [
   { value: 'task.overdue', label: 'Task Overdue' },
   { value: 'task.assigned', label: 'Task Assigned' },
   { value: 'project.created', label: 'Project Created' },
+  { value: 'task.priority_changed', label: 'Task Priority Changed' },
+  { value: 'task.comment_added', label: 'Comment Added to Task' },
 ];
 
 const ACTION_TYPES = [
@@ -17,10 +19,15 @@ const ACTION_TYPES = [
   { value: 'change_status', label: 'Change Status' },
   { value: 'add_comment', label: 'Add Comment' },
   { value: 'create_subtask', label: 'Create Subtask' },
+  { value: 'assign_user', label: 'Assign to User' },
+  { value: 'set_due_date', label: 'Set Due Date (+N days)' },
+  { value: 'send_email', label: 'Send Email' },
+  { value: 'send_webhook', label: 'Call Webhook (HTTP)' },
 ];
 
 const STATUS_OPTIONS = ['todo', 'in_progress', 'review', 'done', 'blocked'];
 const STATUS_LABELS = { todo: 'To Do', in_progress: 'In Progress', review: 'Review', done: 'Done', blocked: 'Blocked' };
+const PRIORITY_OPTIONS = ['low', 'medium', 'high', 'urgent'];
 
 const defaultRule = {
   name: '',
@@ -86,6 +93,22 @@ export default function AutomationsPage() {
     });
   };
 
+  const setCondition = (key, val) => {
+    setForm(f => ({
+      ...f,
+      trigger: {
+        ...f.trigger,
+        conditions: val ? { ...f.trigger.conditions, [key]: val } : (() => {
+          const c = { ...f.trigger.conditions };
+          delete c[key];
+          return c;
+        })(),
+      },
+    }));
+  };
+
+  const event = form.trigger.event;
+
   return (
     <Box sx={{ p: 3 }}>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -121,7 +144,16 @@ export default function AutomationsPage() {
                     <Box sx={{ display: 'flex', gap: 1, mt: 0.5, flexWrap: 'wrap' }}>
                       <Chip label={`When: ${TRIGGER_EVENTS.find(e => e.value === rule.trigger?.event)?.label || rule.trigger?.event}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#EEF2FF', color: '#4F46E5' }} />
                       {rule.trigger?.conditions?.status && (
-                        <Chip label={`→ ${STATUS_LABELS[rule.trigger.conditions.status] || rule.trigger.conditions.status}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#FEF3C7', color: '#D97706' }} />
+                        <Chip label={`status: ${STATUS_LABELS[rule.trigger.conditions.status] || rule.trigger.conditions.status}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#FEF3C7', color: '#D97706' }} />
+                      )}
+                      {rule.trigger?.conditions?.newPriority && (
+                        <Chip label={`priority: ${rule.trigger.conditions.newPriority}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#FEF3C7', color: '#D97706' }} />
+                      )}
+                      {rule.trigger?.conditions?.priority && (
+                        <Chip label={`only priority: ${rule.trigger.conditions.priority}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#FFF7ED', color: '#C2410C' }} />
+                      )}
+                      {rule.trigger?.conditions?.project && (
+                        <Chip label={`project: ${rule.trigger.conditions.project}`} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#F0FDF4', color: '#166534' }} />
                       )}
                       {rule.actions?.map((a, i) => (
                         <Chip key={i} label={ACTION_TYPES.find(t => t.value === a.type)?.label || a.type} size="small" sx={{ fontSize: '0.7rem', backgroundColor: '#F0FDF4', color: '#16A34A' }} />
@@ -156,19 +188,60 @@ export default function AutomationsPage() {
               </Select>
             </FormControl>
 
-            {form.trigger.event === 'task.status_changed' && (
+            {/* Condition: status filter for task.status_changed */}
+            {event === 'task.status_changed' && (
               <FormControl fullWidth size="small">
                 <InputLabel>Only when status changes to (optional)</InputLabel>
                 <Select
                   value={form.trigger.conditions?.status || ''}
                   label="Only when status changes to (optional)"
-                  onChange={e => setForm(f => ({ ...f, trigger: { ...f.trigger, conditions: e.target.value ? { status: e.target.value } : {} } }))}
+                  onChange={e => setCondition('status', e.target.value)}
                 >
                   <MenuItem value=""><em>Any status</em></MenuItem>
                   {STATUS_OPTIONS.map(s => <MenuItem key={s} value={s}>{STATUS_LABELS[s]}</MenuItem>)}
                 </Select>
               </FormControl>
             )}
+
+            {/* Condition: priority filter for task.priority_changed */}
+            {event === 'task.priority_changed' && (
+              <FormControl fullWidth size="small">
+                <InputLabel>Only when priority changes to (optional)</InputLabel>
+                <Select
+                  value={form.trigger.conditions?.newPriority || ''}
+                  label="Only when priority changes to (optional)"
+                  onChange={e => setCondition('newPriority', e.target.value)}
+                >
+                  <MenuItem value=""><em>Any priority</em></MenuItem>
+                  {PRIORITY_OPTIONS.map(p => <MenuItem key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</MenuItem>)}
+                </Select>
+              </FormControl>
+            )}
+
+            {/* Condition: filter by priority (for non-priority_changed triggers) */}
+            {event !== 'task.priority_changed' && (
+              <FormControl fullWidth size="small">
+                <InputLabel>Only when priority is (optional)</InputLabel>
+                <Select
+                  value={form.trigger.conditions?.priority || ''}
+                  label="Only when priority is (optional)"
+                  onChange={e => setCondition('priority', e.target.value)}
+                >
+                  <MenuItem value=""><em>Any priority</em></MenuItem>
+                  {PRIORITY_OPTIONS.map(p => <MenuItem key={p} value={p}>{p.charAt(0).toUpperCase() + p.slice(1)}</MenuItem>)}
+                </Select>
+              </FormControl>
+            )}
+
+            {/* Condition: filter by project (all triggers) */}
+            <TextField
+              label="Only for project ID (optional)"
+              value={form.trigger.conditions?.project || ''}
+              onChange={e => setCondition('project', e.target.value)}
+              fullWidth
+              size="small"
+              placeholder="Leave blank for all projects"
+            />
 
             <Divider><Typography variant="caption" color="text.secondary">ACTIONS</Typography></Divider>
             {form.actions.map((action, idx) => (
@@ -188,6 +261,7 @@ export default function AutomationsPage() {
                     </Tooltip>
                   )}
                 </Box>
+
                 {action.type === 'notify_user' && (
                   <TextField label="Notification Message" value={action.params.message || ''} onChange={e => updateAction(idx, 'message', e.target.value)} fullWidth size="small" multiline rows={2} />
                 )}
@@ -204,6 +278,32 @@ export default function AutomationsPage() {
                 )}
                 {action.type === 'create_subtask' && (
                   <TextField label="Subtask Title" value={action.params.title || ''} onChange={e => updateAction(idx, 'title', e.target.value)} fullWidth size="small" />
+                )}
+                {action.type === 'assign_user' && (
+                  <TextField label="User ID to assign" value={action.params.userId || ''} onChange={e => updateAction(idx, 'userId', e.target.value)} fullWidth size="small" />
+                )}
+                {action.type === 'set_due_date' && (
+                  <TextField label="Days from now (+N)" type="number" value={action.params.days ?? ''} onChange={e => updateAction(idx, 'days', e.target.value)} fullWidth size="small" inputProps={{ min: 0 }} />
+                )}
+                {action.type === 'send_email' && (
+                  <Stack spacing={1.5}>
+                    <TextField label="To (email address)" value={action.params.to || ''} onChange={e => updateAction(idx, 'to', e.target.value)} fullWidth size="small" type="email" />
+                    <TextField label="Subject (optional)" value={action.params.subject || ''} onChange={e => updateAction(idx, 'subject', e.target.value)} fullWidth size="small" />
+                    <TextField label="Message (optional)" value={action.params.message || ''} onChange={e => updateAction(idx, 'message', e.target.value)} fullWidth size="small" multiline rows={3} />
+                  </Stack>
+                )}
+                {action.type === 'send_webhook' && (
+                  <Stack spacing={1.5}>
+                    <TextField label="Webhook URL" value={action.params.url || ''} onChange={e => updateAction(idx, 'url', e.target.value)} fullWidth size="small" placeholder="https://..." />
+                    <FormControl fullWidth size="small">
+                      <InputLabel>HTTP Method</InputLabel>
+                      <Select value={action.params.method || 'POST'} label="HTTP Method" onChange={e => updateAction(idx, 'method', e.target.value)}>
+                        <MenuItem value="POST">POST</MenuItem>
+                        <MenuItem value="GET">GET</MenuItem>
+                        <MenuItem value="PUT">PUT</MenuItem>
+                      </Select>
+                    </FormControl>
+                  </Stack>
                 )}
               </Box>
             ))}

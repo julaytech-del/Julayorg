@@ -6,11 +6,11 @@ const automationRuleSchema = new mongoose.Schema({
   description: { type: String },
   active: { type: Boolean, default: true },
   trigger: {
-    event: { type: String, enum: ['task.status_changed', 'task.created', 'task.assigned', 'task.due_soon', 'project.created', 'task.overdue'], required: true },
+    event: { type: String, enum: ['task.status_changed', 'task.created', 'task.assigned', 'task.due_soon', 'project.created', 'task.overdue', 'task.priority_changed', 'task.comment_added'], required: true },
     conditions: { type: mongoose.Schema.Types.Mixed, default: {} }
   },
   actions: [{
-    type: { type: String, enum: ['notify_user', 'change_status', 'assign_user', 'create_subtask', 'add_comment', 'send_webhook'], required: true },
+    type: { type: String, enum: ['notify_user', 'change_status', 'assign_user', 'create_subtask', 'add_comment', 'send_webhook', 'send_email', 'set_due_date'], required: true },
     params: { type: mongoose.Schema.Types.Mixed }
   }],
   lastTriggered: { type: Date },

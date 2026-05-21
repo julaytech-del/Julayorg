@@ -98,3 +98,17 @@ export const sendWelcome = async (toEmail, name) => {
     </div>
   `);
 };
+
+export const sendAutomationEmail = async (to, task, subject, message) => {
+  const taskTitle = task?.title || 'A task';
+  await send(to, subject || `Automation: ${taskTitle}`, `
+    <div style="font-family:Inter,sans-serif;max-width:520px;margin:0 auto;color:#1E293B">
+      <h2 style="color:#6366F1">Automation triggered ⚡</h2>
+      <div style="background:#F8FAFC;border-left:4px solid #6366F1;padding:16px;border-radius:4px;margin:16px 0">
+        <strong>${taskTitle}</strong>
+      </div>
+      <p>${message || 'An automation rule was triggered for this task.'}</p>
+      ${btn('View Task', `${BASE_URL}/dashboard`)}
+    </div>
+  `);
+};
