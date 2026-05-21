@@ -76,6 +76,7 @@ export const createTask = async (req, res, next) => {
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'created', entityType: 'task', entityId: task._id, entityName: task.title });
     const project = await Project.findById(task.project).select('name');
     triggerSlack(orgId, 'created', task, project?.name || '', req.user.name);
+    evaluateRules(orgId, 'task.created', { task, userId: req.user._id });
     res.status(201).json({ success: true, data: task });
   } catch (err) { next(err); }
 };
@@ -119,6 +120,12 @@ export const updateTask = async (req, res, next) => {
         triggerSlack(orgId, 'completed', task, project?.name || '', req.user.name);
       }
       evaluateRules(orgId, 'task.status_changed', { task, userId: req.user._id, newStatus: task.status });
+    }
+
+    const oldAssignees = (oldTask.assignees || []).map(String).sort().join(',');
+    const newAssignees = (task.assignees || []).map(a => String(a._id || a)).sort().join(',');
+    if (oldAssignees !== newAssignees) {
+      evaluateRules(orgId, 'task.assigned', { task, userId: req.user._id });
     }
 
     res.json({ success: true, data: task });

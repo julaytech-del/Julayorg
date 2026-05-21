@@ -54,9 +54,9 @@ async function executeAction(action, context, orgId) {
     await Task.findByIdAndUpdate(task._id, { status: params.status });
   }
 
-  if (type === 'add_comment' && params?.text && task) {
+  if (type === 'add_comment' && (params?.comment || params?.text) && task) {
     await Task.findByIdAndUpdate(task._id, {
-      $push: { comments: { content: params.text, author: context.userId, authorName: 'Automation', createdAt: new Date() } }
+      $push: { comments: { content: params.comment || params.text, author: context.userId, authorName: 'Automation', createdAt: new Date() } }
     });
   }
 

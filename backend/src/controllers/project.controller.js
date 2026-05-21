@@ -4,6 +4,7 @@ import Goal from '../models/Goal.js';
 import Task from '../models/Task.js';
 import ActivityLog from '../models/ActivityLog.js';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
+import { evaluateRules } from '../services/automation.service.js';
 
 const logActivity = async (orgId, userId, userName, action, entityType, entity) => {
   try {
@@ -51,6 +52,7 @@ export const createProject = async (req, res, next) => {
 
     const project = await Project.create({ ...req.body, organization: orgId, createdBy: req.user._id });
     await logActivity(orgId, req.user._id, req.user.name, 'created', 'project', project);
+    evaluateRules(orgId, 'project.created', { project, userId: req.user._id });
     res.status(201).json({ success: true, data: project });
   } catch (err) { next(err); }
 };
