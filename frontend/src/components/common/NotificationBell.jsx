@@ -54,24 +54,24 @@ function NotificationItem({ notif, onRead, onNavigate }) {
       {/* Content */}
       <Box sx={{ flex: 1, minWidth: 0 }}>
         <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: 1, mb: 0.25 }}>
-          <Typography variant="caption" fontWeight={notif.read ? 500 : 700} sx={{ fontSize: '0.78rem', lineHeight: 1.4, color: notif.read ? 'text.secondary' : 'text.primary' }} noWrap>
+          <Typography variant="caption" fontWeight={notif.read ? 500 : 700} sx={{ fontSize: '0.78rem', lineHeight: 1.4, color: notif.read ? 'rgba(255,255,255,0.55)' : '#F1F5F9' }} noWrap>
             {notif.title}
           </Typography>
           {!notif.read && <Box sx={{ width: 6, height: 6, borderRadius: '50%', bgcolor: cfg.color, flexShrink: 0, mt: 0.5 }} />}
         </Box>
         {notif.body && (
-          <Typography variant="caption" color="text.secondary" sx={{ fontSize: '0.72rem', lineHeight: 1.45, display: 'block' }} noWrap>
+          <Typography variant="caption" sx={{ fontSize: '0.72rem', lineHeight: 1.45, display: 'block', color: 'rgba(255,255,255,0.6)' }} noWrap>
             {notif.body}
           </Typography>
         )}
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
           <Chip label={cfg.label} size="small" sx={{ height: 16, fontSize: '0.62rem', fontWeight: 700, bgcolor: `${cfg.color}18`, color: cfg.color, px: 0.25 }} />
           {notif.projectName && (
-            <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'text.disabled' }} noWrap>
+            <Typography variant="caption" sx={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.35)' }} noWrap>
               {notif.projectName}
             </Typography>
           )}
-          <Typography variant="caption" sx={{ fontSize: '0.66rem', color: 'text.disabled', ml: 'auto', flexShrink: 0 }}>
+          <Typography variant="caption" sx={{ fontSize: '0.66rem', color: 'rgba(255,255,255,0.35)', ml: 'auto', flexShrink: 0 }}>
             {notif.createdAt ? formatDistanceToNow(new Date(notif.createdAt), { addSuffix: true }) : ''}
           </Typography>
         </Box>
@@ -190,7 +190,7 @@ export default function NotificationBell() {
         {/* Header */}
         <Box sx={{ px: 2.5, pt: 2, pb: 1.5, display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexShrink: 0 }}>
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-            <Typography variant="subtitle1" fontWeight={700}>Notifications</Typography>
+            <Typography variant="subtitle1" fontWeight={700} sx={{ color: '#F1F5F9' }}>Notifications</Typography>
             {unreadCount > 0 && (
               <Chip label={`${unreadCount} new`} size="small" sx={{ height: 20, fontSize: '0.68rem', fontWeight: 700, bgcolor: 'rgba(239,68,68,0.15)', color: '#EF4444' }} />
             )}
@@ -220,14 +220,14 @@ export default function NotificationBell() {
               <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: 'rgba(99,102,241,0.1)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                 <NotificationsNone sx={{ fontSize: 24, color: '#6366f1' }} />
               </Box>
-              <Typography variant="body2" fontWeight={600} color="text.secondary">You're all caught up! 🎉</Typography>
-              <Typography variant="caption" color="text.disabled" textAlign="center">No new notifications. Check back later.</Typography>
+              <Typography variant="body2" fontWeight={600} sx={{ color: 'rgba(255,255,255,0.7)' }}>You're all caught up! 🎉</Typography>
+              <Typography variant="caption" sx={{ color: 'rgba(255,255,255,0.4)' }} textAlign="center">No new notifications. Check back later.</Typography>
             </Box>
           ) : (
             Object.entries(grouped).map(([group, items], gi) => (
               <Box key={gi}>
                 <Box sx={{ px: 2.5, py: 1, bgcolor: 'rgba(255,255,255,0.02)', borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
-                  <Typography variant="caption" fontWeight={700} color="text.disabled" sx={{ textTransform: 'uppercase', fontSize: '0.64rem', letterSpacing: '0.08em' }}>
+                  <Typography variant="caption" fontWeight={700} sx={{ color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', fontSize: '0.64rem', letterSpacing: '0.08em' }}>
                     {group}
                   </Typography>
                 </Box>
