@@ -1,11 +1,12 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Avatar, Divider, Tooltip } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban, NotificationsNone } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 import { usePermissions } from '../../hooks/usePermissions.js';
+import { notificationsAPI } from '../../services/api.js';
 
 const SIDEBAR_WIDTH = 260;
 
@@ -19,6 +20,16 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const { t }     = useTranslation();
   const org       = user?.organization;
   const { canUseAI, canViewReports, canManageDepartment, isAdmin } = usePermissions();
+
+  const [unreadCount, setUnreadCount] = useState(0);
+  useEffect(() => {
+    const fetch = async () => {
+      try { const r = await notificationsAPI.getCount(); setUnreadCount(r?.data?.count ?? r?.count ?? 0); } catch {}
+    };
+    fetch();
+    const t = setInterval(fetch, 60000);
+    return () => clearInterval(t);
+  }, []);
 
   const NAV = [
     { title: t('nav.sections.workspace'), items: [
@@ -38,6 +49,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       { label: 'My Tasks',          icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
       { label: 'Time Tracking',     icon: Timer,            path: '/dashboard/time-tracking' },
       { label: 'Activity',          icon: History,          path: '/dashboard/activity' },
+      { label: 'Notifications',     icon: NotificationsNone, path: '/dashboard/notifications', badge: unreadCount > 0 ? String(unreadCount > 99 ? '99+' : unreadCount) : null },
     ]},
     { title: t('nav.sections.intelligence'), items: [
       ...(canUseAI    ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
@@ -153,8 +165,8 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
                         primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: active ? 600 : 400, color: active ? txtAct : txtInact }}
                       />
                       {item.badge && (
-                        <Box sx={{ px: 0.75, py: 0.2, borderRadius: 1, backgroundColor: badgeBg, border: `1px solid ${badgeBorder}` }}>
-                          <Typography sx={{ color: badgeTxt, fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.04em' }}>{item.badge}</Typography>
+                        <Box sx={{ px: 0.75, py: 0.2, borderRadius: 1, backgroundColor: item.label === 'Notifications' ? '#EF444422' : badgeBg, border: `1px solid ${item.label === 'Notifications' ? '#EF444444' : badgeBorder}` }}>
+                          <Typography sx={{ color: item.label === 'Notifications' ? '#EF4444' : badgeTxt, fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.04em' }}>{item.badge}</Typography>
                         </Box>
                       )}
                     </ListItemButton>
