@@ -30,14 +30,21 @@ async function executeAction(action, context, orgId) {
   const { type, params } = action;
   const task = context.task;
 
-  if (type === 'notify_user' && params?.userId && task) {
-    await createNotification(params.userId, orgId, 'automation_triggered', {
-      title: params.title || 'Automation triggered',
-      body: params.message || `Task "${task.title}" triggered an automation.`,
-      link: `/dashboard/projects/${task.project}`,
-      entityId: task._id,
-      entityType: 'task',
-    });
+  if (type === 'notify_user' && task) {
+    const User = (await import('../models/User.js')).default;
+    const title = params?.title || 'Automation triggered';
+    const body = params?.message || `Task "${task.title}" triggered an automation.`;
+    const link = `/dashboard/projects/${task.project}`;
+    if (params?.userId) {
+      // notify specific user
+      await createNotification(params.userId, orgId, 'automation_triggered', { title, body, link, entityId: task._id, entityType: 'task' });
+    } else {
+      // notify all active org members
+      const members = await User.find({ organization: orgId, status: { $ne: 'inactive' } }).select('_id');
+      for (const m of members) {
+        await createNotification(m._id, orgId, 'automation_triggered', { title, body, link, entityId: task._id, entityType: 'task' });
+      }
+    }
   }
 
   if (type === 'change_status' && params?.status && task) {

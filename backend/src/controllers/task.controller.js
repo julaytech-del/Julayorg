@@ -5,6 +5,7 @@ import ActivityLog from '../models/ActivityLog.js';
 import Organization from '../models/Organization.js';
 import { notifyTaskCreated, notifyTaskCompleted } from '../services/slack.service.js';
 import { sendTaskAssigned } from '../services/email.service.js';
+import { evaluateRules } from '../services/automation.service.js';
 
 const triggerSlack = async (orgId, type, task, projectName, userName) => {
   try {
@@ -117,6 +118,7 @@ export const updateTask = async (req, res, next) => {
         const project = await Project.findById(task.project).select('name');
         triggerSlack(orgId, 'completed', task, project?.name || '', req.user.name);
       }
+      evaluateRules(orgId, 'task.status_changed', { task, userId: req.user._id, newStatus: task.status });
     }
 
     res.json({ success: true, data: task });
@@ -151,6 +153,7 @@ export const updateTaskStatus = async (req, res, next) => {
 
     const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'status_changed', entityType: 'task', entityId: task._id, entityName: task.title, changes: { before: { status: task.status }, after: { status } } });
+    evaluateRules(orgId, 'task.status_changed', { task: { ...task.toObject(), status }, userId: req.user._id, newStatus: status });
 
     res.json({ success: true, data: { ...task.toObject(), status } });
   } catch (err) { next(err); }
