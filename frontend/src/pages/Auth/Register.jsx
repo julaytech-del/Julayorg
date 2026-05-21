@@ -118,6 +118,7 @@ function PasswordRegister() {
     if (!form.name.trim()) errs.name = 'Full name is required';
     if (!form.email.trim()) errs.email = 'Email is required';
     else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Enter a valid email';
+    if (!form.organizationName.trim()) errs.organizationName = 'Organization name is required';
     if (!form.password) errs.password = 'Password is required';
     else if (!validatePwd(form.password)) errs.password = 'Password does not meet requirements';
     if (!agreed) errs.agreed = 'You must accept the terms to continue';
@@ -183,7 +184,9 @@ function PasswordRegister() {
 
       <TextField
         fullWidth label={t('auth.register.orgName')} name="organizationName"
-        value={form.organizationName} onChange={set} required sx={{ mb: 2, ...fieldSx }}
+        value={form.organizationName} onChange={set} required
+        error={!!fieldErrors.organizationName} helperText={fieldErrors.organizationName}
+        sx={{ mb: 2, ...fieldSx }}
       />
 
       <TextField
