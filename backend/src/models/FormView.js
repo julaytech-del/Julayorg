@@ -4,7 +4,7 @@ import crypto from 'crypto';
 const fieldSchema = new mongoose.Schema({
   id: { type: String, required: true },
   label: { type: String, required: true },
-  type: { type: String, enum: ['text', 'textarea', 'number', 'date', 'select', 'user', 'priority'], required: true },
+  type: { type: String, enum: ['text', 'textarea', 'number', 'date', 'select', 'user', 'priority', 'phone', 'url', 'rating'], required: true },
   required: { type: Boolean, default: false },
   options: [String],
   placeholder: String,
@@ -24,6 +24,10 @@ const formViewSchema = new mongoose.Schema({
     submittedAt: { type: Date, default: Date.now },
     createdTaskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task' }
   }],
+  successMessage: { type: String, default: 'Thank you! Your submission has been received.' },
+  redirectUrl: { type: String },
+  notifyEmail: { type: String },
+  submissionCount: { type: Number, default: 0 },
   createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
 }, { timestamps: true });
 

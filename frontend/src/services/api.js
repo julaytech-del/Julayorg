@@ -200,6 +200,7 @@ export const formsAPI = {
   delete: (id) => api.delete(`/forms/${id}`),
   getPublic: (token) => api.get(`/forms/public/${token}`),
   submit: (token, data) => api.post(`/forms/public/${token}`, data),
+  getSubmissions: (id) => api.get(`/forms/${id}/submissions`),
 };
 
 // My Tasks

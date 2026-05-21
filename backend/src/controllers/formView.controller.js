@@ -1,5 +1,6 @@
 import FormView from '../models/FormView.js';
 import Task from '../models/Task.js';
+import { sendFormSubmissionEmail } from '../services/email.service.js';
 
 export const getForms = async (req, res, next) => {
   try {
@@ -23,6 +24,16 @@ export const updateForm = async (req, res, next) => {
     const form = await FormView.findOneAndUpdate({ _id: req.params.id, organization: orgId }, req.body, { new: true });
     if (!form) return res.status(404).json({ success: false, message: 'Form not found' });
     res.json({ success: true, data: form });
+  } catch (err) { next(err); }
+};
+
+export const getFormSubmissions = async (req, res, next) => {
+  try {
+    const orgId = req.user.organization._id || req.user.organization;
+    const form = await FormView.findOne({ _id: req.params.id, organization: orgId })
+      .populate('submissions.createdTaskId', 'title status');
+    if (!form) return res.status(404).json({ success: false, message: 'Not found' });
+    res.json({ success: true, data: form.submissions });
   } catch (err) { next(err); }
 };
 
@@ -63,7 +74,13 @@ export const submitForm = async (req, res, next) => {
 
     const task = await Task.create(taskData);
     form.submissions.push({ data, createdTaskId: task._id });
+    form.submissionCount = (form.submissionCount || 0) + 1;
     await form.save();
-    res.status(201).json({ success: true, data: { taskId: task._id, message: 'Submission received and task created!' } });
+
+    if (form.notifyEmail) {
+      sendFormSubmissionEmail(form.notifyEmail, form.name, task.title, new Date()).catch(() => {});
+    }
+
+    res.status(201).json({ success: true, data: { taskId: task._id, message: form.successMessage || 'Submission received and task created!' } });
   } catch (err) { next(err); }
 };

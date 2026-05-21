@@ -1,5 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Button, CircularProgress, Alert, Checkbox, FormControlLabel, Paper } from '@mui/material';
+import {
+  Box, Typography, TextField, Select, MenuItem, FormControl, InputLabel, Button,
+  CircularProgress, Alert, Checkbox, FormControlLabel, Paper, Rating
+} from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { formsAPI } from '../../services/api.js';
 
@@ -22,22 +25,29 @@ export default function FormViewRenderer() {
     })();
   }, [token]);
 
-  const setValue = (label, val) => setValues(v => ({ ...v, [label]: val }));
+  // Values keyed by field.id for backend mapping; display keyed by idx
+  const setValue = (fieldId, val) => setValues(v => ({ ...v, [fieldId]: val }));
 
   const submit = async (e) => {
     e.preventDefault();
-    // Validate required fields
-    const missing = (form.fields || []).filter(f => f.required && !values[f.label]);
+    const missing = (form.fields || []).filter(f => f.required && !values[f.id]);
     if (missing.length) { setError(`Please fill in: ${missing.map(f => f.label).join(', ')}`); return; }
     setSubmitting(true); setError('');
     try {
-      await formsAPI.submit(token, { responses: values });
+      await formsAPI.submit(token, { data: values });
       setSubmitted(true);
+      if (form.redirectUrl) {
+        setTimeout(() => { window.location.href = form.redirectUrl; }, 2000);
+      }
     } catch (e) { setError(e.message || 'Submission failed'); }
     setSubmitting(false);
   };
 
-  if (loading) return <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}><CircularProgress /></Box>;
+  if (loading) return (
+    <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+      <CircularProgress />
+    </Box>
+  );
 
   if (submitted) return (
     <Box sx={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh', p: 3 }}>
@@ -46,7 +56,12 @@ export default function FormViewRenderer() {
           <Typography sx={{ color: 'white', fontSize: '1.8rem' }}>✓</Typography>
         </Box>
         <Typography variant="h5" fontWeight={700} mb={1}>Submitted!</Typography>
-        <Typography color="text.secondary">Your response has been recorded. Thank you!</Typography>
+        <Typography color="text.secondary">
+          {form?.successMessage || 'Your response has been recorded. Thank you!'}
+        </Typography>
+        {form?.redirectUrl && (
+          <Typography variant="body2" color="text.secondary" mt={1}>Redirecting you shortly...</Typography>
+        )}
       </Paper>
     </Box>
   );
@@ -76,24 +91,42 @@ export default function FormViewRenderer() {
             {(form?.fields || []).map((field, idx) => (
               <Box key={idx}>
                 {field.type === 'textarea' && (
-                  <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder} value={values[field.label] || ''} onChange={e => setValue(field.label, e.target.value)} fullWidth multiline rows={4} />
+                  <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder} value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth multiline rows={4} />
                 )}
                 {(field.type === 'text' || field.type === 'number' || field.type === 'email') && (
-                  <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder} type={field.type} value={values[field.label] || ''} onChange={e => setValue(field.label, e.target.value)} fullWidth />
+                  <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder} type={field.type} value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth />
+                )}
+                {field.type === 'phone' && (
+                  <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder || '+1 555 000 0000'} type="tel" value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth />
+                )}
+                {field.type === 'url' && (
+                  <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder || 'https://example.com'} type="url" value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth />
                 )}
                 {field.type === 'date' && (
-                  <TextField label={field.label + (field.required ? ' *' : '')} type="date" value={values[field.label] || ''} onChange={e => setValue(field.label, e.target.value)} fullWidth InputLabelProps={{ shrink: true }} />
+                  <TextField label={field.label + (field.required ? ' *' : '')} type="date" value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth InputLabelProps={{ shrink: true }} />
                 )}
                 {field.type === 'select' && (
                   <FormControl fullWidth>
                     <InputLabel>{field.label + (field.required ? ' *' : '')}</InputLabel>
-                    <Select value={values[field.label] || ''} label={field.label} onChange={e => setValue(field.label, e.target.value)}>
+                    <Select value={values[field.id] || ''} label={field.label} onChange={e => setValue(field.id, e.target.value)}>
                       {(field.options || []).map((opt, i) => <MenuItem key={i} value={opt}>{opt}</MenuItem>)}
                     </Select>
                   </FormControl>
                 )}
                 {field.type === 'checkbox' && (
-                  <FormControlLabel control={<Checkbox checked={!!values[field.label]} onChange={e => setValue(field.label, e.target.checked)} />} label={field.label + (field.required ? ' *' : '')} />
+                  <FormControlLabel control={<Checkbox checked={!!values[field.id]} onChange={e => setValue(field.id, e.target.checked)} />} label={field.label + (field.required ? ' *' : '')} />
+                )}
+                {field.type === 'rating' && (
+                  <Box>
+                    <Typography variant="body2" fontWeight={600} mb={0.5} color="text.primary">
+                      {field.label}{field.required ? ' *' : ''}
+                    </Typography>
+                    <Rating
+                      value={Number(values[field.id]) || 0}
+                      onChange={(_, val) => setValue(field.id, val)}
+                      size="large"
+                    />
+                  </Box>
                 )}
               </Box>
             ))}

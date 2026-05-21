@@ -99,6 +99,20 @@ export const sendWelcome = async (toEmail, name) => {
   `);
 };
 
+export const sendFormSubmissionEmail = async (to, formName, taskTitle, submittedAt) => {
+  await send(to, `New form submission: ${formName}`, `
+    <div style="font-family:Inter,sans-serif;max-width:520px;margin:0 auto;color:#1E293B">
+      <h2 style="color:#6366F1">New Form Submission 📋</h2>
+      <p>A new submission was received for <strong>${formName}</strong>.</p>
+      <div style="background:#F8FAFC;border-left:4px solid #6366F1;padding:16px;border-radius:4px;margin:16px 0">
+        <strong>Task created:</strong> ${taskTitle}<br>
+        <span style="color:#64748B;font-size:14px">Submitted: ${new Date(submittedAt).toLocaleString()}</span>
+      </div>
+      ${btn('View Task', `${BASE_URL}/dashboard`)}
+    </div>
+  `);
+};
+
 export const sendAutomationEmail = async (to, task, subject, message) => {
   const taskTitle = task?.title || 'A task';
   await send(to, subject || `Automation: ${taskTitle}`, `
