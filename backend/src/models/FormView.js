@@ -19,10 +19,12 @@ const formViewSchema = new mongoose.Schema({
   fields: [fieldSchema],
   publicToken: { type: String, unique: true },
   active: { type: Boolean, default: true },
+  mode: { type: String, enum: ['task', 'survey'], default: 'task' },
   submissions: [{
     data: mongoose.Schema.Types.Mixed,
     submittedAt: { type: Date, default: Date.now },
-    createdTaskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task' }
+    createdTaskId: { type: mongoose.Schema.Types.ObjectId, ref: 'Task' },
+    status: { type: String, enum: ['pending', 'converted', 'backlog', 'ignored'], default: 'pending' }
   }],
   successMessage: { type: String, default: 'Thank you! Your submission has been received.' },
   redirectUrl: { type: String },

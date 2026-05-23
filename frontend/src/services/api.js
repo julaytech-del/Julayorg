@@ -201,6 +201,9 @@ export const formsAPI = {
   getPublic: (token) => api.get(`/forms/public/${token}`),
   submit: (token, data) => api.post(`/forms/public/${token}`, data),
   getSubmissions: (id) => api.get(`/forms/${id}/submissions`),
+  updateSubmissionStatus: (formId, subId, status) => api.patch(`/forms/${formId}/submissions/${subId}/status`, { status }),
+  convertToTask: (formId, subId, data) => api.post(`/forms/${formId}/submissions/${subId}/convert`, data),
+  analyze: (formId) => api.post(`/forms/${formId}/analyze`),
 };
 
 // My Tasks

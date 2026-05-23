@@ -3,9 +3,12 @@ import {
   Box, Typography, Button, Card, CardContent, IconButton, TextField, Select, MenuItem,
   FormControl, InputLabel, Stack, Chip, Drawer, Alert, CircularProgress, Divider,
   Switch, FormControlLabel, Tooltip, Snackbar, Dialog, DialogTitle, DialogContent,
-  DialogActions, Table, TableHead, TableRow, TableCell, TableBody, Paper
+  DialogActions, Paper, Collapse
 } from '@mui/material';
-import { Add, Delete, DragIndicator, ContentCopy, OpenInNew, Settings, Visibility, Code } from '@mui/icons-material';
+import {
+  Add, Delete, DragIndicator, ContentCopy, OpenInNew, Settings, Visibility, Code,
+  AutoAwesome, Close, ExpandMore, ExpandLess, CheckCircle, Archive, Block
+} from '@mui/icons-material';
 import { formsAPI, projectsAPI } from '../../services/api.js';
 
 const FIELD_TYPES = [
@@ -37,6 +40,22 @@ function newField() {
   return { id: `field_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, label: 'New Field', type: 'text', required: false, placeholder: '', options: [], mapTo: 'title' };
 }
 
+const STATUS_CONFIG = {
+  pending:   { label: 'Pending',   color: '#F59E0B', bg: '#FEF3C7' },
+  converted: { label: 'Converted', color: '#22C55E', bg: '#DCFCE7' },
+  backlog:   { label: 'Backlog',   color: '#3B82F6', bg: '#DBEAFE' },
+  ignored:   { label: 'Ignored',   color: '#94A3B8', bg: '#F1F5F9' },
+};
+
+const SENTIMENT_CONFIG = {
+  positive: { label: 'Positive', color: '#22C55E', bg: '#DCFCE7' },
+  neutral:  { label: 'Neutral',  color: '#64748B', bg: '#F1F5F9' },
+  negative: { label: 'Negative', color: '#EF4444', bg: '#FEE2E2' },
+  mixed:    { label: 'Mixed',    color: '#F59E0B', bg: '#FEF3C7' },
+};
+
+const PRIORITY_COLOR = { high: '#EF4444', medium: '#F59E0B', low: '#94A3B8' };
+
 export default function FormViewBuilder() {
   const [forms, setForms] = useState([]);
   const [projects, setProjects] = useState([]);
@@ -44,7 +63,6 @@ export default function FormViewBuilder() {
   const [activeForm, setActiveForm] = useState(null);
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [saving, setSaving] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [snackMsg, setSnackMsg] = useState('');
 
   // Create dialog state
@@ -59,6 +77,16 @@ export default function FormViewBuilder() {
   const [submissionsForm, setSubmissionsForm] = useState(null);
   const [submissions, setSubmissions] = useState([]);
   const [loadingSubmissions, setLoadingSubmissions] = useState(false);
+
+  // AI analysis state
+  const [analyzing, setAnalyzing] = useState(false);
+  const [analysis, setAnalysis] = useState(null);
+  const [analysisOpen, setAnalysisOpen] = useState(false);
+  const [analysisError, setAnalysisError] = useState('');
+
+  // Convert-to-task inline state: { subId, title, priority, status }
+  const [convertForm, setConvertForm] = useState(null);
+  const [converting, setConverting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -109,6 +137,7 @@ export default function FormViewBuilder() {
         fields: activeForm.fields,
         successMessage: activeForm.successMessage,
         notifyEmail: activeForm.notifyEmail,
+        mode: activeForm.mode || 'task',
       });
       await load();
       setSnackMsg('Form saved!');
@@ -167,11 +196,52 @@ export default function FormViewBuilder() {
     setSubmissionsForm(f);
     setSubmissionsOpen(true);
     setLoadingSubmissions(true);
+    setAnalysis(null);
+    setAnalysisOpen(false);
+    setAnalysisError('');
+    setConvertForm(null);
     try {
       const res = await formsAPI.getSubmissions(f._id);
       setSubmissions(res.data || []);
     } catch { setSubmissions([]); }
     setLoadingSubmissions(false);
+  };
+
+  const handleUpdateStatus = async (subId, status) => {
+    try {
+      await formsAPI.updateSubmissionStatus(submissionsForm._id, subId, status);
+      setSubmissions(prev => prev.map(s => s._id === subId ? { ...s, status } : s));
+      setSnackMsg(`Marked as ${status}`);
+    } catch { setSnackMsg('Failed to update status'); }
+  };
+
+  const handleConvertToTask = async (subId) => {
+    if (!convertForm || convertForm.subId !== subId) return;
+    setConverting(true);
+    try {
+      await formsAPI.convertToTask(submissionsForm._id, subId, {
+        title: convertForm.title,
+        status: convertForm.status,
+        priority: convertForm.priority,
+      });
+      setSubmissions(prev => prev.map(s => s._id === subId ? { ...s, status: 'converted' } : s));
+      setConvertForm(null);
+      setSnackMsg('Task created successfully!');
+    } catch { setSnackMsg('Failed to create task'); }
+    setConverting(false);
+  };
+
+  const handleAnalyze = async () => {
+    setAnalyzing(true);
+    setAnalysisError('');
+    try {
+      const res = await formsAPI.analyze(submissionsForm._id);
+      setAnalysis(res.data);
+      setAnalysisOpen(true);
+    } catch (e) {
+      setAnalysisError(e?.message || 'AI analysis failed');
+    }
+    setAnalyzing(false);
   };
 
   const embedCode = activeForm?.publicToken
@@ -183,7 +253,7 @@ export default function FormViewBuilder() {
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Box>
           <Typography variant="h5" fontWeight={700}>Form Views</Typography>
-          <Typography variant="body2" color="text.secondary">Build public forms that create tasks automatically</Typography>
+          <Typography variant="body2" color="text.secondary">Build public forms that create tasks automatically or collect feedback</Typography>
         </Box>
         <Button variant="contained" startIcon={<Add />} onClick={openCreateDialog} sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2 }}>
           New Form
@@ -195,7 +265,7 @@ export default function FormViewBuilder() {
           <Box sx={{ textAlign: 'center', mt: 8, p: 6, border: '2px dashed #E2E8F0', borderRadius: 3 }}>
             <Settings sx={{ fontSize: 56, color: '#CBD5E1', mb: 2 }} />
             <Typography variant="h6" color="text.secondary" fontWeight={600}>No Forms Yet</Typography>
-            <Typography variant="body2" color="text.secondary" mb={3}>Create shareable forms that auto-create tasks</Typography>
+            <Typography variant="body2" color="text.secondary" mb={3}>Create shareable forms that auto-create tasks or collect survey feedback</Typography>
             <Button variant="contained" startIcon={<Add />} onClick={openCreateDialog} sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2 }}>Create Form</Button>
           </Box>
         ) : (
@@ -208,9 +278,16 @@ export default function FormViewBuilder() {
                     <Chip label={`${f.fields?.length || 0} fields`} size="small" sx={{ fontSize: '0.68rem' }} />
                   </Box>
 
-                  {f.project?.name && (
-                    <Chip label={f.project.name} size="small" variant="outlined" sx={{ fontSize: '0.68rem', mb: 1, borderColor: '#6366F1', color: '#6366F1' }} />
-                  )}
+                  <Box sx={{ display: 'flex', gap: 0.5, mb: 1, flexWrap: 'wrap' }}>
+                    {f.project?.name && (
+                      <Chip label={f.project.name} size="small" variant="outlined" sx={{ fontSize: '0.68rem', borderColor: '#6366F1', color: '#6366F1' }} />
+                    )}
+                    {f.mode === 'survey' ? (
+                      <Chip label="Survey Mode" size="small" sx={{ fontSize: '0.68rem', backgroundColor: '#F3E8FF', color: '#7C3AED' }} />
+                    ) : (
+                      <Chip label="Task Mode" size="small" sx={{ fontSize: '0.68rem', backgroundColor: '#EFF6FF', color: '#2563EB' }} />
+                    )}
+                  </Box>
 
                   <Typography variant="body2" color="text.secondary" fontSize="0.8rem" mb={1}>{f.description || 'No description'}</Typography>
 
@@ -278,13 +355,115 @@ export default function FormViewBuilder() {
         </DialogActions>
       </Dialog>
 
-      {/* Submissions Dialog */}
-      <Dialog open={submissionsOpen} onClose={() => setSubmissionsOpen(false)} maxWidth="md" fullWidth>
-        <DialogTitle fontWeight={700}>
-          Submissions — {submissionsForm?.name}
-          <Typography variant="body2" color="text.secondary">{submissions.length} total</Typography>
+      {/* Submissions Inbox Dialog */}
+      <Dialog open={submissionsOpen} onClose={() => setSubmissionsOpen(false)} maxWidth="md" fullWidth PaperProps={{ sx: { maxHeight: '90vh' } }}>
+        <DialogTitle sx={{ pb: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start' }}>
+            <Box>
+              <Typography fontWeight={700} variant="h6">Submissions Inbox — {submissionsForm?.name}</Typography>
+              <Typography variant="body2" color="text.secondary">{submissions.length} total submissions</Typography>
+            </Box>
+            <Button
+              variant="contained"
+              startIcon={analyzing ? <CircularProgress size={14} sx={{ color: 'white' }} /> : <AutoAwesome />}
+              disabled={analyzing || submissions.length === 0}
+              onClick={handleAnalyze}
+              size="small"
+              sx={{ background: 'linear-gradient(135deg,#7C3AED,#A855F7)', borderRadius: 2, whiteSpace: 'nowrap' }}
+            >
+              {analyzing ? 'Analyzing...' : 'AI Analysis'}
+            </Button>
+          </Box>
         </DialogTitle>
-        <DialogContent>
+
+        <DialogContent sx={{ pt: 0 }}>
+          {analysisError && <Alert severity="error" sx={{ mb: 2 }}>{analysisError}</Alert>}
+
+          {/* AI Analysis Panel */}
+          {analysis && (
+            <Collapse in={analysisOpen}>
+              <Paper sx={{ p: 2.5, mb: 2, border: '1px solid #E9D5FF', backgroundColor: '#FAFAFF', borderRadius: 2 }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1.5 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <AutoAwesome sx={{ color: '#7C3AED', fontSize: 18 }} />
+                    <Typography fontWeight={700} fontSize="0.95rem" color="#7C3AED">AI Analysis</Typography>
+                    {analysis.sentiment && (
+                      <Chip
+                        label={SENTIMENT_CONFIG[analysis.sentiment]?.label || analysis.sentiment}
+                        size="small"
+                        sx={{
+                          fontSize: '0.7rem',
+                          color: SENTIMENT_CONFIG[analysis.sentiment]?.color,
+                          backgroundColor: SENTIMENT_CONFIG[analysis.sentiment]?.bg,
+                          fontWeight: 700,
+                        }}
+                      />
+                    )}
+                    {analysis.sentimentScore !== undefined && (
+                      <Typography variant="caption" color="text.secondary">Score: {analysis.sentimentScore}/100</Typography>
+                    )}
+                  </Box>
+                  <IconButton size="small" onClick={() => setAnalysisOpen(false)}><Close sx={{ fontSize: 16 }} /></IconButton>
+                </Box>
+
+                <Typography variant="body2" color="text.secondary" mb={1.5} sx={{ lineHeight: 1.6 }}>{analysis.summary}</Typography>
+
+                {analysis.themes?.length > 0 && (
+                  <Box mb={1.5}>
+                    <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>Themes</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                      {analysis.themes.map((t, i) => (
+                        <Tooltip key={i} title={t.description || ''}>
+                          <Chip label={`${t.title} (${t.count})`} size="small" sx={{ fontSize: '0.72rem', backgroundColor: '#EDE9FE', color: '#5B21B6' }} />
+                        </Tooltip>
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+
+                {analysis.actionItems?.length > 0 && (
+                  <Box mb={1.5}>
+                    <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>Action Items</Typography>
+                    <Stack spacing={0.5} mt={0.5}>
+                      {analysis.actionItems.map((item, i) => (
+                        <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 1 }}>
+                          <Box sx={{ width: 8, height: 8, borderRadius: '50%', backgroundColor: PRIORITY_COLOR[item.priority] || '#94A3B8', mt: 0.7, flexShrink: 0 }} />
+                          <Typography variant="body2" fontSize="0.8rem">{item.text}</Typography>
+                          <Chip label={item.priority} size="small" sx={{ fontSize: '0.65rem', height: 18, color: PRIORITY_COLOR[item.priority], backgroundColor: `${PRIORITY_COLOR[item.priority]}20`, ml: 'auto', flexShrink: 0 }} />
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+
+                {analysis.keyInsights?.length > 0 && (
+                  <Box mb={1}>
+                    <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>Key Insights</Typography>
+                    <Stack spacing={0.25} mt={0.5}>
+                      {analysis.keyInsights.map((ins, i) => (
+                        <Box key={i} sx={{ display: 'flex', alignItems: 'flex-start', gap: 0.75 }}>
+                          <Typography color="#7C3AED" sx={{ fontSize: '0.85rem', mt: 0.1 }}>•</Typography>
+                          <Typography variant="body2" fontSize="0.8rem">{ins}</Typography>
+                        </Box>
+                      ))}
+                    </Stack>
+                  </Box>
+                )}
+
+                {analysis.commonIssues?.length > 0 && (
+                  <Box>
+                    <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: 0.5 }}>Common Issues</Typography>
+                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                      {analysis.commonIssues.map((issue, i) => (
+                        <Chip key={i} label={issue} size="small" sx={{ fontSize: '0.72rem', backgroundColor: '#FEE2E2', color: '#991B1B' }} />
+                      ))}
+                    </Box>
+                  </Box>
+                )}
+              </Paper>
+            </Collapse>
+          )}
+
           {loadingSubmissions ? (
             <Box sx={{ display: 'flex', justifyContent: 'center', py: 4 }}><CircularProgress /></Box>
           ) : submissions.length === 0 ? (
@@ -294,38 +473,124 @@ export default function FormViewBuilder() {
               <Typography variant="body2">Share your form link to start collecting responses.</Typography>
             </Box>
           ) : (
-            <Box sx={{ overflowX: 'auto' }}>
-              <Table size="small">
-                <TableHead>
-                  <TableRow>
-                    <TableCell sx={{ fontWeight: 700 }}>Date</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Created Task</TableCell>
-                    <TableCell sx={{ fontWeight: 700 }}>Data Preview</TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {[...submissions].reverse().map((sub, i) => (
-                    <TableRow key={i} sx={{ '&:hover': { backgroundColor: '#F8FAFC' } }}>
-                      <TableCell sx={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}>
+            <Stack spacing={1.5}>
+              {[...submissions].reverse().map((sub) => {
+                const cfg = STATUS_CONFIG[sub.status] || STATUS_CONFIG.pending;
+                const isPending = !sub.status || sub.status === 'pending';
+                const isConverting = convertForm?.subId === sub._id;
+
+                return (
+                  <Paper key={sub._id} variant="outlined" sx={{ p: 2, borderRadius: 2, borderColor: isPending ? '#FDE68A' : '#E2E8F0', backgroundColor: isPending ? '#FFFBEB' : '#FAFAFA' }}>
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+                      <Typography variant="caption" color="text.secondary">
                         {new Date(sub.submittedAt).toLocaleString()}
-                      </TableCell>
-                      <TableCell sx={{ fontSize: '0.8rem' }}>
-                        {sub.createdTaskId?.title || '—'}
-                      </TableCell>
-                      <TableCell sx={{ fontSize: '0.78rem', color: '#64748B', maxWidth: 300 }}>
-                        {sub.data
-                          ? Object.entries(sub.data).slice(0, 3).map(([k, v]) => {
-                              const field = submissionsForm?.fields?.find(f => f.id === k);
-                              const label = field?.label || k;
-                              return `${label}: ${v}`;
-                            }).join(' · ')
-                          : '—'}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
-            </Box>
+                      </Typography>
+                      <Chip
+                        label={cfg.label}
+                        size="small"
+                        sx={{ fontSize: '0.68rem', fontWeight: 700, color: cfg.color, backgroundColor: cfg.bg }}
+                      />
+                    </Box>
+
+                    {/* Field data */}
+                    <Box sx={{ mb: isPending ? 1.5 : 0 }}>
+                      {sub.data && Object.entries(sub.data).map(([k, v]) => {
+                        const field = submissionsForm?.fields?.find(f => f.id === k);
+                        const label = field?.label || k;
+                        return (
+                          <Box key={k} sx={{ display: 'flex', gap: 1, mb: 0.25 }}>
+                            <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ minWidth: 100, flexShrink: 0 }}>{label}:</Typography>
+                            <Typography variant="caption" color="text.primary">{String(v)}</Typography>
+                          </Box>
+                        );
+                      })}
+                    </Box>
+
+                    {/* Action buttons for pending */}
+                    {isPending && (
+                      <Box>
+                        {!isConverting ? (
+                          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+                            <Button
+                              size="small"
+                              variant="contained"
+                              startIcon={<CheckCircle sx={{ fontSize: 14 }} />}
+                              onClick={() => setConvertForm({ subId: sub._id, title: '', priority: 'medium', status: 'todo' })}
+                              sx={{ fontSize: '0.72rem', backgroundColor: '#22C55E', '&:hover': { backgroundColor: '#16A34A' }, borderRadius: 1.5, py: 0.5 }}
+                            >
+                              Create Task
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={<Archive sx={{ fontSize: 14 }} />}
+                              onClick={() => handleUpdateStatus(sub._id, 'backlog')}
+                              sx={{ fontSize: '0.72rem', borderColor: '#3B82F6', color: '#3B82F6', borderRadius: 1.5, py: 0.5 }}
+                            >
+                              Backlog
+                            </Button>
+                            <Button
+                              size="small"
+                              variant="outlined"
+                              startIcon={<Block sx={{ fontSize: 14 }} />}
+                              onClick={() => handleUpdateStatus(sub._id, 'ignored')}
+                              sx={{ fontSize: '0.72rem', borderColor: '#CBD5E1', color: '#94A3B8', borderRadius: 1.5, py: 0.5 }}
+                            >
+                              Ignore
+                            </Button>
+                          </Box>
+                        ) : (
+                          <Paper sx={{ p: 1.5, mt: 1, backgroundColor: '#F0FDF4', border: '1px solid #BBF7D0', borderRadius: 2 }}>
+                            <Typography variant="caption" fontWeight={700} color="#166534" mb={1} display="block">Create Task from this submission</Typography>
+                            <Stack spacing={1}>
+                              <TextField
+                                label="Task Title"
+                                value={convertForm.title}
+                                onChange={e => setConvertForm(f => ({ ...f, title: e.target.value }))}
+                                size="small"
+                                fullWidth
+                                placeholder="Enter task title..."
+                                inputProps={{ style: { fontSize: '0.82rem' } }}
+                              />
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                <FormControl size="small" sx={{ flex: 1 }}>
+                                  <InputLabel sx={{ fontSize: '0.8rem' }}>Priority</InputLabel>
+                                  <Select value={convertForm.priority} label="Priority" onChange={e => setConvertForm(f => ({ ...f, priority: e.target.value }))} sx={{ fontSize: '0.82rem' }}>
+                                    <MenuItem value="high">High</MenuItem>
+                                    <MenuItem value="medium">Medium</MenuItem>
+                                    <MenuItem value="low">Low</MenuItem>
+                                  </Select>
+                                </FormControl>
+                                <FormControl size="small" sx={{ flex: 1 }}>
+                                  <InputLabel sx={{ fontSize: '0.8rem' }}>Status</InputLabel>
+                                  <Select value={convertForm.status} label="Status" onChange={e => setConvertForm(f => ({ ...f, status: e.target.value }))} sx={{ fontSize: '0.82rem' }}>
+                                    <MenuItem value="todo">To Do</MenuItem>
+                                    <MenuItem value="in_progress">In Progress</MenuItem>
+                                    <MenuItem value="planned">Planned</MenuItem>
+                                  </Select>
+                                </FormControl>
+                              </Box>
+                              <Box sx={{ display: 'flex', gap: 1 }}>
+                                <Button size="small" variant="outlined" onClick={() => setConvertForm(null)} sx={{ borderRadius: 1.5, flex: 1, fontSize: '0.75rem' }}>Cancel</Button>
+                                <Button
+                                  size="small"
+                                  variant="contained"
+                                  disabled={converting || !convertForm.title.trim()}
+                                  onClick={() => handleConvertToTask(sub._id)}
+                                  sx={{ borderRadius: 1.5, flex: 1, fontSize: '0.75rem', backgroundColor: '#22C55E', '&:hover': { backgroundColor: '#16A34A' } }}
+                                >
+                                  {converting ? <CircularProgress size={14} sx={{ color: 'white' }} /> : 'Create Task'}
+                                </Button>
+                              </Box>
+                            </Stack>
+                          </Paper>
+                        )}
+                      </Box>
+                    )}
+                  </Paper>
+                );
+              })}
+            </Stack>
           )}
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
@@ -354,6 +619,19 @@ export default function FormViewBuilder() {
             </Box>
 
             <TextField label="Form Name" value={activeForm.name} onChange={e => setActiveForm(f => ({ ...f, name: e.target.value }))} fullWidth size="small" />
+
+            <FormControl fullWidth size="small">
+              <InputLabel>Form Mode</InputLabel>
+              <Select
+                value={activeForm.mode || 'task'}
+                label="Form Mode"
+                onChange={e => setActiveForm(f => ({ ...f, mode: e.target.value }))}
+              >
+                <MenuItem value="task">Task Mode — auto-create task on submit</MenuItem>
+                <MenuItem value="survey">Survey Mode — collect feedback, decide later</MenuItem>
+              </Select>
+            </FormControl>
+
             <TextField label="Description (optional)" value={activeForm.description || ''} onChange={e => setActiveForm(f => ({ ...f, description: e.target.value }))} fullWidth size="small" multiline rows={2} />
             <TextField
               label="Success Message shown after submit"

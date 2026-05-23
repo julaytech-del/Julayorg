@@ -59,7 +59,21 @@ export const submitForm = async (req, res, next) => {
     if (!form) return res.status(404).json({ success: false, message: 'Form not found' });
 
     const { data } = req.body;
-    // Map form fields to task fields
+
+    if (form.mode === 'survey') {
+      // Survey mode: just save submission, no task created
+      form.submissions.push({ data, status: 'pending' });
+      form.submissionCount = (form.submissionCount || 0) + 1;
+      await form.save();
+
+      if (form.notifyEmail) {
+        sendFormSubmissionEmail(form.notifyEmail, form.name, 'Survey Response', new Date()).catch(() => {});
+      }
+
+      return res.status(201).json({ success: true, data: { message: form.successMessage || 'Thank you! Your submission has been received.' } });
+    }
+
+    // Task mode: map form fields to task fields
     const taskData = { project: form.project, organization: form.organization, status: 'planned', priority: 'medium' };
     form.fields.forEach(field => {
       const value = data[field.id];
@@ -73,7 +87,7 @@ export const submitForm = async (req, res, next) => {
     if (!taskData.title) taskData.title = 'Form Submission ' + new Date().toLocaleString();
 
     const task = await Task.create(taskData);
-    form.submissions.push({ data, createdTaskId: task._id });
+    form.submissions.push({ data, createdTaskId: task._id, status: 'converted' });
     form.submissionCount = (form.submissionCount || 0) + 1;
     await form.save();
 
@@ -82,5 +96,66 @@ export const submitForm = async (req, res, next) => {
     }
 
     res.status(201).json({ success: true, data: { taskId: task._id, message: form.successMessage || 'Submission received and task created!' } });
+  } catch (err) { next(err); }
+};
+
+export const updateSubmissionStatus = async (req, res, next) => {
+  try {
+    const orgId = req.user.organization._id || req.user.organization;
+    const { status } = req.body; // 'pending'|'converted'|'backlog'|'ignored'
+    const form = await FormView.findOneAndUpdate(
+      { _id: req.params.id, organization: orgId, 'submissions._id': req.params.subId },
+      { $set: { 'submissions.$.status': status } },
+      { new: true }
+    );
+    if (!form) return res.status(404).json({ success: false, message: 'Not found' });
+    res.json({ success: true });
+  } catch (err) { next(err); }
+};
+
+export const convertSubmissionToTask = async (req, res, next) => {
+  try {
+    const orgId = req.user.organization._id || req.user.organization;
+    const form = await FormView.findOne({ _id: req.params.id, organization: orgId });
+    if (!form) return res.status(404).json({ success: false, message: 'Not found' });
+
+    const submission = form.submissions.id(req.params.subId);
+    if (!submission) return res.status(404).json({ success: false, message: 'Submission not found' });
+
+    const { title, status: taskStatus = 'todo', priority = 'medium' } = req.body;
+    const taskData = {
+      title: title || 'Feedback from form',
+      project: form.project,
+      organization: orgId,
+      status: taskStatus,
+      priority,
+      description: JSON.stringify(submission.data, null, 2),
+      createdBy: req.user._id,
+    };
+    const Task = (await import('../models/Task.js')).default;
+    const task = await Task.create(taskData);
+
+    submission.status = 'converted';
+    submission.createdTaskId = task._id;
+    await form.save();
+
+    res.status(201).json({ success: true, data: task });
+  } catch (err) { next(err); }
+};
+
+export const analyzeSubmissions = async (req, res, next) => {
+  try {
+    const orgId = req.user.organization._id || req.user.organization;
+    const form = await FormView.findOne({ _id: req.params.id, organization: orgId });
+    if (!form) return res.status(404).json({ success: false, message: 'Not found' });
+
+    const pendingSubs = form.submissions.filter(s => s.status !== 'ignored');
+    if (pendingSubs.length === 0) {
+      return res.json({ success: true, data: { summary: 'No submissions to analyze.', themes: [], actionItems: [], sentiment: 'neutral' } });
+    }
+
+    const { analyzeFormSubmissions } = await import('../services/ai/formAnalysis.service.js');
+    const result = await analyzeFormSubmissions(form.name, form.fields, pendingSubs);
+    res.json({ success: true, data: result });
   } catch (err) { next(err); }
 };
