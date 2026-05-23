@@ -6,6 +6,7 @@ import Organization from '../models/Organization.js';
 import { notifyTaskCreated, notifyTaskCompleted } from '../services/slack.service.js';
 import { sendTaskAssigned } from '../services/email.service.js';
 import { evaluateRules } from '../services/automation.service.js';
+import { triggerWebhooks } from '../services/webhook.service.js';
 
 const triggerSlack = async (orgId, type, task, projectName, userName) => {
   try {
@@ -77,6 +78,7 @@ export const createTask = async (req, res, next) => {
     const project = await Project.findById(task.project).select('name');
     triggerSlack(orgId, 'created', task, project?.name || '', req.user.name);
     evaluateRules(orgId, 'task.created', { task, userId: req.user._id });
+    triggerWebhooks(orgId, 'task.created', { taskId: task._id, taskTitle: task.title, status: task.status, priority: task.priority, projectId: task.project, assignees: task.assignees }).catch(() => {});
     res.status(201).json({ success: true, data: task });
   } catch (err) { next(err); }
 };
@@ -113,6 +115,9 @@ export const updateTask = async (req, res, next) => {
     if (task.goal) await recalcGoalProgress(task.goal);
 
     const orgId = req.user.organization._id || req.user.organization;
+    const webhookBase = { taskId: task._id, taskTitle: task.title, status: task.status, priority: task.priority, projectId: task.project };
+    triggerWebhooks(orgId, 'task.updated', webhookBase).catch(() => {});
+
     if (oldTask.status !== task.status) {
       await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'status_changed', entityType: 'task', entityId: task._id, entityName: task.title, changes: { before: { status: oldTask.status }, after: { status: task.status } } });
       if (task.status === 'done') {
@@ -120,12 +125,14 @@ export const updateTask = async (req, res, next) => {
         triggerSlack(orgId, 'completed', task, project?.name || '', req.user.name);
       }
       evaluateRules(orgId, 'task.status_changed', { task, userId: req.user._id, newStatus: task.status });
+      triggerWebhooks(orgId, 'task.status_changed', { ...webhookBase, oldStatus: oldTask.status, newStatus: task.status }).catch(() => {});
     }
 
     const oldAssignees = (oldTask.assignees || []).map(String).sort().join(',');
     const newAssignees = (task.assignees || []).map(a => String(a._id || a)).sort().join(',');
     if (oldAssignees !== newAssignees) {
       evaluateRules(orgId, 'task.assigned', { task, userId: req.user._id });
+      triggerWebhooks(orgId, 'member.assigned', { taskId: task._id, taskTitle: task.title, assignees: task.assignees.map(a => a._id || a) }).catch(() => {});
     }
 
     if (oldTask.priority !== task.priority) {
@@ -141,9 +148,11 @@ export const deleteTask = async (req, res, next) => {
     const task = await Task.findById(req.params.id);
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
     const { project, goal } = task;
+    const orgId = req.user.organization._id || req.user.organization;
     await task.deleteOne();
     if (project) await recalcProjectProgress(project);
     if (goal) await recalcGoalProgress(goal);
+    triggerWebhooks(orgId, 'task.deleted', { taskId: task._id, taskTitle: task.title, projectId: task.project }).catch(() => {});
     res.json({ success: true, message: 'Task deleted' });
   } catch (err) { next(err); }
 };
@@ -165,6 +174,8 @@ export const updateTaskStatus = async (req, res, next) => {
     const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'status_changed', entityType: 'task', entityId: task._id, entityName: task.title, changes: { before: { status: task.status }, after: { status } } });
     evaluateRules(orgId, 'task.status_changed', { task: { ...task.toObject(), status }, userId: req.user._id, newStatus: status });
+    triggerWebhooks(orgId, 'task.status_changed', { taskId: task._id, taskTitle: task.title, oldStatus: task.status, newStatus: status, projectId: task.project }).catch(() => {});
+    triggerWebhooks(orgId, 'task.updated', { taskId: task._id, taskTitle: task.title, status, projectId: task.project }).catch(() => {});
 
     res.json({ success: true, data: { ...task.toObject(), status } });
   } catch (err) { next(err); }
@@ -190,6 +201,7 @@ export const addComment = async (req, res, next) => {
     const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'commented', entityType: 'task', entityId: task._id, entityName: task.title });
     evaluateRules(orgId, 'task.comment_added', { task, userId: req.user._id });
+    triggerWebhooks(orgId, 'comment.added', { taskId: task._id, taskTitle: task.title, projectId: task.project, commentBy: req.user.name, comment: content }).catch(() => {});
     res.json({ success: true, data: task.comments });
   } catch (err) { next(err); }
 };

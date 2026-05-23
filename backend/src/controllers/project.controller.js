@@ -5,6 +5,7 @@ import Task from '../models/Task.js';
 import ActivityLog from '../models/ActivityLog.js';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
 import { evaluateRules } from '../services/automation.service.js';
+import { triggerWebhooks } from '../services/webhook.service.js';
 
 const logActivity = async (orgId, userId, userName, action, entityType, entity) => {
   try {
@@ -53,6 +54,7 @@ export const createProject = async (req, res, next) => {
     const project = await Project.create({ ...req.body, organization: orgId, createdBy: req.user._id });
     await logActivity(orgId, req.user._id, req.user.name, 'created', 'project', project);
     evaluateRules(orgId, 'project.created', { project, userId: req.user._id });
+    triggerWebhooks(orgId, 'project.created', { projectId: project._id, projectName: project.name, status: project.status }).catch(() => {});
     res.status(201).json({ success: true, data: project });
   } catch (err) { next(err); }
 };
@@ -83,6 +85,7 @@ export const updateProject = async (req, res, next) => {
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
     const orgId = req.user.organization._id || req.user.organization;
     await logActivity(orgId, req.user._id, req.user.name, 'updated', 'project', project);
+    triggerWebhooks(orgId, 'project.updated', { projectId: project._id, projectName: project.name, status: project.status }).catch(() => {});
     res.json({ success: true, data: project });
   } catch (err) { next(err); }
 };
