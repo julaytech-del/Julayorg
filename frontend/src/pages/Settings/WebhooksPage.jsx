@@ -100,7 +100,7 @@ function WebhookFormDialog({ open, onClose, webhook, onSave }) {
           onChange={e => setForm(f => ({ ...f, name: e.target.value }))}
           error={!!errors.name} helperText={errors.name}
           placeholder="e.g. Slack Notifications"
-          sx={{ '& .MuiInputBase-input': { fontSize: '0.85rem' } }}
+          sx={{ '& .MuiInputBase-input': { fontSize: '0.85rem', color: '#F1F5F9' }, '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.5)' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' } } }}
         />
 
         <TextField
@@ -109,7 +109,7 @@ function WebhookFormDialog({ open, onClose, webhook, onSave }) {
           error={!!errors.url} helperText={errors.url}
           placeholder="https://example.com/webhook"
           InputProps={{ startAdornment: <InputAdornment position="start"><Http sx={{ fontSize: 16, color: 'text.secondary' }} /></InputAdornment> }}
-          sx={{ '& .MuiInputBase-input': { fontSize: '0.85rem' } }}
+          sx={{ '& .MuiInputBase-input': { fontSize: '0.85rem', color: '#F1F5F9' }, '& .MuiInputLabel-root': { color: 'rgba(255,255,255,0.5)' }, '& .MuiOutlinedInput-root': { '& fieldset': { borderColor: 'rgba(255,255,255,0.15)' } } }}
         />
 
         {/* Secret */}
@@ -188,19 +188,20 @@ function WebhookFormDialog({ open, onClose, webhook, onSave }) {
 }
 
 function DeliveryLogRow({ delivery }) {
-  const statusColor = DELIVERY_STATUS_COLORS[delivery.status] || '#94A3B8';
+  const statusLabel = delivery.success ? 'success' : 'failed';
+  const statusColor = delivery.success ? DELIVERY_STATUS_COLORS.success : DELIVERY_STATUS_COLORS.failed;
   return (
     <TableRow hover sx={{ '& td': { borderBottom: '1px solid rgba(255,255,255,0.04)', fontSize: '0.76rem', py: 1 }, '&:hover': { bgcolor: 'rgba(255,255,255,0.02)' } }}>
       <TableCell>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
           <FiberManualRecord sx={{ fontSize: 8, color: statusColor }} />
-          <Typography variant="caption" sx={{ color: statusColor, fontWeight: 700, fontSize: '0.72rem', textTransform: 'capitalize' }}>{delivery.status}</Typography>
+          <Typography variant="caption" sx={{ color: statusColor, fontWeight: 700, fontSize: '0.72rem', textTransform: 'capitalize' }}>{statusLabel}</Typography>
         </Box>
       </TableCell>
       <TableCell><Chip label={delivery.event} size="small" sx={{ height: 18, fontSize: '0.62rem', bgcolor: 'rgba(99,102,241,0.12)', color: '#818CF8' }} /></TableCell>
-      <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.72rem', color: delivery.responseCode >= 400 ? '#EF4444' : 'text.secondary' }}>{delivery.responseCode || '—'}</TableCell>
-      <TableCell sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>{delivery.duration ? `${delivery.duration}ms` : '—'}</TableCell>
-      <TableCell sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>{delivery.createdAt ? formatDistanceToNow(new Date(delivery.createdAt), { addSuffix: true }) : '—'}</TableCell>
+      <TableCell sx={{ fontFamily: 'monospace', fontSize: '0.72rem', color: delivery.statusCode >= 400 ? '#EF4444' : 'text.secondary' }}>{delivery.statusCode || '—'}</TableCell>
+      <TableCell sx={{ color: 'text.secondary', fontSize: '0.72rem' }}>{delivery.durationMs ? `${delivery.durationMs}ms` : '—'}</TableCell>
+      <TableCell sx={{ color: 'text.secondary', fontSize: '0.7rem' }}>{delivery.triggeredAt ? formatDistanceToNow(new Date(delivery.triggeredAt), { addSuffix: true }) : '—'}</TableCell>
     </TableRow>
   );
 }
@@ -212,6 +213,8 @@ export default function WebhooksPage() {
   const [dialogOpen, setDialogOpen] = useState(false);
   const [editingWebhook, setEditingWebhook] = useState(null);
   const [expandedLogs, setExpandedLogs] = useState({});
+  const [deliveryLogs, setDeliveryLogs] = useState({});
+  const [loadingLogs, setLoadingLogs] = useState({});
   const [testingId, setTestingId] = useState(null);
   const [deletingId, setDeletingId] = useState(null);
 
@@ -250,6 +253,7 @@ export default function WebhooksPage() {
   };
 
   const handleDelete = async (id) => {
+    if (!window.confirm('Delete this webhook? This cannot be undone.')) return;
     setDeletingId(id);
     try {
       await webhooksAPI.delete(id);
@@ -283,7 +287,23 @@ export default function WebhooksPage() {
     }
   };
 
-  const toggleLogs = (id) => setExpandedLogs(prev => ({ ...prev, [id]: !prev[id] }));
+  const fetchDeliveryLog = async (id) => {
+    setLoadingLogs(prev => ({ ...prev, [id]: true }));
+    try {
+      const res = await webhooksAPI.getLog(id);
+      setDeliveryLogs(prev => ({ ...prev, [id]: res?.data || [] }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to load delivery log', severity: 'error' }));
+    } finally {
+      setLoadingLogs(prev => ({ ...prev, [id]: false }));
+    }
+  };
+
+  const toggleLogs = (id) => {
+    const willOpen = !expandedLogs[id];
+    setExpandedLogs(prev => ({ ...prev, [id]: willOpen }));
+    if (willOpen) fetchDeliveryLog(id);
+  };
 
   return (
     <Box>
@@ -420,11 +440,16 @@ export default function WebhooksPage() {
                       <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', letterSpacing: '0.06em', fontSize: '0.64rem' }}>
                         Recent Deliveries
                       </Typography>
-                      <Button size="small" startIcon={<Refresh sx={{ fontSize: 11 }} />} sx={{ fontSize: '0.66rem', color: 'text.disabled', px: 1 }}>
+                      <Button size="small" startIcon={loadingLogs[wh._id] ? <CircularProgress size={10} color="inherit" /> : <Refresh sx={{ fontSize: 11 }} />} onClick={() => fetchDeliveryLog(wh._id)} disabled={loadingLogs[wh._id]} sx={{ fontSize: '0.66rem', color: 'text.disabled', px: 1 }}>
                         Refresh
                       </Button>
                     </Box>
-                    {!wh.deliveries?.length ? (
+                    {loadingLogs[wh._id] ? (
+                      <Box sx={{ px: 2.5, pb: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CircularProgress size={14} sx={{ color: '#6366f1' }} />
+                        <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.72rem', ml: 0.5 }}>Loading deliveries...</Typography>
+                      </Box>
+                    ) : !deliveryLogs[wh._id]?.length ? (
                       <Box sx={{ px: 2.5, pb: 2.5, display: 'flex', alignItems: 'center', gap: 1 }}>
                         <FiberManualRecord sx={{ fontSize: 10, color: 'text.disabled' }} />
                         <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.72rem' }}>No deliveries yet — activate the webhook and trigger an event to see logs here</Typography>
@@ -434,13 +459,13 @@ export default function WebhooksPage() {
                         <Table size="small">
                           <TableHead>
                             <TableRow>
-                              {['Status', 'Event', 'Response', 'Duration', 'Time'].map(h => (
+                              {['Status', 'Event', 'HTTP', 'Duration', 'Time'].map(h => (
                                 <TableCell key={h} sx={{ borderBottom: '1px solid rgba(255,255,255,0.06)', fontSize: '0.66rem', fontWeight: 700, textTransform: 'uppercase', color: 'text.disabled', letterSpacing: '0.05em', py: 1 }}>{h}</TableCell>
                               ))}
                             </TableRow>
                           </TableHead>
                           <TableBody>
-                            {(wh.deliveries || []).map((d, i) => <DeliveryLogRow key={i} delivery={d} />)}
+                            {deliveryLogs[wh._id].map((d, i) => <DeliveryLogRow key={i} delivery={d} />)}
                           </TableBody>
                         </Table>
                       </TableContainer>

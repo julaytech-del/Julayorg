@@ -129,6 +129,7 @@ export const webhooksAPI = {
   update: (id, data) => api.put(`/webhooks/${id}`, data),
   delete: (id) => api.delete(`/webhooks/${id}`),
   test: (id) => api.post(`/webhooks/${id}/test`),
+  getLog: (id) => api.get(`/webhooks/${id}/log`),
 };
 
 // AI
