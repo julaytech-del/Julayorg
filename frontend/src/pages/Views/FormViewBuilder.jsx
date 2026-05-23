@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Box, Typography, Button, Card, CardContent, IconButton, TextField, Select, MenuItem,
   FormControl, InputLabel, Stack, Chip, Drawer, Alert, CircularProgress, Divider,
   Switch, FormControlLabel, Tooltip, Snackbar, Dialog, DialogTitle, DialogContent,
-  DialogActions, Paper, Collapse
+  DialogActions, Paper, Collapse, InputAdornment
 } from '@mui/material';
 import {
   Add, Delete, DragIndicator, ContentCopy, OpenInNew, Settings, Visibility, Code,
@@ -55,6 +55,57 @@ const SENTIMENT_CONFIG = {
 };
 
 const PRIORITY_COLOR = { high: '#EF4444', medium: '#F59E0B', low: '#94A3B8' };
+
+function OptionsEditor({ options, onChange }) {
+  const [draft, setDraft] = useState('');
+  const inputRef = useRef(null);
+
+  const addOption = () => {
+    const trimmed = draft.trim();
+    if (!trimmed || options.includes(trimmed)) return;
+    onChange([...options, trimmed]);
+    setDraft('');
+    inputRef.current?.focus();
+  };
+
+  return (
+    <Box sx={{ mb: 1 }}>
+      <Typography variant="caption" fontWeight={700} color="text.secondary" sx={{ textTransform: 'uppercase', fontSize: '0.65rem', letterSpacing: 0.5, display: 'block', mb: 0.5 }}>
+        Dropdown Options
+      </Typography>
+      <Box sx={{ display: 'flex', gap: 0.75, mb: 0.75 }}>
+        <TextField
+          inputRef={inputRef}
+          value={draft}
+          onChange={e => setDraft(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter') { e.preventDefault(); addOption(); } }}
+          size="small"
+          placeholder="Type an option and press Enter"
+          sx={{ flex: 1 }}
+          inputProps={{ style: { fontSize: '0.8rem' } }}
+        />
+        <Button size="small" variant="outlined" onClick={addOption} disabled={!draft.trim()} sx={{ borderRadius: 1.5, minWidth: 56, fontSize: '0.75rem' }}>
+          Add
+        </Button>
+      </Box>
+      {options.length > 0 ? (
+        <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+          {options.map((opt, i) => (
+            <Chip
+              key={i}
+              label={opt}
+              size="small"
+              onDelete={() => onChange(options.filter((_, j) => j !== i))}
+              sx={{ fontSize: '0.72rem', height: 22, backgroundColor: '#EEF2FF', color: '#4F46E5', '& .MuiChip-deleteIcon': { fontSize: 14 } }}
+            />
+          ))}
+        </Box>
+      ) : (
+        <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.7rem' }}>No options yet — add at least one</Typography>
+      )}
+    </Box>
+  );
+}
 
 export default function FormViewBuilder() {
   const [forms, setForms] = useState([]);
@@ -674,6 +725,12 @@ export default function FormViewBuilder() {
                         </Select>
                       </FormControl>
                     </Box>
+                    {field.type === 'select' && (
+                      <OptionsEditor
+                        options={field.options || []}
+                        onChange={opts => updateField(idx, 'options', opts)}
+                      />
+                    )}
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                       <TextField value={field.placeholder || ''} onChange={e => updateField(idx, 'placeholder', e.target.value)} size="small" placeholder="Placeholder..." sx={{ flex: 1, mr: 1 }} inputProps={{ style: { fontSize: '0.78rem' } }} />
                       <FormControlLabel control={<Switch checked={field.required} onChange={e => updateField(idx, 'required', e.target.checked)} size="small" />} label={<Typography fontSize="0.75rem">Required</Typography>} />
