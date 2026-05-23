@@ -21,17 +21,20 @@ const FIELD_TYPES = [
   { value: 'rating', label: 'Rating (1-5)' },
 ];
 
-const MAP_TO_OPTIONS = [
-  { value: '', label: 'None' },
-  { value: 'title', label: 'Task Title' },
-  { value: 'description', label: 'Task Description' },
-  { value: 'dueDate', label: 'Due Date' },
-  { value: 'priority', label: 'Priority' },
-  { value: 'estimatedHours', label: 'Estimated Hours' },
+const ALL_MAP_TO = [
+  { value: 'title',          label: 'Task Title',       types: ['text','textarea','email','phone','url','select'] },
+  { value: 'description',    label: 'Task Description', types: ['text','textarea','email','phone','url'] },
+  { value: 'dueDate',        label: 'Due Date',         types: ['date'] },
+  { value: 'priority',       label: 'Priority',         types: ['select'] },
+  { value: 'estimatedHours', label: 'Estimated Hours',  types: ['number','rating'] },
+  { value: 'notes',          label: 'Notes',            types: ['text','textarea'] },
 ];
 
+const getMapToOptions = (fieldType) =>
+  ALL_MAP_TO.filter(o => o.types.includes(fieldType));
+
 function newField() {
-  return { id: `field_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, label: 'New Field', type: 'text', required: false, placeholder: '', options: [], mapTo: '' };
+  return { id: `field_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, label: 'New Field', type: 'text', required: false, placeholder: '', options: [], mapTo: 'title' };
 }
 
 export default function FormViewBuilder() {
@@ -132,7 +135,14 @@ export default function FormViewBuilder() {
   const updateField = (idx, key, val) => {
     setActiveForm(f => {
       const fields = [...f.fields];
-      fields[idx] = { ...fields[idx], [key]: val };
+      const updated = { ...fields[idx], [key]: val };
+      if (key === 'type') {
+        const compatible = getMapToOptions(val);
+        if (!compatible.find(o => o.value === updated.mapTo)) {
+          updated.mapTo = compatible[0]?.value || 'title';
+        }
+      }
+      fields[idx] = updated;
       return { ...f, fields };
     });
   };
@@ -304,7 +314,11 @@ export default function FormViewBuilder() {
                       </TableCell>
                       <TableCell sx={{ fontSize: '0.78rem', color: '#64748B', maxWidth: 300 }}>
                         {sub.data
-                          ? Object.entries(sub.data).slice(0, 3).map(([k, v]) => `${k}: ${v}`).join(' · ')
+                          ? Object.entries(sub.data).slice(0, 3).map(([k, v]) => {
+                              const field = submissionsForm?.fields?.find(f => f.id === k);
+                              const label = field?.label || k;
+                              return `${label}: ${v}`;
+                            }).join(' · ')
                           : '—'}
                       </TableCell>
                     </TableRow>
@@ -378,7 +392,7 @@ export default function FormViewBuilder() {
                       <FormControl size="small">
                         <InputLabel>Maps to</InputLabel>
                         <Select value={field.mapTo || ''} label="Maps to" onChange={e => updateField(idx, 'mapTo', e.target.value)}>
-                          {MAP_TO_OPTIONS.map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
+                          {getMapToOptions(field.type).map(o => <MenuItem key={o.value} value={o.value}>{o.label}</MenuItem>)}
                         </Select>
                       </FormControl>
                     </Box>

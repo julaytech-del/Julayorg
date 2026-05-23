@@ -8,7 +8,7 @@ const fieldSchema = new mongoose.Schema({
   required: { type: Boolean, default: false },
   options: [String],
   placeholder: String,
-  mapTo: { type: String, enum: ['title', 'description', 'priority', 'dueDate', 'estimatedHours', 'notes'], default: 'title' }
+  mapTo: { type: String, default: 'title' }
 }, { _id: false });
 
 const formViewSchema = new mongoose.Schema({
