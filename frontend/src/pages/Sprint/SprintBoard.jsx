@@ -6,7 +6,7 @@ import {
   TextField, Drawer, List, ListItem, ListItemButton, ListItemText,
   Divider, Tooltip, Paper, Skeleton, CircularProgress, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
   Add, Close, PlayArrow, CheckCircle, FilterTiltShift,
   FlagOutlined, Speed, Event, Bolt, TrendingDown, FilterList,
