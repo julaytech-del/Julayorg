@@ -184,7 +184,7 @@ function CreateSprintDialog({ open, onClose, onSubmit, loading }) {
       </DialogContent>
       <DialogActions sx={{ px: 3, pb: 2 }}>
         <Button onClick={onClose}>Cancel</Button>
-        <Button variant="contained" onClick={handleSubmit} disabled={!form.name || loading}
+        <Button variant="contained" onClick={handleSubmit} disabled={!form.name || !form.startDate || !form.endDate || loading}
           sx={{ background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
           {loading ? <CircularProgress size={16} color="inherit" /> : 'Create Sprint'}
         </Button>
