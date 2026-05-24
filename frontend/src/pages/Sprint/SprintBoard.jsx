@@ -263,7 +263,7 @@ export default function SprintBoard() {
     if (!selectedProject) return;
     setCreateLoading(true);
     try {
-      const res = await sprintsAPI.create({ ...form, projectId: selectedProject });
+      const res = await sprintsAPI.create({ ...form, project: selectedProject, capacity: form.capacity ? Number(form.capacity) : undefined });
       const newSprint = res?.data || res;
       setSprints(prev => [...prev, newSprint]);
       setSelectedSprint(newSprint._id);
