@@ -35,7 +35,7 @@ export const getSprint = async (req, res) => {
   try {
     const orgId = req.user.organization?._id || req.user.organization;
     const sprint = await Sprint.findOne({ _id: req.params.id, organization: orgId })
-      .populate('tasks');
+      .populate({ path: 'tasks', populate: { path: 'assignees', select: 'name avatar' } });
 
     if (!sprint) return res.status(404).json({ success: false, message: 'Sprint not found' });
 

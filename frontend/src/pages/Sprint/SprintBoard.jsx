@@ -235,15 +235,24 @@ export default function SprintBoard() {
       .finally(() => setLoadingSprints(false));
   }, [selectedProject]);
 
+  const loadSprintTasks = useCallback(async (sprintId) => {
+    if (!sprintId) { setSprintTasks([]); return; }
+    setLoadingTasks(true);
+    try {
+      const res = await sprintsAPI.getOne(sprintId);
+      const tasks = res?.data?.tasks || res?.tasks || [];
+      setSprintTasks(Array.isArray(tasks) ? tasks : []);
+    } catch {
+      setSprintTasks([]);
+    } finally {
+      setLoadingTasks(false);
+    }
+  }, []);
+
   // load tasks for sprint
   useEffect(() => {
-    if (!selectedSprint) { setSprintTasks([]); return; }
-    setLoadingTasks(true);
-    tasksAPI.getAll({ sprintId: selectedSprint })
-      .then(res => setSprintTasks(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []))
-      .catch(() => setSprintTasks([]))
-      .finally(() => setLoadingTasks(false));
-  }, [selectedSprint]);
+    loadSprintTasks(selectedSprint);
+  }, [selectedSprint, loadSprintTasks]);
 
   const currentSprint = sprints.find(s => s._id === selectedSprint);
   const isActive = currentSprint?.status === 'active';
@@ -431,13 +440,7 @@ export default function SprintBoard() {
 
       {/* Dialogs */}
       <CreateSprintDialog open={createOpen} onClose={() => setCreateOpen(false)} onSubmit={handleCreateSprint} loading={createLoading} />
-      <AddToSprintDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} projectId={selectedProject} sprintId={selectedSprint} onAdded={() => {
-        if (selectedSprint) {
-          tasksAPI.getAll({ sprintId: selectedSprint })
-            .then(res => setSprintTasks(Array.isArray(res?.data) ? res.data : Array.isArray(res) ? res : []))
-            .catch(() => {});
-        }
-      }} />
+      <AddToSprintDrawer open={drawerOpen} onClose={() => setDrawerOpen(false)} projectId={selectedProject} sprintId={selectedSprint} onAdded={() => loadSprintTasks(selectedSprint)} />
     </Box>
   );
 }

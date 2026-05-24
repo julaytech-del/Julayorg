@@ -216,6 +216,7 @@ export const myTasksAPI = {
 // Sprints
 export const sprintsAPI = {
   getAll: (params) => api.get('/sprints', { params }),
+  getOne: (id) => api.get(`/sprints/${id}`),
   create: (data) => api.post('/sprints', data),
   update: (id, data) => api.put(`/sprints/${id}`, data),
   delete: (id) => api.delete(`/sprints/${id}`),
