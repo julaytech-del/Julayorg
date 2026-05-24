@@ -59,14 +59,15 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
       ...(isAdmin ? [
         { label: 'Automations',   icon: Bolt,            path: '/dashboard/automations' },
         { label: 'Form Views',    icon: DynamicForm,     path: '/dashboard/views/forms' },
-        { label: 'Webhooks',      icon: Webhook,         path: '/dashboard/settings/webhooks' },
+        // HIDDEN — رجّع الـ hidden features: { label: 'Webhooks', icon: Webhook, path: '/dashboard/settings/webhooks' },
       ] : []),
       { label: 'Sprints',         icon: FilterTiltShift, path: '/dashboard/sprints' },
     ]},
-    { title: 'Apps', items: [
-      { label: 'Workspace Apps',    icon: Apps,             path: '/dashboard/apps' },
-      { label: 'Smart Share',       icon: Share,            path: '/dashboard/apps/share' },
-    ]},
+    // HIDDEN — رجّع الـ hidden features:
+    // { title: 'Apps', items: [
+    //   { label: 'Workspace Apps', icon: Apps,  path: '/dashboard/apps' },
+    //   { label: 'Smart Share',    icon: Share, path: '/dashboard/apps/share' },
+    // ]},
     { title: 'Account', items: [
       { label: 'Settings',          icon: Settings,         path: '/dashboard/settings' },
     ]},
