@@ -394,8 +394,12 @@ export default function SprintBoard() {
     return true;
   });
 
+  const KNOWN_STATUSES = new Set(COLUMNS.map(c => c.key));
   const tasksByStatus = COLUMNS.reduce((acc, col) => {
-    acc[col.key] = visibleTasks.filter(t => (t.status || 'todo') === col.key);
+    acc[col.key] = visibleTasks.filter(t => {
+      const s = t.status || 'todo';
+      return KNOWN_STATUSES.has(s) ? s === col.key : col.key === 'todo';
+    });
     return acc;
   }, {});
 
@@ -463,6 +467,7 @@ export default function SprintBoard() {
 
   const handleCompleteSprint = async () => {
     if (!currentSprint) return;
+    if (!window.confirm(`Complete sprint "${currentSprint.name}"? This cannot be undone.`)) return;
     try {
       await sprintsAPI.update(currentSprint._id, { status: 'completed' });
       setSprints(prev => prev.map(s => s._id === currentSprint._id ? { ...s, status: 'completed' } : s));
