@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import {
   Box, Typography, Card, CardContent, Chip, Avatar, AvatarGroup,
   Button, IconButton, Select, MenuItem, FormControl, InputLabel,
@@ -6,7 +6,6 @@ import {
   TextField, Drawer, List, ListItem, ListItemButton, ListItemText,
   Divider, Tooltip, Paper, Skeleton, CircularProgress, ToggleButtonGroup, ToggleButton,
 } from '@mui/material';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import {
   Add, Close, PlayArrow, CheckCircle, FilterTiltShift,
   FlagOutlined, Speed, Event, Bolt, TrendingDown, FilterList,
@@ -45,91 +44,89 @@ const STATUS_CONFIG = {
 let _projectsCache = null;
 
 // ── task card ─────────────────────────────────────────────────────────────────
-function TaskCard({ task, index, onRemove, onClick }) {
+function TaskCard({ task, onRemove, onClick, onDragStart }) {
   const p = PRIORITY_CONFIG[task.priority] || PRIORITY_CONFIG.medium;
   const assignees = Array.isArray(task.assignees) ? task.assignees : [];
   const isOverdue = task.dueDate && isPast(parseISO(task.dueDate)) && task.status !== 'done';
+  const [dragging, setDragging] = useState(false);
 
   return (
-    <Draggable draggableId={task._id} index={index}>
-      {(provided, snapshot) => (
-        <Card
-          ref={provided.innerRef}
-          {...provided.draggableProps}
-          {...provided.dragHandleProps}
-          elevation={snapshot.isDragging ? 8 : 0}
-          onClick={() => onClick(task)}
-          sx={{
-            mb: 1, cursor: 'grab', borderRadius: 2,
-            border: '1px solid',
-            borderColor: snapshot.isDragging ? p.color : 'rgba(0,0,0,0.08)',
-            borderLeft: `3px solid ${p.color}`,
-            transform: snapshot.isDragging ? 'rotate(2deg)' : 'none',
-            transition: 'box-shadow 0.15s, border-color 0.15s',
-            '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.12)', borderColor: p.color },
-            userSelect: 'none',
-          }}
-        >
-          <CardContent sx={{ py: '10px !important', px: '12px !important' }}>
-            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.75 }}>
-              <Typography variant="body2" fontWeight={600} sx={{ flex: 1, lineHeight: 1.35, mr: 0.5, fontSize: '0.82rem' }}>
-                {task.title}
+    <Card
+      draggable
+      onDragStart={e => { setDragging(true); onDragStart(task._id, task.status); }}
+      onDragEnd={() => setDragging(false)}
+      elevation={dragging ? 8 : 0}
+      onClick={() => onClick(task)}
+      sx={{
+        mb: 1, cursor: 'grab', borderRadius: 2,
+        border: '1px solid',
+        borderColor: dragging ? p.color : 'rgba(0,0,0,0.08)',
+        borderLeft: `3px solid ${p.color}`,
+        opacity: dragging ? 0.5 : 1,
+        transition: 'box-shadow 0.15s, border-color 0.15s, opacity 0.1s',
+        '&:hover': { boxShadow: '0 4px 16px rgba(0,0,0,0.12)', borderColor: p.color },
+        userSelect: 'none',
+      }}
+    >
+      <CardContent sx={{ py: '10px !important', px: '12px !important' }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', mb: 0.75 }}>
+          <Typography variant="body2" fontWeight={600} sx={{ flex: 1, lineHeight: 1.35, mr: 0.5, fontSize: '0.82rem' }}>
+            {task.title}
+          </Typography>
+          <Tooltip title="Remove from sprint">
+            <IconButton
+              size="small"
+              onClick={e => { e.stopPropagation(); onRemove(task._id); }}
+              sx={{ p: 0.25, opacity: 0, '.MuiCard-root:hover &': { opacity: 1 }, transition: 'opacity 0.15s' }}
+            >
+              <Close sx={{ fontSize: 13, color: 'text.disabled' }} />
+            </IconButton>
+          </Tooltip>
+        </Box>
+
+        <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}>
+          <Chip
+            label={p.label}
+            size="small"
+            sx={{ height: 16, fontSize: '0.6rem', fontWeight: 700, bgcolor: `${p.color}15`, color: p.color, border: `1px solid ${p.color}30` }}
+          />
+          {task.estimatedHours != null && (
+            <Chip label={`${task.estimatedHours} pts`} size="small" variant="outlined" sx={{ height: 16, fontSize: '0.6rem' }} />
+          )}
+          {isOverdue && (
+            <Chip label="Overdue" size="small" sx={{ height: 16, fontSize: '0.6rem', bgcolor: '#FEE2E2', color: '#DC2626', fontWeight: 700 }} />
+          )}
+          {task.dueDate && !isOverdue && (
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25, ml: 'auto' }}>
+              <AccessTime sx={{ fontSize: 11, color: 'text.disabled' }} />
+              <Typography variant="caption" sx={{ fontSize: '0.62rem', color: 'text.disabled' }}>
+                {format(parseISO(task.dueDate), 'MMM d')}
               </Typography>
-              <Tooltip title="Remove from sprint">
-                <IconButton
-                  size="small"
-                  onClick={e => { e.stopPropagation(); onRemove(task._id); }}
-                  sx={{ p: 0.25, opacity: 0, '.MuiCard-root:hover &': { opacity: 1 }, transition: 'opacity 0.15s' }}
-                >
-                  <Close sx={{ fontSize: 13, color: 'text.disabled' }} />
-                </IconButton>
-              </Tooltip>
             </Box>
+          )}
+        </Box>
 
-            <Box sx={{ display: 'flex', gap: 0.5, flexWrap: 'wrap', alignItems: 'center' }}>
-              <Chip
-                label={p.label}
-                size="small"
-                sx={{ height: 16, fontSize: '0.6rem', fontWeight: 700, bgcolor: `${p.color}15`, color: p.color, border: `1px solid ${p.color}30` }}
-              />
-              {task.estimatedHours != null && (
-                <Chip label={`${task.estimatedHours} pts`} size="small" variant="outlined" sx={{ height: 16, fontSize: '0.6rem' }} />
-              )}
-              {isOverdue && (
-                <Chip label="Overdue" size="small" sx={{ height: 16, fontSize: '0.6rem', bgcolor: '#FEE2E2', color: '#DC2626', fontWeight: 700 }} />
-              )}
-              {task.dueDate && !isOverdue && (
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.25, ml: 'auto' }}>
-                  <AccessTime sx={{ fontSize: 11, color: 'text.disabled' }} />
-                  <Typography variant="caption" sx={{ fontSize: '0.62rem', color: 'text.disabled' }}>
-                    {format(parseISO(task.dueDate), 'MMM d')}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
-
-            {assignees.length > 0 && (
-              <Box sx={{ mt: 0.75 }}>
-                <AvatarGroup max={4} sx={{ justifyContent: 'flex-end', '& .MuiAvatar-root': { width: 20, height: 20, fontSize: '0.6rem', border: '1.5px solid white' } }}>
-                  {assignees.map((a, i) => (
-                    <Tooltip key={i} title={typeof a === 'object' ? a.name : a}>
-                      <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
-                        {(typeof a === 'object' ? a.name : a)?.[0]?.toUpperCase()}
-                      </Avatar>
-                    </Tooltip>
-                  ))}
-                </AvatarGroup>
-              </Box>
-            )}
-          </CardContent>
-        </Card>
-      )}
-    </Draggable>
+        {assignees.length > 0 && (
+          <Box sx={{ mt: 0.75 }}>
+            <AvatarGroup max={4} sx={{ justifyContent: 'flex-end', '& .MuiAvatar-root': { width: 20, height: 20, fontSize: '0.6rem', border: '1.5px solid white' } }}>
+              {assignees.map((a, i) => (
+                <Tooltip key={i} title={typeof a === 'object' ? a.name : a}>
+                  <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', background: 'linear-gradient(135deg, #6366F1, #8B5CF6)' }}>
+                    {(typeof a === 'object' ? a.name : a)?.[0]?.toUpperCase()}
+                  </Avatar>
+                </Tooltip>
+              ))}
+            </AvatarGroup>
+          </Box>
+        )}
+      </CardContent>
+    </Card>
   );
 }
 
 // ── kanban column ─────────────────────────────────────────────────────────────
-function KanbanColumn({ column, tasks, onRemoveTask, onTaskClick }) {
+function KanbanColumn({ column, tasks, onRemoveTask, onTaskClick, onDragStart, onDrop }) {
+  const [over, setOver] = useState(false);
   const pts = tasks.reduce((s, t) => s + (t.estimatedHours || 0), 0);
   return (
     <Box sx={{ flex: 1, minWidth: 210, maxWidth: 300 }}>
@@ -142,31 +139,27 @@ function KanbanColumn({ column, tasks, onRemoveTask, onTaskClick }) {
         {pts > 0 && <Chip label={`${pts}pt`} size="small" sx={{ height: 18, fontSize: '0.6rem', color: 'text.disabled' }} />}
       </Box>
 
-      <Droppable droppableId={column.key}>
-        {(provided, snapshot) => (
-          <Box
-            ref={provided.innerRef}
-            {...provided.droppableProps}
-            sx={{
-              minHeight: 420, borderRadius: 2, p: 1,
-              border: '2px dashed',
-              borderColor: snapshot.isDraggingOver ? column.color : 'rgba(0,0,0,0.06)',
-              bgcolor: snapshot.isDraggingOver ? `${column.color}08` : column.bg,
-              transition: 'all 0.15s',
-            }}
-          >
-            {tasks.length === 0 && !snapshot.isDraggingOver && (
-              <Box sx={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.72rem' }}>Drop tasks here</Typography>
-              </Box>
-            )}
-            {tasks.map((t, i) => (
-              <TaskCard key={t._id} task={t} index={i} onRemove={onRemoveTask} onClick={onTaskClick} />
-            ))}
-            {provided.placeholder}
+      <Box
+        onDragOver={e => { e.preventDefault(); setOver(true); }}
+        onDragLeave={() => setOver(false)}
+        onDrop={e => { e.preventDefault(); setOver(false); onDrop(column.key); }}
+        sx={{
+          minHeight: 420, borderRadius: 2, p: 1,
+          border: '2px dashed',
+          borderColor: over ? column.color : 'rgba(0,0,0,0.06)',
+          bgcolor: over ? `${column.color}08` : column.bg,
+          transition: 'all 0.15s',
+        }}
+      >
+        {tasks.length === 0 && !over && (
+          <Box sx={{ height: 80, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.72rem' }}>Drop tasks here</Typography>
           </Box>
         )}
-      </Droppable>
+        {tasks.map(t => (
+          <TaskCard key={t._id} task={t} onRemove={onRemoveTask} onClick={onTaskClick} onDragStart={onDragStart} />
+        ))}
+      </Box>
     </Box>
   );
 }
@@ -344,6 +337,7 @@ export default function SprintBoard() {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
   const [updatingStatus, setUpdatingStatus] = useState(null);
+  const dragRef = useRef(null); // { taskId, sourceStatus }
 
   // load projects
   useEffect(() => {
@@ -419,22 +413,24 @@ export default function SprintBoard() {
     sprintTasks.flatMap(t => (t.assignees || []).map(a => [typeof a === 'object' ? a._id : a, a]))
   ).values()];
 
-  // drag & drop
-  const onDragEnd = async (result) => {
-    const { destination, source, draggableId } = result;
-    if (!destination || destination.droppableId === source.droppableId) return;
+  // drag & drop (native HTML5)
+  const handleDragStart = (taskId, sourceStatus) => {
+    dragRef.current = { taskId, sourceStatus };
+  };
 
-    const newStatus = destination.droppableId;
-    setUpdatingStatus(draggableId);
+  const handleDrop = async (targetStatus) => {
+    const drag = dragRef.current;
+    dragRef.current = null;
+    if (!drag || drag.sourceStatus === targetStatus) return;
 
-    // optimistic update
-    setSprintTasks(prev => prev.map(t => t._id === draggableId ? { ...t, status: newStatus } : t));
+    const { taskId, sourceStatus } = drag;
+    setUpdatingStatus(taskId);
+    setSprintTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: targetStatus } : t));
 
     try {
-      await tasksAPI.updateStatus(draggableId, newStatus);
+      await tasksAPI.updateStatus(taskId, targetStatus);
     } catch {
-      // rollback
-      setSprintTasks(prev => prev.map(t => t._id === draggableId ? { ...t, status: source.droppableId } : t));
+      setSprintTasks(prev => prev.map(t => t._id === taskId ? { ...t, status: sourceStatus } : t));
       dispatch(showSnackbar({ message: 'Failed to update task status', severity: 'error' }));
     } finally {
       setUpdatingStatus(null);
@@ -661,19 +657,19 @@ export default function SprintBoard() {
           </Button>
         </Box>
       ) : (
-        <DragDropContext onDragEnd={onDragEnd}>
-          <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2, alignItems: 'flex-start' }}>
-            {COLUMNS.map(col => (
-              <KanbanColumn
-                key={col.key}
-                column={col}
-                tasks={tasksByStatus[col.key] || []}
-                onRemoveTask={handleRemoveTask}
-                onTaskClick={handleTaskClick}
-              />
-            ))}
-          </Box>
-        </DragDropContext>
+        <Box sx={{ display: 'flex', gap: 2, overflowX: 'auto', pb: 2, alignItems: 'flex-start' }}>
+          {COLUMNS.map(col => (
+            <KanbanColumn
+              key={col.key}
+              column={col}
+              tasks={tasksByStatus[col.key] || []}
+              onRemoveTask={handleRemoveTask}
+              onTaskClick={handleTaskClick}
+              onDragStart={handleDragStart}
+              onDrop={handleDrop}
+            />
+          ))}
+        </Box>
       )}
 
       {updatingStatus && (
