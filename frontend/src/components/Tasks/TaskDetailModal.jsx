@@ -203,7 +203,10 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
 
   const handleComment = async () => {
     if (!comment.trim()) return;
-    await dispatch(addComment({ id: task._id, content: comment }));
+    const result = await dispatch(addComment({ id: task._id, content: comment }));
+    if (result.payload?.comments) {
+      setLocalTask(p => ({ ...p, comments: result.payload.comments }));
+    }
     setComment('');
     onUpdate?.();
   };

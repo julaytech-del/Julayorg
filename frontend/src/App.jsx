@@ -267,6 +267,8 @@ export default function App() {
           } />
           <Route path="ai-studio"   element={<Navigate to="/dashboard/ai"          replace />} />
           <Route path="form-views"  element={<Navigate to="/dashboard/views/forms" replace />} />
+          <Route path="tasks"       element={<Navigate to="/dashboard/execution-board" replace />} />
+          <Route path="forms"       element={<Navigate to="/dashboard/views/forms"     replace />} />
         </Route>
 
         <Route path="*" element={<NotFound />} />

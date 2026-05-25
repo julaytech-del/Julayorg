@@ -33,9 +33,9 @@ const ACTION_MAP = {
 };
 
 // ── Stat Card ─────────────────────────────────────────────────────────────────
-function StatCard({ title, value, subtitle, icon, color, loading, badge }) {
+function StatCard({ title, value, subtitle, icon, color, loading, badge, onClick }) {
   return (
-    <Card sx={{ height:'100%', border:'1px solid #F1F5F9', boxShadow:'0 1px 4px rgba(0,0,0,0.04)' }}>
+    <Card onClick={onClick} sx={{ height:'100%', border:'1px solid #F1F5F9', boxShadow:'0 1px 4px rgba(0,0,0,0.04)', ...(onClick && { cursor:'pointer', '&:hover':{ boxShadow:'0 4px 16px rgba(0,0,0,0.1)', transform:'translateY(-1px)', transition:'all 0.15s' } }) }}>
       <CardContent sx={{ p:2.5 }}>
         <Box sx={{ display:'flex', justifyContent:'space-between', alignItems:'flex-start' }}>
           <Box sx={{ flex:1 }}>
@@ -276,24 +276,28 @@ export default function Dashboard() {
           <StatCard title={t('dashboard.stats.totalProjects')} value={stats?.projects.total}
             subtitle={t('dashboard.stats.activeCompleted', { active:stats?.projects.active||0, completed:stats?.projects.completed||0 })}
             icon={<TrendingUp/>} color={accent} loading={loading}
-            badge={stats?.projects.active ? t('dashboard.stats.running',{ count:stats.projects.active }) : null}/>
+            badge={stats?.projects.active ? t('dashboard.stats.running',{ count:stats.projects.active }) : null}
+            onClick={() => navigate('/dashboard/projects')}/>
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard title={t('dashboard.stats.activeTasks')} value={stats?.tasks.inProgress}
             subtitle={t('dashboard.stats.overdueTotal', { overdue:stats?.tasks.overdue||0, total:stats?.tasks.total||0 })}
             icon={<Assignment/>} color="#0EA5E9" loading={loading}
-            badge={stats?.tasks.overdue > 0 ? t('dashboard.stats.overdueBadge',{ count:stats.tasks.overdue }) : null}/>
+            badge={stats?.tasks.overdue > 0 ? t('dashboard.stats.overdueBadge',{ count:stats.tasks.overdue }) : null}
+            onClick={() => navigate('/dashboard/execution-board')}/>
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard title={t('dashboard.stats.teamMembers')} value={stats?.team.total}
             subtitle={t('dashboard.stats.activeToday',{ count:stats?.team.active||0 })}
-            icon={<Group/>} color="#10B981" loading={loading}/>
+            icon={<Group/>} color="#10B981" loading={loading}
+            onClick={() => navigate('/dashboard/settings')}/>
         </Grid>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard title={t('dashboard.stats.completionRate')} value={stats ? `${stats.completionRate}%` : null}
             subtitle={t('dashboard.stats.tasksCompleted',{ count:stats?.tasks.completed||0 })}
             icon={<CheckCircle/>} color="#F59E0B" loading={loading}
-            badge={stats?.completionRate >= 70 ? t('dashboard.stats.onTrack') : stats?.completionRate > 0 ? t('dashboard.stats.needsAttention') : null}/>
+            badge={stats?.completionRate >= 70 ? t('dashboard.stats.onTrack') : stats?.completionRate > 0 ? t('dashboard.stats.needsAttention') : null}
+            onClick={() => navigate('/dashboard/reports')}/>
         </Grid>
       </Grid>
 

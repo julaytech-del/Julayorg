@@ -194,7 +194,7 @@ export default function ReportsPage() {
     if (!reportData) return;
     setAILoading(true);
     try {
-      const res = await reportsAPI.getAINarrative({ type: reportType, data: reportData });
+      const res = await reportsAPI.getAINarrative({ reportType, reportData });
       setAINarrative(res?.data?.narrative || res?.narrative || 'AI narrative not available.');
     } catch {
       dispatch(showSnackbar({ message: 'Failed to generate AI narrative', severity: 'error' }));

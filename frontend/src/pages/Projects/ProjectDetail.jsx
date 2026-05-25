@@ -23,7 +23,7 @@ export default function ProjectDetail() {
   const { t } = useTranslation();
   const { currentProject, goals, loading } = useSelector(s => s.projects);
   const { tasks } = useSelector(s => s.tasks);
-  const { loading: aiLoading, standupReport, performanceReport } = useSelector(s => s.ai);
+  const { loading: aiLoading, standupReport, performanceReport, error: aiError } = useSelector(s => s.ai);
   const [tab, setTab] = useState(0);
   const [selectedTask, setSelectedTask] = useState(null);
   const [aiDialog, setAiDialog] = useState(null);
@@ -560,7 +560,7 @@ export default function ProjectDetail() {
           <AutoAwesome color="primary" /> {t('projectDetail.standup')}
         </DialogTitle>
         <DialogContent>
-          {aiLoading ? <LoadingSpinner message={t('common.loading')} /> : standupReport && (
+          {aiLoading ? <LoadingSpinner message={t('common.loading')} /> : standupReport ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ p: 2, backgroundColor: standupReport.overallHealth === 'green' ? '#ECFDF5' : standupReport.overallHealth === 'yellow' ? '#FFFBEB' : '#FEF2F2', borderRadius: 2 }}>
                 <Typography variant="subtitle2" fontWeight={700}>Health: {standupReport.overallHealth?.toUpperCase()}</Typography>
@@ -570,6 +570,8 @@ export default function ProjectDetail() {
               {standupReport.blockers?.length > 0 && <Box><Typography variant="subtitle2" fontWeight={700} color="error.main" mb={1}>{t('projectDetail.blocked')}</Typography>{standupReport.blockers.map((b, i) => <Typography key={i} variant="body2">• {b.issue}: {b.suggestion}</Typography>)}</Box>}
               {standupReport.aiInsights?.length > 0 && <Box><Typography variant="subtitle2" fontWeight={700} mb={1}>{t('ai.hero.title')}</Typography>{standupReport.aiInsights.map((ins, i) => <Typography key={i} variant="body2">💡 {ins}</Typography>)}</Box>}
             </Box>
+          ) : (
+            <Typography color="error.main" sx={{ py: 2 }}>{aiError || 'Could not generate standup report. Please try again.'}</Typography>
           )}
         </DialogContent>
         <DialogActions><Button onClick={() => setAiDialog(null)}>{t('common.close')}</Button></DialogActions>
@@ -580,7 +582,7 @@ export default function ProjectDetail() {
           <AutoAwesome color="primary" /> {t('projectDetail.performance')}
         </DialogTitle>
         <DialogContent>
-          {aiLoading ? <LoadingSpinner message={t('common.loading')} /> : performanceReport && (
+          {aiLoading ? <LoadingSpinner message={t('common.loading')} /> : performanceReport ? (
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
               <Box sx={{ display: 'flex', gap: 2 }}>
                 <Box sx={{ textAlign: 'center', p: 2, backgroundColor: 'grey.50', borderRadius: 2, flex: 1 }}>
@@ -595,6 +597,8 @@ export default function ProjectDetail() {
               {performanceReport.recommendations?.length > 0 && <Box><Typography variant="subtitle2" fontWeight={700} mb={1}>{t('ai.tools.performance.analyze')}</Typography>{performanceReport.recommendations.map((r, i) => <Typography key={i} variant="body2">• {r}</Typography>)}</Box>}
               {performanceReport.insights?.length > 0 && <Box><Typography variant="subtitle2" fontWeight={700} mb={1}>{t('ai.hero.title')}</Typography>{performanceReport.insights.map((r, i) => <Typography key={i} variant="body2">💡 {r}</Typography>)}</Box>}
             </Box>
+          ) : (
+            <Typography color="error.main" sx={{ py: 2 }}>{aiError || 'Could not analyze performance. Please try again.'}</Typography>
           )}
         </DialogContent>
         <DialogActions><Button onClick={() => setAiDialog(null)}>{t('common.close')}</Button></DialogActions>

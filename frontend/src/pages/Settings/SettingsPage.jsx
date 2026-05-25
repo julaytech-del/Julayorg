@@ -618,7 +618,7 @@ function TwoFactorCard() {
     setLoading(true);
     try {
       const res = await twoFactorAPI.setup();
-      setQrCode(res.data.qrCode);
+      setQrCode(res.qrCode || res.data?.qrCode);
       setStep('setup');
     } catch { dispatch(showSnackbar({ message: 'Setup failed', severity: 'error' })); }
     finally { setLoading(false); }

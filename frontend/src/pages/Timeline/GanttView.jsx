@@ -159,9 +159,11 @@ export default function GanttView() {
   const units = zoomCfg.unitFn(paddedStart, paddedEnd);
 
   const getBarPos = useCallback((task) => {
-    if (!task.startDate || !task.dueDate) return null;
-    const start = differenceInDays(new Date(task.startDate), paddedStart);
-    const duration = Math.max(differenceInDays(new Date(task.dueDate), new Date(task.startDate)), 1);
+    if (!task.dueDate) return null;
+    const effectiveStart = task.startDate || task.createdAt;
+    if (!effectiveStart) return null;
+    const start = differenceInDays(new Date(effectiveStart), paddedStart);
+    const duration = Math.max(differenceInDays(new Date(task.dueDate), new Date(effectiveStart)), 1);
     return { left: start * dayWidth, width: duration * dayWidth };
   }, [paddedStart, dayWidth]);
 
