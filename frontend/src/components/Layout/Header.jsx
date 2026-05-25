@@ -8,7 +8,7 @@ import {
 import {
   Search, AutoAwesome, Settings, Logout, Person, KeyboardArrowDown,
   DarkMode, LightMode, Add, Close, CalendarToday, LocalOffer,
-  Task, FolderOpen,
+  Task, FolderOpen, Menu as MenuIcon,
 } from '@mui/icons-material';
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
@@ -325,7 +325,7 @@ function QuickAddProjectModal({ open, onClose }) {
 }
 
 // ── Header ────────────────────────────────────────────────────────────────────
-export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
+export default function Header({ sidebarWidth = 268, onOpenCommandPalette, onMenuClick }) {
   const dispatch    = useDispatch();
   const navigate    = useNavigate();
   const location    = useLocation();
@@ -366,6 +366,9 @@ export default function Header({ sidebarWidth = 268, onOpenCommandPalette }) {
         zIndex: th => th.zIndex.drawer - 1,
       }}>
         <Toolbar sx={{ gap:1.5, px:{ xs:2, sm:3 }, minHeight:'60px !important' }}>
+          <IconButton onClick={onMenuClick} sx={{ display:{ xs:'flex', md:'none' }, mr:0.5 }} size="small">
+            <MenuIcon />
+          </IconButton>
           <Box sx={{ display:{ xs:'none', md:'block' }, mr:0.5 }}>
             <Typography variant="subtitle1" sx={{ fontWeight:700, color:'text.primary', lineHeight:1.2, fontSize:'0.95rem' }}>{pageInfo?.title}</Typography>
             <Typography variant="caption" sx={{ color:'text.secondary', fontSize:'0.72rem' }}>{pageInfo?.subtitle}</Typography>

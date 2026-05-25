@@ -571,7 +571,14 @@ export default function ProjectDetail() {
               {standupReport.aiInsights?.length > 0 && <Box><Typography variant="subtitle2" fontWeight={700} mb={1}>{t('ai.hero.title')}</Typography>{standupReport.aiInsights.map((ins, i) => <Typography key={i} variant="body2">💡 {ins}</Typography>)}</Box>}
             </Box>
           ) : (
-            <Typography color="error.main" sx={{ py: 2 }}>{aiError || 'Could not generate standup report. Please try again.'}</Typography>
+            <Box sx={{ py: 3, textAlign: 'center' }}>
+              <Typography color="error.main" sx={{ mb: 2 }}>{aiError || 'Could not generate standup report. Please try again.'}</Typography>
+              {aiError?.toLowerCase().includes('paid') && (
+                <Button variant="contained" onClick={() => navigate('/pricing')} sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2, textTransform: 'none', fontWeight: 700 }}>
+                  Upgrade to unlock AI ✨
+                </Button>
+              )}
+            </Box>
           )}
         </DialogContent>
         <DialogActions><Button onClick={() => setAiDialog(null)}>{t('common.close')}</Button></DialogActions>
@@ -598,7 +605,14 @@ export default function ProjectDetail() {
               {performanceReport.insights?.length > 0 && <Box><Typography variant="subtitle2" fontWeight={700} mb={1}>{t('ai.hero.title')}</Typography>{performanceReport.insights.map((r, i) => <Typography key={i} variant="body2">💡 {r}</Typography>)}</Box>}
             </Box>
           ) : (
-            <Typography color="error.main" sx={{ py: 2 }}>{aiError || 'Could not analyze performance. Please try again.'}</Typography>
+            <Box sx={{ py: 3, textAlign: 'center' }}>
+              <Typography color="error.main" sx={{ mb: 2 }}>{aiError || 'Could not analyze performance. Please try again.'}</Typography>
+              {aiError?.toLowerCase().includes('paid') && (
+                <Button variant="contained" onClick={() => navigate('/pricing')} sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2, textTransform: 'none', fontWeight: 700 }}>
+                  Upgrade to unlock AI ✨
+                </Button>
+              )}
+            </Box>
           )}
         </DialogContent>
         <DialogActions><Button onClick={() => setAiDialog(null)}>{t('common.close')}</Button></DialogActions>

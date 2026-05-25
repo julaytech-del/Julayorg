@@ -378,6 +378,9 @@ export default function GanttView() {
                 <Typography variant="caption" fontWeight={500} noWrap sx={{ flex: 1, fontSize: '0.78rem', color: task._isCritical ? '#FCA5A5' : 'text.primary' }}>
                   {task.title}
                 </Typography>
+                {!task.dueDate && (
+                  <Typography variant="caption" sx={{ fontSize: '0.62rem', color: 'rgba(255,255,255,0.25)', flexShrink: 0 }}>no date</Typography>
+                )}
                 {task.assignees?.[0] && (
                   <Avatar sx={{ width: 20, height: 20, fontSize: '0.6rem', bgcolor: '#6366f1', flexShrink: 0 }}>
                     {task.assignees[0].name?.[0] || '?'}
