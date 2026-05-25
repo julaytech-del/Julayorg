@@ -72,6 +72,7 @@ const SettingsPage        = React.lazy(() => import('./pages/Settings/SettingsPa
 const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTrackingPage.jsx'));
 const ExecutionBoard      = React.lazy(() => import('./pages/ExecutionBoard/ExecutionBoard.jsx'));
 const NotificationsPage   = React.lazy(() => import('./pages/Notifications/NotificationsPage.jsx'));
+const OwnerAdminPanel     = React.lazy(() => import('./pages/OwnerAdmin/OwnerAdminPanel.jsx'));
 
 // ─── Page loading fallback ────────────────────────────────────────────────────
 function PageLoader() {
@@ -270,6 +271,11 @@ export default function App() {
           <Route path="tasks"       element={<Navigate to="/dashboard/execution-board" replace />} />
           <Route path="forms"       element={<Navigate to="/dashboard/views/forms"     replace />} />
         </Route>
+
+        {/* Owner-only control panel — private URL */}
+        <Route path="julay-owner-9x7k" element={
+          <Suspense fallback={<PageLoader />}><OwnerAdminPanel /></Suspense>
+        } />
 
         <Route path="*" element={<NotFound />} />
       </Routes>

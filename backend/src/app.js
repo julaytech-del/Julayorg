@@ -35,6 +35,7 @@ import integrationsRoutes from './routes/integrations.routes.js';
 import analyticsRoutes from './routes/analytics.routes.js';
 import organizationRoutes from './routes/organization.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
+import ownerAdminRoutes from './routes/ownerAdmin.routes.js';
 import { errorHandler, notFound } from './middleware/error.middleware.js';
 
 const app = express();
@@ -85,6 +86,7 @@ app.use('/api/integrations', integrationsRoutes);
 app.use('/api/analytics', analyticsRoutes);
 app.use('/api/organization', organizationRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/owner', ownerAdminRoutes);
 const UPLOADS_SERVE_DIR = process.env.UPLOADS_DIR || path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(UPLOADS_SERVE_DIR));
 
