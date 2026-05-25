@@ -137,10 +137,11 @@ export default function GanttView() {
 
   const allTasks = localTasks.length ? localTasks : tasks.map(t => ({ ...t, _isCritical: false }));
 
+  const taskStartDates = allTasks.map(t => new Date(t.startDate || t.createdAt)).filter(d => !isNaN(d));
   const projectStart = currentProject?.startDate
     ? new Date(currentProject.startDate)
-    : allTasks.length
-      ? new Date(Math.min(...allTasks.filter(t => t.startDate).map(t => new Date(t.startDate))))
+    : taskStartDates.length
+      ? new Date(Math.min(...taskStartDates))
       : addDays(today, -7);
 
   const projectEnd = currentProject?.endDate
@@ -177,7 +178,8 @@ export default function GanttView() {
   const handleDragStart = (e, task) => {
     const pos = getBarPos(task);
     if (!pos) return;
-    setDragging({ task, startX: e.clientX, origLeft: pos.left, origDays: differenceInDays(new Date(task.startDate), paddedStart) });
+    const effectiveStart = task.startDate || task.createdAt;
+    setDragging({ task, startX: e.clientX, origLeft: pos.left, origDays: differenceInDays(new Date(effectiveStart), paddedStart) });
     e.preventDefault();
   };
 
@@ -477,7 +479,7 @@ export default function GanttView() {
                     }}
                   >
                     {pos && (
-                      <Tooltip title={`${task.title} · ${task.status?.replace('_', ' ')} · ${format(new Date(task.startDate), 'MMM d')} → ${format(new Date(task.dueDate), 'MMM d')}`} placement="top">
+                      <Tooltip title={`${task.title} · ${task.status?.replace('_', ' ')} · ${format(new Date(task.startDate || task.createdAt), 'MMM d')} → ${format(new Date(task.dueDate), 'MMM d')}`} placement="top">
                         <Box
                           onMouseDown={(e) => handleDragStart(e, task)}
                           sx={{
