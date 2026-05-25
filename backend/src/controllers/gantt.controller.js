@@ -11,7 +11,7 @@ export const getGanttData = async (req, res, next) => {
     const tasks = await Task.find({ project: id })
       .populate('assignees', 'name avatar')
       .populate('dependencies', 'title startDate dueDate status')
-      .select('title status priority startDate dueDate estimatedHours assignees dependencies goal type');
+      .select('title status priority startDate dueDate estimatedHours assignees dependencies goal type createdAt');
 
     const { criticalTaskIds, taskFloat } = computeCriticalPath(tasks);
     const project = await Project.findById(id).select('ganttBaseline name startDate endDate');
