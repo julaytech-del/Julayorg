@@ -1,21 +1,36 @@
 import React, { useState, useEffect, useCallback } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { Navigate } from 'react-router-dom';
 import {
   Box, Typography, Card, CardContent, Grid, Chip, Avatar, Table, TableBody,
   TableCell, TableHead, TableRow, TablePagination, TextField, Select, MenuItem,
   FormControl, InputLabel, IconButton, Button, Tooltip, CircularProgress,
-  LinearProgress, Divider, Paper, Tab, Tabs, Dialog, DialogTitle,
-  DialogContent, DialogActions,
+  LinearProgress, Paper, Tab, Tabs, Dialog, DialogTitle,
+  DialogContent, DialogActions, Alert,
 } from '@mui/material';
 import {
   People, Business, AttachMoney, TrendingUp, Search, Refresh,
-  Delete, Edit, Shield, CheckCircle, Cancel, Star,
+  Delete, Shield, CheckCircle, Cancel, Star, Lock,
 } from '@mui/icons-material';
-import { LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, BarChart, Bar, Cell } from 'recharts';
+import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { format } from 'date-fns';
 import api from '../../services/api.js';
+import { showSnackbar } from '../../store/slices/uiSlice.js';
 
+const OWNER_EMAIL = 'assimohammad489@gmail.com';
 const PLAN_COLOR = { free: '#94A3B8', starter: '#6366F1', professional: '#8B5CF6', business: '#F59E0B', enterprise: '#10B981' };
 const PLAN_PRICE = { free: 0, starter: 19, professional: 59, business: 99, enterprise: 299 };
+const MONTH_NAMES = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+
+function buildGrowthSkeleton() {
+  const now = new Date();
+  const months = [];
+  for (let i = 5; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ month: MONTH_NAMES[d.getMonth()], year: d.getFullYear(), monthNum: d.getMonth() + 1, signups: 0 });
+  }
+  return months;
+}
 
 function StatCard({ icon: Icon, label, value, sub, color }) {
   return (
@@ -42,28 +57,51 @@ function PlanBadge({ plan }) {
   );
 }
 
+function AccessDenied() {
+  return (
+    <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100vh', gap: 2 }}>
+      <Lock sx={{ fontSize: 48, color: 'error.main' }} />
+      <Typography variant="h6" fontWeight={700}>Access Denied</Typography>
+      <Typography color="text.secondary" variant="body2">This area is restricted to platform owners only.</Typography>
+      <Button variant="contained" href="/dashboard" sx={{ textTransform: 'none', borderRadius: 2, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)' }}>
+        Back to Dashboard
+      </Button>
+    </Box>
+  );
+}
+
 export default function OwnerAdminPanel() {
+  const dispatch = useDispatch();
+  const { token, initialized, user } = useSelector(s => s.auth);
+
   const [tab, setTab] = useState(0);
   const [stats, setStats] = useState(null);
   const [orgs, setOrgs] = useState([]);
   const [users, setUsers] = useState([]);
   const [growth, setGrowth] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [orgTotal, setOrgTotal] = useState(0);
   const [userTotal, setUserTotal] = useState(0);
   const [orgPage, setOrgPage] = useState(0);
   const [userPage, setUserPage] = useState(0);
   const [orgPlan, setOrgPlan] = useState('all');
   const [search, setSearch] = useState('');
-  const [planDialog, setPlanDialog] = useState(null); // { orgId, orgName, currentPlan }
+  const [planDialog, setPlanDialog] = useState(null);
   const [newPlan, setNewPlan] = useState('');
   const [saving, setSaving] = useState(false);
+  const [deleteDialog, setDeleteDialog] = useState(null);
+  const [deleting, setDeleting] = useState(false);
+
+  const isOwner = initialized && token && user?.email === OWNER_EMAIL;
 
   const fetchStats = useCallback(async () => {
     try {
       const res = await api.get('/owner/stats');
       setStats(res.data);
-    } catch { /* handled by auth interceptor */ }
+    } catch (err) {
+      if (err?.response?.status === 403) setAccessDenied(true);
+    }
   }, []);
 
   const fetchOrgs = useCallback(async () => {
@@ -85,17 +123,22 @@ export default function OwnerAdminPanel() {
   const fetchGrowth = useCallback(async () => {
     try {
       const res = await api.get('/owner/growth');
-      const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
-      setGrowth((res.data || []).map(d => ({ month: months[d._id.month - 1], signups: d.count })));
-    } catch { setGrowth([]); }
+      const skeleton = buildGrowthSkeleton();
+      (res.data || []).forEach(d => {
+        const slot = skeleton.find(s => s.monthNum === d._id.month && s.year === d._id.year);
+        if (slot) slot.signups = d.count;
+      });
+      setGrowth(skeleton);
+    } catch { setGrowth(buildGrowthSkeleton()); }
   }, []);
 
   useEffect(() => {
+    if (!isOwner) return;
     Promise.all([fetchStats(), fetchGrowth()]).finally(() => setLoading(false));
-  }, []);
+  }, [isOwner]);
 
-  useEffect(() => { fetchOrgs(); }, [fetchOrgs]);
-  useEffect(() => { fetchUsers(); }, [fetchUsers]);
+  useEffect(() => { if (isOwner) fetchOrgs(); }, [fetchOrgs, isOwner]);
+  useEffect(() => { if (isOwner) fetchUsers(); }, [fetchUsers, isOwner]);
 
   const handleChangePlan = async () => {
     if (!planDialog || !newPlan) return;
@@ -105,18 +148,36 @@ export default function OwnerAdminPanel() {
       setPlanDialog(null);
       fetchOrgs();
       fetchStats();
-    } catch { }
-    finally { setSaving(false); }
+      dispatch(showSnackbar({ message: `Plan updated to "${newPlan}" for ${planDialog.orgName}`, severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to update plan. Please try again.', severity: 'error' }));
+    } finally { setSaving(false); }
   };
 
-  const handleDeleteUser = async (userId, userName) => {
-    if (!window.confirm(`Delete user "${userName}"? This cannot be undone.`)) return;
+  const handleDeleteConfirmed = async () => {
+    if (!deleteDialog) return;
+    setDeleting(true);
     try {
-      await api.delete(`/owner/users/${userId}`);
+      await api.delete(`/owner/users/${deleteDialog.userId}`);
+      setDeleteDialog(null);
       fetchUsers();
       fetchStats();
-    } catch { }
+      dispatch(showSnackbar({ message: `User "${deleteDialog.userName}" has been deleted.`, severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to delete user. Please try again.', severity: 'error' }));
+    } finally { setDeleting(false); }
   };
+
+  // ── Auth guards (after all hooks) ─────────────────────────────────────────
+  if (!initialized) return (
+    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 2 }}>
+      <CircularProgress sx={{ color: '#6366F1' }} />
+    </Box>
+  );
+
+  if (!token) return <Navigate to="/login" replace />;
+
+  if (user?.email !== OWNER_EMAIL || accessDenied) return <AccessDenied />;
 
   if (loading) return (
     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: '100vh', flexDirection: 'column', gap: 2 }}>
@@ -154,13 +215,13 @@ export default function OwnerAdminPanel() {
           <StatCard icon={Business} label="Total Organizations" value={stats?.totalOrgs} sub={`${stats?.paidOrgs} paid · ${stats?.freeOrgs} free`} color="#6366F1" />
         </Grid>
         <Grid item xs={6} md={3}>
-          <StatCard icon={People} label="Total Users" value={stats?.totalUsers} sub={`across all orgs`} color="#8B5CF6" />
+          <StatCard icon={People} label="Total Users" value={stats?.totalUsers} sub="across all orgs" color="#8B5CF6" />
         </Grid>
         <Grid item xs={6} md={3}>
           <StatCard icon={AttachMoney} label="MRR (Est.)" value={`$${mrr.toLocaleString()}`} sub={`ARR: $${arr.toLocaleString()}`} color="#10B981" />
         </Grid>
         <Grid item xs={6} md={3}>
-          <StatCard icon={TrendingUp} label="Conversion Rate" value={`${stats?.conversionRate || 0}%`} sub={`free → paid`} color="#F59E0B" />
+          <StatCard icon={TrendingUp} label="Conversion Rate" value={`${stats?.conversionRate || 0}%`} sub="free → paid" color="#F59E0B" />
         </Grid>
       </Grid>
 
@@ -183,6 +244,9 @@ export default function OwnerAdminPanel() {
                     sx={{ height: 6, borderRadius: 3, bgcolor: `${PLAN_COLOR[p._id]}18`, '& .MuiLinearProgress-bar': { bgcolor: PLAN_COLOR[p._id] || '#94A3B8', borderRadius: 3 } }} />
                 </Box>
               ))}
+              {!stats?.planBreakdown?.length && (
+                <Typography variant="caption" color="text.disabled">No data yet</Typography>
+              )}
             </CardContent>
           </Card>
         </Grid>
@@ -190,20 +254,16 @@ export default function OwnerAdminPanel() {
           <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }}>
             <CardContent sx={{ p: 2.5 }}>
               <Typography variant="subtitle2" fontWeight={700} mb={2}>New Signups (Last 6 Months)</Typography>
-              {growth.length > 0 ? (
-                <ResponsiveContainer width="100%" height={160}>
-                  <BarChart data={growth} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
-                    <XAxis dataKey="month" tick={{ fontSize: 11 }} />
-                    <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
-                    <ReTooltip contentStyle={{ fontSize: 12 }} />
-                    <Bar dataKey="signups" radius={[4, 4, 0, 0]}>
-                      {growth.map((_, i) => <Cell key={i} fill={i === growth.length - 1 ? '#6366F1' : '#C7D2FE'} />)}
-                    </Bar>
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <Typography variant="caption" color="text.disabled">No growth data yet</Typography>
-              )}
+              <ResponsiveContainer width="100%" height={160}>
+                <BarChart data={growth} margin={{ top: 4, right: 8, left: -20, bottom: 0 }}>
+                  <XAxis dataKey="month" tick={{ fontSize: 11 }} />
+                  <YAxis tick={{ fontSize: 11 }} allowDecimals={false} />
+                  <ReTooltip contentStyle={{ fontSize: 12 }} />
+                  <Bar dataKey="signups" radius={[4, 4, 0, 0]}>
+                    {growth.map((_, i) => <Cell key={i} fill={i === growth.length - 1 ? '#6366F1' : '#C7D2FE'} />)}
+                  </Bar>
+                </BarChart>
+              </ResponsiveContainer>
             </CardContent>
           </Card>
         </Grid>
@@ -286,6 +346,11 @@ export default function OwnerAdminPanel() {
                   </TableCell>
                 </TableRow>
               ))}
+              {orgs.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={7} sx={{ textAlign: 'center', py: 4, color: 'text.disabled' }}>No organizations found</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <TablePagination
@@ -310,45 +375,46 @@ export default function OwnerAdminPanel() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {users.map(user => (
-                <TableRow key={user._id} hover>
+              {users.map(u => (
+                <TableRow key={u._id} hover>
                   <TableCell>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                      <Avatar sx={{ width: 30, height: 30, fontSize: '0.75rem', bgcolor: '#8B5CF618', color: '#8B5CF6' }} src={user.avatar}>
-                        {user.name?.[0]?.toUpperCase()}
+                      <Avatar sx={{ width: 30, height: 30, fontSize: '0.75rem', bgcolor: '#8B5CF618', color: '#8B5CF6' }} src={u.avatar}>
+                        {u.name?.[0]?.toUpperCase()}
                       </Avatar>
                       <Box>
-                        <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.82rem' }}>{user.name}</Typography>
-                        <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.68rem' }}>{user.email}</Typography>
+                        <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.82rem' }}>{u.name}</Typography>
+                        <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.68rem' }}>{u.email}</Typography>
                       </Box>
                     </Box>
                   </TableCell>
+                  <TableCell><Typography variant="caption">{u.organization?.name || '—'}</Typography></TableCell>
+                  <TableCell><PlanBadge plan={u.organization?.subscription?.plan || 'free'} /></TableCell>
                   <TableCell>
-                    <Typography variant="caption">{user.organization?.name || '—'}</Typography>
-                  </TableCell>
-                  <TableCell>
-                    <PlanBadge plan={user.organization?.subscription?.plan || 'free'} />
-                  </TableCell>
-                  <TableCell>
-                    {user.twoFactor?.enabled
+                    {u.twoFactor?.enabled
                       ? <CheckCircle sx={{ fontSize: 16, color: '#10B981' }} />
                       : <Cancel sx={{ fontSize: 16, color: '#94A3B8' }} />
                     }
                   </TableCell>
                   <TableCell>
                     <Typography variant="caption" color="text.secondary">
-                      {user.createdAt ? format(new Date(user.createdAt), 'MMM d, yyyy') : '—'}
+                      {u.createdAt ? format(new Date(u.createdAt), 'MMM d, yyyy') : '—'}
                     </Typography>
                   </TableCell>
                   <TableCell>
                     <Tooltip title="Delete user">
-                      <IconButton size="small" onClick={() => handleDeleteUser(user._id, user.name)} sx={{ color: 'error.main' }}>
+                      <IconButton size="small" onClick={() => setDeleteDialog({ userId: u._id, userName: u.name })} sx={{ color: 'error.main' }}>
                         <Delete sx={{ fontSize: 16 }} />
                       </IconButton>
                     </Tooltip>
                   </TableCell>
                 </TableRow>
               ))}
+              {users.length === 0 && (
+                <TableRow>
+                  <TableCell colSpan={6} sx={{ textAlign: 'center', py: 4, color: 'text.disabled' }}>No users found</TableCell>
+                </TableRow>
+              )}
             </TableBody>
           </Table>
           <TablePagination
@@ -405,6 +471,23 @@ export default function OwnerAdminPanel() {
           <Button variant="contained" onClick={handleChangePlan} disabled={saving}
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2 }}>
             {saving ? <CircularProgress size={16} color="inherit" /> : 'Save'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete User Confirmation Dialog */}
+      <Dialog open={!!deleteDialog} onClose={() => !deleting && setDeleteDialog(null)} maxWidth="xs" fullWidth>
+        <DialogTitle fontWeight={700} sx={{ color: 'error.main' }}>Delete User</DialogTitle>
+        <DialogContent>
+          <Alert severity="error" sx={{ mb: 2 }}>This action cannot be undone.</Alert>
+          <Typography variant="body2">
+            Are you sure you want to permanently delete <strong>{deleteDialog?.userName}</strong>? Their account and all associated data will be removed.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDeleteDialog(null)} disabled={deleting}>Cancel</Button>
+          <Button variant="contained" color="error" onClick={handleDeleteConfirmed} disabled={deleting} sx={{ borderRadius: 2 }}>
+            {deleting ? <CircularProgress size={16} color="inherit" /> : 'Delete permanently'}
           </Button>
         </DialogActions>
       </Dialog>
