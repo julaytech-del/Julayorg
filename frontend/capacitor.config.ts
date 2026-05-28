@@ -2,7 +2,7 @@ import { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'org.julay.app',
-  appName: 'Julay', // v1.0
+  appName: 'julay.org',
   webDir: 'dist',
   server: {
     androidScheme: 'https',

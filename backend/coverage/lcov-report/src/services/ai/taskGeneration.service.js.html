@@ -1,0 +1,367 @@
+
+<!doctype html>
+<html lang="en">
+
+<head>
+    <title>Code coverage report for src/services/ai/taskGeneration.service.js</title>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" href="../../../prettify.css" />
+    <link rel="stylesheet" href="../../../base.css" />
+    <link rel="shortcut icon" type="image/x-icon" href="../../../favicon.png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <style type='text/css'>
+        .coverage-summary .sorter {
+            background-image: url(../../../sort-arrow-sprite.png);
+        }
+    </style>
+</head>
+    
+<body>
+<div class='wrapper'>
+    <div class='pad1'>
+        <h1><a href="../../../index.html">All files</a> / <a href="index.html">src/services/ai</a> taskGeneration.service.js</h1>
+        <div class='clearfix'>
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">9.09% </span>
+                <span class="quiet">Statements</span>
+                <span class='fraction'>1/11</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Branches</span>
+                <span class='fraction'>0/4</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">0% </span>
+                <span class="quiet">Functions</span>
+                <span class='fraction'>0/2</span>
+            </div>
+        
+            
+            <div class='fl pad1y space-right2'>
+                <span class="strong">9.09% </span>
+                <span class="quiet">Lines</span>
+                <span class='fraction'>1/11</span>
+            </div>
+        
+            
+        </div>
+        <p class="quiet">
+            Press <em>n</em> or <em>j</em> to go to the next uncovered block, <em>b</em>, <em>p</em> or <em>k</em> for the previous block.
+        </p>
+        <template id="filterTemplate">
+            <div class="quiet">
+                Filter:
+                <input type="search" id="fileSearch">
+            </div>
+        </template>
+    </div>
+    <div class='status-line low'></div>
+    <pre><table class="coverage">
+<tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
+<a name='L2'></a><a href='#L2'>2</a>
+<a name='L3'></a><a href='#L3'>3</a>
+<a name='L4'></a><a href='#L4'>4</a>
+<a name='L5'></a><a href='#L5'>5</a>
+<a name='L6'></a><a href='#L6'>6</a>
+<a name='L7'></a><a href='#L7'>7</a>
+<a name='L8'></a><a href='#L8'>8</a>
+<a name='L9'></a><a href='#L9'>9</a>
+<a name='L10'></a><a href='#L10'>10</a>
+<a name='L11'></a><a href='#L11'>11</a>
+<a name='L12'></a><a href='#L12'>12</a>
+<a name='L13'></a><a href='#L13'>13</a>
+<a name='L14'></a><a href='#L14'>14</a>
+<a name='L15'></a><a href='#L15'>15</a>
+<a name='L16'></a><a href='#L16'>16</a>
+<a name='L17'></a><a href='#L17'>17</a>
+<a name='L18'></a><a href='#L18'>18</a>
+<a name='L19'></a><a href='#L19'>19</a>
+<a name='L20'></a><a href='#L20'>20</a>
+<a name='L21'></a><a href='#L21'>21</a>
+<a name='L22'></a><a href='#L22'>22</a>
+<a name='L23'></a><a href='#L23'>23</a>
+<a name='L24'></a><a href='#L24'>24</a>
+<a name='L25'></a><a href='#L25'>25</a>
+<a name='L26'></a><a href='#L26'>26</a>
+<a name='L27'></a><a href='#L27'>27</a>
+<a name='L28'></a><a href='#L28'>28</a>
+<a name='L29'></a><a href='#L29'>29</a>
+<a name='L30'></a><a href='#L30'>30</a>
+<a name='L31'></a><a href='#L31'>31</a>
+<a name='L32'></a><a href='#L32'>32</a>
+<a name='L33'></a><a href='#L33'>33</a>
+<a name='L34'></a><a href='#L34'>34</a>
+<a name='L35'></a><a href='#L35'>35</a>
+<a name='L36'></a><a href='#L36'>36</a>
+<a name='L37'></a><a href='#L37'>37</a>
+<a name='L38'></a><a href='#L38'>38</a>
+<a name='L39'></a><a href='#L39'>39</a>
+<a name='L40'></a><a href='#L40'>40</a>
+<a name='L41'></a><a href='#L41'>41</a>
+<a name='L42'></a><a href='#L42'>42</a>
+<a name='L43'></a><a href='#L43'>43</a>
+<a name='L44'></a><a href='#L44'>44</a>
+<a name='L45'></a><a href='#L45'>45</a>
+<a name='L46'></a><a href='#L46'>46</a>
+<a name='L47'></a><a href='#L47'>47</a>
+<a name='L48'></a><a href='#L48'>48</a>
+<a name='L49'></a><a href='#L49'>49</a>
+<a name='L50'></a><a href='#L50'>50</a>
+<a name='L51'></a><a href='#L51'>51</a>
+<a name='L52'></a><a href='#L52'>52</a>
+<a name='L53'></a><a href='#L53'>53</a>
+<a name='L54'></a><a href='#L54'>54</a>
+<a name='L55'></a><a href='#L55'>55</a>
+<a name='L56'></a><a href='#L56'>56</a>
+<a name='L57'></a><a href='#L57'>57</a>
+<a name='L58'></a><a href='#L58'>58</a>
+<a name='L59'></a><a href='#L59'>59</a>
+<a name='L60'></a><a href='#L60'>60</a>
+<a name='L61'></a><a href='#L61'>61</a>
+<a name='L62'></a><a href='#L62'>62</a>
+<a name='L63'></a><a href='#L63'>63</a>
+<a name='L64'></a><a href='#L64'>64</a>
+<a name='L65'></a><a href='#L65'>65</a>
+<a name='L66'></a><a href='#L66'>66</a>
+<a name='L67'></a><a href='#L67'>67</a>
+<a name='L68'></a><a href='#L68'>68</a>
+<a name='L69'></a><a href='#L69'>69</a>
+<a name='L70'></a><a href='#L70'>70</a>
+<a name='L71'></a><a href='#L71'>71</a>
+<a name='L72'></a><a href='#L72'>72</a>
+<a name='L73'></a><a href='#L73'>73</a>
+<a name='L74'></a><a href='#L74'>74</a>
+<a name='L75'></a><a href='#L75'>75</a>
+<a name='L76'></a><a href='#L76'>76</a>
+<a name='L77'></a><a href='#L77'>77</a>
+<a name='L78'></a><a href='#L78'>78</a>
+<a name='L79'></a><a href='#L79'>79</a>
+<a name='L80'></a><a href='#L80'>80</a>
+<a name='L81'></a><a href='#L81'>81</a>
+<a name='L82'></a><a href='#L82'>82</a>
+<a name='L83'></a><a href='#L83'>83</a>
+<a name='L84'></a><a href='#L84'>84</a>
+<a name='L85'></a><a href='#L85'>85</a>
+<a name='L86'></a><a href='#L86'>86</a>
+<a name='L87'></a><a href='#L87'>87</a>
+<a name='L88'></a><a href='#L88'>88</a>
+<a name='L89'></a><a href='#L89'>89</a>
+<a name='L90'></a><a href='#L90'>90</a>
+<a name='L91'></a><a href='#L91'>91</a>
+<a name='L92'></a><a href='#L92'>92</a>
+<a name='L93'></a><a href='#L93'>93</a>
+<a name='L94'></a><a href='#L94'>94</a>
+<a name='L95'></a><a href='#L95'>95</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-yes">13x</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span>
+<span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import Anthropic from '@anthropic-ai/sdk';
+&nbsp;
+const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+&nbsp;
+export async function <span class="fstat-no" title="function not covered" >generateTasks(</span>planAnalysis) {
+<span class="cstat-no" title="statement not covered" >  if (!process.env.ANTHROPIC_API_KEY) {</span>
+<span class="cstat-no" title="statement not covered" >    return getMockTasks(planAnalysis);</span>
+  }
+&nbsp;
+  const message = <span class="cstat-no" title="statement not covered" >await client.messages.create({</span>
+    model: 'claude-sonnet-4-6',
+    max_tokens: 8192,
+    system: `You are an expert project manager. Generate a complete project task breakdown and return ONLY valid JSON with no markdown, no explanation, no code blocks. Just raw JSON.`,
+    messages: [{
+      role: 'user',
+      content: `Generate a project breakdown for: "${planAnalysis.projectName}"
+Industry: ${planAnalysis.industry}
+Complexity: ${planAnalysis.complexity}
+Duration: ${planAnalysis.estimatedDurationWeeks} weeks
+Key areas: ${planAnalysis.keyAreas.join(', ')}
+&nbsp;
+Return ONLY this JSON structure (no markdown, no explanation):
+{"goals":[{"title":"string","description":"string","order":1,"dueOffsetWeeks":2,"color":"#6366F1","tasks":[{"title":"string","description":"string","type":"feature","priority":"high","estimatedHours":8,"skillsRequired":["skill"],"tools":[{"name":"Tool","category":"development","url":"url.com","description":"why"}],"subtasks":[{"title":"subtask"}],"dueOffsetDays":7,"departmentHint":"Development"}]}]}
+&nbsp;
+Create 5 goals. Each goal: 3-4 tasks. Keep descriptions concise (under 100 chars). Total tasks: 15-20.`
+    }]
+  });
+&nbsp;
+  const content = <span class="cstat-no" title="statement not covered" >message.content[0].text.trim();</span>
+<span class="cstat-no" title="statement not covered" >  try {</span>
+    const jsonMatch = <span class="cstat-no" title="statement not covered" >content.match(/\{[\s\S]*\}/);</span>
+<span class="cstat-no" title="statement not covered" >    return JSON.parse(jsonMatch ? jsonMatch[0] : content);</span>
+  } catch (e) {
+<span class="cstat-no" title="statement not covered" >    console.error('AI JSON parse error, falling back to mock:', e.message);</span>
+<span class="cstat-no" title="statement not covered" >    return getMockTasks(planAnalysis);</span>
+  }
+}
+&nbsp;
+function <span class="fstat-no" title="function not covered" >getMockTasks(</span>planAnalysis) {
+<span class="cstat-no" title="statement not covered" >  return {</span>
+    goals: [
+      {
+        title: 'Requirements &amp; Planning',
+        description: 'Define project scope, gather requirements, and plan the architecture',
+        order: 1, dueOffsetWeeks: 1, color: '#6366F1',
+        tasks: [
+          { title: 'Stakeholder Requirements Workshop', description: 'Conduct workshops to gather and document all stakeholder requirements', type: 'meeting', priority: 'high', estimatedHours: 8, skillsRequired: ['Communication', 'Planning'], tools: [], subtasks: [{ title: 'Prepare workshop agenda' }, { title: 'Conduct meeting' }, { title: 'Document requirements' }, { title: 'Get stakeholder sign-off' }], dueOffsetDays: 3, departmentHint: 'Project Management' },
+          { title: 'Technical Architecture Planning', description: 'Define the technical stack, database schema, and system architecture', type: 'planning', priority: 'critical', estimatedHours: 12, skillsRequired: ['System Design', 'Architecture'], tools: [{ name: 'Lucidchart', category: 'design', url: 'lucidchart.com', description: 'Diagram and architecture tool' }], subtasks: [{ title: 'Define tech stack' }, { title: 'Plan database schema' }, { title: 'Create architecture diagram' }], dueOffsetDays: 5, departmentHint: 'Development' },
+          { title: 'Project Repository Setup', description: 'Initialize version control, CI/CD pipelines, and development environments', type: 'planning', priority: 'high', estimatedHours: 4, skillsRequired: ['DevOps', 'Git'], tools: [{ name: 'GitHub', category: 'development', url: 'github.com', description: 'Source code management and CI/CD' }], subtasks: [{ title: 'Initialize repository' }, { title: 'Configure CI/CD pipeline' }, { title: 'Set up environments' }], dueOffsetDays: 7, departmentHint: 'Development' }
+        ]
+      },
+      {
+        title: 'UI/UX Design',
+        description: 'Create wireframes, mockups, and design system',
+        order: 2, dueOffsetWeeks: 3, color: '#EC4899',
+        tasks: [
+          { title: 'Brand Identity &amp; Style Guide', description: 'Define color palette, typography, and component design system', type: 'design', priority: 'high', estimatedHours: 24, skillsRequired: ['UI Design', 'Branding'], tools: [{ name: 'Figma', category: 'design', url: 'figma.com', description: 'Professional UI/UX design tool' }], subtasks: [{ title: 'Define color palette' }, { title: 'Typography system' }, { title: 'Component library' }, { title: 'Export design tokens' }], dueOffsetDays: 14, departmentHint: 'Design' },
+          { title: 'Wireframes - All Pages', description: 'Create low-fidelity wireframes for all major pages and user flows', type: 'design', priority: 'high', estimatedHours: 32, skillsRequired: ['Wireframing', 'UX'], tools: [{ name: 'Figma', category: 'design', url: 'figma.com', description: 'Wireframing and prototyping' }], subtasks: [{ title: 'Homepage wireframe' }, { title: 'Inner pages wireframes' }, { title: 'Mobile responsive layouts' }, { title: 'User flow diagrams' }], dueOffsetDays: 18, departmentHint: 'Design' },
+          { title: 'High-Fidelity Mockups &amp; Prototype', description: 'Create pixel-perfect designs and interactive prototype for stakeholder review', type: 'design', priority: 'high', estimatedHours: 40, skillsRequired: ['UI Design', 'Prototyping'], tools: [{ name: 'Figma', category: 'design', url: 'figma.com', description: 'High-fidelity design and prototyping' }], subtasks: [{ title: 'Desktop designs' }, { title: 'Mobile designs' }, { title: 'Interactive prototype' }, { title: 'Design review &amp; approval' }], dueOffsetDays: 21, departmentHint: 'Design' }
+        ]
+      },
+      {
+        title: 'Core Development',
+        description: 'Build the main application features and functionality',
+        order: 3, dueOffsetWeeks: 6, color: '#10B981',
+        tasks: [
+          { title: 'Frontend Scaffolding &amp; Core Setup', description: 'Set up the frontend framework, routing, state management, and base components', type: 'feature', priority: 'critical', estimatedHours: 16, skillsRequired: ['React', 'JavaScript'], tools: [{ name: 'React', category: 'development', url: 'react.dev', description: 'Frontend framework' }, { name: 'Vite', category: 'development', url: 'vitejs.dev', description: 'Build tool' }], subtasks: [{ title: 'Initialize React project' }, { title: 'Configure routing' }, { title: 'Set up state management' }, { title: 'Create base layout' }], dueOffsetDays: 28, departmentHint: 'Development' },
+          { title: 'Homepage &amp; Landing Page', description: 'Develop the homepage with all sections, animations, and responsive design', type: 'feature', priority: 'high', estimatedHours: 24, skillsRequired: ['React', 'CSS', 'Animation'], tools: [], subtasks: [{ title: 'Hero section' }, { title: 'Features section' }, { title: 'Testimonials section' }, { title: 'CTA section' }], dueOffsetDays: 35, departmentHint: 'Development' },
+          { title: 'Inner Pages Development', description: 'Develop all inner pages: About, Services, Portfolio, Blog, Contact', type: 'feature', priority: 'high', estimatedHours: 40, skillsRequired: ['React', 'CSS'], tools: [], subtasks: [{ title: 'About page' }, { title: 'Services page' }, { title: 'Contact page' }, { title: 'Blog listing &amp; detail pages' }], dueOffsetDays: 42, departmentHint: 'Development' },
+          { title: 'Backend API &amp; CMS Integration', description: 'Set up headless CMS, develop APIs for contact forms and dynamic content', type: 'feature', priority: 'high', estimatedHours: 32, skillsRequired: ['Node.js', 'API Design'], tools: [{ name: 'Strapi', category: 'development', url: 'strapi.io', description: 'Headless CMS' }], subtasks: [{ title: 'CMS setup and configuration' }, { title: 'Contact form API' }, { title: 'Blog/content API' }, { title: 'Email integration' }], dueOffsetDays: 42, departmentHint: 'Development' }
+        ]
+      },
+      {
+        title: 'Content &amp; SEO',
+        description: 'Create all content, optimize for search engines',
+        order: 4, dueOffsetWeeks: 7, color: '#F59E0B',
+        tasks: [
+          { title: 'Copywriting - All Pages', description: 'Write compelling copy for all website pages aligned with brand voice', type: 'content', priority: 'high', estimatedHours: 32, skillsRequired: ['Copywriting', 'SEO Writing'], tools: [{ name: 'Grammarly', category: 'other', url: 'grammarly.com', description: 'Writing assistant' }], subtasks: [{ title: 'Homepage copy' }, { title: 'About page copy' }, { title: 'Services descriptions' }, { title: 'Blog posts (5 articles)' }], dueOffsetDays: 45, departmentHint: 'Marketing' },
+          { title: 'SEO Implementation', description: 'Implement on-page SEO, meta tags, sitemap, structured data', type: 'feature', priority: 'high', estimatedHours: 16, skillsRequired: ['SEO', 'Technical SEO'], tools: [{ name: 'Google Search Console', category: 'analytics', url: 'search.google.com/search-console', description: 'SEO monitoring' }, { name: 'Ahrefs', category: 'analytics', url: 'ahrefs.com', description: 'SEO analysis' }], subtasks: [{ title: 'Keyword research' }, { title: 'Meta tags optimization' }, { title: 'XML sitemap' }, { title: 'Structured data markup' }], dueOffsetDays: 49, departmentHint: 'Marketing' }
+        ]
+      },
+      {
+        title: 'Testing &amp; Quality Assurance',
+        description: 'Comprehensive testing across all devices and browsers',
+        order: 5, dueOffsetWeeks: 8, color: '#EF4444',
+        tasks: [
+          { title: 'Cross-Browser &amp; Device Testing', description: 'Test on all major browsers and devices, fix compatibility issues', type: 'testing', priority: 'critical', estimatedHours: 24, skillsRequired: ['QA Testing', 'Browser Testing'], tools: [{ name: 'BrowserStack', category: 'testing', url: 'browserstack.com', description: 'Cross-browser testing' }, { name: 'Cypress', category: 'testing', url: 'cypress.io', description: 'E2E testing framework' }], subtasks: [{ title: 'Desktop browser testing' }, { title: 'Mobile device testing' }, { title: 'Performance testing' }, { title: 'Accessibility audit' }], dueOffsetDays: 52, departmentHint: 'Development' },
+          { title: 'Performance &amp; Security Audit', description: 'Optimize page speed, implement security headers, run vulnerability scan', type: 'testing', priority: 'high', estimatedHours: 12, skillsRequired: ['Performance Optimization', 'Security'], tools: [{ name: 'Lighthouse', category: 'testing', url: 'developers.google.com/web/tools/lighthouse', description: 'Performance auditing' }], subtasks: [{ title: 'Lighthouse audit &amp; fixes' }, { title: 'Security headers' }, { title: 'Image optimization' }], dueOffsetDays: 54, departmentHint: 'Development' },
+          { title: 'Launch &amp; Deployment', description: 'Deploy to production, configure CDN, DNS, SSL, and monitoring', type: 'deployment', priority: 'critical', estimatedHours: 8, skillsRequired: ['DevOps', 'Cloud Deployment'], tools: [{ name: 'Vercel', category: 'development', url: 'vercel.com', description: 'Frontend hosting and deployment' }, { name: 'Google Analytics', category: 'analytics', url: 'analytics.google.com', description: 'Traffic analytics' }], subtasks: [{ title: 'Production deployment' }, { title: 'DNS configuration' }, { title: 'SSL setup' }, { title: 'Analytics integration' }, { title: 'Post-launch monitoring' }], dueOffsetDays: 56, departmentHint: 'Development' }
+        ]
+      }
+    ]
+  };
+}
+&nbsp;</pre></td></tr></table></pre>
+
+                <div class='push'></div><!-- for sticky footer -->
+            </div><!-- /wrapper -->
+            <div class='footer quiet pad2 space-top1 center small'>
+                Code coverage generated by
+                <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
+                at 2026-04-28T21:19:46.971Z
+            </div>
+        <script src="../../../prettify.js"></script>
+        <script>
+            window.onload = function () {
+                prettyPrint();
+            };
+        </script>
+        <script src="../../../sorter.js"></script>
+        <script src="../../../block-navigation.js"></script>
+    </body>
+</html>
+    
