@@ -2,16 +2,6 @@ name: Build iOS (IPA → TestFlight)
 
 on:
   workflow_dispatch:
-  push:
-    branches: [main]
-    paths:
-      - 'frontend/src/**'
-      - 'frontend/public/**'
-      - 'frontend/index.html'
-      - 'frontend/vite.config.*'
-      - 'frontend/capacitor.config.ts'
-      - 'frontend/ios/**'
-      - 'frontend/package.json'
 
 concurrency:
   group: ios-build
