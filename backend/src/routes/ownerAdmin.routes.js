@@ -18,6 +18,16 @@ const ownerOnly = (req, res, next) => {
   next();
 };
 
+// POST /api/owner/email-report — any authenticated user can trigger; always sends to owner only
+router.post('/email-report', protect, async (req, res) => {
+  try {
+    const { subject = 'Julay QA Report', body } = req.body;
+    if (!body) return res.status(400).json({ success: false, message: 'body is required' });
+    await sendReportEmail({ subject, body });
+    res.json({ success: true, message: 'Report sent to owner email.' });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
 router.use(protect, ownerOnly);
 
 // GET /api/owner/stats — platform overview
@@ -149,16 +159,6 @@ router.get('/growth', async (req, res) => {
     ]);
 
     res.json({ success: true, data: growth });
-  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
-});
-
-// POST /api/owner/email-report — send QA or any report to owner email
-router.post('/email-report', async (req, res) => {
-  try {
-    const { subject = 'Julay QA Report', body } = req.body;
-    if (!body) return res.status(400).json({ success: false, message: 'body is required' });
-    await sendReportEmail({ subject, body });
-    res.json({ success: true, message: 'Report sent to owner email.' });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
