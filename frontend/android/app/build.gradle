@@ -16,14 +16,14 @@ android {
     }
     signingConfigs {
         release {
-            def keystoreFile = System.getenv("KEYSTORE_PATH") ?: ""
+            def keystorePath = System.getenv("KEYSTORE_PATH") ?: ""
             def keystorePass = System.getenv("KEYSTORE_PASSWORD") ?: ""
-            def keyAlias = System.getenv("KEY_ALIAS") ?: "julay"
+            def aliasName = System.getenv("KEY_ALIAS") ?: "julay"
             def keyPass = System.getenv("KEY_PASSWORD") ?: ""
-            if (keystoreFile) {
-                storeFile file(keystoreFile)
+            if (keystorePath) {
+                storeFile file(keystorePath)
                 storePassword keystorePass
-                keyAlias keyAlias
+                keyAlias aliasName
                 keyPassword keyPass
             }
         }
@@ -32,8 +32,8 @@ android {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-            def keystoreFile = System.getenv("KEYSTORE_PATH") ?: ""
-            if (keystoreFile) {
+            def keystorePath = System.getenv("KEYSTORE_PATH") ?: ""
+            if (keystorePath) {
                 signingConfig signingConfigs.release
             }
         }
