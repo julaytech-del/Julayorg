@@ -264,6 +264,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   // ── render ───────────────────────────────────────────────────────────────────
 
   return (
+    <>
     <Drawer
       anchor="right"
       open={Boolean(task)}
@@ -972,5 +973,6 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         </Button>
       </DialogActions>
     </Dialog>
+    </>
   );
 }
