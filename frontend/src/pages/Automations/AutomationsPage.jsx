@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, Button, Card, CardContent, Switch, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Stack, Alert, CircularProgress, Divider, Tooltip } from '@mui/material';
+import { Warning } from '@mui/icons-material';
 import { Add, Delete, Edit, FlashOn, Bolt } from '@mui/icons-material';
 import { automationsAPI } from '../../services/api.js';
 
@@ -43,6 +44,8 @@ export default function AutomationsPage() {
   const [form, setForm] = useState(defaultRule);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState('');
+  const [deleteDialog, setDeleteDialog] = useState(null); // { id, name }
+  const [deleting, setDeleting] = useState(false);
 
   const load = async () => {
     setLoading(true);
@@ -71,10 +74,16 @@ export default function AutomationsPage() {
     setRules(prev => prev.map(r => r._id === id ? { ...r, active: !r.active } : r));
   };
 
-  const remove = async (id) => {
-    if (!window.confirm('Delete this automation?')) return;
-    await automationsAPI.delete(id);
-    setRules(prev => prev.filter(r => r._id !== id));
+  const handleDeleteConfirmed = async () => {
+    if (!deleteDialog) return;
+    setDeleting(true);
+    try {
+      await automationsAPI.delete(deleteDialog.id);
+      setRules(prev => prev.filter(r => r._id !== deleteDialog.id));
+      setDeleteDialog(null);
+    } catch {
+      setError('Failed to delete automation rule. Please try again.');
+    } finally { setDeleting(false); }
   };
 
   const updateAction = (idx, field, val) => {
@@ -166,7 +175,7 @@ export default function AutomationsPage() {
                       <Switch checked={rule.active} onChange={() => toggle(rule._id)} size="small" color="primary" />
                     </Tooltip>
                     <Tooltip title="Edit"><IconButton size="small" onClick={() => openEdit(rule)}><Edit sx={{ fontSize: 16 }} /></IconButton></Tooltip>
-                    <Tooltip title="Delete"><IconButton size="small" onClick={() => remove(rule._id)} sx={{ color: '#EF4444' }}><Delete sx={{ fontSize: 16 }} /></IconButton></Tooltip>
+                    <Tooltip title="Delete"><IconButton size="small" onClick={() => setDeleteDialog({ id: rule._id, name: rule.name })} sx={{ color: '#EF4444' }}><Delete sx={{ fontSize: 16 }} /></IconButton></Tooltip>
                   </Box>
                 </CardContent>
               </Card>
@@ -316,6 +325,25 @@ export default function AutomationsPage() {
           <Button onClick={() => setOpen(false)} variant="outlined" sx={{ borderRadius: 2 }}>Cancel</Button>
           <Button onClick={save} variant="contained" disabled={saving} sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2 }}>
             {saving ? <CircularProgress size={18} sx={{ color: 'white' }} /> : 'Save Rule'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={!!deleteDialog} onClose={() => !deleting && setDeleteDialog(null)} maxWidth="xs" fullWidth>
+        <DialogTitle fontWeight={700} sx={{ color: 'error.main', display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Warning sx={{ fontSize: 20 }} /> Delete Automation Rule
+        </DialogTitle>
+        <DialogContent>
+          <Alert severity="error" sx={{ mb: 2 }}>This action cannot be undone.</Alert>
+          <Typography variant="body2">
+            Are you sure you want to delete <strong>"{deleteDialog?.name}"</strong>?
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setDeleteDialog(null)} disabled={deleting}>Cancel</Button>
+          <Button variant="contained" color="error" onClick={handleDeleteConfirmed} disabled={deleting} sx={{ borderRadius: 2 }}>
+            {deleting ? <CircularProgress size={16} color="inherit" /> : 'Delete'}
           </Button>
         </DialogActions>
       </Dialog>

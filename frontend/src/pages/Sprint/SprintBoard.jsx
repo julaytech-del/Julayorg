@@ -337,6 +337,8 @@ export default function SprintBoard() {
   const [priorityFilter, setPriorityFilter] = useState('all');
   const [assigneeFilter, setAssigneeFilter] = useState('all');
   const [updatingStatus, setUpdatingStatus] = useState(null);
+  const [completeDialog, setCompleteDialog] = useState(false);
+  const [completing, setCompleting] = useState(false);
   const dragRef = useRef(null); // { taskId, sourceStatus }
 
   // load projects
@@ -467,12 +469,15 @@ export default function SprintBoard() {
 
   const handleCompleteSprint = async () => {
     if (!currentSprint) return;
-    if (!window.confirm(`Complete sprint "${currentSprint.name}"? This cannot be undone.`)) return;
+    setCompleting(true);
     try {
       await sprintsAPI.update(currentSprint._id, { status: 'completed' });
       setSprints(prev => prev.map(s => s._id === currentSprint._id ? { ...s, status: 'completed' } : s));
-      dispatch(showSnackbar({ message: 'Sprint completed! 🎉', severity: 'success' }));
-    } catch { dispatch(showSnackbar({ message: 'Failed to complete sprint', severity: 'error' })); }
+      setCompleteDialog(false);
+      dispatch(showSnackbar({ message: 'Sprint completed!', severity: 'success' }));
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to complete sprint', severity: 'error' }));
+    } finally { setCompleting(false); }
   };
 
   const handleRemoveTask = async (taskId) => {
@@ -523,7 +528,7 @@ export default function SprintBoard() {
             </Button>
           )}
           {isActive && (
-            <Button variant="contained" startIcon={<CheckCircle />} onClick={handleCompleteSprint}
+            <Button variant="contained" startIcon={<CheckCircle />} onClick={() => setCompleteDialog(true)}
               sx={{ background: 'linear-gradient(135deg, #10B981, #059669)', borderRadius: 2 }}>
               Complete Sprint
             </Button>
@@ -683,6 +688,26 @@ export default function SprintBoard() {
           <Typography variant="caption">Updating status…</Typography>
         </Box>
       )}
+
+      {/* Complete Sprint Confirmation Dialog */}
+      <Dialog open={completeDialog} onClose={() => !completing && setCompleteDialog(false)} maxWidth="xs" fullWidth>
+        <DialogTitle fontWeight={700}>Complete Sprint</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 1 }}>
+            Are you sure you want to complete <strong>"{currentSprint?.name}"</strong>?
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            Incomplete tasks will remain in the backlog. This cannot be undone.
+          </Typography>
+        </DialogContent>
+        <DialogActions sx={{ px: 3, pb: 2 }}>
+          <Button onClick={() => setCompleteDialog(false)} disabled={completing}>Cancel</Button>
+          <Button variant="contained" onClick={handleCompleteSprint} disabled={completing}
+            sx={{ background: 'linear-gradient(135deg,#10B981,#059669)', borderRadius: 2 }}>
+            {completing ? <CircularProgress size={16} color="inherit" /> : 'Complete Sprint'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       <CreateSprintDialog open={createOpen} onClose={() => setCreateOpen(false)} onSubmit={handleCreateSprint} loading={createLoading} />
       <AddToSprintDrawer

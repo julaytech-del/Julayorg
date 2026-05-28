@@ -116,6 +116,11 @@ function PublicRoute({ children }) {
   return children;
 }
 
+const PERM_MESSAGES = {
+  canUseAI:       { title: 'AI Studio requires a paid plan', sub: 'Upgrade to Starter or above to access AI-powered features.', href: '/pricing' },
+  canViewReports: { title: 'Reports require Manager role or above', sub: 'Ask your workspace admin to upgrade your role, or upgrade the organization plan.', href: '/pricing' },
+};
+
 function PermissionRoute({ permKey, children }) {
   const { initialized } = useSelector(s => s.auth);
   const perms = usePermissions();
@@ -124,7 +129,24 @@ function PermissionRoute({ permKey, children }) {
       <CircularProgress size={24} sx={{ color: '#6366F1' }} />
     </Box>
   );
-  if (!perms[permKey]) return <Navigate to="/dashboard" replace />;
+  if (!perms[permKey]) {
+    const msg = PERM_MESSAGES[permKey] || { title: 'Access restricted', sub: 'You do not have permission to view this page.' };
+    return (
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '70vh', gap: 2, textAlign: 'center', px: 3 }}>
+        <Box sx={{ width: 56, height: 56, borderRadius: 3, background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ color: 'white', fontWeight: 800, fontSize: '1.5rem' }}>✦</span>
+        </Box>
+        <Typography variant="h6" fontWeight={700}>{msg.title}</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ maxWidth: 360 }}>{msg.sub}</Typography>
+        {msg.href && (
+          <Button variant="contained" href={msg.href}
+            sx={{ textTransform: 'none', background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2, mt: 1 }}>
+            View Pricing Plans
+          </Button>
+        )}
+      </Box>
+    );
+  }
   return children;
 }
 

@@ -3,6 +3,7 @@ import {
   Drawer, Box, Typography, TextField, MenuItem, Chip, Button,
   Avatar, IconButton, Checkbox, LinearProgress, Divider,
   AvatarGroup, Autocomplete, Tooltip,
+  Dialog, DialogTitle, DialogContent, DialogActions, Alert,
 } from '@mui/material';
 import {
   Close, Delete, Add, AutoAwesome, OpenInNew, Send,
@@ -115,6 +116,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const [timeHours,    setTimeHours]    = useState('');
   const [timeNote,     setTimeNote]     = useState('');
   const [tick,         setTick]         = useState(0);  // forces re-render every second
+  const [deleteConfirm, setDeleteConfirm] = useState(false);
   const tickRef = useRef(null);
 
   // derive timer state from Redux (survives drawer close/reopen)
@@ -194,9 +196,10 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     onUpdate?.();
   };
 
-  const handleDelete = async () => {
+  const handleDeleteConfirmed = async () => {
     await dispatch(deleteTask(task._id));
     dispatch(showSnackbar({ message: t('common.delete'), severity: 'info' }));
+    setDeleteConfirm(false);
     onClose();
     onUpdate?.();
   };
@@ -336,7 +339,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
           )}
           {canEdit && (
             <Tooltip title="Delete task">
-              <IconButton size="small" onClick={handleDelete} sx={{ color: '#EF4444', '&:hover': { bgcolor: '#FEF2F2' } }}>
+              <IconButton size="small" onClick={() => setDeleteConfirm(true)} sx={{ color: '#EF4444', '&:hover': { bgcolor: '#FEF2F2' } }}>
                 <Delete fontSize="small" />
               </IconButton>
             </Tooltip>
@@ -953,5 +956,21 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
 
       </Box>
     </Drawer>
+
+    <Dialog open={deleteConfirm} onClose={() => setDeleteConfirm(false)} maxWidth="xs" fullWidth>
+      <DialogTitle fontWeight={700} sx={{ color: 'error.main' }}>Delete Task</DialogTitle>
+      <DialogContent>
+        <Alert severity="error" sx={{ mb: 2 }}>This action cannot be undone.</Alert>
+        <Typography variant="body2">
+          Delete <strong>"{localTask?.title}"</strong>? All comments and subtasks will also be removed.
+        </Typography>
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={() => setDeleteConfirm(false)}>Cancel</Button>
+        <Button variant="contained" color="error" onClick={handleDeleteConfirmed} sx={{ borderRadius: 2 }}>
+          Delete
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }

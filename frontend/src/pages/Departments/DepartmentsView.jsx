@@ -12,11 +12,13 @@ import { showSnackbar } from '../../store/slices/uiSlice.js';
 import { patchUserDepartment } from '../../store/slices/authSlice.js';
 import { useSelector } from 'react-redux';
 import ConfirmDialog from '../../components/common/ConfirmDialog.jsx';
+import { usePermissions } from '../../hooks/usePermissions.js';
 
 export default function DepartmentsView() {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const currentUser = useSelector(s => s.auth.user);
+  const { canManageDepartment } = usePermissions();
   const [departments, setDepartments] = useState(_deptCache || []);
   const [loading, setLoading] = useState(!_deptCache);
   const [dialogOpen, setDialogOpen] = useState(false);
@@ -103,7 +105,12 @@ export default function DepartmentsView() {
       if (editing && String(userDeptId) === String(editing._id)) {
         dispatch(patchUserDepartment({ name: form.name, color: form.color, logo: form.logo }));
       }
-    } catch { dispatch(showSnackbar({ message: t('errors.generic'), severity: 'error' })); }
+    } catch (err) {
+      const msg = err?.response?.status === 403
+        ? 'You need Manager or Admin role to manage departments.'
+        : t('errors.generic');
+      dispatch(showSnackbar({ message: msg, severity: 'error' }));
+    }
   };
 
   const openMembers = async (dept) => {
@@ -146,7 +153,9 @@ export default function DepartmentsView() {
 
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
         <Typography variant="h5" fontWeight={700}>{t('departments.title')}</Typography>
-        <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>{t('departments.new')}</Button>
+        {canManageDepartment && (
+          <Button variant="contained" startIcon={<Add />} onClick={() => handleOpen()}>{t('departments.new')}</Button>
+        )}
       </Box>
 
       <Grid container spacing={2.5}>
@@ -213,7 +222,9 @@ export default function DepartmentsView() {
             <Box sx={{ textAlign: 'center', py: 8 }}>
               <Business sx={{ fontSize: 64, color: 'grey.300', mb: 2 }} />
               <Typography color="text.secondary">{t('common.noData')}</Typography>
-              <Button variant="contained" startIcon={<Add />} sx={{ mt: 2 }} onClick={() => handleOpen()}>{t('departments.form.create')}</Button>
+              {canManageDepartment && (
+                <Button variant="contained" startIcon={<Add />} sx={{ mt: 2 }} onClick={() => handleOpen()}>{t('departments.form.create')}</Button>
+              )}
             </Box>
           </Grid>
         )}
