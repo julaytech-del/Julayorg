@@ -50,6 +50,21 @@ export const sendContactEmail = async ({ name, email, subject, message }) => {
   });
 };
 
+export const sendReportEmail = async ({ subject, body }) => {
+  const transporter = getTransporter();
+  const ownerEmail = process.env.OWNER_EMAIL || 'assimohammad489@gmail.com';
+  if (!transporter) {
+    console.log(`[REPORT] Subject: ${subject}\n${body}`);
+    return;
+  }
+  await transporter.sendMail({
+    from: `"Julay System" <${process.env.SMTP_USER}>`,
+    to: ownerEmail,
+    subject,
+    html: `<div style="font-family:monospace;white-space:pre-wrap;max-width:900px;margin:0 auto;padding:24px;font-size:13px;line-height:1.6;color:#1E293B">${body.replace(/</g,'&lt;').replace(/>/g,'&gt;')}</div>`,
+  });
+};
+
 export const sendOTPEmail = async (to, code) => {
   const transporter = getTransporter();
   if (!transporter) {
