@@ -221,7 +221,7 @@ export default function OwnerAdminPanel() {
   useEffect(() => { if (isOwner && tab === 4) fetchSettings(); }, [tab, isOwner]);
   useEffect(() => { if (isOwner && tab === 5) fetchPlans(); }, [tab, isOwner]);
   useEffect(() => { if (isOwner && tab === 6) fetchAnnouncements(); }, [tab, isOwner]);
-  useEffect(() => { if (isOwner && tab === 8) fetchSystem(); }, [tab, isOwner]);
+  // System tab: do NOT auto-fetch — show placeholder until user clicks Refresh
 
   // ── Handlers ────────────────────────────────────────────────────────────────
   const handleChangePlan = async () => {
@@ -323,6 +323,7 @@ export default function OwnerAdminPanel() {
     try {
       const res = await api.post('/owner/email-blast', blastForm);
       setBlastResult(res.data);
+      setBlastForm({ subject: '', body: '', targetPlans: [] });
       dispatch(showSnackbar({ message: `Email sent to ${res.data.sent} recipients.`, severity: 'success' }));
     } catch {
       dispatch(showSnackbar({ message: 'Failed to send email blast.', severity: 'error' }));
@@ -370,7 +371,11 @@ export default function OwnerAdminPanel() {
       {/* Maintenance Mode Banner */}
       {platformSettings?.maintenanceMode && (
         <Alert severity="warning" sx={{ mb: 3 }} action={
-          <Button size="small" color="warning" onClick={() => { setPlatformSettings(p => ({ ...p, maintenanceMode: false })); }}>Disable</Button>
+          <Button size="small" color="warning" onClick={async () => {
+          const updated = { ...platformSettings, maintenanceMode: false };
+          setPlatformSettings(updated);
+          try { await api.put('/owner/settings', updated); } catch {}
+        }}>Disable</Button>
         }>
           <strong>Maintenance Mode is ON</strong> — Users see a maintenance page. Disable when done.
         </Alert>
@@ -413,7 +418,8 @@ export default function OwnerAdminPanel() {
           {tab === 0 && (
             <FormControl size="small" sx={{ minWidth: 160 }}>
               <InputLabel>Plan</InputLabel>
-              <Select value={orgPlan} label="Plan" onChange={e => { setOrgPlan(e.target.value); setOrgPage(0); }}>
+              <Select value={orgPlan} label="Plan" onChange={e => { setOrgPlan(e.target.value); setOrgPage(0); }}
+                renderValue={v => v === 'all' ? 'All Plans' : <PlanBadge plan={v} />}>
                 <MenuItem value="all">All Plans</MenuItem>
                 {['free','starter','professional','business','enterprise'].map(p => (
                   <MenuItem key={p} value={p}><PlanBadge plan={p} /></MenuItem>
@@ -1180,7 +1186,7 @@ export default function OwnerAdminPanel() {
       </Dialog>
 
       {/* Announcement Form */}
-      <Dialog open={announceDialog !== null} onClose={() => setAnnounceDialog(null)} maxWidth="sm" fullWidth>
+      <Dialog open={announceDialog !== null} onClose={() => { setAnnounceDialog(null); setAnnounceForm({ message: '', type: 'info', active: true, link: '', linkText: '', dismissible: true, targetPlans: [] }); }} maxWidth="sm" fullWidth>
         <DialogTitle fontWeight={700}>{announceDialog?._id ? 'Edit Announcement' : 'New Announcement'}</DialogTitle>
         <DialogContent>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
@@ -1216,7 +1222,7 @@ export default function OwnerAdminPanel() {
           </Box>
         </DialogContent>
         <DialogActions sx={{ px: 3, pb: 2 }}>
-          <Button onClick={() => setAnnounceDialog(null)}>Cancel</Button>
+          <Button onClick={() => { setAnnounceDialog(null); setAnnounceForm({ message: '', type: 'info', active: true, link: '', linkText: '', dismissible: true, targetPlans: [] }); }}>Cancel</Button>
           <Button variant="contained" onClick={handleSaveAnnouncement} disabled={!announceForm.message || announceSaving}
             sx={{ background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', borderRadius: 2 }}>
             {announceSaving ? <CircularProgress size={16} color="inherit" /> : 'Save'}
