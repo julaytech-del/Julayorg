@@ -5,6 +5,7 @@ import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
 import SuggestionsPanel from '../AI/SuggestionsPanel.jsx';
 import CommandPalette from '../common/CommandPalette.jsx';
+import AnnouncementBanner from '../common/AnnouncementBanner.jsx';
 
 const SIDEBAR_WIDTH = 268;
 
@@ -48,6 +49,7 @@ export default function MainLayout() {
         />
         <Toolbar />
         <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflow: 'auto' }}>
+          <AnnouncementBanner />
           <Outlet />
         </Box>
       </Box>
