@@ -41,8 +41,11 @@ import FormViewRenderer from './pages/Views/FormViewRenderer.jsx';
 import NotFound from './pages/NotFound.jsx';
 import CookieConsent from './components/common/CookieConsent.jsx';
 import Analytics from './components/common/Analytics.jsx';
-const Contact = React.lazy(() => import('./pages/Contact.jsx'));
-const Pricing  = React.lazy(() => import('./pages/Pricing.jsx'));
+const Contact       = React.lazy(() => import('./pages/Contact.jsx'));
+const Pricing       = React.lazy(() => import('./pages/Pricing.jsx'));
+const PrivacyPolicy = React.lazy(() => import('./pages/Legal/PrivacyPolicy.jsx'));
+const TermsOfService = React.lazy(() => import('./pages/Legal/TermsOfService.jsx'));
+const HelpPage      = React.lazy(() => import('./pages/Help/HelpPage.jsx'));
 
 // ─── Lazily loaded (only when user navigates to that route) ───────────────────
 const Dashboard           = React.lazy(() => import('./pages/Dashboard.jsx'));
@@ -179,6 +182,9 @@ export default function App() {
         {/* ── Info pages ── */}
         <Route path="/contact" element={<Suspense fallback={<PageLoader />}><Contact /></Suspense>} />
         <Route path="/pricing" element={<Suspense fallback={<PageLoader />}><Pricing /></Suspense>} />
+        <Route path="/privacy" element={<Suspense fallback={<PageLoader />}><PrivacyPolicy /></Suspense>} />
+        <Route path="/terms"   element={<Suspense fallback={<PageLoader />}><TermsOfService /></Suspense>} />
+        <Route path="/help"    element={<Suspense fallback={<PageLoader />}><HelpPage /></Suspense>} />
 
         {/* ── Short redirects ── */}
         <Route path="/ai"             element={<Navigate to="/dashboard/ai"       replace />} />

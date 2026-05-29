@@ -17,7 +17,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { showSnackbar, setAccentColor } from '../../store/slices/uiSlice.js';
-import { setCredentials } from '../../store/slices/authSlice.js';
+import { setCredentials, logout } from '../../store/slices/authSlice.js';
 import api, { settingsAPI, subscriptionAPI, usersAPI, twoFactorAPI, integrationsAPI, organizationAPI } from '../../services/api.js';
 
 // ── Profile Tab ────────────────────────────────────────────────────────────
@@ -543,6 +543,7 @@ function SecurityTab() {
   const [form, setForm] = useState({ current: '', newPass: '', confirm: '' });
   const [showPass, setShowPass] = useState({ current: false, new: false, confirm: false });
   const [saving, setSaving] = useState(false);
+  const [deleteOpen, setDeleteOpen] = useState(false);
   const set = (k) => (e) => setForm(f => ({ ...f, [k]: e.target.value }));
 
   const handleChange = async () => {
@@ -601,6 +602,20 @@ function SecurityTab() {
       </Card>
 
       <TwoFactorCard />
+
+      <Card elevation={0} sx={{ mt: 3, border: '1px solid', borderColor: 'error.main', borderRadius: 2, maxWidth: 480 }}>
+        <CardContent>
+          <Typography variant="subtitle2" fontWeight={700} color="error" sx={{ mb: 1 }}>Danger Zone</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </Typography>
+          <Button variant="outlined" color="error" onClick={() => setDeleteOpen(true)}>
+            Delete Account
+          </Button>
+        </CardContent>
+      </Card>
+
+      <DeleteAccountDialog open={deleteOpen} onClose={() => setDeleteOpen(false)} />
     </Box>
   );
 }
@@ -713,6 +728,59 @@ function TwoFactorCard() {
         )}
       </CardContent>
     </Card>
+  );
+}
+
+function DeleteAccountDialog({ open, onClose }) {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [confirmText, setConfirmText] = useState('');
+  const [deleting, setDeleting] = useState(false);
+
+  const handleDelete = async () => {
+    setDeleting(true);
+    try {
+      await api.delete('/users/me');
+      dispatch(logout());
+      navigate('/');
+    } catch (err) {
+      dispatch(showSnackbar({ message: err?.message || 'Failed to delete account', severity: 'error' }));
+      setDeleting(false);
+    }
+  };
+
+  const handleClose = () => {
+    setConfirmText('');
+    onClose();
+  };
+
+  return (
+    <Dialog open={open} onClose={handleClose} maxWidth="sm" fullWidth>
+      <DialogTitle fontWeight={700}>Delete Account</DialogTitle>
+      <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '12px !important' }}>
+        <Alert severity="error">
+          This will permanently delete your account and all associated data. This cannot be undone.
+        </Alert>
+        <TextField
+          label='Type "DELETE" to confirm'
+          value={confirmText}
+          onChange={e => setConfirmText(e.target.value)}
+          fullWidth
+          autoComplete="off"
+        />
+      </DialogContent>
+      <DialogActions sx={{ px: 3, pb: 2 }}>
+        <Button onClick={handleClose} disabled={deleting}>Cancel</Button>
+        <Button
+          variant="contained"
+          color="error"
+          disabled={confirmText !== 'DELETE' || deleting}
+          onClick={handleDelete}
+        >
+          {deleting ? 'Deleting…' : 'Delete permanently'}
+        </Button>
+      </DialogActions>
+    </Dialog>
   );
 }
 
