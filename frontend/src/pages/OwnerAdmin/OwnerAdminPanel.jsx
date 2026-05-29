@@ -11,6 +11,7 @@ import {
 import {
   People, Business, AttachMoney, TrendingUp, Search, Refresh,
   Delete, Shield, CheckCircle, Cancel, Star, Lock,
+  Android, Apple, Download, OpenInNew, Build,
 } from '@mui/icons-material';
 import { BarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { format } from 'date-fns';
@@ -275,6 +276,7 @@ export default function OwnerAdminPanel() {
           <Tab label={`Organizations (${orgTotal})`} />
           <Tab label={`Users (${userTotal})`} />
           <Tab label="Recent Signups" />
+          <Tab label="Mobile Apps" />
         </Tabs>
       </Box>
 
@@ -446,6 +448,132 @@ export default function OwnerAdminPanel() {
             <Typography color="text.disabled" variant="body2" sx={{ textAlign: 'center', py: 6 }}>No signups yet</Typography>
           )}
         </Box>
+      )}
+
+      {/* Mobile Apps */}
+      {tab === 3 && (
+        <Grid container spacing={2.5}>
+          {/* Android */}
+          <Grid item xs={12} md={6}>
+            <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                  <Box sx={{ width: 44, height: 44, borderRadius: 2, bgcolor: '#3DDC8418', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Android sx={{ color: '#3DDC84', fontSize: 26 }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight={800}>Android</Typography>
+                    <Chip label="Live" size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700, bgcolor: '#10B98118', color: '#10B981' }} />
+                  </Box>
+                </Box>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 1.5 }}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>APK (Direct Download)</Typography>
+                      <Typography variant="body2" fontWeight={600}>julay.org/julay.apk</Typography>
+                    </Box>
+                    <Button size="small" variant="outlined" startIcon={<Download />}
+                      href="https://julay.org/julay.apk" target="_blank"
+                      sx={{ textTransform: 'none', borderRadius: 1.5, fontSize: '0.75rem' }}>
+                      Download
+                    </Button>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 1.5 }}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>AAB (Play Store)</Typography>
+                      <Typography variant="body2" fontWeight={600}>GitHub Actions Artifacts</Typography>
+                    </Box>
+                    <Button size="small" variant="outlined" startIcon={<OpenInNew />}
+                      href="https://github.com/julaytech-del/Julayorg/actions/workflows/apk.yml" target="_blank"
+                      sx={{ textTransform: 'none', borderRadius: 1.5, fontSize: '0.75rem' }}>
+                      View
+                    </Button>
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 1.5 }}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>Auto-Build Trigger</Typography>
+                      <Typography variant="body2" fontWeight={600}>Every push to main</Typography>
+                    </Box>
+                    <Chip label="Active" size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#10B98118', color: '#10B981' }} />
+                  </Box>
+
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 1.5 }}>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary" fontWeight={700} sx={{ textTransform: 'uppercase', fontSize: '0.65rem' }}>Play Store</Typography>
+                      <Typography variant="body2" fontWeight={600}>Google Play Developer Required</Typography>
+                    </Box>
+                    <Chip label="Pending" size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: '#F59E0B18', color: '#F59E0B' }} />
+                  </Box>
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* iOS */}
+          <Grid item xs={12} md={6}>
+            <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }}>
+              <CardContent sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2.5 }}>
+                  <Box sx={{ width: 44, height: 44, borderRadius: 2, bgcolor: '#94A3B818', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Apple sx={{ color: '#94A3B8', fontSize: 26 }} />
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle1" fontWeight={800}>iOS</Typography>
+                    <Chip label="Pending Setup" size="small" sx={{ height: 18, fontSize: '0.62rem', fontWeight: 700, bgcolor: '#F59E0B18', color: '#F59E0B' }} />
+                  </Box>
+                </Box>
+
+                <Alert severity="info" sx={{ mb: 2, fontSize: '0.78rem' }}>
+                  Requires Apple Developer Program ($99/year) to build and distribute.
+                </Alert>
+
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {[
+                    { label: 'Workflow (ios.yml)', status: 'Ready', color: '#10B981' },
+                    { label: 'Apple Developer Account', status: 'Needed', color: '#F59E0B' },
+                    { label: 'Signing Certificate', status: 'Needed', color: '#F59E0B' },
+                    { label: 'Provisioning Profile', status: 'Needed', color: '#F59E0B' },
+                    { label: 'App Store Connect API', status: 'Needed', color: '#F59E0B' },
+                    { label: 'TestFlight / App Store', status: 'Pending', color: '#94A3B8' },
+                  ].map(({ label, status, color }) => (
+                    <Box key={label} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 1.5, bgcolor: 'action.hover', borderRadius: 1.5 }}>
+                      <Typography variant="body2" fontWeight={600}>{label}</Typography>
+                      <Chip label={status} size="small" sx={{ height: 20, fontSize: '0.65rem', fontWeight: 700, bgcolor: `${color}18`, color }} />
+                    </Box>
+                  ))}
+                </Box>
+
+                <Button fullWidth variant="outlined" startIcon={<Build />}
+                  href="https://developer.apple.com/programs/enroll/" target="_blank"
+                  sx={{ mt: 2.5, textTransform: 'none', borderRadius: 2 }}>
+                  Enroll in Apple Developer Program
+                </Button>
+              </CardContent>
+            </Card>
+          </Grid>
+
+          {/* CI/CD Info */}
+          <Grid item xs={12}>
+            <Card elevation={0} sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }}>
+              <CardContent sx={{ p: 2.5 }}>
+                <Typography variant="subtitle2" fontWeight={700} mb={2}>Auto-Sync Pipeline</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                  {['Push to main', '→', 'Web Build (Vite)', '→', 'Cap Sync', '→', 'Android AAB + APK', '→', 'Deploy to julay.org'].map((step, i) => (
+                    step === '→'
+                      ? <Typography key={i} color="text.disabled" sx={{ fontWeight: 700, mx: 0.5 }}>→</Typography>
+                      : <Chip key={i} label={step} size="small"
+                          sx={{ height: 24, fontSize: '0.72rem', fontWeight: 600,
+                            bgcolor: step === 'Push to main' ? '#6366F118' : step === 'Deploy to julay.org' ? '#10B98118' : 'action.selected',
+                            color: step === 'Push to main' ? '#6366F1' : step === 'Deploy to julay.org' ? '#10B981' : 'text.primary' }} />
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        </Grid>
       )}
 
       {/* Change Plan Dialog */}
