@@ -176,25 +176,19 @@ export default function Login() {
   const [authTab, setAuthTab] = useState('password');
 
   return (
-    <Box sx={{
-      minHeight: '100vh',
-      display: 'flex', alignItems: 'center', justifyContent: 'center',
-      background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%)',
-      p: 2,
-    }}>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%)' }}>
+      {/* Navbar */}
+      <Box sx={{ borderBottom: '1px solid #E5E7EB', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', zIndex: 100 }}>
+        <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 32, objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
+        </Box>
+        <LanguageSwitcher />
+      </Box>
+
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 56px)', p: 2 }}>
       <Card sx={{ width: '100%', maxWidth: 480, borderRadius: 3 }}>
         <CardContent sx={{ p: 4 }}>
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
-            <Button component={RouterLink} to="/" startIcon={<ArrowBack sx={{ fontSize: 16 }} />}
-              sx={{ color: 'rgba(0,0,0,0.4)', fontSize: '0.8rem', fontWeight: 500, textTransform: 'none', p: 0, minWidth: 0, '&:hover': { color: '#6366F1', background: 'none' } }}>
-              Home
-            </Button>
-            <LanguageSwitcher />
-          </Box>
-
-          {/* Logo + title */}
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1.5, mb: 3 }}>
-            <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 36, objectFit: 'contain' }} />
+          <Box sx={{ textAlign: 'center', mb: 3 }}>
             <Typography variant="h5" fontWeight={700}>{t('auth.login.greeting')}</Typography>
           </Box>
 
@@ -238,6 +232,7 @@ export default function Login() {
           </Typography>
         </CardContent>
       </Card>
+      </Box>
     </Box>
   );
 }
