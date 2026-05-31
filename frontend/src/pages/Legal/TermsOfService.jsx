@@ -122,7 +122,7 @@ export default function TermsOfService() {
   return (
     <Box sx={{ minHeight: '100vh', background: '#0F172A' }}>
       {/* Navbar */}
-      <Box sx={{ borderBottom: `1px solid ${BORDER}`, px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(15,23,42,0.92)', backdropFilter: 'blur(12px)', zIndex: 100 }}>
+      <Box sx={{ borderBottom: '1px solid #E5E7EB', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: '#fff', zIndex: 100 }}>
         <Box
           component={RouterLink}
           to="/"
@@ -139,7 +139,7 @@ export default function TermsOfService() {
         <Link
           component={RouterLink}
           to="/"
-          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: TEXT_SECONDARY, textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, px: 1.5, py: 0.75, borderRadius: 2, border: `1px solid ${BORDER}`, transition: 'all 0.15s', '&:hover': { color: 'white', borderColor: 'rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' } }}
+          sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: '#6B7280', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, px: 1.5, py: 0.75, borderRadius: 2, border: '1px solid #E5E7EB', transition: 'all 0.15s', '&:hover': { color: '#111827', borderColor: '#D1D5DB' } }}
         >
           <ArrowBack sx={{ fontSize: 13 }} /> Back to Home
         </Link>
