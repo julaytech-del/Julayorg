@@ -260,9 +260,8 @@ function TopNav() {
         position: 'sticky',
         top: 0,
         zIndex: 100,
-        bgcolor: 'rgba(15,23,42,0.85)',
-        backdropFilter: 'blur(12px)',
-        borderBottom: '1px solid rgba(255,255,255,0.07)',
+        bgcolor: '#fff',
+        borderBottom: '1px solid #E5E7EB',
       }}
     >
       <Container maxWidth="lg">
@@ -285,7 +284,7 @@ function TopNav() {
           <Box sx={{ flex: 1 }} />
 
           {isMobile ? (
-            <IconButton onClick={() => setDrawerOpen(true)} sx={{ color: 'white' }}>
+            <IconButton onClick={() => setDrawerOpen(true)} sx={{ color: '#374151' }}>
               <MenuIcon />
             </IconButton>
           ) : (
@@ -294,7 +293,7 @@ function TopNav() {
                 component={RouterLink}
                 to="/login"
                 variant="text"
-                sx={{ color: 'rgba(255,255,255,0.75)', fontWeight: 500, '&:hover': { color: 'white' } }}
+                sx={{ color: '#374151', fontWeight: 500, '&:hover': { color: '#111827' } }}
               >
                 Login
               </Button>

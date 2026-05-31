@@ -193,11 +193,11 @@ export default function HelpPage() {
     <Box sx={{ minHeight: '100vh', backgroundColor: BG, color: 'white', pb: 10 }}>
 
       {/* ── Navbar ── */}
-      <Box sx={{ borderBottom: `1px solid ${BORDER}`, px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(15,23,42,0.92)', backdropFilter: 'blur(12px)', zIndex: 100 }}>
+      <Box sx={{ borderBottom: '1px solid #E5E7EB', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: '#fff', zIndex: 100 }}>
         <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
           <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 32, objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
         </Box>
-        <Box component={RouterLink} to="/" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: MUTED, textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, px: 1.5, py: 0.75, borderRadius: 2, border: `1px solid ${BORDER}`, transition: 'all 0.15s', '&:hover': { color: 'white', borderColor: 'rgba(255,255,255,0.18)', background: 'rgba(255,255,255,0.04)' } }}>
+        <Box component={RouterLink} to="/" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: '#6B7280', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, px: 1.5, py: 0.75, borderRadius: 2, border: '1px solid #E5E7EB', transition: 'all 0.15s', '&:hover': { color: '#111827', borderColor: '#D1D5DB' } }}>
           <ArrowBack sx={{ fontSize: 13 }} /> Back to Home
         </Box>
       </Box>
