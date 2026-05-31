@@ -609,7 +609,7 @@
         "AI Included in Base Plan"
       ],
       "startingPrice": {
-        "julay": "$9/mo",
+        "julay": "Free / $29",
         "monday": "$9/seat",
         "asana": "$13/seat",
         "notion": "$10/seat"
@@ -662,8 +662,8 @@
         {
           "id": "starter",
           "name": "Starter",
-          "price": 19,
-          "yearlyPrice": 15,
+          "price": 29,
+          "yearlyPrice": 19,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "For solo professionals",
@@ -680,8 +680,8 @@
         {
           "id": "professional",
           "name": "Professional",
-          "price": 59,
-          "yearlyPrice": 47,
+          "price": 79,
+          "yearlyPrice": 59,
           "ctaVariant": "contained",
           "highlight": true,
           "popular": true,
@@ -701,8 +701,8 @@
         {
           "id": "business",
           "name": "Business",
-          "price": 99,
-          "yearlyPrice": 79,
+          "price": 120,
+          "yearlyPrice": 99,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "For scaling companies",

@@ -279,6 +279,14 @@ const FEATURES_STRIP = [
   { icon: '👥', grad: 'linear-gradient(135deg,#EC4899,#8B5CF6)', title: 'Scalable for Everyone',  desc: 'Perfect for startups, agencies, and growing enterprises.' },
 ];
 
+/* ─────────── LemonSqueezy checkout ──────────────────────────────── */
+// Replace null with checkout URL when store is approved
+const LEMON_URLS = {
+  starter:      null, // 'https://julay.lemonsqueezy.com/checkout/buy/STARTER_ID'
+  professional: null, // 'https://julay.lemonsqueezy.com/checkout/buy/PRO_ID'
+  business:     null,
+};
+
 /* ═══════════════════════════════════════════════════════════ */
 export default function Landing() {
   if (Capacitor.isNativePlatform()) return <Navigate to="/mobile-welcome" replace />;
@@ -431,7 +439,7 @@ export default function Landing() {
               </Typography>
 
               {/* CTAs */}
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 5 }}>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 3 }}>
                 <Button onClick={() => { trackEvent('cta_clicked', { location: 'hero' }); navigate('/register'); }} variant="contained" size="large"
                   sx={{ background: 'linear-gradient(135deg,#6366F1,#7C3AED)', color: 'white', fontWeight: 700, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', boxShadow: '0 4px 20px rgba(99,102,241,0.45)', '&:hover': { opacity: 0.9, transform: 'translateY(-1px)' }, transition: 'all 0.2s' }}>
                   {t('landing.nav.start')}
@@ -440,6 +448,26 @@ export default function Landing() {
                   sx={{ borderColor: '#D1D5DB', color: '#374151', fontWeight: 600, px: 3.5, py: 1.6, borderRadius: 2, fontSize: '0.95rem', background: 'white', '&:hover': { background: '#F9FAFB', borderColor: '#9CA3AF' } }}>
                   {t('landing.nav.login')}
                 </Button>
+              </Box>
+
+              {/* Trust bar */}
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5, flexWrap: 'wrap', mb: 5 }}>
+                {/* Avatar stack */}
+                <Box sx={{ display: 'flex', alignItems: 'center' }}>
+                  {['#6366F1','#8B5CF6','#EC4899','#10B981','#F59E0B'].map((c, i) => (
+                    <Box key={i} sx={{ width: 30, height: 30, borderRadius: '50%', background: c, border: '2px solid white', ml: i === 0 ? 0 : -1, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.65rem', color: 'white', fontWeight: 700, zIndex: 5 - i }}>
+                      {['S','J','A','M','R'][i]}
+                    </Box>
+                  ))}
+                </Box>
+                <Box>
+                  <Box sx={{ display: 'flex', gap: 0.25, mb: 0.25 }}>
+                    {[1,2,3,4,5].map(s => <Box key={s} component="span" sx={{ color: '#F59E0B', fontSize: '0.75rem' }}>★</Box>)}
+                  </Box>
+                  <Typography sx={{ fontSize: '0.78rem', color: '#6B7280', fontWeight: 500 }}>
+                    Trusted by 500+ early teams · <Box component="span" sx={{ color: '#6366F1', fontWeight: 700 }}>Free to start</Box>
+                  </Typography>
+                </Box>
               </Box>
 
             </Box>
@@ -600,7 +628,13 @@ export default function Landing() {
                       )}
                       {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>{t('landing.pricing.saveYear', { amount: (plan.price - plan.yearlyPrice) * 12 })}</Typography>}
                     </Box>
-                    <Button onClick={() => navigate('/register')} variant={plan.ctaVariant} fullWidth
+                    <Button
+                      onClick={() => {
+                        const url = LEMON_URLS[plan.id];
+                        if (url) window.open(url, '_blank');
+                        else navigate(`/register?plan=${plan.id}`);
+                      }}
+                      variant={plan.ctaVariant} fullWidth
                       sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
                       {plan.cta}
                     </Button>

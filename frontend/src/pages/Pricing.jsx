@@ -36,6 +36,14 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 
+/* ─────────────────────── LemonSqueezy checkout ─────────────────── */
+// When store is approved, replace null with the checkout URL for each plan
+const LEMON_URLS = {
+  starter:      null, // 'https://julay.lemonsqueezy.com/checkout/buy/STARTER_ID'
+  professional: null, // 'https://julay.lemonsqueezy.com/checkout/buy/PRO_ID'
+  business:     null, // keep as /contact
+};
+
 /* ─────────────────────────── constants ─────────────────────────── */
 
 const BG = '#0F172A';
@@ -445,8 +453,10 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
 
       {/* CTA */}
       <Button
-        component={RouterLink}
-        to={plan.ctaHref}
+        {...(LEMON_URLS[plan.id]
+          ? { component: 'a', href: LEMON_URLS[plan.id], target: '_blank', rel: 'noreferrer' }
+          : { component: RouterLink, to: plan.ctaHref }
+        )}
         variant={plan.ctaVariant}
         fullWidth
         sx={
@@ -655,7 +665,7 @@ export default function Pricing() {
           >
             <Verified sx={{ color: '#4ADE80', fontSize: 18 }} />
             <Typography sx={{ fontSize: 13, color: '#4ADE80', fontWeight: 600 }}>
-              30-day money-back guarantee on all paid plans
+              14-day money-back guarantee on all paid plans
             </Typography>
           </Box>
         </Box>
