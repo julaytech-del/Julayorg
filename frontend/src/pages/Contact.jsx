@@ -85,7 +85,17 @@ export default function Contact() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', background: '#0F172A', py: { xs: 4, md: 8 }, px: 2 }}>
+    <Box sx={{ minHeight: '100vh', background: '#0F172A' }}>
+      {/* Navbar */}
+      <Box sx={{ borderBottom: '1px solid rgba(255,255,255,0.07)', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(15,23,42,0.92)', backdropFilter: 'blur(12px)', zIndex: 100 }}>
+        <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}>
+          <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 32, objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
+        </Box>
+        <Link component={RouterLink} to="/" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, px: 1.5, py: 0.75, borderRadius: 2, border: '1px solid rgba(255,255,255,0.07)', '&:hover': { color: 'white' } }}>
+          <ArrowBack sx={{ fontSize: 13 }} /> Back to Home
+        </Link>
+      </Box>
+      <Box sx={{ py: { xs: 4, md: 8 }, px: 2 }}>
       <Box sx={{ maxWidth: 600, mx: 'auto' }}>
         <Box sx={{ mb: 4 }}>
           <Link component={RouterLink} to="/" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.85rem', mb: 3, '&:hover': { color: 'white' } }}>
@@ -185,6 +195,7 @@ export default function Contact() {
             </Box>
           ))}
         </Box>
+      </Box>
       </Box>
     </Box>
   );

@@ -123,9 +123,19 @@ export default function TermsOfService() {
     <Box sx={{ minHeight: '100vh', background: '#0F172A' }}>
       {/* Navbar */}
       <Box sx={{ borderBottom: `1px solid ${BORDER}`, px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, background: 'rgba(15,23,42,0.92)', backdropFilter: 'blur(12px)', zIndex: 100 }}>
-        <Typography fontWeight={800} fontSize="1.15rem" sx={{ color: 'white', letterSpacing: '-0.02em' }}>
-          Julay
-        </Typography>
+        <Box
+          component={RouterLink}
+          to="/"
+          sx={{ display: 'flex', alignItems: 'center', textDecoration: 'none' }}
+        >
+          <Box
+            component="img"
+            src="/julay-logo-full.png"
+            alt="Julay.org"
+            sx={{ height: 32, objectFit: 'contain' }}
+            onError={(e) => { e.target.style.display = 'none'; }}
+          />
+        </Box>
         <Link
           component={RouterLink}
           to="/"
