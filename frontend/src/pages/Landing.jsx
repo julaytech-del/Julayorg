@@ -297,6 +297,14 @@ export default function Landing() {
   const [billing, setBilling] = useState('monthly');
   const [openFaq, setOpenFaq]  = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [trialIdea, setTrialIdea] = useState('');
+
+  const handleTryAI = () => {
+    if (!trialIdea.trim()) return;
+    localStorage.setItem('julay_trial_idea', trialIdea.trim());
+    trackEvent('trial_idea_submitted', { idea_length: trialIdea.length });
+    navigate('/register');
+  };
 
   const FEATURES   = t('landing.features.items',   { returnObjects: true });
   const PLANS      = t('landing.pricing.plans',     { returnObjects: true });
@@ -437,6 +445,53 @@ export default function Landing() {
               <Typography sx={{ color: '#6B7280', fontSize: { xs: '1rem', md: '1.05rem' }, lineHeight: 1.75, mb: 4, maxWidth: 440 }}>
                 {t('landing.hero.sub')}
               </Typography>
+
+              {/* AI Teaser */}
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{
+                  display: 'flex', gap: 1,
+                  background: 'white',
+                  borderRadius: 2.5,
+                  border: '1.5px solid #E5E7EB',
+                  p: 0.75,
+                  boxShadow: '0 4px 24px rgba(99,102,241,0.12)',
+                  maxWidth: 500,
+                }}>
+                  <Box
+                    component="input"
+                    value={trialIdea}
+                    onChange={e => setTrialIdea(e.target.value)}
+                    onKeyDown={e => e.key === 'Enter' && handleTryAI()}
+                    placeholder='e.g. "Launch a food delivery app"'
+                    sx={{
+                      flex: 1, border: 'none', outline: 'none',
+                      px: 1.5, py: 1, fontSize: '0.9rem',
+                      fontFamily: '"Inter", sans-serif',
+                      background: 'transparent', color: '#111827',
+                      '&::placeholder': { color: '#9CA3AF' },
+                    }}
+                  />
+                  <Button
+                    onClick={handleTryAI}
+                    variant="contained"
+                    endIcon={<ArrowForward sx={{ fontSize: 16 }} />}
+                    sx={{
+                      background: trialIdea.trim() ? 'linear-gradient(135deg,#6366F1,#7C3AED)' : '#E5E7EB',
+                      color: trialIdea.trim() ? 'white' : '#9CA3AF',
+                      fontWeight: 700, borderRadius: 2, px: 2,
+                      fontSize: '0.82rem', whiteSpace: 'nowrap',
+                      boxShadow: 'none', textTransform: 'none',
+                      transition: 'all 0.2s',
+                      '&:hover': { opacity: trialIdea.trim() ? 0.9 : 1, boxShadow: 'none' },
+                    }}
+                  >
+                    Try free
+                  </Button>
+                </Box>
+                <Typography sx={{ fontSize: '0.73rem', color: '#9CA3AF', mt: 0.75, ml: 0.5 }}>
+                  ✨ AI generates a full project plan in seconds — no credit card needed
+                </Typography>
+              </Box>
 
               {/* CTAs */}
               <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mb: 3 }}>

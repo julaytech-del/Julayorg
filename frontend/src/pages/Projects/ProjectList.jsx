@@ -15,7 +15,7 @@ import {
   TuneRounded, GridViewRounded, ViewListRounded
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { fetchProjects, createProject, deleteProject } from '../../store/slices/projectSlice.js';
@@ -31,14 +31,14 @@ const FILTER_STATUSES = ['all', 'planning', 'active', 'on_hold', 'completed'];
 const COLORS = ['#4F46E5', '#0EA5E9', '#10B981', '#F59E0B', '#EF4444', '#8B5CF6', '#EC4899', '#06B6D4'];
 const PRIORITIES = ['low', 'medium', 'high', 'critical'];
 
-function CreateProjectDialog({ open, onClose, onCreated }) {
+function CreateProjectDialog({ open, onClose, onCreated, initialPrompt = '' }) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { t } = useTranslation();
   const user = useSelector(s => s.auth.user);
   const { loading: aiLoading } = useSelector(s => s.ai);
   const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
-  const [tab, setTab] = useState(0);
+  const [tab, setTab] = useState(initialPrompt ? 1 : 0);
   const [step, setStep] = useState(0);
   const [aiResult, setAiResult] = useState(null);
   const [users, setUsers] = useState([]);
@@ -66,8 +66,15 @@ function CreateProjectDialog({ open, onClose, onCreated }) {
   const [form, setForm] = useState({ name: '', description: '', startDate: '', endDate: '', priority: 'medium', color: '#4F46E5' });
 
   // AI form
-  const [prompt, setPrompt] = useState('');
+  const [prompt, setPrompt] = useState(initialPrompt);
   const [startDate, setStartDate] = useState('');
+
+  useEffect(() => {
+    if (open && initialPrompt) {
+      setTab(1);
+      setPrompt(initialPrompt);
+    }
+  }, [open, initialPrompt]);
 
   useEffect(() => {
     if (open) {
@@ -501,7 +508,9 @@ export default function ProjectList() {
   const [filter, setFilter] = useState('all');
   const [search, setSearch] = useState('');
   const [createOpen, setCreateOpen] = useState(false);
+  const [trialPrompt, setTrialPrompt] = useState('');
   const [deleteTarget, setDeleteTarget] = useState(null);
+  const [searchParams, setSearchParams] = useSearchParams();
   // Use cache for initial render to avoid blank flash
   const [skeletonLoading, setSkeletonLoading] = useState(!_projectsCache);
 
@@ -511,6 +520,18 @@ export default function ProjectList() {
       setSkeletonLoading(false);
     };
     fetchAndCache();
+  }, []);
+
+  useEffect(() => {
+    const idea = searchParams.get('idea');
+    const tryAI = searchParams.get('try_ai');
+    if (tryAI && idea) {
+      const decoded = decodeURIComponent(idea);
+      setTrialPrompt(decoded);
+      setCreateOpen(true);
+      localStorage.removeItem('julay_trial_idea');
+      setSearchParams({}, { replace: true });
+    }
   }, []);
 
   // Keep cache in sync with redux
@@ -676,8 +697,9 @@ export default function ProjectList() {
 
       <CreateProjectDialog
         open={createOpen}
-        onClose={() => setCreateOpen(false)}
+        onClose={() => { setCreateOpen(false); setTrialPrompt(''); }}
         onCreated={() => dispatch(fetchProjects())}
+        initialPrompt={trialPrompt}
       />
       <ConfirmDialog
         open={Boolean(deleteTarget)}

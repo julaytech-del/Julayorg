@@ -36,7 +36,14 @@ function PasswordForm() {
   const handleSubmit = async e => {
     e.preventDefault();
     const res = await dispatch(loginUser({ email, password }));
-    if (!res.error) navigate('/dashboard');
+    if (!res.error) {
+      const trialIdea = localStorage.getItem('julay_trial_idea');
+      if (trialIdea) {
+        navigate('/dashboard/projects?try_ai=1&idea=' + encodeURIComponent(trialIdea));
+      } else {
+        navigate('/dashboard');
+      }
+    }
   };
 
   return (

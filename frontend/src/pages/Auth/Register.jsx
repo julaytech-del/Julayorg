@@ -135,7 +135,12 @@ function PasswordRegister() {
     const res = await dispatch(registerUser({ ...form, ...(refCode ? { referredBy: refCode } : {}) }));
     if (!res.error) {
       trackEvent('registration_completed', { method: 'password' });
-      navigate('/dashboard');
+      const trialIdea = localStorage.getItem('julay_trial_idea');
+      if (trialIdea) {
+        navigate('/dashboard/projects?try_ai=1&idea=' + encodeURIComponent(trialIdea));
+      } else {
+        navigate('/dashboard');
+      }
     }
   };
 
