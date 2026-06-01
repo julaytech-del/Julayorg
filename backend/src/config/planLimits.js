@@ -1,6 +1,6 @@
 // Central plan limits — single source of truth
 export const PLAN_LIMITS = {
-  free:         { projects: 3,   members: 3,   aiRequests: 0,    storage: 1    },
+  free:         { projects: 3,   members: 3,   aiRequests: 1,    storage: 1    },
   starter:      { projects: 10,  members: 10,  aiRequests: 100,  storage: 10   },
   professional: { projects: -1,  members: 50,  aiRequests: 500,  storage: 50   },
   business:     { projects: -1,  members: -1,  aiRequests: -1,   storage: 500  },
