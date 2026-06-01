@@ -72,16 +72,16 @@ const PLANS = [
   {
     id: 'starter',
     name: 'Starter',
-    monthlyPrice: 29,
-    annualPrice: 228,
-    annualMonthlyPrice: 19,
+    monthlyPrice: 35,
+    annualPrice: 276,
+    annualMonthlyPrice: 23,
     description: 'For growing teams that need more power.',
     cta: 'Get Started',
     ctaNote: null,
     ctaVariant: 'outlined',
     ctaHref: '/register?plan=starter',
     popular: false,
-    highlights: ['15 projects max', '15 team members max', '10 GB storage', 'Gantt / Timeline & Sprint boards', 'Time tracking & Calendar', 'Workload views', '10 AI requests/month'],
+    highlights: ['15 projects max', '15 team members max', '10 GB storage', 'Gantt / Timeline & Sprint boards', 'Time tracking & Calendar', 'Workload views', '70 AI requests/month'],
   },
   {
     id: 'professional',
@@ -95,7 +95,7 @@ const PLANS = [
     ctaVariant: 'contained',
     ctaHref: '/register?plan=professional',
     popular: true,
-    highlights: ['Unlimited projects', '50 team members max', '50 GB storage', 'Full AI project generation', 'AI Standup & Performance analysis', '500 AI requests/month', 'Automations, Webhooks & Forms', 'Custom dashboards & Reports'],
+    highlights: ['Unlimited projects', '50 team members max', '50 GB storage', 'Full AI project generation', 'AI Standup & Performance analysis', '150 AI requests/month', 'Automations, Webhooks & Forms', 'Custom dashboards & Reports'],
   },
   {
     id: 'business',
@@ -109,7 +109,7 @@ const PLANS = [
     ctaVariant: 'outlined',
     ctaHref: '/contact',
     popular: false,
-    highlights: ['Unlimited projects & users', 'Unlimited AI requests', '500 GB storage', 'API access & Custom integrations', 'Priority support', 'Advanced analytics', 'Dedicated account manager', '99.9% uptime SLA'],
+    highlights: ['Unlimited projects & users', '300 AI requests/month', '500 GB storage', 'API access & Custom integrations', 'Priority support', 'Advanced analytics', 'Dedicated account manager', '99.9% uptime SLA'],
   },
 ];
 
@@ -117,7 +117,7 @@ const FEATURE_ROWS = [
   { label: 'Projects',            free: '3',        starter: '10',        pro: 'Unlimited',  biz: 'Unlimited' },
   { label: 'Team members',        free: '3',        starter: '10',        pro: '25',         biz: 'Unlimited' },
   { label: 'Storage',             free: '1 GB',     starter: '10 GB',     pro: '50 GB',      biz: '200 GB'    },
-  { label: 'AI requests/month',   free: false,      starter: '30',        pro: '500',        biz: '2,000'     },
+  { label: 'AI requests/month',   free: '1 (trial)', starter: '70',       pro: '150',        biz: '300'       },
   { label: 'AI project gen.',     free: false,      starter: true,        pro: true,         biz: true        },
   { label: 'AI task suggestions', free: false,      starter: true,        pro: true,         biz: true        },
   { label: 'Kanban board',        free: true,       starter: true,        pro: true,         biz: true        },

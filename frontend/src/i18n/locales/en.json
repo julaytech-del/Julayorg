@@ -609,7 +609,7 @@
         "AI Included in Base Plan"
       ],
       "startingPrice": {
-        "julay": "Free / $29",
+        "julay": "Free / $35",
         "monday": "$9/seat",
         "asana": "$13/seat",
         "notion": "$10/seat"
@@ -653,7 +653,7 @@
           "features": [
             "3 projects",
             "3 team members",
-            "5 AI requests/month",
+            "1 AI request (trial)",
             "Kanban & List views",
             "1 GB storage"
           ],
@@ -662,15 +662,15 @@
         {
           "id": "starter",
           "name": "Starter",
-          "price": 29,
-          "yearlyPrice": 19,
+          "price": 35,
+          "yearlyPrice": 23,
           "ctaVariant": "outlined",
           "highlight": false,
           "description": "For solo professionals",
           "features": [
             "10 projects",
             "10 team members",
-            "100 AI requests/month",
+            "70 AI requests/month",
             "All views (Calendar, Gantt)",
             "10 GB storage",
             "Email support"
@@ -689,7 +689,7 @@
           "features": [
             "Unlimited projects",
             "25 team members",
-            "500 AI requests/month",
+            "150 AI requests/month",
             "Automations & Webhooks",
             "Reports & Forms",
             "Time Tracking + Custom Fields",
@@ -709,10 +709,10 @@
           "features": [
             "Everything in Professional",
             "Unlimited team members",
-            "2,000 AI requests/month",
+            "300 AI requests/month",
             "API access",
             "Custom analytics",
-            "200 GB storage",
+            "500 GB storage",
             "Dedicated support"
           ],
           "cta": "Start Free Trial"
@@ -734,7 +734,7 @@
         },
         {
           "q": "Is there a free plan?",
-          "a": "Yes — free forever. 3 projects, 3 team members, 5 AI requests per month. No credit card required. Upgrade when you need more."
+          "a": "Yes — free forever. 3 projects, 3 team members, 1 free AI project generation. No credit card required. Upgrade when you need more."
         },
         {
           "q": "How secure is my data?",
