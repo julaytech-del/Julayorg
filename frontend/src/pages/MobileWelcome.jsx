@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Box, Button, Typography } from '@mui/material';
 import { useNavigate } from 'react-router-dom';
 
@@ -107,6 +107,13 @@ function AIIllustration() {
 
 export default function MobileWelcome() {
   const navigate = useNavigate();
+  const [idea, setIdea] = useState('');
+
+  const handleTryAI = () => {
+    if (!idea.trim()) return;
+    localStorage.setItem('julay_trial_idea', idea.trim());
+    navigate('/register');
+  };
 
   return (
     <Box sx={{
@@ -116,92 +123,104 @@ export default function MobileWelcome() {
       flexDirection: 'column',
       alignItems: 'center',
       px: 3,
-      pt: 7,
-      pb: 10,
+      pt: 6,
+      pb: 6,
     }}>
-      {/* Logo + Name */}
-      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 2 }}>
-        <img
-          src="/julay-logo-full.png"
-          alt="Julay.org"
-          style={{ height: 40, marginBottom: 10, filter: 'brightness(0) invert(1)', opacity: 0.9 }}
-        />
-        <Typography
-          sx={{
-            color: 'rgba(255,255,255,0.35)',
-            fontSize: '0.8rem',
-            letterSpacing: '0.15em',
-            fontWeight: 500,
-          }}
-        >
-          julay.org
-        </Typography>
-      </Box>
-
-      {/* Tagline */}
-      <Box sx={{ textAlign: 'center', mb: 2, px: 1 }}>
-        <Typography sx={{
-          color: 'white',
-          fontSize: '1.15rem',
-          fontWeight: 700,
-          lineHeight: 1.4,
-        }}>
-          We don't manage tasks.
-        </Typography>
-        <Typography sx={{
-          background: 'linear-gradient(90deg, #6366F1, #38BDF8)',
-          WebkitBackgroundClip: 'text',
-          WebkitTextFillColor: 'transparent',
-          fontSize: '1.15rem',
-          fontWeight: 700,
-          lineHeight: 1.4,
-        }}>
-          We design execution systems.
-        </Typography>
+      {/* Logo */}
+      <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', mb: 4 }}>
+        <img src="/julay-logo-full.png" alt="Julay.org"
+          style={{ height: 36, marginBottom: 8, filter: 'brightness(0) invert(1)', opacity: 0.9 }} />
       </Box>
 
       {/* Illustration */}
-      <Box sx={{ flex: 1, display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', py: 2 }}>
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'center', mb: 3 }}>
         <AIIllustration />
       </Box>
 
-      {/* Buttons */}
-      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
-        <Button
-          fullWidth
-          variant="contained"
-          size="large"
-          onClick={() => navigate('/login')}
-          sx={{
-            borderRadius: 3,
-            py: 1.8,
-            background: 'linear-gradient(135deg, #6366F1, #8B5CF6)',
-            fontWeight: 700,
-            fontSize: '1rem',
-            textTransform: 'none',
-            boxShadow: '0 4px 24px rgba(99,102,241,0.45)',
-          }}
-        >
-          Log in
-        </Button>
+      {/* Headline */}
+      <Box sx={{ textAlign: 'center', mb: 4, px: 1 }}>
+        <Typography sx={{ color: 'white', fontSize: '1.5rem', fontWeight: 800, lineHeight: 1.3, mb: 1 }}>
+          Describe your project.
+        </Typography>
+        <Typography sx={{
+          background: 'linear-gradient(90deg, #6366F1, #38BDF8)',
+          WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent',
+          fontSize: '1.5rem', fontWeight: 800, lineHeight: 1.3, mb: 1.5,
+        }}>
+          AI builds it instantly.
+        </Typography>
+        <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.85rem', lineHeight: 1.6 }}>
+          Type your idea below — free, no credit card needed.
+        </Typography>
+      </Box>
 
-        <Button
-          fullWidth
-          variant="outlined"
-          size="large"
+      {/* AI Input */}
+      <Box sx={{ width: '100%', mb: 1.5 }}>
+        <Box
+          component="textarea"
+          value={idea}
+          onChange={e => setIdea(e.target.value)}
+          rows={3}
+          placeholder='e.g. "Build a food delivery app for my city"'
+          sx={{
+            width: '100%', boxSizing: 'border-box',
+            border: '1.5px solid rgba(99,102,241,0.4)',
+            borderRadius: 2.5, p: 1.5,
+            background: 'rgba(255,255,255,0.05)',
+            color: 'white', fontSize: '0.95rem',
+            fontFamily: 'Inter, system-ui, sans-serif',
+            resize: 'none', outline: 'none',
+            lineHeight: 1.6,
+            '&::placeholder': { color: 'rgba(255,255,255,0.3)' },
+            '&:focus': { borderColor: '#6366F1', background: 'rgba(99,102,241,0.08)' },
+          }}
+        />
+      </Box>
+
+      <Button
+        fullWidth variant="contained" size="large"
+        onClick={handleTryAI}
+        sx={{
+          borderRadius: 3, py: 1.8,
+          background: idea.trim()
+            ? 'linear-gradient(135deg, #6366F1, #8B5CF6)'
+            : 'rgba(99,102,241,0.25)',
+          fontWeight: 700, fontSize: '1rem', textTransform: 'none',
+          boxShadow: idea.trim() ? '0 4px 24px rgba(99,102,241,0.45)' : 'none',
+          color: idea.trim() ? 'white' : 'rgba(255,255,255,0.4)',
+          mb: 3,
+          transition: 'all 0.2s',
+        }}
+      >
+        ✨ Try Free — See AI in Action
+      </Button>
+
+      {/* Divider */}
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, width: '100%', mb: 3 }}>
+        <Box sx={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+        <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.75rem' }}>or</Typography>
+        <Box sx={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.1)' }} />
+      </Box>
+
+      {/* Secondary buttons */}
+      <Box sx={{ width: '100%', display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+        <Button fullWidth variant="outlined" size="large"
           onClick={() => navigate('/register')}
           sx={{
-            borderRadius: 3,
-            py: 1.8,
-            fontWeight: 600,
-            fontSize: '1rem',
-            textTransform: 'none',
-            borderColor: 'rgba(99,102,241,0.4)',
+            borderRadius: 3, py: 1.5, fontWeight: 600, fontSize: '0.95rem',
+            textTransform: 'none', borderColor: 'rgba(99,102,241,0.4)',
             color: '#A5B4FC',
             '&:hover': { borderColor: '#6366F1', bgcolor: 'rgba(99,102,241,0.08)' },
-          }}
-        >
-          Create new account
+          }}>
+          Create account
+        </Button>
+        <Button fullWidth variant="text" size="large"
+          onClick={() => navigate('/login')}
+          sx={{
+            borderRadius: 3, py: 1.5, fontWeight: 600, fontSize: '0.95rem',
+            textTransform: 'none', color: 'rgba(255,255,255,0.4)',
+          }}>
+          Log in
         </Button>
       </Box>
     </Box>
