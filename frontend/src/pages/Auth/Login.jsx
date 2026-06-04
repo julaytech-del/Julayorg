@@ -186,11 +186,16 @@ export default function Login() {
     <Box sx={{ minHeight: '100vh', background: 'linear-gradient(135deg, #1E1B4B 0%, #312E81 50%, #1E1B4B 100%)' }}>
       {/* Navbar */}
       <Box sx={{ borderBottom: '1px solid #E5E7EB', px: { xs: 2, md: 4 }, py: 1.5, display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: '#fff', zIndex: 100 }}>
-        <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', gap: 1, textDecoration: 'none', color: '#1E1B4B' }}>
+        <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', gap: 1, textDecoration: 'none' }}>
           <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 32, objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
-          <Typography sx={{ fontWeight: 800, fontSize: '1.1rem', color: '#1E1B4B', letterSpacing: -0.3 }}>Julay</Typography>
         </Box>
-        <LanguageSwitcher />
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Box component={RouterLink} to="/" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, textDecoration: 'none', color: '#6B7280', fontSize: '0.85rem', fontWeight: 500, '&:hover': { color: '#111827' } }}>
+            <ArrowBack sx={{ fontSize: 16 }} />
+            Back to home
+          </Box>
+          <LanguageSwitcher />
+        </Box>
       </Box>
 
       <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', minHeight: 'calc(100vh - 56px)', p: 2 }}>
