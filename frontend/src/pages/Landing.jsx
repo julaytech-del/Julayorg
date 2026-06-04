@@ -832,7 +832,10 @@ export default function Landing() {
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: 4, justifyContent: 'space-between', mb: 5 }}>
             <Box sx={{ maxWidth: 280 }}>
               <Box sx={{ mb: 2 }}>
-                <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 30, objectFit: 'contain' }} />
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Box component="img" src="/icon-julay.png" alt="Julay" sx={{ height: 28, objectFit: 'contain' }} />
+                  <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1.1rem', letterSpacing: '-0.01em' }}>Julay.org</Typography>
+                </Box>
               </Box>
               <Typography sx={{ color: '#6B7280', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
             </Box>
