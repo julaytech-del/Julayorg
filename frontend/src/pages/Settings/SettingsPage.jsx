@@ -444,17 +444,20 @@ function BillingTab() {
   const aiLimit = sub?.aiLimit ?? 5;
   const aiPct = aiLimit > 0 ? Math.min(100, Math.round((aiUsed / aiLimit) * 100)) : 0;
 
-  const handleUpgrade = async (planId) => {
-    setUpgrading(planId);
-    try {
-      const res = await subscriptionAPI.checkout(planId);
-      const url = res?.data?.url || res?.url;
-      if (url) window.location.href = url;
-    } catch (err) {
-      alert('Failed to start checkout. Please try again.');
-    } finally {
-      setUpgrading('');
-    }
+  const { user: authUser } = useSelector(s => s.auth);
+
+  const LEMON_URLS = {
+    starter:      'https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce',
+    professional: 'https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071',
+    business:     'https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483',
+  };
+
+  const handleUpgrade = (planId) => {
+    const base = LEMON_URLS[planId];
+    if (!base) return;
+    const orgId = authUser?.organization?._id || authUser?.organization || '';
+    const email = encodeURIComponent(authUser?.email || '');
+    window.location.href = `${base}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
   };
 
   const handlePortal = async () => {
