@@ -8,6 +8,7 @@ import {
   Menu as MenuIcon, Search, Notifications,
 } from '@mui/icons-material';
 import { useNavigate, Navigate } from 'react-router-dom';
+import { useSelector } from 'react-redux';
 import { Capacitor } from '@capacitor/core';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from '../components/common/LanguageSwitcher.jsx';
@@ -282,9 +283,9 @@ const FEATURES_STRIP = [
 /* ─────────── LemonSqueezy checkout ──────────────────────────────── */
 // Replace null with checkout URL when store is approved
 const LEMON_URLS = {
-  starter:      null, // 'https://julay.lemonsqueezy.com/checkout/buy/STARTER_ID'
-  professional: null, // 'https://julay.lemonsqueezy.com/checkout/buy/PRO_ID'
-  business:     null,
+  starter:      'https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce',
+  professional: 'https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071',
+  business:     'https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483',
 };
 
 /* ═══════════════════════════════════════════════════════════ */
@@ -294,7 +295,21 @@ export default function Landing() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation();
   const isRTL = i18n.language === 'ar';
+  const { user } = useSelector(s => s.auth);
   const [billing, setBilling] = useState('monthly');
+
+  const handlePlanCheckout = (planId) => {
+    const base = LEMON_URLS[planId];
+    if (!base) { navigate(`/register?plan=${planId}`); return; }
+    if (user) {
+      const orgId = user.organization?._id || user.organization || '';
+      const email = encodeURIComponent(user.email || '');
+      window.location.href = `${base}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+    } else {
+      localStorage.setItem('julay_pending_plan', planId);
+      window.location.href = `/login?plan=${planId}`;
+    }
+  };
   const [openFaq, setOpenFaq]  = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [trialIdea, setTrialIdea] = useState('');
@@ -684,11 +699,7 @@ export default function Landing() {
                       {billing === 'yearly' && plan.price > 0 && <Typography sx={{ color: '#10B981', fontSize: '0.78rem', fontWeight: 600, mt: 0.5 }}>{t('landing.pricing.saveYear', { amount: (plan.price - plan.yearlyPrice) * 12 })}</Typography>}
                     </Box>
                     <Button
-                      onClick={() => {
-                        const url = LEMON_URLS[plan.id];
-                        if (url) window.open(url, '_blank');
-                        else navigate(`/register?plan=${plan.id}`);
-                      }}
+                      onClick={() => handlePlanCheckout(plan.id)}
                       variant={plan.ctaVariant} fullWidth
                       sx={{ mb: 3, py: 1.25, fontWeight: 700, borderRadius: 2, ...(plan.ctaVariant === 'contained' ? { background: 'linear-gradient(135deg,#6366F1,#8B5CF6)', boxShadow: '0 4px 16px rgba(99,102,241,0.35)', '&:hover': { opacity: 0.9 } } : { borderWidth: '1.5px', '&:hover': { borderWidth: '1.5px' } }) }}>
                       {plan.cta}
