@@ -358,19 +358,13 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
   const displayPrice = annual ? plan.annualMonthlyPrice : plan.monthlyPrice;
   const { user } = useSelector(s => s.auth);
 
-  const handleCheckout = async (e) => {
+  const handleCheckout = (e) => {
     if (!LEMON_URLS[plan.id]) return;
     e.preventDefault();
     if (user) {
-      // logged in — get checkout URL with org_id from backend
-      try {
-        const token = localStorage.getItem('julay_token');
-        const res = await fetch(`/api/lemonsqueezy/checkout?plan=${plan.id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        if (data.url) window.location.href = data.url;
-      } catch { window.location.href = LEMON_URLS[plan.id]; }
+      const orgId = user.organization?._id || user.organization || '';
+      const email = encodeURIComponent(user.email || '');
+      window.location.href = `${LEMON_URLS[plan.id]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
     } else {
       window.location.href = `/register?plan=${plan.id}`;
     }
