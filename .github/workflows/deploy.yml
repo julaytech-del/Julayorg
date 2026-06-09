@@ -125,6 +125,18 @@ jobs:
             grep -q '^UPLOADS_DIR=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^UPLOADS_DIR=.*|UPLOADS_DIR=/var/www/julay/uploads|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'UPLOADS_DIR=/var/www/julay/uploads' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^LS_WEBHOOK_SECRET=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^LS_WEBHOOK_SECRET=.*|LS_WEBHOOK_SECRET=julay-ls-webhook-2026|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'LS_WEBHOOK_SECRET=julay-ls-webhook-2026' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^LS_CHECKOUT_STARTER=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^LS_CHECKOUT_STARTER=.*|LS_CHECKOUT_STARTER=https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'LS_CHECKOUT_STARTER=https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^LS_CHECKOUT_PROFESSIONAL=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^LS_CHECKOUT_PROFESSIONAL=.*|LS_CHECKOUT_PROFESSIONAL=https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'LS_CHECKOUT_PROFESSIONAL=https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^LS_CHECKOUT_BUSINESS=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^LS_CHECKOUT_BUSINESS=.*|LS_CHECKOUT_BUSINESS=https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'LS_CHECKOUT_BUSINESS=https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483' >> /home/ubuntu/Julayorg/backend/.env
             pm2 restart julay-backend
           ENDSSH
 
