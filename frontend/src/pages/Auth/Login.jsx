@@ -33,10 +33,25 @@ function PasswordForm() {
 
   React.useEffect(() => { return () => dispatch(clearError()); }, []);
 
+  const LEMON_URLS = {
+    starter:      'https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce',
+    professional: 'https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071',
+    business:     'https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483',
+  };
+
   const handleSubmit = async e => {
     e.preventDefault();
     const res = await dispatch(loginUser({ email, password }));
     if (!res.error) {
+      const pendingPlan = localStorage.getItem('julay_pending_plan');
+      if (pendingPlan && LEMON_URLS[pendingPlan]) {
+        localStorage.removeItem('julay_pending_plan');
+        const user = res.payload?.user;
+        const orgId = user?.organization?._id || user?.organization || '';
+        const userEmail = encodeURIComponent(user?.email || email);
+        window.location.href = `${LEMON_URLS[pendingPlan]}?checkout[custom][org_id]=${orgId}&checkout[email]=${userEmail}`;
+        return;
+      }
       const trialIdea = localStorage.getItem('julay_trial_idea');
       if (trialIdea) {
         navigate('/dashboard/projects?try_ai=1&idea=' + encodeURIComponent(trialIdea));

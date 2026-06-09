@@ -366,7 +366,8 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
       const email = encodeURIComponent(user.email || '');
       window.location.href = `${LEMON_URLS[plan.id]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
     } else {
-      window.location.href = `/register?plan=${plan.id}`;
+      localStorage.setItem('julay_pending_plan', plan.id);
+      window.location.href = `/login?plan=${plan.id}`;
     }
   };
   const savePct = plan.monthlyPrice > 0 ? Math.round((1 - plan.annualMonthlyPrice / plan.monthlyPrice) * 100) : 0;
