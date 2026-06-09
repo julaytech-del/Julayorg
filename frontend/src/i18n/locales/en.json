@@ -675,7 +675,7 @@
             "10 GB storage",
             "Email support"
           ],
-          "cta": "Start Free Trial"
+          "cta": "Subscribe Now"
         },
         {
           "id": "professional",
@@ -696,7 +696,7 @@
             "50 GB storage",
             "Priority support"
           ],
-          "cta": "Start Free Trial"
+          "cta": "Subscribe Now"
         },
         {
           "id": "business",
@@ -715,7 +715,7 @@
             "500 GB storage",
             "Dedicated support"
           ],
-          "cta": "Start Free Trial"
+          "cta": "Subscribe Now"
         }
       ],
       "foundingBadge": "🔥 Founding member pricing — limited spots at this rate"
