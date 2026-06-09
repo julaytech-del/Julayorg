@@ -56,6 +56,21 @@ export default function GoogleAuthButton({ dark = false }) {
       try {
         const res = await api.post('/auth/google-code', { code, redirect_uri: REDIRECT_URI }, { timeout: 15000 });
         dispatch(setCredentials(res.data));
+
+        const LEMON_URLS = {
+          starter:      'https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce',
+          professional: 'https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071',
+          business:     'https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483',
+        };
+        const pendingPlan = localStorage.getItem('julay_pending_plan');
+        if (pendingPlan && LEMON_URLS[pendingPlan]) {
+          localStorage.removeItem('julay_pending_plan');
+          const user = res.data?.user;
+          const orgId = user?.organization?._id || user?.organization || '';
+          const email = encodeURIComponent(user?.email || '');
+          window.location.href = `${LEMON_URLS[pendingPlan]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+          return;
+        }
         navigate('/dashboard');
       } catch (err) {
         dispatch(showSnackbar({ message: err?.message || 'Google sign-in failed. Please try again.', severity: 'error' }));
