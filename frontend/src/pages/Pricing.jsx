@@ -39,9 +39,9 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 /* ─────────────────────── LemonSqueezy checkout ─────────────────── */
 // When store is approved, replace null with the checkout URL for each plan
 const LEMON_URLS = {
-  starter:      null, // 'https://julay.lemonsqueezy.com/checkout/buy/STARTER_ID'
-  professional: null, // 'https://julay.lemonsqueezy.com/checkout/buy/PRO_ID'
-  business:     null, // keep as /contact
+  starter:      'https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce',
+  professional: 'https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071',
+  business:     'https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483',
 };
 
 /* ─────────────────────────── constants ─────────────────────────── */
