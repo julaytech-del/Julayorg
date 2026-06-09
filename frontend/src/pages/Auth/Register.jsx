@@ -135,6 +135,18 @@ function PasswordRegister() {
     const res = await dispatch(registerUser({ ...form, ...(refCode ? { referredBy: refCode } : {}) }));
     if (!res.error) {
       trackEvent('registration_completed', { method: 'password' });
+      const plan = searchParams.get('plan');
+      const LEMON_URLS = {
+        starter:      'https://julay-org.lemonsqueezy.com/checkout/buy/1cbc841f-12c7-451f-8bb2-9be1015485ce',
+        professional: 'https://julay-org.lemonsqueezy.com/checkout/buy/5cf9c419-6c46-4098-8754-a27316c90071',
+        business:     'https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483',
+      };
+      if (plan && LEMON_URLS[plan]) {
+        const orgId = res.payload?.user?.organization?._id || res.payload?.user?.organization || '';
+        const email = encodeURIComponent(form.email);
+        window.location.href = `${LEMON_URLS[plan]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+        return;
+      }
       const trialIdea = localStorage.getItem('julay_trial_idea');
       if (trialIdea) {
         navigate('/dashboard/projects?try_ai=1&idea=' + encodeURIComponent(trialIdea));
