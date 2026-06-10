@@ -68,7 +68,7 @@ export default function GoogleAuthButton({ dark = false }) {
           const user = res.data?.user;
           const orgId = user?.organization?._id || user?.organization || '';
           const email = encodeURIComponent(user?.email || '');
-          window.location.href = `${LEMON_URLS[pendingPlan]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+          window.location.href = `${LEMON_URLS[pendingPlan]}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${pendingPlan}&checkout[email]=${email}`;
           return;
         }
         navigate('/dashboard');

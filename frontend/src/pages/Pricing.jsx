@@ -364,7 +364,7 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
     if (user) {
       const orgId = user.organization?._id || user.organization || '';
       const email = encodeURIComponent(user.email || '');
-      window.location.href = `${LEMON_URLS[plan.id]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+      window.location.href = `${LEMON_URLS[plan.id]}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${planId}&checkout[email]=${email}`;
     } else {
       localStorage.setItem('julay_pending_plan', plan.id);
       window.location.href = `/login?plan=${plan.id}`;

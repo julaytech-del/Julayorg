@@ -71,7 +71,8 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
   try {
     if (eventName === 'subscription_created' || eventName === 'subscription_updated') {
       const variantId = String(data?.variant_id);
-      const plan = VARIANT_TO_PLAN[variantId];
+      const VALID_PLANS = ['starter', 'professional', 'business', 'enterprise'];
+      const plan = VALID_PLANS.includes(custom.plan) ? custom.plan : VARIANT_TO_PLAN[variantId];
 
       if (orgId && plan && data?.status === 'active') {
         const expiresAt = data.renews_at ? new Date(data.renews_at) : null;

@@ -144,7 +144,7 @@ function PasswordRegister() {
       if (plan && LEMON_URLS[plan]) {
         const orgId = res.payload?.user?.organization?._id || res.payload?.user?.organization || '';
         const email = encodeURIComponent(form.email);
-        window.location.href = `${LEMON_URLS[plan]}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+        window.location.href = `${LEMON_URLS[plan]}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${plan}&checkout[email]=${email}`;
         return;
       }
       const trialIdea = localStorage.getItem('julay_trial_idea');

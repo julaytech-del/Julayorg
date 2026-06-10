@@ -49,7 +49,7 @@ function PasswordForm() {
         const user = res.payload?.user;
         const orgId = user?.organization?._id || user?.organization || '';
         const userEmail = encodeURIComponent(user?.email || email);
-        window.location.href = `${LEMON_URLS[pendingPlan]}?checkout[custom][org_id]=${orgId}&checkout[email]=${userEmail}`;
+        window.location.href = `${LEMON_URLS[pendingPlan]}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${pendingPlan}&checkout[email]=${userEmail}`;
         return;
       }
       const trialIdea = localStorage.getItem('julay_trial_idea');

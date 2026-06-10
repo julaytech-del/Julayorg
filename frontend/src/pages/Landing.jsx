@@ -304,7 +304,7 @@ export default function Landing() {
     if (user) {
       const orgId = user.organization?._id || user.organization || '';
       const email = encodeURIComponent(user.email || '');
-      window.location.href = `${base}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+      window.location.href = `${base}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${planId}&checkout[email]=${email}`;
     } else {
       localStorage.setItem('julay_pending_plan', planId);
       window.location.href = `/login?plan=${planId}`;

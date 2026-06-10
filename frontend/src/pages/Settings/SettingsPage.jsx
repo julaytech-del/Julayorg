@@ -457,7 +457,7 @@ function BillingTab() {
     if (!base) return;
     const orgId = authUser?.organization?._id || authUser?.organization || '';
     const email = encodeURIComponent(authUser?.email || '');
-    window.location.href = `${base}?checkout[custom][org_id]=${orgId}&checkout[email]=${email}`;
+    window.location.href = `${base}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${planId}&checkout[email]=${email}`;
   };
 
   const handlePortal = async () => {
