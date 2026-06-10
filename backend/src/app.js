@@ -46,7 +46,10 @@ const allowedOrigins = ['https://julay.org', 'https://www.julay.org', 'https://a
 app.use(cors({ origin: (origin, cb) => { if (!origin || allowedOrigins.includes(origin)) cb(null, true); else cb(null, false); }, credentials: true }));
 app.use(helmet({ contentSecurityPolicy: false }));
 app.use(morgan(process.env.NODE_ENV === 'production' ? 'combined' : 'dev'));
-app.use(express.json({ limit: '10mb' }));
+app.use((req, res, next) => {
+  if (req.path === '/api/lemonsqueezy/webhook') return next();
+  express.json({ limit: '10mb' })(req, res, next);
+});
 app.use(express.urlencoded({ extended: true }));
 
 const isTest = process.env.NODE_ENV === 'test';
