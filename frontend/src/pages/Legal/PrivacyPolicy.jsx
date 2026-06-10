@@ -158,17 +158,20 @@ export default function PrivacyPolicy() {
         </Box>
 
         {/* Footer */}
-        <Box sx={{ mt: 8, pt: 4, borderTop: `1px solid ${BORDER}`, display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
-          <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem' }}>
-            © {new Date().getFullYear()} Julay Group LLC. All rights reserved.
-          </Typography>
-          <Box sx={{ display: 'flex', gap: 2.5 }}>
-            <Link component={RouterLink} to="/terms" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>
-              Terms of Service
-            </Link>
-            <Link href="mailto:support@julay.org" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>
-              support@julay.org
-            </Link>
+        <Box sx={{ mt: 8, pt: 4, borderTop: `1px solid ${BORDER}` }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+            <Box component="img" src="/icon-julay.png" alt="Julay" sx={{ height: 24, objectFit: 'contain' }} />
+            <Typography sx={{ color: 'white', fontWeight: 700, fontSize: '1rem' }}>Julay.org</Typography>
+          </Box>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
+            <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem' }}>
+              © {new Date().getFullYear()} Julay Group LLC. All rights reserved.
+            </Typography>
+            <Box sx={{ display: 'flex', gap: 2.5 }}>
+              <Link component={RouterLink} to="/terms" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>Terms</Link>
+              <Link component={RouterLink} to="/privacy" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>Privacy</Link>
+              <Link href="mailto:support@julay.org" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>support@julay.org</Link>
+            </Box>
           </Box>
         </Box>
       </Container>

@@ -186,6 +186,16 @@ export default function App() {
         <Route path="/terms"   element={<Suspense fallback={<PageLoader />}><TermsOfService /></Suspense>} />
         <Route path="/help"    element={<Suspense fallback={<PageLoader />}><HelpPage /></Suspense>} />
 
+        {/* ── Secondary public pages ── */}
+        <Route path="/about"     element={<Navigate to="/"        replace />} />
+        <Route path="/blog"      element={<Navigate to="/"        replace />} />
+        <Route path="/careers"   element={<Navigate to="/contact" replace />} />
+        <Route path="/changelog" element={<Navigate to="/"        replace />} />
+        <Route path="/security"  element={<Navigate to="/privacy" replace />} />
+        <Route path="/cookies"   element={<Navigate to="/privacy" replace />} />
+        <Route path="/faq"       element={<Navigate to="/pricing" replace />} />
+        <Route path="/compare"   element={<Navigate to="/pricing" replace />} />
+
         {/* ── Short redirects ── */}
         <Route path="/ai"             element={<Navigate to="/dashboard/ai"       replace />} />
         <Route path="/projects"       element={<Navigate to="/dashboard/projects" replace />} />
