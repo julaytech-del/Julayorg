@@ -49,6 +49,8 @@ export default function CookieConsent() {
 
   useEffect(() => {
     const stored = getStoredConsent();
+    const isLoggedIn = !!localStorage.getItem('julay_token');
+    if (isLoggedIn) { saveConsent(true, false); return; }
     if (!stored) setVisible(true);
   }, []);
 
