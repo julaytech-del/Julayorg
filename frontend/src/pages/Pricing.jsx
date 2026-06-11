@@ -498,7 +498,9 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
               }
         }
       >
-        {plan.cta}
+        {plan.monthlyPrice > 0
+          ? `Subscribe — $${annual ? plan.annualMonthlyPrice : plan.monthlyPrice}/mo`
+          : plan.cta}
       </Button>
       {plan.ctaNote && (
         <Typography sx={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>
@@ -525,7 +527,7 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
 /* ─────────────────────────── Main Page ─────────────────────────── */
 
 export default function Pricing() {
-  const [annual, setAnnual] = useState(true);
+  const [annual, setAnnual] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
 
