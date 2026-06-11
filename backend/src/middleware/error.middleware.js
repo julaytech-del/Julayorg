@@ -1,3 +1,19 @@
+import { notifyOwner } from '../services/notify.service.js';
+
+// Throttle server-error alerts: at most 1 per 60s for the same route+message,
+// so a recurring crash doesn't flood the owner with hundreds of pings.
+const recentAlerts = new Map();
+function shouldAlert(key) {
+  const now = Date.now();
+  const last = recentAlerts.get(key) || 0;
+  if (now - last < 60 * 1000) return false;
+  recentAlerts.set(key, now);
+  if (recentAlerts.size > 200) {
+    for (const [k, t] of recentAlerts) if (now - t > 5 * 60 * 1000) recentAlerts.delete(k);
+  }
+  return true;
+}
+
 export const errorHandler = (err, req, res, next) => {
   console.error('Error:', err.message);
 
@@ -20,6 +36,19 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   const status = err.statusCode || err.status || 500;
+
+  // Alert the owner only on real server errors (5xx), throttled.
+  if (status >= 500) {
+    const key = `${req.method} ${req.originalUrl}:${err.message}`;
+    if (shouldAlert(key)) {
+      notifyOwner({
+        emoji: '🔥',
+        title: 'Server error (app crash)',
+        fields: { Route: `${req.method} ${req.originalUrl}`, Error: err.message },
+      });
+    }
+  }
+
   res.status(status).json({
     success: false,
     message: err.message || 'Internal server error'

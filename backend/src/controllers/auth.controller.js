@@ -8,6 +8,7 @@ import Invite from '../models/Invite.js';
 import OTP from '../models/OTP.js';
 import { sendOTPEmail } from '../utils/email.js';
 import { sendInvite, sendPasswordReset } from '../services/email.service.js';
+import { notifyOwner } from '../services/notify.service.js';
 import PasswordReset from '../models/PasswordReset.js';
 import { OAuth2Client } from 'google-auth-library';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
@@ -65,6 +66,12 @@ export const register = async (req, res, next) => {
 
     const token = signToken(user._id);
     const userData = await User.findById(user._id).populate('role').populate('department').populate('organization');
+
+    notifyOwner({
+      emoji: '🎉',
+      title: 'New account created',
+      fields: { Name: name, Email: email, Organization: org.name },
+    });
 
     res.status(201).json({ success: true, data: { token, user: userData } });
   } catch (err) {
@@ -274,6 +281,7 @@ export const verifyOTPRegister = async (req, res, next) => {
 
     const token = signToken(user._id);
     const userData = await User.findById(user._id).populate('role').populate('department');
+    notifyOwner({ emoji: '🎉', title: 'New account created (email code)', fields: { Name: name, Email: email, Organization: org.name } });
     res.status(201).json({ success: true, data: { token, user: userData } });
   } catch (err) { next(err); }
 };
@@ -327,6 +335,7 @@ export const googleCodeAuth = async (req, res, next) => {
 
     const token = signToken(user._id);
     const userData = await User.findById(user._id).populate('role').populate('department');
+    notifyOwner({ emoji: "🎉", title: "New account created (Google)", fields: { Name: name, Email: email } });
     res.status(201).json({ success: true, data: { token, user: userData } });
   } catch (err) { next(err); }
 };
@@ -362,6 +371,7 @@ export const googleAuth = async (req, res, next) => {
 
     const token = signToken(user._id);
     const userData = await User.findById(user._id).populate('role').populate('department');
+    notifyOwner({ emoji: "🎉", title: "New account created (Google)", fields: { Name: name, Email: email } });
     res.status(201).json({ success: true, data: { token, user: userData } });
   } catch (err) { next(err); }
 };

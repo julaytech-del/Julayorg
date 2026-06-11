@@ -2,6 +2,7 @@ import express, { Router } from 'express';
 import crypto from 'crypto';
 import { protect } from '../middleware/auth.middleware.js';
 import Organization from '../models/Organization.js';
+import { notifyOwner } from '../services/notify.service.js';
 
 const router = Router();
 
@@ -86,6 +87,13 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
           'subscription.aiUsedThisMonth': 0,
         });
         console.log('[LS webhook] upgraded org', orgId, '→', plan);
+        if (eventName === 'subscription_created') {
+          notifyOwner({
+            emoji: '💰',
+            title: 'New paid subscription!',
+            fields: { Plan: plan, Customer: data?.user_email || custom.email, Renews: data?.renews_at },
+          });
+        }
       }
     }
 
@@ -110,6 +118,19 @@ router.post('/webhook', express.raw({ type: 'application/json' }), async (req, r
         });
         console.log('[LS webhook] downgraded org', orgId, '→ free');
       }
+      notifyOwner({
+        emoji: eventName === 'subscription_payment_failed' ? '⚠️' : '📉',
+        title: eventName === 'subscription_payment_failed' ? 'Payment failed' : 'Subscription expired',
+        fields: { Customer: data?.user_email || custom.email, Event: eventName },
+      });
+    }
+
+    if (eventName === 'subscription_cancelled') {
+      notifyOwner({
+        emoji: '🚪',
+        title: 'Subscription cancelled',
+        fields: { Customer: data?.user_email || custom.email, 'Active until': data?.ends_at },
+      });
     }
   } catch (err) {
     console.error('[LS webhook] error:', err.message);

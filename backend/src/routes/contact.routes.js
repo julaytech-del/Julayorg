@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import rateLimit from 'express-rate-limit';
 import { sendContactEmail } from '../utils/email.js';
+import { notifyOwner } from '../services/notify.service.js';
 
 const router = Router();
 
@@ -31,6 +32,12 @@ router.post('/', contactLimiter, async (req, res) => {
     }
 
     await sendContactEmail({ name: name.trim(), email: email.trim(), subject, message: message.trim() });
+
+    notifyOwner({
+      emoji: '✉️',
+      title: 'New contact message',
+      fields: { From: name.trim(), Email: email.trim(), Topic: subject, Message: message.trim().slice(0, 300) },
+    });
 
     res.json({ success: true, message: 'Message received. We\'ll be in touch soon.' });
   } catch (err) {

@@ -137,6 +137,15 @@ jobs:
             grep -q '^LS_CHECKOUT_BUSINESS=' /home/ubuntu/Julayorg/backend/.env \
               && sed -i 's|^LS_CHECKOUT_BUSINESS=.*|LS_CHECKOUT_BUSINESS=https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483|' /home/ubuntu/Julayorg/backend/.env \
               || echo 'LS_CHECKOUT_BUSINESS=https://julay-org.lemonsqueezy.com/checkout/buy/3e535e8b-e2c0-4427-8de1-0f4e72390483' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^OWNER_ALERT_EMAIL=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^OWNER_ALERT_EMAIL=.*|OWNER_ALERT_EMAIL=admin@julay.org|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'OWNER_ALERT_EMAIL=admin@julay.org' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^TG_BOT_TOKEN=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^TG_BOT_TOKEN=.*|TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'TG_BOT_TOKEN=${{ secrets.TG_BOT_TOKEN }}' >> /home/ubuntu/Julayorg/backend/.env
+            grep -q '^TG_CHAT_ID=' /home/ubuntu/Julayorg/backend/.env \
+              && sed -i 's|^TG_CHAT_ID=.*|TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}|' /home/ubuntu/Julayorg/backend/.env \
+              || echo 'TG_CHAT_ID=${{ secrets.TG_CHAT_ID }}' >> /home/ubuntu/Julayorg/backend/.env
             pm2 restart julay-backend
           ENDSSH
 
