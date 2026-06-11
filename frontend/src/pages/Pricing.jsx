@@ -151,7 +151,7 @@ const FAQS = [
   },
   {
     q: 'Do you offer discounts for non-profits or education?',
-    a: 'We offer a 50% discount for registered non-profits and accredited educational institutions. Reach out to us at hello@julay.org with proof of eligibility and we\'ll apply the discount right away.',
+    a: 'We offer a 50% discount for registered non-profits and accredited educational institutions. Reach out to us at admin@julay.org with proof of eligibility and we\'ll apply the discount right away.',
   },
   {
     q: 'How do I cancel my subscription?',

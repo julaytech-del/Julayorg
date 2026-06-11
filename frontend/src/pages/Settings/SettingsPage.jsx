@@ -525,7 +525,7 @@ function BillingTab() {
                     </Button>
                   )}
                   {plan.id === 'enterprise' && !isCurrent && (
-                    <Button fullWidth variant="outlined" href="mailto:hello@julay.org"
+                    <Button fullWidth variant="outlined" href="mailto:admin@julay.org"
                       sx={{ borderColor: '#6366F1', color: '#6366F1', textTransform: 'none' }}>
                       Contact Sales
                     </Button>

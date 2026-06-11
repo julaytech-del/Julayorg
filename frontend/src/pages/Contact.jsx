@@ -177,7 +177,7 @@ export default function Contact() {
 
             <noscript>
               <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', mt: 2, textAlign: 'center' }}>
-                Email us directly: <a href="mailto:hello@julay.org" style={{ color: '#818CF8' }}>hello@julay.org</a>
+                Email us directly: <a href="mailto:admin@julay.org" style={{ color: '#818CF8' }}>admin@julay.org</a>
               </Typography>
             </noscript>
           </Box>
@@ -185,7 +185,7 @@ export default function Contact() {
 
         <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: 3, flexWrap: 'wrap' }}>
           {[
-            { label: 'General', email: 'hello@julay.org' },
+            { label: 'General', email: 'admin@julay.org' },
             { label: 'Support', email: 'support@julay.org' },
             { label: 'Privacy', email: 'privacy@julay.org' },
           ].map(({ label, email }) => (
