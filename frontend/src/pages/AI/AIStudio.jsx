@@ -14,6 +14,7 @@ function StandupCard({ projects }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { standupReport, loading } = useSelector(s => s.ai);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [projectId, setProjectId] = useState('');
   const [generated, setGenerated] = useState(false);
 
@@ -54,6 +55,7 @@ function PerformanceCard({ projects }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { performanceReport, loading } = useSelector(s => s.ai);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [projectId, setProjectId] = useState('');
   const [generated, setGenerated] = useState(false);
 
@@ -91,6 +93,7 @@ function ReplanCard({ projects }) {
   const dispatch = useDispatch();
   const { t } = useTranslation();
   const { replanResult, loading } = useSelector(s => s.ai);
+  const accent = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const [projectId, setProjectId] = useState('');
   const [reason, setReason] = useState('');
   const [generated, setGenerated] = useState(false);
