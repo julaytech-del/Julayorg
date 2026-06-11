@@ -9,6 +9,7 @@ import Project from '../models/Project.js';
 import PlatformSettings, { getSettings } from '../models/PlatformSettings.js';
 import Announcement from '../models/Announcement.js';
 import { sendReportEmail } from '../utils/email.js';
+import { getAnalyticsStats } from '../services/analytics.service.js';
 import nodemailer from 'nodemailer';
 
 const router = express.Router();
@@ -69,6 +70,13 @@ router.get('/settings/public', protect, async (req, res) => {
 
 // ── Owner-only from here ──────────────────────────────────────────────────────
 router.use(protect, ownerOnly);
+
+// ── Traffic analytics (visitors) — owner-authenticated ────────────────────────
+router.get('/analytics', async (req, res) => {
+  try {
+    res.json({ success: true, data: await getAnalyticsStats() });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
 
 // ── Stats ─────────────────────────────────────────────────────────────────────
 router.get('/stats', async (req, res) => {

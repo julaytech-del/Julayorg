@@ -17,6 +17,7 @@ import {
   ExpandMore, Edit, Save, Add, Dns, Circle,
   Warning, Info, Error as ErrorIcon, CheckCircleOutline,
   Campaign, Send, PowerSettingsNew, Tune, CreditCard, BarChart,
+  Public, Language, TouchApp, Visibility,
 } from '@mui/icons-material';
 import { BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, Cell } from 'recharts';
 import { format } from 'date-fns';
@@ -211,6 +212,16 @@ export default function OwnerAdminPanel() {
     } catch {} finally { setSystemLoading(false); }
   }, []);
 
+  const [traffic, setTraffic] = useState(null);
+  const [trafficLoading, setTrafficLoading] = useState(false);
+  const fetchTraffic = useCallback(async () => {
+    setTrafficLoading(true);
+    try {
+      const res = await api.get('/owner/analytics');
+      setTraffic(res.data || res);
+    } catch {} finally { setTrafficLoading(false); }
+  }, []);
+
   useEffect(() => {
     if (!isOwner) return;
     Promise.all([fetchStats(), fetchGrowth()]).finally(() => setLoading(false));
@@ -221,6 +232,7 @@ export default function OwnerAdminPanel() {
   useEffect(() => { if (isOwner && tab === 4) fetchSettings(); }, [tab, isOwner]);
   useEffect(() => { if (isOwner && tab === 5) fetchPlans(); }, [tab, isOwner]);
   useEffect(() => { if (isOwner && tab === 6) fetchAnnouncements(); }, [tab, isOwner]);
+  useEffect(() => { if (isOwner && tab === 10) fetchTraffic(); }, [tab, isOwner]);
   // System tab: do NOT auto-fetch — show placeholder until user clicks Refresh
 
   // ── Handlers ────────────────────────────────────────────────────────────────
@@ -415,6 +427,7 @@ export default function OwnerAdminPanel() {
           <Tab label="Email Blast" icon={<Email sx={{ fontSize: 16 }} />} iconPosition="start" />
           <Tab label="System" icon={<Dns sx={{ fontSize: 16 }} />} iconPosition="start" />
           <Tab label="Mobile" icon={<Android sx={{ fontSize: 16 }} />} iconPosition="start" />
+          <Tab label="Traffic" icon={<Public sx={{ fontSize: 16 }} />} iconPosition="start" />
         </Tabs>
       </Box>
 
@@ -1143,6 +1156,84 @@ export default function OwnerAdminPanel() {
             </Card>
           </Grid>
         </Grid>
+      )}
+
+      {/* ── Traffic (visitor analytics) ──────────────────────────────────────── */}
+      {tab === 10 && (
+        <Box sx={{ mt: 1 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+            <Typography variant="subtitle1" fontWeight={700}>Site Traffic</Typography>
+            <Button size="small" startIcon={<Refresh sx={{ fontSize: 16 }} />} onClick={fetchTraffic} disabled={trafficLoading} sx={{ textTransform: 'none' }}>
+              {trafficLoading ? 'Loading…' : 'Refresh'}
+            </Button>
+          </Box>
+
+          {!traffic && trafficLoading && <LinearProgress />}
+          {traffic && (
+            <>
+              {/* Stat cards */}
+              <Grid container spacing={2} sx={{ mb: 2 }}>
+                <Grid item xs={6} md={3}><StatCard icon={Circle} label="Active Now" value={traffic.active} sub="visitors (5 min)" color="#10B981" /></Grid>
+                <Grid item xs={6} md={3}><StatCard icon={Visibility} label="Today" value={traffic.today} sub="page views" color="#6366F1" /></Grid>
+                <Grid item xs={6} md={3}><StatCard icon={BarChart} label="This Week" value={traffic.week} sub="page views" color="#8B5CF6" /></Grid>
+                <Grid item xs={6} md={3}><StatCard icon={TrendingUp} label="This Month" value={traffic.month} sub="page views" color="#F59E0B" /></Grid>
+                <Grid item xs={6} md={3}><StatCard icon={TouchApp} label="Bounce Rate" value={`${traffic.bounceRate}%`} sub="single-page" color="#EF4444" /></Grid>
+                <Grid item xs={6} md={3}><StatCard icon={Speed} label="Avg Session" value={`${Math.round((traffic.avgDuration||0)/60)}m`} sub="on site" color="#0EA5E9" /></Grid>
+              </Grid>
+
+              {/* Conversion funnel */}
+              <Card sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2.5 }} elevation={0}>
+                <CardContent>
+                  <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Conversion Funnel <Typography component="span" variant="caption" color="text.disabled">(7 days, unique sessions)</Typography></Typography>
+                  {[
+                    { label: '🏠 Homepage', val: traffic.funnel?.home },
+                    { label: '💲 Pricing', val: traffic.funnel?.pricing },
+                    { label: '📝 Register / Login', val: traffic.funnel?.register },
+                    { label: '📊 Dashboard', val: traffic.funnel?.dashboard },
+                  ].map((s, i) => {
+                    const max = traffic.funnel?.home || 1;
+                    const pct = Math.round(((s.val || 0) / max) * 100);
+                    return (
+                      <Box key={i} sx={{ mb: 1 }}>
+                        <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.25 }}>
+                          <Typography variant="caption" fontWeight={600}>{s.label}</Typography>
+                          <Typography variant="caption" color="text.secondary">{s.val || 0} · {pct}%</Typography>
+                        </Box>
+                        <LinearProgress variant="determinate" value={pct} sx={{ height: 8, borderRadius: 4, bgcolor: 'action.hover', '& .MuiLinearProgress-bar': { bgcolor: '#6366F1' } }} />
+                      </Box>
+                    );
+                  })}
+                </CardContent>
+              </Card>
+
+              {/* Top pages / referrers / languages */}
+              <Grid container spacing={2}>
+                {[
+                  { title: 'Top Pages', rows: (traffic.topPages||[]).map(p => [p.page, p.views]) },
+                  { title: 'Top Referrers', rows: (traffic.topReferrers||[]).map(r => [r.referrer || 'Direct', r.views]) },
+                  { title: 'Top Clicked', rows: (traffic.topClicks||[]).map(c => [c.element, c.count]) },
+                  { title: 'Languages', rows: (traffic.topLanguages||[]).map(l => [l.language, l.count]) },
+                  { title: 'Devices', rows: (traffic.deviceBreakdown||[]).map(d => [d.device, d.count]) },
+                ].map((tbl, ti) => (
+                  <Grid item xs={12} md={6} key={ti}>
+                    <Card sx={{ border: '1px solid', borderColor: 'divider', borderRadius: 2.5, height: '100%' }} elevation={0}>
+                      <CardContent>
+                        <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1 }}>{tbl.title}</Typography>
+                        {tbl.rows.length === 0 && <Typography variant="caption" color="text.disabled">No data yet</Typography>}
+                        {tbl.rows.slice(0, 8).map(([k, v], ri) => (
+                          <Box key={ri} sx={{ display: 'flex', justifyContent: 'space-between', py: 0.4, borderBottom: ri < Math.min(tbl.rows.length, 8) - 1 ? '1px solid' : 'none', borderColor: 'divider' }}>
+                            <Typography variant="caption" sx={{ overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap', maxWidth: '75%' }}>{k}</Typography>
+                            <Typography variant="caption" fontWeight={700}>{v}</Typography>
+                          </Box>
+                        ))}
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                ))}
+              </Grid>
+            </>
+          )}
+        </Box>
       )}
 
       {/* ── Dialogs ────────────────────────────────────────────────────────────── */}
