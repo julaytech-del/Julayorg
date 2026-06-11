@@ -11,7 +11,7 @@ import {
 } from '@mui/material';
 import {
   People, Business, AttachMoney, TrendingUp, Search, Refresh,
-  Delete, Shield, CheckCircle, Cancel, Star, Lock,
+  Delete, Shield, CheckCircle, Cancel, Star, Lock, Block, LockOpen,
   Android, Apple, Download, OpenInNew, Build,
   Settings, Notifications, Email, Memory, Storage, Speed,
   ExpandMore, Edit, Save, Add, Dns, Circle,
@@ -246,6 +246,17 @@ export default function OwnerAdminPanel() {
     } catch {
       dispatch(showSnackbar({ message: 'Failed to delete user.', severity: 'error' }));
     } finally { setDeleting(false); }
+  };
+
+  const handleToggleBlock = async (u) => {
+    const next = !u.blocked;
+    try {
+      await api.patch(`/owner/users/${u._id}/block`, { blocked: next });
+      fetchUsers();
+      dispatch(showSnackbar({ message: next ? `"${u.name}" suspended.` : `"${u.name}" unblocked.`, severity: 'success' }));
+    } catch (err) {
+      dispatch(showSnackbar({ message: err?.response?.data?.message || 'Failed to update user.', severity: 'error' }));
+    }
   };
 
   const handleDeleteOrg = async () => {
@@ -503,7 +514,10 @@ export default function OwnerAdminPanel() {
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                       <Avatar sx={{ width: 30, height: 30, fontSize: '0.75rem', bgcolor: '#8B5CF618', color: '#8B5CF6' }} src={u.avatar}>{u.name?.[0]?.toUpperCase()}</Avatar>
                       <Box>
-                        <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.82rem' }}>{u.name}</Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.75 }}>
+                          <Typography variant="body2" fontWeight={600} sx={{ fontSize: '0.82rem' }}>{u.name}</Typography>
+                          {u.blocked && <Chip label="Suspended" size="small" sx={{ height: 16, fontSize: '0.6rem', fontWeight: 700, bgcolor: '#FEE2E2', color: '#DC2626' }} />}
+                        </Box>
                         <Typography variant="caption" color="text.disabled" sx={{ fontSize: '0.68rem' }}>{u.email}</Typography>
                       </Box>
                     </Box>
@@ -513,6 +527,11 @@ export default function OwnerAdminPanel() {
                   <TableCell>{u.twoFactor?.enabled ? <CheckCircle sx={{ fontSize: 16, color: '#10B981' }} /> : <Cancel sx={{ fontSize: 16, color: '#94A3B8' }} />}</TableCell>
                   <TableCell><Typography variant="caption" color="text.secondary">{u.createdAt ? format(new Date(u.createdAt), 'MMM d, yyyy') : '—'}</Typography></TableCell>
                   <TableCell>
+                    <Tooltip title={u.blocked ? 'Unblock user' : 'Suspend user'}>
+                      <IconButton size="small" onClick={() => handleToggleBlock(u)} sx={{ color: u.blocked ? '#10B981' : '#F59E0B' }}>
+                        {u.blocked ? <LockOpen sx={{ fontSize: 16 }} /> : <Block sx={{ fontSize: 16 }} />}
+                      </IconButton>
+                    </Tooltip>
                     <Tooltip title="Delete user">
                       <IconButton size="small" onClick={() => setDeleteDialog({ userId: u._id, userName: u.name })} sx={{ color: 'error.main' }}>
                         <Delete sx={{ fontSize: 16 }} />

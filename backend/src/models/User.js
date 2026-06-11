@@ -20,6 +20,7 @@ const userSchema = new mongoose.Schema({
     timezone: { type: String, default: 'UTC' }
   },
   status: { type: String, enum: ['active', 'inactive', 'busy', 'away'], default: 'active' },
+  blocked: { type: Boolean, default: false },
   performance: {
     score: { type: Number, default: 100 },
     tasksCompleted: { type: Number, default: 0 },

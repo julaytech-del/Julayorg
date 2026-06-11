@@ -88,6 +88,9 @@ export const login = async (req, res, next) => {
     if (!user || !(await user.comparePassword(password))) {
       return res.status(401).json({ success: false, message: 'Invalid credentials' });
     }
+    if (user.blocked) {
+      return res.status(403).json({ success: false, message: 'Your account has been suspended. Contact support@julay.org.' });
+    }
 
     await User.findByIdAndUpdate(user._id, { lastActive: new Date() });
 

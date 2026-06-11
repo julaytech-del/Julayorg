@@ -187,10 +187,22 @@ router.get('/users', async (req, res) => {
       User.find(filter).sort({ createdAt: -1 })
         .skip((page - 1) * limit).limit(Number(limit))
         .populate('organization', 'name subscription.plan')
-        .select('name email avatar createdAt lastActive status twoFactor.enabled'),
+        .select('name email avatar createdAt lastActive status blocked twoFactor.enabled'),
       User.countDocuments(filter)
     ]);
     res.json({ success: true, data: users, total, pages: Math.ceil(total / limit) });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
+// Block / unblock a user (suspend without deleting)
+router.patch('/users/:id/block', async (req, res) => {
+  try {
+    const user = await User.findById(req.params.id);
+    if (!user) return res.status(404).json({ success: false, message: 'User not found' });
+    if (user.email === OWNER_EMAIL) return res.status(400).json({ success: false, message: 'Cannot block owner account' });
+    user.blocked = req.body.blocked === true;
+    await user.save();
+    res.json({ success: true, data: { id: user._id, blocked: user.blocked } });
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
