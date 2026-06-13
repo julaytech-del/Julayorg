@@ -9,8 +9,8 @@ export const protect = async (req, res, next) => {
     }
 
     const token = authHeader.split(' ')[1];
-    const jwtSecret = process.env.JWT_SECRET || 'fallback-secret';
-    const decoded = jwt.verify(token, jwtSecret);
+    if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET not configured');
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
     const user = await User.findById(decoded.id).populate('role').populate('department').populate('organization');
     if (!user) {

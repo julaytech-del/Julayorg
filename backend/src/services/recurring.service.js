@@ -35,6 +35,7 @@ const processRecurring = async () => {
       await Task.create({
         title: task.title,
         description: task.description,
+        organization: task.organization,
         project: task.project,
         goal: task.goal,
         status: 'planned',

@@ -3,6 +3,7 @@ import mongoose from 'mongoose';
 const goalSchema = new mongoose.Schema({
   title: { type: String, required: true, trim: true },
   description: { type: String },
+  organization: { type: mongoose.Schema.Types.ObjectId, ref: 'Organization', required: true, index: true },
   project: { type: mongoose.Schema.Types.ObjectId, ref: 'Project', required: true },
   status: { type: String, enum: ['not_started', 'in_progress', 'completed', 'blocked'], default: 'not_started' },
   priority: { type: String, enum: ['critical', 'high', 'medium', 'low'], default: 'medium' },

@@ -114,6 +114,7 @@ export const generatePlan = async (req, res, next) => {
         title: goalData.title,
         description: goalData.description,
         project: project._id,
+        organization: orgId,
         order: goalData.order || 0,
         dueDate: goalData.dueDate,
         color: goalData.color,
@@ -130,6 +131,7 @@ export const generatePlan = async (req, res, next) => {
           title: taskData.title,
           description: taskData.description,
           project: project._id,
+          organization: orgId,
           goal: goal._id,
           type: taskData.type || 'other',
           priority: taskData.priority || 'medium',
@@ -181,11 +183,11 @@ export const generatePlan = async (req, res, next) => {
 
 export const assignTeamToProject = async (req, res, next) => {
   try {
-    const project = await Project.findById(req.params.projectId).populate('team.user');
+    const orgId = req.user.organization._id || req.user.organization;
+    const project = await Project.findOne({ _id: req.params.projectId, organization: orgId }).populate("team.user");
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
-    const orgId = req.user.organization._id || req.user.organization;
-    const tasks = await Task.find({ project: project._id });
+    const tasks = await Task.find({ project: project._id, organization: orgId });
     const teamMembers = project.team.map(t => t.user).filter(Boolean);
 
     if (teamMembers.length === 0) return res.status(400).json({ success: false, message: 'No team members assigned to project' });
@@ -211,7 +213,8 @@ export const assignTeamToProject = async (req, res, next) => {
 
 export const getStandup = async (req, res, next) => {
   try {
-    const project = await Project.findById(req.params.projectId);
+    const orgId = req.user.organization._id || req.user.organization;
+    const project = await Project.findOne({ _id: req.params.projectId, organization: orgId });
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
     const tasks = await Task.find({ project: project._id }).populate('assignees', 'name email');
@@ -224,7 +227,8 @@ export const getStandup = async (req, res, next) => {
 
 export const getPerformanceAnalysis = async (req, res, next) => {
   try {
-    const project = await Project.findById(req.params.projectId);
+    const orgId = req.user.organization._id || req.user.organization;
+    const project = await Project.findOne({ _id: req.params.projectId, organization: orgId });
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
     const tasks = await Task.find({ project: project._id }).populate('assignees', 'name email jobTitle');
@@ -238,18 +242,19 @@ export const getPerformanceAnalysis = async (req, res, next) => {
 export const replanProject = async (req, res, next) => {
   try {
     const { reason } = req.body;
-    const project = await Project.findById(req.params.projectId);
+    const orgId = req.user.organization._id || req.user.organization;
+    const project = await Project.findOne({ _id: req.params.projectId, organization: orgId });
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
 
-    const tasks = await Task.find({ project: project._id });
-    const teamMembers = await User.find({ _id: { $in: project.team.map(t => t.user) } });
+    const tasks = await Task.find({ project: project._id, organization: orgId });
+    const teamMembers = await User.find({ _id: { $in: project.team.map(t => t.user) }, organization: orgId });
     const replan = await generateReplan(project, tasks, teamMembers, reason || 'Schedule adjustment needed');
 
     // Apply task updates
     if (replan.taskUpdates) {
       for (const update of replan.taskUpdates) {
         if (update.taskId) {
-          await Task.findByIdAndUpdate(update.taskId, { dueDate: update.newDueDate, priority: update.priority });
+          await Task.findOneAndUpdate({ _id: update.taskId, organization: orgId }, { dueDate: update.newDueDate, priority: update.priority });
         }
       }
     }
@@ -259,7 +264,6 @@ export const replanProject = async (req, res, next) => {
       await Project.findByIdAndUpdate(project._id, { endDate: replan.newEndDate });
     }
 
-    const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'replanned', entityType: 'project', entityId: project._id, entityName: project.name, metadata: { reason } });
 
     res.json({ success: true, data: replan });

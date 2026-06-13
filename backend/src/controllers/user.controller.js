@@ -19,7 +19,8 @@ export const getUsers = async (req, res, next) => {
 
 export const getUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id).populate('role', 'name level permissions').populate('department', 'name color icon');
+    const orgId = req.user.organization._id || req.user.organization;
+    const user = await User.findOne({ _id: req.params.id, organization: orgId }).populate('role', 'name level permissions').populate('department', 'name color icon');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
 
     const [assignedTasks, completedTasks, overdueTasks] = await Promise.all([
@@ -37,16 +38,16 @@ export const getUser = async (req, res, next) => {
 
 export const updateUser = async (req, res, next) => {
   try {
-    const { password, email, isAdmin, roleLevel, ...updates } = req.body;
+    const orgId = req.user.organization._id || req.user.organization;
+    const { password, email, isAdmin, roleLevel, organization, ...updates } = req.body;
     if (roleLevel) {
-      const orgId = req.user.organization._id || req.user.organization;
       const role = await Role.findOne({ organization: orgId, level: roleLevel });
       if (role) {
         updates.role = role._id;
         updates.isAdmin = roleLevel === 'admin';
       }
     }
-    const user = await User.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
+    const user = await User.findOneAndUpdate({ _id: req.params.id, organization: orgId }, updates, { new: true, runValidators: true })
       .populate('role', 'name level').populate('department', 'name color');
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     res.json({ success: true, data: user });
@@ -55,7 +56,8 @@ export const updateUser = async (req, res, next) => {
 
 export const deleteUser = async (req, res, next) => {
   try {
-    const user = await User.findById(req.params.id);
+    const orgId = req.user.organization._id || req.user.organization;
+    const user = await User.findOne({ _id: req.params.id, organization: orgId });
     if (!user) return res.status(404).json({ success: false, message: 'User not found' });
     if (user._id.toString() === req.user._id.toString()) {
       return res.status(400).json({ success: false, message: 'Cannot delete your own account' });

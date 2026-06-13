@@ -61,7 +61,8 @@ export const createProject = async (req, res, next) => {
 
 export const getProject = async (req, res, next) => {
   try {
-    const project = await Project.findById(req.params.id)
+    const orgId = req.user.organization._id || req.user.organization;
+    const project = await Project.findOne({ _id: req.params.id, organization: orgId })
       .populate('team.user', 'name avatar email jobTitle skills')
       .populate('departments', 'name color icon')
       .populate('createdBy', 'name');
@@ -80,10 +81,12 @@ export const getProject = async (req, res, next) => {
 
 export const updateProject = async (req, res, next) => {
   try {
-    const project = await Project.findByIdAndUpdate(req.params.id, req.body, { new: true, runValidators: true })
+    const orgId = req.user.organization._id || req.user.organization;
+    const updates = { ...req.body };
+    delete updates.organization;
+    const project = await Project.findOneAndUpdate({ _id: req.params.id, organization: orgId }, updates, { new: true, runValidators: true })
       .populate('team.user', 'name avatar email');
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
-    const orgId = req.user.organization._id || req.user.organization;
     await logActivity(orgId, req.user._id, req.user.name, 'updated', 'project', project);
     triggerWebhooks(orgId, 'project.updated', { projectId: project._id, projectName: project.name, status: project.status }).catch(() => {});
     res.json({ success: true, data: project });
@@ -92,14 +95,14 @@ export const updateProject = async (req, res, next) => {
 
 export const deleteProject = async (req, res, next) => {
   try {
-    const project = await Project.findById(req.params.id);
+    const orgId = req.user.organization._id || req.user.organization;
+    const project = await Project.findOne({ _id: req.params.id, organization: orgId });
     if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
     await Promise.all([
       Task.deleteMany({ project: project._id }),
       Goal.deleteMany({ project: project._id }),
       project.deleteOne()
     ]);
-    const orgId = req.user.organization._id || req.user.organization;
     await logActivity(orgId, req.user._id, req.user.name, 'deleted', 'project', project);
     res.json({ success: true, message: 'Project deleted' });
   } catch (err) { next(err); }
@@ -107,8 +110,9 @@ export const deleteProject = async (req, res, next) => {
 
 export const getProjectStats = async (req, res, next) => {
   try {
+    const orgId = req.user.organization._id || req.user.organization;
     const projectId = req.params.id;
-    const tasks = await Task.find({ project: projectId });
+    const tasks = await Task.find({ project: projectId, organization: orgId });
     const now = new Date();
 
     const byStatus = tasks.reduce((acc, t) => { acc[t.status] = (acc[t.status] || 0) + 1; return acc; }, {});
@@ -125,7 +129,8 @@ export const getProjectStats = async (req, res, next) => {
 // Goals CRUD
 export const getGoals = async (req, res, next) => {
   try {
-    const goals = await Goal.find({ project: req.params.id }).sort({ order: 1 }).populate('assignees', 'name avatar');
+    const orgId = req.user.organization._id || req.user.organization;
+    const goals = await Goal.find({ project: req.params.id, organization: orgId }).sort({ order: 1 }).populate('assignees', 'name avatar');
     const tasksPerGoal = await Task.aggregate([
       { $match: { project: new mongoose.Types.ObjectId(req.params.id) } },
       { $group: { _id: '$goal', total: { $sum: 1 }, done: { $sum: { $cond: [{ $eq: ['$status', 'done'] }, 1, 0] } } } }
@@ -138,14 +143,21 @@ export const getGoals = async (req, res, next) => {
 
 export const createGoal = async (req, res, next) => {
   try {
-    const goal = await Goal.create({ ...req.body, project: req.params.id });
+    const orgId = req.user.organization._id || req.user.organization;
+    // Ensure the target project belongs to the caller's org
+    const project = await Project.findOne({ _id: req.params.id, organization: orgId }).select('_id');
+    if (!project) return res.status(404).json({ success: false, message: 'Project not found' });
+    const goal = await Goal.create({ ...req.body, project: req.params.id, organization: orgId });
     res.status(201).json({ success: true, data: goal });
   } catch (err) { next(err); }
 };
 
 export const updateGoal = async (req, res, next) => {
   try {
-    const goal = await Goal.findByIdAndUpdate(req.params.goalId, req.body, { new: true });
+    const orgId = req.user.organization._id || req.user.organization;
+    const updates = { ...req.body };
+    delete updates.organization;
+    const goal = await Goal.findOneAndUpdate({ _id: req.params.goalId, organization: orgId }, updates, { new: true });
     if (!goal) return res.status(404).json({ success: false, message: 'Goal not found' });
     res.json({ success: true, data: goal });
   } catch (err) { next(err); }
@@ -153,7 +165,8 @@ export const updateGoal = async (req, res, next) => {
 
 export const deleteGoal = async (req, res, next) => {
   try {
-    const goal = await Goal.findById(req.params.goalId);
+    const orgId = req.user.organization._id || req.user.organization;
+    const goal = await Goal.findOne({ _id: req.params.goalId, organization: orgId });
     if (!goal) return res.status(404).json({ success: false, message: 'Goal not found' });
     await Task.updateMany({ goal: goal._id }, { $unset: { goal: 1 } });
     await goal.deleteOne();

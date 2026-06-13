@@ -39,15 +39,16 @@ const recalcGoalProgress = async (goalId) => {
 
 export const getTasks = async (req, res, next) => {
   try {
+    const orgId = req.user.organization?._id || req.user.organization;
     const { projectId, goalId, status, assignee, priority, type, search } = req.query;
-    const filter = {};
+    const filter = { organization: orgId };
     if (projectId) filter.project = projectId;
     if (goalId) filter.goal = goalId;
     if (status) filter.status = status;
     if (priority) filter.priority = priority;
     if (type) filter.type = type;
     if (assignee) filter.assignees = assignee;
-    if (search) filter.title = { $regex: search, $options: 'i' };
+    if (search) filter.title = { $regex: String(search).slice(0, 80).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' };
 
     const tasks = await Task.find(filter)
       .populate('assignees', 'name avatar email jobTitle')
@@ -85,7 +86,8 @@ export const createTask = async (req, res, next) => {
 
 export const getTask = async (req, res, next) => {
   try {
-    const task = await Task.findById(req.params.id)
+    const orgId = req.user.organization?._id || req.user.organization;
+    const task = await Task.findOne({ _id: req.params.id, organization: orgId })
       .populate('assignees', 'name avatar email jobTitle skills')
       .populate('reporter', 'name avatar')
       .populate('goal', 'title color')
@@ -101,20 +103,21 @@ export const getTask = async (req, res, next) => {
 
 export const updateTask = async (req, res, next) => {
   try {
-    const oldTask = await Task.findById(req.params.id);
+    const orgId = req.user.organization?._id || req.user.organization;
+    const oldTask = await Task.findOne({ _id: req.params.id, organization: orgId });
     if (!oldTask) return res.status(404).json({ success: false, message: 'Task not found' });
 
     const updates = { ...req.body };
+    delete updates.organization; // prevent moving a task to another org
     if (updates.status === 'done' && oldTask.status !== 'done') updates.completedAt = new Date();
     if (updates.status !== 'done' && oldTask.status === 'done') updates.completedAt = null;
 
-    const task = await Task.findByIdAndUpdate(req.params.id, updates, { new: true, runValidators: true })
+    const task = await Task.findOneAndUpdate({ _id: req.params.id, organization: orgId }, updates, { new: true, runValidators: true })
       .populate('assignees', 'name avatar email');
 
     if (task.project) await recalcProjectProgress(task.project);
     if (task.goal) await recalcGoalProgress(task.goal);
 
-    const orgId = req.user.organization._id || req.user.organization;
     const webhookBase = { taskId: task._id, taskTitle: task.title, status: task.status, priority: task.priority, projectId: task.project };
     triggerWebhooks(orgId, 'task.updated', webhookBase).catch(() => {});
 
@@ -145,10 +148,10 @@ export const updateTask = async (req, res, next) => {
 
 export const deleteTask = async (req, res, next) => {
   try {
-    const task = await Task.findById(req.params.id);
+    const orgId = req.user.organization._id || req.user.organization;
+    const task = await Task.findOne({ _id: req.params.id, organization: orgId });
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
     const { project, goal } = task;
-    const orgId = req.user.organization._id || req.user.organization;
     await task.deleteOne();
     if (project) await recalcProjectProgress(project);
     if (goal) await recalcGoalProgress(goal);
@@ -160,7 +163,8 @@ export const deleteTask = async (req, res, next) => {
 export const updateTaskStatus = async (req, res, next) => {
   try {
     const { status } = req.body;
-    const task = await Task.findById(req.params.id);
+    const orgId = req.user.organization._id || req.user.organization;
+    const task = await Task.findOne({ _id: req.params.id, organization: orgId });
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
 
     const updates = { status };
@@ -170,8 +174,6 @@ export const updateTaskStatus = async (req, res, next) => {
     await task.updateOne(updates);
     if (task.project) await recalcProjectProgress(task.project);
     if (task.goal) await recalcGoalProgress(task.goal);
-
-    const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'status_changed', entityType: 'task', entityId: task._id, entityName: task.title, changes: { before: { status: task.status }, after: { status } } });
     evaluateRules(orgId, 'task.status_changed', { task: { ...task.toObject(), status }, userId: req.user._id, newStatus: status });
     triggerWebhooks(orgId, 'task.status_changed', { taskId: task._id, taskTitle: task.title, oldStatus: task.status, newStatus: status, projectId: task.project }).catch(() => {});
@@ -183,7 +185,8 @@ export const updateTaskStatus = async (req, res, next) => {
 
 export const getComments = async (req, res, next) => {
   try {
-    const task = await Task.findById(req.params.id).populate('comments.author', 'name avatar');
+    const orgId = req.user.organization?._id || req.user.organization;
+    const task = await Task.findOne({ _id: req.params.id, organization: orgId }).populate('comments.author', 'name avatar');
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
     res.json({ success: true, data: task.comments });
   } catch (err) { next(err); }
@@ -192,13 +195,13 @@ export const getComments = async (req, res, next) => {
 export const addComment = async (req, res, next) => {
   try {
     const { content } = req.body;
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
+    const orgId = req.user.organization._id || req.user.organization;
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, organization: orgId },
       { $push: { comments: { author: req.user._id, content, createdAt: new Date() } } },
       { new: true }
     ).populate('comments.author', 'name avatar');
     if (!task) return res.status(404).json({ success: false, message: 'Task not found' });
-    const orgId = req.user.organization._id || req.user.organization;
     await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'commented', entityType: 'task', entityId: task._id, entityName: task.title });
     evaluateRules(orgId, 'task.comment_added', { task, userId: req.user._id });
     triggerWebhooks(orgId, 'comment.added', { taskId: task._id, taskTitle: task.title, projectId: task.project, commentBy: req.user.name, comment: content }).catch(() => {});
@@ -208,8 +211,9 @@ export const addComment = async (req, res, next) => {
 
 export const addSubtask = async (req, res, next) => {
   try {
-    const task = await Task.findByIdAndUpdate(
-      req.params.id,
+    const orgId = req.user.organization?._id || req.user.organization;
+    const task = await Task.findOneAndUpdate(
+      { _id: req.params.id, organization: orgId },
       { $push: { subtasks: req.body } },
       { new: true }
     ).populate('subtasks.assignee', 'name avatar');
@@ -221,6 +225,7 @@ export const addSubtask = async (req, res, next) => {
 export const updateSubtask = async (req, res, next) => {
   try {
     const { taskId, subtaskId } = req.params;
+    const orgId = req.user.organization?._id || req.user.organization;
     const updates = {};
     for (const [k, v] of Object.entries(req.body)) {
       updates[`subtasks.$.${k}`] = v;
@@ -228,7 +233,7 @@ export const updateSubtask = async (req, res, next) => {
     if (req.body.status === 'done') updates['subtasks.$.completedAt'] = new Date();
 
     const task = await Task.findOneAndUpdate(
-      { _id: taskId, 'subtasks._id': subtaskId },
+      { _id: taskId, organization: orgId, 'subtasks._id': subtaskId },
       { $set: updates },
       { new: true }
     );
@@ -240,13 +245,14 @@ export const updateSubtask = async (req, res, next) => {
 export const reorderTasks = async (req, res, next) => {
   try {
     const { tasks } = req.body;
+    const orgId = req.user.organization?._id || req.user.organization;
     const bulkOps = tasks.map(({ id, position, status }) => ({
-      updateOne: { filter: { _id: id }, update: { position, ...(status && { status }) } }
+      updateOne: { filter: { _id: id, organization: orgId }, update: { position, ...(status && { status }) } }
     }));
     await Task.bulkWrite(bulkOps);
 
     if (tasks.length > 0) {
-      const sampleTask = await Task.findById(tasks[0].id);
+      const sampleTask = await Task.findOne({ _id: tasks[0].id, organization: orgId });
       if (sampleTask?.project) await recalcProjectProgress(sampleTask.project);
     }
 

@@ -29,9 +29,9 @@ export const createDepartment = async (req, res, next) => {
 
 export const getDepartment = async (req, res, next) => {
   try {
-    const dept = await Department.findById(req.params.id).populate('head', 'name avatar');
-    if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
     const orgId = req.user.organization._id || req.user.organization;
+    const dept = await Department.findOne({ _id: req.params.id, organization: orgId }).populate('head', 'name avatar');
+    if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
     const memberCount = await User.countDocuments({ department: dept._id, organization: orgId });
     res.json({ success: true, data: { ...dept.toObject(), memberCount } });
   } catch (err) { next(err); }
@@ -39,7 +39,10 @@ export const getDepartment = async (req, res, next) => {
 
 export const updateDepartment = async (req, res, next) => {
   try {
-    const dept = await Department.findByIdAndUpdate(req.params.id, req.body, { new: true }).populate('head', 'name avatar');
+    const orgId = req.user.organization._id || req.user.organization;
+    const updates = { ...req.body };
+    delete updates.organization;
+    const dept = await Department.findOneAndUpdate({ _id: req.params.id, organization: orgId }, updates, { new: true }).populate('head', 'name avatar');
     if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
     res.json({ success: true, data: dept });
   } catch (err) { next(err); }
@@ -47,9 +50,10 @@ export const updateDepartment = async (req, res, next) => {
 
 export const deleteDepartment = async (req, res, next) => {
   try {
-    const dept = await Department.findById(req.params.id);
+    const orgId = req.user.organization._id || req.user.organization;
+    const dept = await Department.findOne({ _id: req.params.id, organization: orgId });
     if (!dept) return res.status(404).json({ success: false, message: 'Department not found' });
-    await User.updateMany({ department: dept._id }, { $unset: { department: 1 } });
+    await User.updateMany({ department: dept._id, organization: orgId }, { $unset: { department: 1 } });
     await dept.deleteOne();
     res.json({ success: true, message: 'Department deleted' });
   } catch (err) { next(err); }

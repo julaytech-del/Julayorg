@@ -1,5 +1,8 @@
 import nodemailer from 'nodemailer';
 
+// Escape user-supplied values before interpolating into email HTML (prevents HTML/script injection)
+const esc = (s) => String(s ?? '').replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+
 const getTransporter = () => {
   if (!process.env.SMTP_USER || !process.env.SMTP_PASS) return null;
   return nodemailer.createTransport({
@@ -23,16 +26,16 @@ export const sendContactEmail = async ({ name, email, subject, message }) => {
     from: `"Julay Contact" <${process.env.SMTP_USER}>`,
     to: process.env.CONTACT_EMAIL || 'admin@julay.org',
     replyTo: email,
-    subject: `[${label}] Contact from ${name}`,
+    subject: `[${label}] Contact from ${esc(name)}`,
     html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px">
       <h2 style="color:#1E293B">New Contact Form Submission</h2>
       <table style="width:100%;border-collapse:collapse">
-        <tr><td style="padding:8px 0;color:#64748B;width:100px">Name</td><td style="color:#1E293B;font-weight:600">${name}</td></tr>
-        <tr><td style="padding:8px 0;color:#64748B">Email</td><td><a href="mailto:${email}" style="color:#6366F1">${email}</a></td></tr>
-        <tr><td style="padding:8px 0;color:#64748B">Subject</td><td style="color:#1E293B">${label}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748B;width:100px">Name</td><td style="color:#1E293B;font-weight:600">${esc(name)}</td></tr>
+        <tr><td style="padding:8px 0;color:#64748B">Email</td><td><a href="mailto:${esc(email)}" style="color:#6366F1">${esc(email)}</a></td></tr>
+        <tr><td style="padding:8px 0;color:#64748B">Subject</td><td style="color:#1E293B">${esc(label)}</td></tr>
       </table>
       <div style="margin-top:16px;padding:16px;background:#F8FAFC;border-radius:8px;border-left:4px solid #6366F1">
-        <p style="margin:0;color:#1E293B;white-space:pre-wrap">${message}</p>
+        <p style="margin:0;color:#1E293B;white-space:pre-wrap">${esc(message)}</p>
       </div>
     </div>`,
   });
@@ -42,7 +45,7 @@ export const sendContactEmail = async ({ name, email, subject, message }) => {
     to: email,
     subject: 'We received your message — Julay',
     html: `<div style="font-family:system-ui,sans-serif;max-width:480px;margin:0 auto;padding:40px 24px">
-      <h2 style="color:#0F172A;font-weight:800">Got your message, ${name}!</h2>
+      <h2 style="color:#0F172A;font-weight:800">Got your message, ${esc(name)}!</h2>
       <p style="color:#64748B">Thanks for reaching out. We've received your message about <strong>${label}</strong> and will get back to you within 24 hours.</p>
       <p style="color:#64748B">In the meantime, you can check our <a href="https://julay.org" style="color:#6366F1">homepage</a> or explore the app.</p>
       <p style="color:#94A3B8;font-size:13px;margin-top:32px">— The Julay Team</p>
