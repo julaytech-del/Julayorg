@@ -1,0 +1,100 @@
+name: Server cleanup (disk)
+
+# Manual only — diagnose what is eating disk, then safely free space (logs & caches).
+# Does NOT touch the database, uploads, or app code.
+on:
+  workflow_dispatch:
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Diagnose and clean
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash << 'ENDSSH'
+            set +e
+            echo "########################################"
+            echo "### SECURITY CHECK — who touched the server?"
+            echo "########################################"
+            echo "=== Last 15 successful logins (user / IP / time) ==="
+            last -15 -i 2>/dev/null
+            echo ""
+            echo "=== Recent FAILED login attempts (hack attempts?) ==="
+            sudo lastb -15 -i 2>/dev/null | head -15 || echo "(no failed-login log / none)"
+            echo ""
+            echo "=== Who is connected RIGHT NOW ==="
+            who -a 2>/dev/null
+            echo ""
+            echo "=== Active network connections (listening + established) ==="
+            sudo ss -tunp 2>/dev/null | head -30
+            echo ""
+            echo "=== Top processes by CPU/MEM (anything unexpected?) ==="
+            ps aux --sort=-%cpu 2>/dev/null | head -12
+            echo ""
+            echo "=== Recent sudo / auth events ==="
+            sudo tail -25 /var/log/auth.log 2>/dev/null || sudo journalctl _COMM=sshd -n 25 --no-pager 2>/dev/null || echo "(auth log unavailable)"
+
+            echo ""
+            echo "========================================"
+            echo "=== DISK BEFORE ==="
+            df -h /
+            echo ""
+            echo "=== TOP SPACE USERS (depth 2) ==="
+            sudo du -xh / --max-depth=2 2>/dev/null | sort -rh | head -25
+            echo ""
+            echo "=== Common heavy spots ==="
+            echo "-- PM2 logs --";        sudo du -sh ~/.pm2/logs 2>/dev/null
+            echo "-- journald --";        sudo du -sh /var/log/journal 2>/dev/null
+            echo "-- nginx logs --";      sudo du -sh /var/log/nginx 2>/dev/null
+            echo "-- mongodb logs --";    sudo du -sh /var/log/mongodb 2>/dev/null
+            echo "-- mongodb data --";    sudo du -sh /var/lib/mongodb 2>/dev/null
+            echo "-- apt cache --";       sudo du -sh /var/cache/apt 2>/dev/null
+            echo "-- npm cache --";       sudo du -sh ~/.npm 2>/dev/null
+            echo "-- /tmp --";            sudo du -sh /tmp 2>/dev/null
+            echo "-- old git objects --"; sudo du -sh /home/ubuntu/Julayorg/.git 2>/dev/null
+
+            echo ""
+            echo "========================================"
+            echo "=== CLEANING (safe: logs & caches only) ==="
+
+            echo "-- flush PM2 logs --"
+            pm2 flush 2>/dev/null || true
+
+            echo "-- vacuum journald to 100M --"
+            sudo journalctl --vacuum-size=100M 2>/dev/null || true
+
+            echo "-- apt clean + autoremove --"
+            sudo apt-get clean 2>/dev/null || true
+            sudo apt-get autoremove -y 2>/dev/null || true
+
+            echo "-- npm cache clean --"
+            npm cache clean --force 2>/dev/null || true
+
+            echo "-- truncate nginx logs --"
+            sudo truncate -s 0 /var/log/nginx/*.log 2>/dev/null || true
+
+            echo "-- compress/rotate old logrotate --"
+            sudo logrotate -f /etc/logrotate.conf 2>/dev/null || true
+
+            echo "-- remove old rotated/compressed logs --"
+            sudo find /var/log -type f \( -name "*.gz" -o -name "*.1" -o -name "*.old" \) -delete 2>/dev/null || true
+
+            echo "-- git gc on repo --"
+            cd /home/ubuntu/Julayorg && git gc --prune=now 2>/dev/null || true
+
+            echo "-- clear /tmp leftovers older than 2 days --"
+            sudo find /tmp -mindepth 1 -mtime +2 -delete 2>/dev/null || true
+
+            echo ""
+            echo "========================================"
+            echo "=== DISK AFTER ==="
+            df -h /
+            echo "=== Done ==="
+          ENDSSH
