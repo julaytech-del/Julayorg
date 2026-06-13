@@ -65,12 +65,6 @@ const aiLimiter   = rateLimit({ windowMs: 60 * 1000,      max: isTest ? 10000 : 
 
 app.get(['/health', '/api/health'], (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
-// Diagnostic: deliberately throw to verify the 5xx owner-alert pipeline (key-gated).
-app.get('/api/_diag/throw', (req, res, next) => {
-  if (req.query.key !== process.env.ANALYTICS_SECRET) return res.status(404).json({ success: false, message: 'Not found' });
-  throw new Error('Diagnostic test error — owner alert pipeline check');
-});
-
 app.get('/api/auth/me', meLimiter);
 app.use('/api/auth', authLimiter, authRoutes);
 app.use('/api/projects', projectRoutes);
