@@ -1,6 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { createMessage } from './claude.js';
 
 export async function assignTeam(tasks, teamMembers) {
   if (!teamMembers || teamMembers.length === 0) return [];
@@ -24,7 +22,7 @@ export async function assignTeam(tasks, teamMembers) {
     departmentHint: t.departmentHint
   }));
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 2048,
     system: `You are a smart resource allocation AI. Match tasks to team members based on skills. Return ONLY valid JSON.`,

@@ -1,6 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { createMessage } from './claude.js';
 
 export async function analyzeFormSubmissions(formName, fields, submissions) {
   // Format submissions for the prompt
@@ -16,7 +14,7 @@ export async function analyzeFormSubmissions(formName, fields, submissions) {
     return { summary: 'AI analysis not available.', themes: [], actionItems: [], sentiment: 'neutral' };
   }
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     system: 'You are a feedback analysis expert. Analyze form submissions and return ONLY valid JSON, no markdown.',

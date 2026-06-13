@@ -1,6 +1,4 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { createMessage } from './claude.js';
 
 export async function generateStandup(project, tasks, teamMembers) {
   const stats = getTaskStats(tasks);
@@ -19,7 +17,7 @@ export async function generateStandup(project, tasks, teamMembers) {
     inProgressTasks: tasks.filter(t => t.status === 'in_progress').map(t => ({ title: t.title, assignees: t.assignees?.length }))
   };
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     system: `You are an AI project manager generating a daily standup report. Be concise, actionable, and professional. Return ONLY valid JSON.`,
@@ -60,7 +58,7 @@ export async function analyzePerformance(project, tasks, teamMembers) {
     return { name: m.name, jobTitle: m.jobTitle, assigned: assigned.length, completed: done.length, overdue: overdue.length };
   });
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 1500,
     system: `You are an AI performance analyst. Analyze project performance and return ONLY valid JSON.`,
@@ -99,7 +97,7 @@ export async function generateReplan(project, tasks, teamMembers, reason) {
     id: t._id, title: t.title, status: t.status, dueDate: t.dueDate, estimatedHours: t.estimatedHours
   }));
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 2048,
     system: `You are an AI project replanning engine. Suggest revised schedules. Return ONLY valid JSON.`,

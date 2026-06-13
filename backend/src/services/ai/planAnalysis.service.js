@@ -1,13 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { createMessage } from './claude.js';
 
 export async function analyzePlan(prompt) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return getMockAnalysis(prompt);
   }
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 2048,
     system: `You are an expert project planning AI. Analyze the user's project description and return ONLY a valid JSON object with no markdown, no explanation, just the raw JSON.`,

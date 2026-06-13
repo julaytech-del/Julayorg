@@ -1,13 +1,11 @@
-import Anthropic from '@anthropic-ai/sdk';
-
-const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY });
+import { createMessage } from './claude.js';
 
 export async function generateTasks(planAnalysis) {
   if (!process.env.ANTHROPIC_API_KEY) {
     return getMockTasks(planAnalysis);
   }
 
-  const message = await client.messages.create({
+  const message = await createMessage({
     model: 'claude-sonnet-4-6',
     max_tokens: 8192,
     system: `You are an expert project manager. Generate a complete project task breakdown and return ONLY valid JSON with no markdown, no explanation, no code blocks. Just raw JSON.`,
