@@ -382,6 +382,22 @@ router.get('/system', async (req, res) => {
     const mem = process.memoryUsage();
     const load = os.loadavg();
 
+    // Disk usage of the root filesystem (where MongoDB data + uploads live)
+    let disk = null;
+    try {
+      const { statfs } = await import('fs/promises');
+      const s = await statfs('/');
+      const totalBytes = s.blocks * s.bsize;
+      const freeBytes = s.bavail * s.bsize;
+      const usedBytes = totalBytes - freeBytes;
+      disk = {
+        totalGB: +(totalBytes / 1024 ** 3).toFixed(1),
+        freeGB: +(freeBytes / 1024 ** 3).toFixed(1),
+        usedGB: +(usedBytes / 1024 ** 3).toFixed(1),
+        percentUsed: Math.round((usedBytes / totalBytes) * 100),
+      };
+    } catch { /* statfs unavailable */ }
+
     const now = new Date();
     const dayAgo = new Date(now - 24 * 60 * 60 * 1000);
     const weekAgo = new Date(now - 7 * 24 * 60 * 60 * 1000);
@@ -415,8 +431,12 @@ router.get('/system', async (req, res) => {
           loadAvg5: load[1].toFixed(2),
           totalMem: Math.round(os.totalmem() / 1024 / 1024 / 1024),
           freeMem: Math.round(os.freemem() / 1024 / 1024 / 1024),
+          totalMemMB: Math.round(os.totalmem() / 1024 / 1024),
+          freeMemMB: Math.round(os.freemem() / 1024 / 1024),
+          memPercentUsed: Math.round((1 - os.freemem() / os.totalmem()) * 100),
           cpus: os.cpus().length,
         },
+        disk,
         activity: {
           newUsersToday,
           newUsersWeek,

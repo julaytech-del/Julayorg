@@ -4,6 +4,7 @@ import connectDB from './src/config/database.js';
 import { startRecurringJobs } from './src/services/recurring.service.js';
 import { startOverdueCron } from './src/services/overdue.service.js';
 import { startScheduler } from './src/services/scheduler.service.js';
+import { startHealthMonitor } from './src/services/healthMonitor.service.js';
 import Role from './src/models/Role.js';
 
 const PORT = process.env.PORT || 5000;
@@ -37,4 +38,5 @@ connectDB().then(async () => {
   startRecurringJobs();
   startOverdueCron();
   startScheduler();
+  startHealthMonitor();
 });
