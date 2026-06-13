@@ -31,13 +31,19 @@ router.post('/', contactLimiter, async (req, res) => {
       return res.status(400).json({ success: false, message: 'Message must be 10–5000 characters.' });
     }
 
-    await sendContactEmail({ name: name.trim(), email: email.trim(), subject, message: message.trim() });
-
+    // Owner alert (Telegram + email) — the reliable delivery path
     notifyOwner({
       emoji: '✉️',
       title: 'New contact message',
       fields: { From: name.trim(), Email: email.trim(), Topic: subject, Message: message.trim().slice(0, 300) },
     });
+
+    // Formatted contact email + auto-reply — best-effort, never fail the request
+    try {
+      await sendContactEmail({ name: name.trim(), email: email.trim(), subject, message: message.trim() });
+    } catch (mailErr) {
+      console.error('[Contact] email send failed (non-fatal):', mailErr.message);
+    }
 
     res.json({ success: true, message: 'Message received. We\'ll be in touch soon.' });
   } catch (err) {

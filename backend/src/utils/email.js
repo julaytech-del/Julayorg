@@ -21,7 +21,7 @@ export const sendContactEmail = async ({ name, email, subject, message }) => {
   // Notify team
   await transporter.sendMail({
     from: `"Julay Contact" <${process.env.SMTP_USER}>`,
-    to: process.env.CONTACT_EMAIL || 'hello@julay.org',
+    to: process.env.CONTACT_EMAIL || 'admin@julay.org',
     replyTo: email,
     subject: `[${label}] Contact from ${name}`,
     html: `<div style="font-family:system-ui,sans-serif;max-width:600px;margin:0 auto;padding:24px">
