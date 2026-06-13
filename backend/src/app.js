@@ -37,7 +37,7 @@ import organizationRoutes from './routes/organization.routes.js';
 import uploadRoutes from './routes/upload.routes.js';
 import ownerAdminRoutes from './routes/ownerAdmin.routes.js';
 import lemonsqueezyRoutes from './routes/lemonsqueezy.routes.js';
-import { errorHandler, notFound } from './middleware/error.middleware.js';
+import { errorHandler, notFound, alertOn5xx } from './middleware/error.middleware.js';
 
 const app = express();
 app.set('trust proxy', 1);
@@ -51,6 +51,9 @@ app.use((req, res, next) => {
   express.json({ limit: '10mb' })(req, res, next);
 });
 app.use(express.urlencoded({ extended: true }));
+
+// Global 5xx alerter — notifies owner (Telegram + email) on ANY server error
+app.use(alertOn5xx);
 
 const isTest = process.env.NODE_ENV === 'test';
 // Strict limit for login/register/OTP (brute-force protection); skip /me which is called on every page load

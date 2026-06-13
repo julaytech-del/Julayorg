@@ -14,6 +14,33 @@ function shouldAlert(key) {
   return true;
 }
 
+function fireServerErrorAlert(req, message) {
+  const key = `${req.method} ${req.originalUrl}:${message}`;
+  if (!shouldAlert(key)) return;
+  notifyOwner({
+    emoji: '🔥',
+    title: 'Server error on the site',
+    fields: { Route: `${req.method} ${req.originalUrl}`, Error: message || 'Unknown error' },
+  });
+}
+
+// Global safety net: intercept ANY response and alert the owner on a 5xx,
+// no matter which route produced it (direct res.status(500), thrown error, etc.).
+export const alertOn5xx = (req, res, next) => {
+  const origJson = res.json.bind(res);
+  const origSend = res.send.bind(res);
+  let alerted = false;
+  const maybeAlert = (body) => {
+    if (alerted || res.statusCode < 500) return;
+    alerted = true;
+    const message = (body && typeof body === 'object' && body.message) ? body.message : `HTTP ${res.statusCode}`;
+    fireServerErrorAlert(req, message);
+  };
+  res.json = (body) => { maybeAlert(body); return origJson(body); };
+  res.send = (body) => { maybeAlert(body); return origSend(body); };
+  next();
+};
+
 export const errorHandler = (err, req, res, next) => {
   console.error('Error:', err.message);
 
@@ -36,19 +63,7 @@ export const errorHandler = (err, req, res, next) => {
   }
 
   const status = err.statusCode || err.status || 500;
-
-  // Alert the owner only on real server errors (5xx), throttled.
-  if (status >= 500) {
-    const key = `${req.method} ${req.originalUrl}:${err.message}`;
-    if (shouldAlert(key)) {
-      notifyOwner({
-        emoji: '🔥',
-        title: 'Server error (app crash)',
-        fields: { Route: `${req.method} ${req.originalUrl}`, Error: err.message },
-      });
-    }
-  }
-
+  // 5xx alerting is handled centrally by alertOn5xx (intercepts this res.json call).
   res.status(status).json({
     success: false,
     message: err.message || 'Internal server error'
