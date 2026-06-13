@@ -167,6 +167,25 @@ router.patch('/organizations/:id/plan', async (req, res) => {
   } catch (err) { res.status(500).json({ success: false, message: err.message }); }
 });
 
+// Edit organization (name and/or plan) in one call
+router.patch('/organizations/:id', async (req, res) => {
+  try {
+    const { name, plan } = req.body;
+    const update = {};
+    if (typeof name === 'string' && name.trim()) update.name = name.trim();
+    if (plan) {
+      const valid = ['free', 'starter', 'professional', 'business', 'enterprise'];
+      if (!valid.includes(plan)) return res.status(400).json({ success: false, message: 'Invalid plan' });
+      update['subscription.plan'] = plan;
+      update['subscription.expiresAt'] = plan === 'free' ? null : new Date(Date.now() + 30 * 24 * 60 * 60 * 1000);
+    }
+    if (!Object.keys(update).length) return res.status(400).json({ success: false, message: 'Nothing to update' });
+    const org = await Organization.findByIdAndUpdate(req.params.id, update, { new: true });
+    if (!org) return res.status(404).json({ success: false, message: 'Org not found' });
+    res.json({ success: true, data: org });
+  } catch (err) { res.status(500).json({ success: false, message: err.message }); }
+});
+
 // DELETE org
 router.delete('/organizations/:id', async (req, res) => {
   try {

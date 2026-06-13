@@ -106,6 +106,7 @@ export default function OwnerAdminPanel() {
   const [search, setSearch]     = useState('');
   const [planDialog, setPlanDialog] = useState(null);
   const [newPlan, setNewPlan]   = useState('');
+  const [editOrgName, setEditOrgName] = useState('');
   const [saving, setSaving]     = useState(false);
   const [deleteOrgDialog, setDeleteOrgDialog] = useState(null);
   const [deletingOrg, setDeletingOrg]         = useState(false);
@@ -237,14 +238,16 @@ export default function OwnerAdminPanel() {
 
   // ── Handlers ────────────────────────────────────────────────────────────────
   const handleChangePlan = async () => {
-    if (!planDialog || !newPlan) return;
+    if (!planDialog) return;
+    const name = (editOrgName || '').trim();
+    if (!name) { dispatch(showSnackbar({ message: 'Organization name is required.', severity: 'error' })); return; }
     setSaving(true);
     try {
-      await api.patch(`/owner/organizations/${planDialog.orgId}/plan`, { plan: newPlan });
+      await api.patch(`/owner/organizations/${planDialog.orgId}`, { name, plan: newPlan });
       setPlanDialog(null); fetchOrgs(); fetchStats();
-      dispatch(showSnackbar({ message: `Plan updated to "${newPlan}" for ${planDialog.orgName}`, severity: 'success' }));
+      dispatch(showSnackbar({ message: `Updated "${name}"`, severity: 'success' }));
     } catch {
-      dispatch(showSnackbar({ message: 'Failed to update plan.', severity: 'error' }));
+      dispatch(showSnackbar({ message: 'Failed to update organization.', severity: 'error' }));
     } finally { setSaving(false); }
   };
 
@@ -487,9 +490,9 @@ export default function OwnerAdminPanel() {
                     </Typography>
                   </TableCell>
                   <TableCell>
-                    <Tooltip title="Change plan">
-                      <IconButton size="small" onClick={() => { setPlanDialog({ orgId: org._id, orgName: org.name, currentPlan: org.subscription?.plan }); setNewPlan(org.subscription?.plan || 'free'); }}>
-                        <Star sx={{ fontSize: 16, color: '#F59E0B' }} />
+                    <Tooltip title="Edit organization">
+                      <IconButton size="small" onClick={() => { setPlanDialog({ orgId: org._id, orgName: org.name, currentPlan: org.subscription?.plan }); setNewPlan(org.subscription?.plan || 'free'); setEditOrgName(org.name || ''); }}>
+                        <Edit sx={{ fontSize: 16, color: '#6366F1' }} />
                       </IconButton>
                     </Tooltip>
                     <Tooltip title="Delete organization">
@@ -1238,13 +1241,17 @@ export default function OwnerAdminPanel() {
 
       {/* ── Dialogs ────────────────────────────────────────────────────────────── */}
 
-      {/* Change Org Plan */}
+      {/* Edit Organization */}
       <Dialog open={!!planDialog} onClose={() => setPlanDialog(null)} maxWidth="xs" fullWidth>
-        <DialogTitle fontWeight={700}>Change Plan — {planDialog?.orgName}</DialogTitle>
+        <DialogTitle fontWeight={700}>Edit Organization</DialogTitle>
         <DialogContent>
-          <FormControl fullWidth size="small" sx={{ mt: 1 }}>
-            <InputLabel>New Plan</InputLabel>
-            <Select value={newPlan} label="New Plan" onChange={e => setNewPlan(e.target.value)}>
+          <TextField
+            fullWidth size="small" label="Organization name" sx={{ mt: 1, mb: 2 }}
+            value={editOrgName} onChange={e => setEditOrgName(e.target.value)}
+          />
+          <FormControl fullWidth size="small">
+            <InputLabel>Plan</InputLabel>
+            <Select value={newPlan} label="Plan" onChange={e => setNewPlan(e.target.value)}>
               {['free','starter','professional','business','enterprise'].map(p => (
                 <MenuItem key={p} value={p}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
