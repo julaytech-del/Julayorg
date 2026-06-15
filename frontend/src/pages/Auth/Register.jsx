@@ -44,14 +44,13 @@ const fieldSx = {
 
 // Password policy
 const PWD_RULES = [
-  { id: 'len',     label: 'At least 12 characters',         test: p => p.length >= 12 },
-  { id: 'upper',   label: 'One uppercase letter (A–Z)',      test: p => /[A-Z]/.test(p) },
-  { id: 'number',  label: 'One number (0–9)',                test: p => /[0-9]/.test(p) },
-  { id: 'special', label: 'One special character (!@#…)',    test: p => /[^A-Za-z0-9]/.test(p) },
+  { id: 'len',     tKey: 'auth.register.pwLen',     test: p => p.length >= 12 },
+  { id: 'upper',   tKey: 'auth.register.pwUpper',   test: p => /[A-Z]/.test(p) },
+  { id: 'number',  tKey: 'auth.register.pwNum',     test: p => /[0-9]/.test(p) },
+  { id: 'special', tKey: 'auth.register.pwSpecial', test: p => /[^A-Za-z0-9]/.test(p) },
 ];
 
 const STRENGTH_COLORS = ['#EF4444','#F97316','#EAB308','#22C55E','#22C55E'];
-const STRENGTH_LABELS = ['Very weak','Weak','Fair','Strong','Very strong'];
 
 function pwdScore(p) {
   let s = 0;
@@ -64,6 +63,8 @@ function pwdScore(p) {
 }
 
 function PasswordStrength({ password }) {
+  const { t } = useTranslation();
+  const STRENGTH_LABELS = t('auth.register.strength', { returnObjects: true });
   if (!password) return null;
   const score = useMemo(() => pwdScore(password), [password]);
   const rules = PWD_RULES.map(r => ({ ...r, pass: r.test(password) }));
@@ -83,7 +84,7 @@ function PasswordStrength({ password }) {
             {r.pass
               ? <CheckCircleOutline sx={{ fontSize: 13, color: '#22C55E' }} />
               : <RadioButtonUnchecked sx={{ fontSize: 13, color: 'rgba(0,0,0,0.3)' }} />}
-            <Typography sx={{ fontSize: '0.68rem', color: r.pass ? '#16A34A' : 'rgba(0,0,0,0.45)' }}>{r.label}</Typography>
+            <Typography sx={{ fontSize: '0.68rem', color: r.pass ? '#16A34A' : 'rgba(0,0,0,0.45)' }}>{t(r.tKey)}</Typography>
           </Box>
         ))}
       </Box>
@@ -115,13 +116,13 @@ function PasswordRegister() {
 
   const validate = () => {
     const errs = {};
-    if (!form.name.trim()) errs.name = 'Full name is required';
-    if (!form.email.trim()) errs.email = 'Email is required';
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = 'Enter a valid email';
-    if (!form.organizationName.trim()) errs.organizationName = 'Organization name is required';
-    if (!form.password) errs.password = 'Password is required';
-    else if (!validatePwd(form.password)) errs.password = 'Password does not meet requirements';
-    if (!agreed) errs.agreed = 'You must accept the terms to continue';
+    if (!form.name.trim()) errs.name = t('auth.register.errName');
+    if (!form.email.trim()) errs.email = t('auth.register.errEmail');
+    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errs.email = t('auth.register.errEmailValid');
+    if (!form.organizationName.trim()) errs.organizationName = t('auth.register.errOrg');
+    if (!form.password) errs.password = t('auth.register.errPw');
+    else if (!validatePwd(form.password)) errs.password = t('auth.register.errPwReqs');
+    if (!agreed) errs.agreed = t('auth.register.errTerms');
     return errs;
   };
 
@@ -264,13 +265,13 @@ function OTPRegister() {
   const handleSendCode = async e => {
     e.preventDefault();
     if (!form.name || !form.email) return;
-    if (!agreed) { setError('You must accept the Terms of Service and Privacy Policy.'); return; }
+    if (!agreed) { setError(t('auth.register.errTerms')); return; }
     setLoading(true); setError('');
     try {
       await api.post('/auth/otp/send', { email: form.email });
       setStep('code');
     } catch (err) {
-      setError(err.message || 'Failed to send code. Try again.');
+      setError(err.message || t('auth.otp.failedSend'));
     } finally { setLoading(false); }
   };
 
@@ -290,7 +291,7 @@ function OTPRegister() {
       dispatch(setCredentials(res.data));
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Invalid or expired code.');
+      setError(err.message || t('auth.otp.invalidCode'));
     } finally { setLoading(false); }
   };
 
@@ -300,13 +301,13 @@ function OTPRegister() {
         {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Email sx={{ fontSize: 40, color: '#6366F1', mb: 1 }} />
-          <Typography fontWeight={700} fontSize="1rem">Check your email</Typography>
+          <Typography fontWeight={700} fontSize="1rem">{t('auth.otp.checkEmail')}</Typography>
           <Typography color="text.secondary" fontSize="0.85rem" mt={0.5}>
-            We sent a 6-digit code to <strong>{form.email}</strong>
+            {t('auth.otp.sentTo')} <strong>{form.email}</strong>
           </Typography>
         </Box>
         <TextField
-          fullWidth label="Verification code" value={code}
+          fullWidth label={t("auth.otp.codeLabel")} value={code}
           onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
           required autoFocus placeholder="000000"
           inputProps={{ inputMode: 'numeric', style: { letterSpacing: '0.4em', fontSize: '1.5rem', textAlign: 'center', fontFamily: 'monospace' } }}
@@ -316,15 +317,15 @@ function OTPRegister() {
           disabled={loading || code.length !== 6}
           startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <CheckCircle sx={{ fontSize: 16 }} />}
           sx={btnSx}>
-          {loading ? 'Verifying…' : 'Verify & Create Workspace'}
+          {loading ? t('auth.otp.verifying') : t('auth.otp.verifyCreate')}
         </Button>
         <Button fullWidth onClick={() => { setStep('form'); setCode(''); setError(''); }}
           sx={{ mt: 1.5, textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>
-          ← Go back
+          {t('auth.otp.goBack')}
         </Button>
         <Button fullWidth onClick={handleSendCode} disabled={loading}
           sx={{ textTransform: 'none', color: '#6366F1', fontSize: '0.78rem' }}>
-          Didn't receive it? Resend code
+          {t('auth.otp.resend')}
         </Button>
       </form>
     );
@@ -354,7 +355,7 @@ function OTPRegister() {
       <Button fullWidth type="submit" variant="contained" size="large" disabled={loading}
         startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Email sx={{ fontSize: 16 }} />}
         sx={btnSx}>
-        {loading ? 'Sending code…' : 'Send verification code'}
+        {loading ? t('auth.otp.sending') : t('auth.otp.sendCode')}
       </Button>
     </form>
   );

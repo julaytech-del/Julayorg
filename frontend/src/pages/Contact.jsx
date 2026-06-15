@@ -2,24 +2,17 @@ import React, { useState } from 'react';
 import { Box, Typography, TextField, Button, MenuItem, Alert, Link, CircularProgress } from '@mui/material';
 import { Send, Email, ArrowBack } from '@mui/icons-material';
 import { Link as RouterLink } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import api from '../services/api.js';
 
-const SUBJECTS = [
-  { value: 'general', label: 'General Inquiry' },
-  { value: 'sales', label: 'Sales' },
-  { value: 'support', label: 'Technical Support' },
-  { value: 'privacy', label: 'Privacy / Data Request' },
-  { value: 'bug', label: 'Bug Report' },
-];
-
-function validate(form) {
+function validate(form, t) {
   const errors = {};
-  if (!form.name.trim()) errors.name = 'Name is required';
-  if (!form.email.trim()) errors.email = 'Email is required';
-  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = 'Invalid email address';
-  if (!form.subject) errors.subject = 'Please select a subject';
-  if (!form.message.trim()) errors.message = 'Message is required';
-  else if (form.message.trim().length < 10) errors.message = 'Message must be at least 10 characters';
+  if (!form.name.trim()) errors.name = t('contact.err.nameReq');
+  if (!form.email.trim()) errors.email = t('contact.err.emailReq');
+  else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.email = t('contact.err.emailInvalid');
+  if (!form.subject) errors.subject = t('contact.err.subjectReq');
+  if (!form.message.trim()) errors.message = t('contact.err.messageReq');
+  else if (form.message.trim().length < 10) errors.message = t('contact.err.messageMin');
   return errors;
 }
 
@@ -50,6 +43,14 @@ const menuSx = {
 };
 
 export default function Contact() {
+  const { t } = useTranslation();
+  const SUBJECTS = [
+    { value: 'general', label: t('contact.subjects.general') },
+    { value: 'sales', label: t('contact.subjects.sales') },
+    { value: 'support', label: t('contact.subjects.support') },
+    { value: 'privacy', label: t('contact.subjects.privacy') },
+    { value: 'bug', label: t('contact.subjects.bug') },
+  ];
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '', website: '' });
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -63,7 +64,7 @@ export default function Contact() {
     // Honeypot check (hidden field — bots fill it, humans don't)
     if (form.website) return;
 
-    const errs = validate(form);
+    const errs = validate(form, t);
     setErrors(errs);
     if (Object.keys(errs).length) return;
 
@@ -79,8 +80,8 @@ export default function Contact() {
       setSuccess(true);
     } catch (err) {
       const status = err.response?.status;
-      if (status === 429) setServerError('Too many requests. Please wait a few minutes and try again.');
-      else setServerError(err.response?.data?.message || 'Failed to send message. Please try again.');
+      if (status === 429) setServerError(t('contact.err.tooMany'));
+      else setServerError(err.response?.data?.message || t('contact.err.failed'));
     } finally { setLoading(false); }
   };
 
@@ -92,30 +93,30 @@ export default function Contact() {
           <Box component="img" src="/julay-logo-full.png" alt="Julay.org" sx={{ height: 32, objectFit: 'contain' }} onError={(e) => { e.target.style.display = 'none'; }} />
         </Box>
         <Link component={RouterLink} to="/" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: '#6B7280', textDecoration: 'none', fontSize: '0.85rem', fontWeight: 500, px: 1.5, py: 0.75, borderRadius: 2, border: '1px solid #E5E7EB', '&:hover': { color: '#111827', borderColor: '#D1D5DB' } }}>
-          <ArrowBack sx={{ fontSize: 13 }} /> Back to Home
+          <ArrowBack sx={{ fontSize: 13 }} /> {t('contact.back')}
         </Link>
       </Box>
       <Box sx={{ py: { xs: 4, md: 8 }, px: 2 }}>
       <Box sx={{ maxWidth: 600, mx: 'auto' }}>
         <Box sx={{ mb: 4 }}>
           <Link component={RouterLink} to="/" sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5, color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.85rem', mb: 3, '&:hover': { color: 'white' } }}>
-            <ArrowBack sx={{ fontSize: 14 }} /> Back to home
+            <ArrowBack sx={{ fontSize: 14 }} /> {t('contact.back')}
           </Link>
-          <Typography variant="h4" fontWeight={800} sx={{ color: 'white', letterSpacing: '-0.02em', mb: 1 }}>Contact Us</Typography>
+          <Typography variant="h4" fontWeight={800} sx={{ color: 'white', letterSpacing: '-0.02em', mb: 1 }}>{t('contact.title')}</Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem', lineHeight: 1.7 }}>
-            Have a question? We typically respond within 24 hours.
+            {t('contact.subtitle')}
           </Typography>
         </Box>
 
         {success ? (
           <Box sx={{ p: 4, borderRadius: 3, background: 'rgba(99,102,241,0.1)', border: '1px solid rgba(99,102,241,0.25)', textAlign: 'center' }}>
             <Email sx={{ color: '#6366F1', fontSize: 48, mb: 2 }} />
-            <Typography variant="h6" fontWeight={700} sx={{ color: 'white', mb: 1 }}>Message sent!</Typography>
+            <Typography variant="h6" fontWeight={700} sx={{ color: 'white', mb: 1 }}>{t('contact.sent')}</Typography>
             <Typography sx={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.9rem', lineHeight: 1.7 }}>
-              Thank you for reaching out. We've sent a confirmation to <strong style={{ color: '#818CF8' }}>{form.email}</strong> and will get back to you shortly.
+              {t('contact.sentA')} <strong style={{ color: '#818CF8' }}>{form.email}</strong> {t('contact.sentB')}
             </Typography>
             <Button onClick={() => { setSuccess(false); setForm({ name: '', email: '', subject: '', message: '', website: '' }); }} sx={{ mt: 2.5, color: '#818CF8', textTransform: 'none' }}>
-              Send another message
+              {t('contact.sendAnother')}
             </Button>
           </Box>
         ) : (
@@ -139,20 +140,20 @@ export default function Contact() {
 
             <Box sx={{ display: 'flex', gap: 2, flexDirection: { xs: 'column', sm: 'row' }, mb: 2.5 }}>
               <TextField
-                fullWidth label="Full Name" value={form.name} onChange={set('name')}
+                fullWidth label={t("contact.fullName")} value={form.name} onChange={set('name')}
                 error={!!errors.name} helperText={errors.name}
                 inputProps={{ 'aria-describedby': errors.name ? 'name-error' : undefined }}
                 sx={inputSx}
               />
               <TextField
-                fullWidth label="Email Address" type="email" value={form.email} onChange={set('email')}
+                fullWidth label={t("contact.emailAddr")} type="email" value={form.email} onChange={set('email')}
                 error={!!errors.email} helperText={errors.email}
                 sx={inputSx}
               />
             </Box>
 
             <TextField
-              fullWidth select label="Subject" value={form.subject} onChange={set('subject')}
+              fullWidth select label={t("contact.subject")} value={form.subject} onChange={set('subject')}
               error={!!errors.subject} helperText={errors.subject}
               SelectProps={{ MenuProps: menuSx }}
               sx={{ ...inputSx, mb: 2.5 }}
@@ -161,7 +162,7 @@ export default function Contact() {
             </TextField>
 
             <TextField
-              fullWidth multiline rows={5} label="Message" value={form.message} onChange={set('message')}
+              fullWidth multiline rows={5} label={t("contact.message")} value={form.message} onChange={set('message')}
               error={!!errors.message} helperText={errors.message}
               sx={{ ...inputSx, mb: 3 }}
             />
@@ -172,12 +173,12 @@ export default function Contact() {
               startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Send sx={{ fontSize: 16 }} />}
               sx={{ py: 1.4, fontWeight: 700, background: 'linear-gradient(135deg,#4F46E5,#7C3AED)', boxShadow: '0 4px 16px rgba(79,70,229,0.4)', textTransform: 'none', fontSize: '0.95rem', '&:hover': { boxShadow: '0 6px 20px rgba(79,70,229,0.5)' }, '&:disabled': { background: 'rgba(79,70,229,0.4)', color: 'rgba(255,255,255,0.5)' } }}
             >
-              {loading ? 'Sending…' : 'Send Message'}
+              {loading ? t('contact.sending') : t('contact.send')}
             </Button>
 
             <noscript>
               <Typography sx={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', mt: 2, textAlign: 'center' }}>
-                Email us directly: <a href="mailto:admin@julay.org" style={{ color: '#818CF8' }}>admin@julay.org</a>
+                {t('contact.emailDirectly')} <a href="mailto:admin@julay.org" style={{ color: '#818CF8' }}>admin@julay.org</a>
               </Typography>
             </noscript>
           </Box>
@@ -185,9 +186,9 @@ export default function Contact() {
 
         <Box sx={{ mt: 5, pt: 3, borderTop: '1px solid rgba(255,255,255,0.06)', display: 'flex', gap: 3, flexWrap: 'wrap' }}>
           {[
-            { label: 'General', email: 'admin@julay.org' },
-            { label: 'Support', email: 'support@julay.org' },
-            { label: 'Privacy', email: 'privacy@julay.org' },
+            { label: t('contact.cat.general'), email: 'admin@julay.org' },
+            { label: t('contact.cat.support'), email: 'support@julay.org' },
+            { label: t('contact.cat.privacy'), email: 'privacy@julay.org' },
           ].map(({ label, email }) => (
             <Box key={email}>
               <Typography sx={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.7rem', textTransform: 'uppercase', letterSpacing: '0.08em', mb: 0.25 }}>{label}</Typography>

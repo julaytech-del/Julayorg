@@ -121,7 +121,7 @@ function OTPForm() {
       await api.post('/auth/otp/send', { email });
       setStep('code');
     } catch (err) {
-      setError(err.message || 'Failed to send code. Try again.');
+      setError(err.message || t('auth.otp.failedSend'));
     } finally { setLoading(false); }
   };
 
@@ -134,7 +134,7 @@ function OTPForm() {
       dispatch(setCredentials(res.data));
       navigate('/dashboard');
     } catch (err) {
-      setError(err.message || 'Invalid or expired code.');
+      setError(err.message || t('auth.otp.invalidCode'));
     } finally { setLoading(false); }
   };
 
@@ -144,13 +144,13 @@ function OTPForm() {
         {error && <Alert severity="error" sx={{ mb: 2, borderRadius: 2 }}>{error}</Alert>}
         <Box sx={{ textAlign: 'center', mb: 3 }}>
           <Email sx={{ fontSize: 40, color: '#6366F1', mb: 1 }} />
-          <Typography fontWeight={700} fontSize="1rem">Check your email</Typography>
+          <Typography fontWeight={700} fontSize="1rem">{t('auth.otp.checkEmail')}</Typography>
           <Typography color="text.secondary" fontSize="0.85rem" mt={0.5}>
-            We sent a 6-digit code to <strong>{email}</strong>
+            {t('auth.otp.sentTo')} <strong>{email}</strong>
           </Typography>
         </Box>
         <TextField
-          fullWidth label="Verification code" value={code}
+          fullWidth label={t("auth.otp.codeLabel")} value={code}
           onChange={e => setCode(e.target.value.replace(/\D/g, '').slice(0, 6))}
           required autoFocus placeholder="000000"
           inputProps={{ inputMode: 'numeric', style: { letterSpacing: '0.4em', fontSize: '1.5rem', textAlign: 'center', fontFamily: 'monospace' } }}
@@ -160,15 +160,15 @@ function OTPForm() {
           disabled={loading || code.length !== 6}
           startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <CheckCircle sx={{ fontSize: 16 }} />}
           sx={btnSx}>
-          {loading ? 'Verifying…' : 'Verify & Sign In'}
+          {loading ? t('auth.otp.verifying') : t('auth.otp.verify')}
         </Button>
         <Button fullWidth onClick={() => { setStep('email'); setCode(''); setError(''); }}
           sx={{ mt: 1.5, textTransform: 'none', color: 'text.secondary', fontSize: '0.8rem' }}>
-          ← Go back
+          {t('auth.otp.goBack')}
         </Button>
         <Button fullWidth onClick={handleSend} disabled={loading}
           sx={{ textTransform: 'none', color: '#6366F1', fontSize: '0.78rem' }}>
-          Didn't receive it? Resend code
+          {t('auth.otp.resend')}
         </Button>
       </form>
     );
@@ -186,7 +186,7 @@ function OTPForm() {
         disabled={loading}
         startIcon={loading ? <CircularProgress size={16} color="inherit" /> : <Email sx={{ fontSize: 16 }} />}
         sx={btnSx}>
-        {loading ? 'Sending code…' : 'Send verification code'}
+        {loading ? t('auth.otp.sending') : t('auth.otp.sendCode')}
       </Button>
     </form>
   );

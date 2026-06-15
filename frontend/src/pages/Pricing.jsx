@@ -36,6 +36,7 @@ import {
 } from '@mui/icons-material';
 import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 
 /* ─────────────────────── LemonSqueezy checkout ─────────────────── */
 // When store is approved, replace null with the checkout URL for each plan
@@ -185,11 +186,13 @@ function FeatureCell({ value }) {
 }
 
 function MobileFeatureList({ plan }) {
+  const { t } = useTranslation();
+  const rows = t('pricing.featureRows', { returnObjects: true });
   const cols = { free: 'free', starter: 'starter', professional: 'pro', business: 'biz' };
   const key = cols[plan.id];
   return (
     <Box sx={{ mt: 1.5 }}>
-      {FEATURE_ROWS.map((row) => {
+      {rows.map((row) => {
         const val = row[key];
         return (
           <Box key={row.label} sx={{ display: 'flex', alignItems: 'center', gap: 1, py: 0.5 }}>
@@ -257,6 +260,7 @@ function useJsonLd() {
 /* ─────────────────────────── Nav ─────────────────────────── */
 
 function TopNav() {
+  const { t } = useTranslation();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
@@ -303,9 +307,7 @@ function TopNav() {
                 to="/login"
                 variant="text"
                 sx={{ color: '#374151', fontWeight: 500, '&:hover': { color: '#111827' } }}
-              >
-                Login
-              </Button>
+              >{t('pricing.nav.login')}</Button>
               <Button
                 component={RouterLink}
                 to="/register"
@@ -316,9 +318,7 @@ function TopNav() {
                   fontWeight: 600,
                   '&:hover': { bgcolor: '#4F46E5' },
                 }}
-              >
-                Start Free
-              </Button>
+              >{t('pricing.nav.startFree')}</Button>
             </Box>
           )}
         </Box>
@@ -334,7 +334,7 @@ function TopNav() {
         </Box>
         <List>
           <ListItemButton component={RouterLink} to="/login" onClick={() => setDrawerOpen(false)}>
-            <ListItemText primary="Login" primaryTypographyProps={{ color: 'white' }} />
+            <ListItemText primary={t("pricing.nav.login")} primaryTypographyProps={{ color: 'white' }} />
           </ListItemButton>
           <ListItemButton
             component={RouterLink}
@@ -342,7 +342,7 @@ function TopNav() {
             onClick={() => setDrawerOpen(false)}
             sx={{ bgcolor: PRIMARY, mx: 2, borderRadius: 1, mt: 1, '&:hover': { bgcolor: '#4F46E5' } }}
           >
-            <ListItemText primary="Start Free" primaryTypographyProps={{ color: 'white', fontWeight: 700 }} />
+            <ListItemText primary={t("pricing.nav.startFree")} primaryTypographyProps={{ color: 'white', fontWeight: 700 }} />
           </ListItemButton>
         </List>
       </Drawer>
@@ -353,6 +353,10 @@ function TopNav() {
 /* ─────────────────────────── Plan Card ─────────────────────────── */
 
 function PlanCard({ plan, annual, showMobileFeatures }) {
+  const { t } = useTranslation();
+  const tPlans = t('pricing.plans', { returnObjects: true });
+  const tIdx = PLANS.findIndex(p => p.id === plan.id);
+  const tp = (Array.isArray(tPlans) ? tPlans[tIdx] : null) || {};
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
   const displayPrice = annual ? plan.annualMonthlyPrice : plan.monthlyPrice;
@@ -364,7 +368,7 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
     if (user) {
       const orgId = user.organization?._id || user.organization || '';
       const email = encodeURIComponent(user.email || '');
-      window.location.href = `${LEMON_URLS[plan.id]}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${planId}&checkout[email]=${email}`;
+      window.location.href = `${LEMON_URLS[plan.id]}?checkout[custom][org_id]=${orgId}&checkout[custom][plan]=${plan.id}&checkout[email]=${email}`;
     } else {
       localStorage.setItem('julay_pending_plan', plan.id);
       window.location.href = `/login?plan=${plan.id}`;
@@ -407,7 +411,7 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
       {plan.popular && (
         <Chip
           icon={<AutoAwesome sx={{ fontSize: '14px !important', color: 'white !important' }} />}
-          label="Most Popular"
+          label={t("pricing.mostPopular")}
           size="small"
           sx={{
             position: 'absolute',
@@ -426,20 +430,20 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
 
       {/* Plan name */}
       <Typography sx={{ fontWeight: 700, fontSize: 17, color: plan.popular ? PRIMARY_LIGHT : 'white', mb: 0.5 }}>
-        {plan.name}
+        {tp.name || plan.name}
       </Typography>
       <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.5)', mb: 2, minHeight: 32 }}>
-        {plan.description}
+        {tp.description || plan.description}
       </Typography>
 
       {/* Price */}
       <Box sx={{ display: 'flex', alignItems: 'flex-end', gap: 0.5, mb: 0.5 }}>
         <Typography sx={{ fontSize: 36, fontWeight: 800, color: 'white', lineHeight: 1 }}>
-          {plan.monthlyPrice === 0 ? 'Free' : `$${displayPrice}`}
+          {plan.monthlyPrice === 0 ? t('pricing.free') : `$${displayPrice}`}
         </Typography>
         {plan.monthlyPrice > 0 && (
           <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.5)', mb: 0.5 }}>
-            / mo
+            {t('pricing.perMo')}
           </Typography>
         )}
       </Box>
@@ -451,7 +455,7 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
             ${plan.monthlyPrice}/mo
           </Typography>
           <Chip
-            label={`Save ${savePct}%`}
+            label={t('pricing.savePct', { pct: savePct })}
             size="small"
             sx={{ bgcolor: 'rgba(34,197,94,0.15)', color: '#4ADE80', fontWeight: 700, fontSize: 10, height: 18, px: 0 }}
           />
@@ -459,7 +463,7 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
       )}
       {!annual && plan.monthlyPrice > 0 && (
         <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.35)', mb: 0.5 }}>
-          or ${plan.annualMonthlyPrice}/mo billed annually
+          {t('pricing.orBilled', { price: plan.annualMonthlyPrice })}
         </Typography>
       )}
       {plan.monthlyPrice === 0 && <Box sx={{ mb: 2.5 }} />}
@@ -499,18 +503,18 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
         }
       >
         {plan.monthlyPrice > 0
-          ? `Subscribe — $${annual ? plan.annualMonthlyPrice : plan.monthlyPrice}/mo`
-          : plan.cta}
+          ? t('pricing.subscribe', { price: annual ? plan.annualMonthlyPrice : plan.monthlyPrice })
+          : t('pricing.startForFree')}
       </Button>
-      {plan.ctaNote && (
+      {(tp.ctaNote || plan.ctaNote) && (
         <Typography sx={{ fontSize: 11, color: 'rgba(255,255,255,0.4)', textAlign: 'center' }}>
-          {plan.ctaNote}
+          {tp.ctaNote || plan.ctaNote}
         </Typography>
       )}
 
       {/* Feature highlights */}
       <Box sx={{ mt: 2.5, flex: 1 }}>
-        {plan.highlights.map((h) => (
+        {(tp.highlights || plan.highlights).map((h) => (
           <Box key={h} sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.85 }}>
             <CheckCircle sx={{ color: CHECK_COLOR, fontSize: 15, flexShrink: 0 }} />
             <Typography sx={{ fontSize: 13, color: 'rgba(255,255,255,0.78)' }}>{h}</Typography>
@@ -527,9 +531,12 @@ function PlanCard({ plan, annual, showMobileFeatures }) {
 /* ─────────────────────────── Main Page ─────────────────────────── */
 
 export default function Pricing() {
+  const { t } = useTranslation();
   const [annual, setAnnual] = useState(false);
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down('md'));
+  const tRows = t('pricing.featureRows', { returnObjects: true });
+  const tPlans = t('pricing.plans', { returnObjects: true });
 
   useJsonLd();
 
@@ -556,7 +563,7 @@ export default function Pricing() {
 
         <Chip
           icon={<Verified sx={{ fontSize: '14px !important', color: `${PRIMARY_LIGHT} !important` }} />}
-          label="Simple, transparent pricing"
+          label={t('pricing.badge')}
           size="small"
           sx={{ bgcolor: 'rgba(99,102,241,0.12)', color: PRIMARY_LIGHT, fontWeight: 600, mb: 2.5, fontSize: 12, px: 0.5 }}
         />
@@ -574,10 +581,10 @@ export default function Pricing() {
             WebkitTextFillColor: 'transparent',
           }}
         >
-          Plans that grow<br />with your team
+          {t('pricing.h1')}
         </Typography>
         <Typography sx={{ fontSize: { xs: 15, md: 18 }, color: 'rgba(255,255,255,0.55)', maxWidth: 520, mx: 'auto', mb: 5 }}>
-          Start free. Upgrade when you're ready. No hidden fees, cancel anytime.
+          {t('pricing.sub')}
         </Typography>
 
         {/* ── Billing Toggle ── */}
@@ -604,7 +611,7 @@ export default function Pricing() {
               userSelect: 'none',
             }}
           >
-            Monthly
+            {t('pricing.monthly')}
           </Typography>
           <Switch
             checked={annual}
@@ -627,10 +634,10 @@ export default function Pricing() {
                 userSelect: 'none',
               }}
             >
-              Annual
+              {t('pricing.annual')}
             </Typography>
             <Chip
-              label="Save 20%"
+              label={t("pricing.save20")}
               size="small"
               sx={{
                 bgcolor: annual ? 'rgba(34,197,94,0.18)' : 'rgba(255,255,255,0.06)',
@@ -682,7 +689,7 @@ export default function Pricing() {
           >
             <Verified sx={{ color: '#4ADE80', fontSize: 18 }} />
             <Typography sx={{ fontSize: 13, color: '#4ADE80', fontWeight: 600 }}>
-              14-day money-back guarantee on all paid plans
+              {t('pricing.moneyBack')}
             </Typography>
           </Box>
         </Box>
@@ -702,7 +709,7 @@ export default function Pricing() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Full feature comparison
+            {t('pricing.comparison')}
           </Typography>
 
           <TableContainer
@@ -725,9 +732,9 @@ export default function Pricing() {
                       py: 2,
                     }}
                   >
-                    Feature
+                    {t('pricing.feature')}
                   </TableCell>
-                  {PLANS.map((p) => (
+                  {PLANS.map((p, i) => (
                     <TableCell
                       key={p.id}
                       align="center"
@@ -744,11 +751,11 @@ export default function Pricing() {
                             color: p.popular ? PRIMARY_LIGHT : 'white',
                           }}
                         >
-                          {p.name}
+                          {tPlans[i]?.name || p.name}
                         </Typography>
                         {p.popular && (
                           <Chip
-                            label="Most Popular"
+                            label={t("pricing.mostPopular")}
                             size="small"
                             sx={{ bgcolor: PRIMARY, color: 'white', fontWeight: 700, fontSize: 9, height: 16 }}
                           />
@@ -759,7 +766,7 @@ export default function Pricing() {
                 </TableRow>
               </TableHead>
               <TableBody>
-                {FEATURE_ROWS.map((row, i) => (
+                {tRows.map((row, i) => (
                   <TableRow
                     key={row.label}
                     sx={{
@@ -803,9 +810,9 @@ export default function Pricing() {
             WebkitTextFillColor: 'transparent',
           }}
         >
-          Frequently asked questions
+          {t('pricing.faqTitle')}
         </Typography>
-        {FAQS.map((faq, i) => (
+        {t('pricing.faqs', { returnObjects: true }).map((faq, i) => (
           <Accordion
             key={i}
             disableGutters
@@ -857,10 +864,10 @@ export default function Pricing() {
               WebkitTextFillColor: 'transparent',
             }}
           >
-            Enterprise or large team?
+            {t('pricing.enterpriseTitle')}
           </Typography>
           <Typography sx={{ color: 'rgba(255,255,255,0.55)', fontSize: 15, mb: 3.5, maxWidth: 420, mx: 'auto' }}>
-            Get a custom plan tailored to your organisation — volume discounts, dedicated infrastructure, and white-glove onboarding.
+            {t('pricing.enterpriseSub')}
           </Typography>
           <Button
             component={RouterLink}
@@ -876,9 +883,7 @@ export default function Pricing() {
               borderRadius: 2,
               '&:hover': { bgcolor: '#4F46E5' },
             }}
-          >
-            Talk to Sales
-          </Button>
+          >{t('pricing.talkToSales')}</Button>
         </Box>
       </Container>
 
@@ -893,9 +898,9 @@ export default function Pricing() {
       >
         <Box sx={{ display: 'flex', justifyContent: 'center', gap: { xs: 2.5, md: 4 }, flexWrap: 'wrap' }}>
           {[
-            { label: 'Privacy', href: '/privacy' },
-            { label: 'Terms', href: '/terms' },
-            { label: 'Cookies', href: '/cookies' },
+            { label: t('pricing.footer.privacy'), href: '/privacy' },
+            { label: t('pricing.footer.terms'), href: '/terms' },
+            { label: t('pricing.footer.cookies'), href: '/cookies' },
           ].map(({ label, href }) => (
             <Typography
               key={label}
@@ -914,7 +919,7 @@ export default function Pricing() {
           ))}
         </Box>
         <Typography sx={{ fontSize: 12, color: 'rgba(255,255,255,0.2)', mt: 1.5 }}>
-          © {new Date().getFullYear()} Julay Technologies, Inc. All rights reserved.
+          © {new Date().getFullYear()} Julay Technologies, Inc. {t('pricing.footer.rights')}
         </Typography>
       </Box>
     </Box>

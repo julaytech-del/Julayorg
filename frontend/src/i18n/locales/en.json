@@ -80,7 +80,39 @@
       "agreePrefix": "I agree to the",
       "agreeAnd": "and",
       "terms": "Terms of Service",
-      "privacy": "Privacy Policy"
+      "privacy": "Privacy Policy",
+      "pwLen": "At least 12 characters",
+      "pwUpper": "One uppercase letter (A–Z)",
+      "pwNum": "One number (0–9)",
+      "pwSpecial": "One special character (!@#…)",
+      "strength": [
+        "Very weak",
+        "Weak",
+        "Fair",
+        "Strong",
+        "Very strong"
+      ],
+      "errName": "Full name is required",
+      "errEmail": "Email is required",
+      "errEmailValid": "Enter a valid email",
+      "errOrg": "Organization name is required",
+      "errPw": "Password is required",
+      "errPwReqs": "Password does not meet requirements",
+      "errTerms": "You must accept the terms to continue"
+    },
+    "otp": {
+      "checkEmail": "Check your email",
+      "sentTo": "We sent a 6-digit code to",
+      "sendCode": "Send verification code",
+      "sending": "Sending code…",
+      "verify": "Verify & Sign In",
+      "verifying": "Verifying…",
+      "failedSend": "Failed to send code. Try again.",
+      "invalidCode": "Invalid or expired code.",
+      "codeLabel": "Verification code",
+      "goBack": "← Go back",
+      "resend": "Didn't receive it? Resend code",
+      "verifyCreate": "Verify & Create Workspace"
     }
   },
   "dashboard": {
@@ -481,7 +513,12 @@
       "sub": "Julay combines powerful project management with built-in AI to help your team work smarter and grow faster.",
       "cta1": "Start Free — No credit card",
       "cta2": "See how it works",
-      "tagline": "Free plan forever · No credit card · Setup in 60 seconds"
+      "tagline": "Free plan forever · No credit card · Setup in 60 seconds",
+      "tryPlaceholder": "e.g. \"Launch a food delivery app\"",
+      "tryFree": "Try free",
+      "aiGenerates": "✨ AI generates a full project plan in seconds — no credit card needed",
+      "trustedBy": "Trusted by 500+ early teams · ",
+      "freeToStart": "Free to start"
     },
     "badges": [
       "12 AI-powered features",
@@ -829,6 +866,314 @@
       },
       "copy": "© 2025 Julay. All rights reserved.",
       "built": "Built by Julay.org"
+    },
+    "featuresStrip": [
+      {
+        "title": "All-in-One Workspace",
+        "desc": "Manage projects, tasks, clients, and documents in one place."
+      },
+      {
+        "title": "AI-Powered Studio",
+        "desc": "Generate project plans, assign tasks, and get smart suggestions instantly."
+      },
+      {
+        "title": "Smart Automation",
+        "desc": "Automate workflows and save time on repetitive tasks."
+      },
+      {
+        "title": "Real-Time Insights",
+        "desc": "Get powerful reports to make smarter business decisions."
+      },
+      {
+        "title": "Scalable for Everyone",
+        "desc": "Perfect for startups, agencies, and growing enterprises."
+      }
+    ]
+  },
+  "pricing": {
+    "nav": {
+      "login": "Login",
+      "startFree": "Start Free"
+    },
+    "badge": "Simple, transparent pricing",
+    "h1": "Plans that grow with your team",
+    "sub": "Start free. Upgrade when you're ready. No hidden fees, cancel anytime.",
+    "monthly": "Monthly",
+    "annual": "Annual",
+    "save20": "Save 20%",
+    "perMo": "/ mo",
+    "savePct": "Save {{pct}}%",
+    "orBilled": "or ${{price}}/mo billed annually",
+    "subscribe": "Subscribe — ${{price}}/mo",
+    "startForFree": "Start for free",
+    "mostPopular": "Most Popular",
+    "free": "Free",
+    "moneyBack": "14-day money-back guarantee on all paid plans",
+    "comparison": "Full feature comparison",
+    "feature": "Feature",
+    "faqTitle": "Frequently asked questions",
+    "enterpriseTitle": "Enterprise or large team?",
+    "enterpriseSub": "Get a custom plan tailored to your organisation — volume discounts, dedicated infrastructure, and white-glove onboarding.",
+    "talkToSales": "Talk to Sales",
+    "footer": {
+      "privacy": "Privacy",
+      "terms": "Terms",
+      "cookies": "Cookies",
+      "rights": "All rights reserved."
+    },
+    "plans": [
+      {
+        "name": "Free",
+        "description": "For individuals and small teams getting started.",
+        "ctaNote": "No credit card required",
+        "highlights": [
+          "3 projects max",
+          "5 team members max",
+          "1 GB storage",
+          "Kanban & List views",
+          "Basic task management",
+          "No AI features"
+        ]
+      },
+      {
+        "name": "Starter",
+        "description": "For growing teams that need more power.",
+        "ctaNote": null,
+        "highlights": [
+          "15 projects max",
+          "15 team members max",
+          "10 GB storage",
+          "Gantt / Timeline & Sprint boards",
+          "Time tracking & Calendar",
+          "Workload views",
+          "70 AI requests/month"
+        ]
+      },
+      {
+        "name": "Professional",
+        "description": "For teams serious about shipping faster with AI.",
+        "ctaNote": null,
+        "highlights": [
+          "Unlimited projects",
+          "50 team members max",
+          "50 GB storage",
+          "Full AI project generation",
+          "AI Standup & Performance analysis",
+          "150 AI requests/month",
+          "Automations, Webhooks & Forms",
+          "Custom dashboards & Reports"
+        ]
+      },
+      {
+        "name": "Business",
+        "description": "For organisations that need enterprise-grade reliability.",
+        "ctaNote": null,
+        "highlights": [
+          "Unlimited projects & users",
+          "300 AI requests/month",
+          "500 GB storage",
+          "API access & Custom integrations",
+          "Priority support",
+          "Advanced analytics",
+          "Dedicated account manager",
+          "99.9% uptime SLA"
+        ]
+      }
+    ],
+    "featureRows": [
+      {
+        "label": "Projects",
+        "free": "3",
+        "starter": "10",
+        "pro": "Unlimited",
+        "biz": "Unlimited"
+      },
+      {
+        "label": "Team members",
+        "free": "3",
+        "starter": "10",
+        "pro": "25",
+        "biz": "Unlimited"
+      },
+      {
+        "label": "Storage",
+        "free": "1 GB",
+        "starter": "10 GB",
+        "pro": "50 GB",
+        "biz": "200 GB"
+      },
+      {
+        "label": "AI requests/month",
+        "free": "1 (trial)",
+        "starter": "70",
+        "pro": "150",
+        "biz": "300"
+      },
+      {
+        "label": "AI project gen.",
+        "free": false,
+        "starter": true,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "AI task suggestions",
+        "free": false,
+        "starter": true,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Kanban board",
+        "free": true,
+        "starter": true,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Gantt / Timeline",
+        "free": false,
+        "starter": true,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Sprint board",
+        "free": false,
+        "starter": false,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Time tracking",
+        "free": false,
+        "starter": true,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Automations",
+        "free": false,
+        "starter": false,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Custom dashboards",
+        "free": false,
+        "starter": false,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Workload view",
+        "free": false,
+        "starter": true,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Reports & exports",
+        "free": false,
+        "starter": false,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "Webhooks",
+        "free": false,
+        "starter": false,
+        "pro": true,
+        "biz": true
+      },
+      {
+        "label": "API access",
+        "free": false,
+        "starter": false,
+        "pro": false,
+        "biz": true
+      },
+      {
+        "label": "SSO / SAML",
+        "free": false,
+        "starter": false,
+        "pro": false,
+        "biz": true
+      },
+      {
+        "label": "Priority support",
+        "free": false,
+        "starter": "Email",
+        "pro": "Priority",
+        "biz": "Dedicated"
+      },
+      {
+        "label": "SLA guarantee",
+        "free": false,
+        "starter": false,
+        "pro": false,
+        "biz": "99.9%"
+      }
+    ],
+    "faqs": [
+      {
+        "q": "What happens when I exceed plan limits?",
+        "a": "We'll send you a notification well before you hit the limit. Your service won't be interrupted — you'll simply need to upgrade to continue creating new projects or adding members once limits are reached."
+      },
+      {
+        "q": "Can I change plans at any time?",
+        "a": "Yes. Upgrades take effect immediately and you only pay the prorated difference. Downgrades are applied at the end of your current billing period so you keep full access in the meantime."
+      },
+      {
+        "q": "Is there a free trial on paid plans?",
+        "a": "All paid plans come with a 14-day money-back guarantee on your first payment — no questions asked. Just email support@julay.org within 14 days of your first charge."
+      },
+      {
+        "q": "Do you offer discounts for non-profits or education?",
+        "a": "We offer a 50% discount for registered non-profits and accredited educational institutions. Reach out to us at admin@julay.org with proof of eligibility and we'll apply the discount right away."
+      },
+      {
+        "q": "How do I cancel my subscription?",
+        "a": "You can cancel at any time from Settings → Billing inside the app. Your subscription will remain active until the end of the current billing period and you won't be charged again."
+      }
+    ]
+  },
+  "contact": {
+    "back": "Back to home",
+    "title": "Contact Us",
+    "subtitle": "Have a question? We typically respond within 24 hours.",
+    "sent": "Message sent!",
+    "sentA": "Thank you for reaching out. We've sent a confirmation to",
+    "sentB": "and will get back to you shortly.",
+    "sendAnother": "Send another message",
+    "fullName": "Full Name",
+    "emailAddr": "Email Address",
+    "subject": "Subject",
+    "message": "Message",
+    "sending": "Sending…",
+    "send": "Send Message",
+    "emailDirectly": "Email us directly:",
+    "subjects": {
+      "general": "General Inquiry",
+      "sales": "Sales",
+      "support": "Technical Support",
+      "privacy": "Privacy / Data Request",
+      "bug": "Bug Report"
+    },
+    "cat": {
+      "general": "General",
+      "support": "Support",
+      "privacy": "Privacy"
+    },
+    "err": {
+      "nameReq": "Name is required",
+      "emailReq": "Email is required",
+      "emailInvalid": "Invalid email address",
+      "subjectReq": "Please select a subject",
+      "messageReq": "Message is required",
+      "messageMin": "Message must be at least 10 characters",
+      "tooMany": "Too many requests. Please wait a few minutes and try again.",
+      "failed": "Failed to send message. Please try again."
     }
   }
 }

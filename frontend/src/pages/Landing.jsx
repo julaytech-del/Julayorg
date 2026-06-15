@@ -322,6 +322,7 @@ export default function Landing() {
   };
 
   const FEATURES   = t('landing.features.items',   { returnObjects: true });
+  const STRIP      = t('landing.featuresStrip',     { returnObjects: true });
   const PLANS      = t('landing.pricing.plans',     { returnObjects: true });
   const FAQS       = t('landing.faq.items',         { returnObjects: true }).filter(f => !/(Notion|ClickUp)/i.test(f.q));
   const BADGES     = t('landing.badges',            { returnObjects: true });
@@ -477,7 +478,7 @@ export default function Landing() {
                     value={trialIdea}
                     onChange={e => setTrialIdea(e.target.value)}
                     onKeyDown={e => e.key === 'Enter' && handleTryAI()}
-                    placeholder='e.g. "Launch a food delivery app"'
+                    placeholder={t('landing.hero.tryPlaceholder')}
                     sx={{
                       flex: 1, border: 'none', outline: 'none',
                       px: 1.5, py: 1, fontSize: '0.9rem',
@@ -500,11 +501,11 @@ export default function Landing() {
                       '&:hover': { opacity: trialIdea.trim() ? 0.9 : 1, boxShadow: 'none' },
                     }}
                   >
-                    Try free
+                    {t('landing.hero.tryFree')}
                   </Button>
                 </Box>
                 <Typography sx={{ fontSize: '0.73rem', color: '#9CA3AF', mt: 0.75, ml: 0.5 }}>
-                  ✨ AI generates a full project plan in seconds — no credit card needed
+                  {t('landing.hero.aiGenerates')}
                 </Typography>
               </Box>
 
@@ -535,7 +536,7 @@ export default function Landing() {
                     {[1,2,3,4,5].map(s => <Box key={s} component="span" sx={{ color: '#F59E0B', fontSize: '0.75rem' }}>★</Box>)}
                   </Box>
                   <Typography sx={{ fontSize: '0.78rem', color: '#6B7280', fontWeight: 500 }}>
-                    Trusted by 500+ early teams · <Box component="span" sx={{ color: '#6366F1', fontWeight: 700 }}>Free to start</Box>
+                    {t('landing.hero.trustedBy')}<Box component="span" sx={{ color: '#6366F1', fontWeight: 700 }}>{t('landing.hero.freeToStart')}</Box>
                   </Typography>
                 </Box>
               </Box>
@@ -560,8 +561,8 @@ export default function Landing() {
                   {f.icon}
                 </Box>
                 <Box>
-                  <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#111827', mb: 0.4, lineHeight: 1.3 }}>{f.title}</Typography>
-                  <Typography sx={{ fontSize: '0.78rem', color: '#6B7280', lineHeight: 1.55 }}>{f.desc}</Typography>
+                  <Typography sx={{ fontWeight: 700, fontSize: '0.88rem', color: '#111827', mb: 0.4, lineHeight: 1.3 }}>{STRIP[i]?.title || f.title}</Typography>
+                  <Typography sx={{ fontSize: '0.78rem', color: '#6B7280', lineHeight: 1.55 }}>{STRIP[i]?.desc || f.desc}</Typography>
                 </Box>
               </Box>
             ))}
