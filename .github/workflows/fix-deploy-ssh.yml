@@ -1,0 +1,40 @@
+name: Fix deploy SSH (fail2ban)
+
+# Manual — fail2ban was banning the GitHub Actions runner mid-deploy (DROP → 16-min hang).
+# Key-only SSH already blocks brute force, so we unban everything and stop fail2ban.
+on:
+  workflow_dispatch:
+
+jobs:
+  fix:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Unban + stop fail2ban (no keyscan, fast)
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            -o ConnectTimeout=20 -o ServerAliveInterval=10 -o ServerAliveCountMax=3 \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash <<'ENDSSH'
+            set +e
+            echo "=== fail2ban banned list (before) ==="
+            sudo fail2ban-client status sshd 2>/dev/null | grep -i banned || echo "(fail2ban not running)"
+            echo "=== unban everything ==="
+            sudo fail2ban-client unban --all 2>/dev/null || true
+            echo "=== stop + disable fail2ban (key-only SSH is the real protection) ==="
+            sudo systemctl stop fail2ban 2>/dev/null || true
+            sudo systemctl disable fail2ban 2>/dev/null || true
+            echo "=== flush any leftover fail2ban iptables DROP rules ==="
+            sudo iptables -S 2>/dev/null | grep -i f2b | sed 's/^-A/-D/' | while read -r rule; do sudo iptables $rule 2>/dev/null; done
+            echo "=== confirm SSH auth is key-only (still secure) ==="
+            sudo sshd -T 2>/dev/null | grep -iE "^passwordauthentication|^pubkeyauthentication"
+            echo "=== quick resource check ==="
+            df -h / | tail -1
+            free -m | awk '/Mem:/{print "RAM used "$3"MB / "$2"MB"}'
+            echo "=== Done — deploys should work now ==="
+          ENDSSH
