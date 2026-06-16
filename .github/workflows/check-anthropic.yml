@@ -1,0 +1,46 @@
+name: Check Anthropic API key
+
+# Manual — checks if ANTHROPIC_API_KEY is set on the server, valid, and has credit.
+# Never prints the key (only length + last 4 chars).
+on:
+  workflow_dispatch:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Probe key + live test call
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash <<'ENDSSH'
+            set +e
+            ENV=/home/ubuntu/Julayorg/backend/.env
+            KEY=$(grep -E '^ANTHROPIC_API_KEY=' "$ENV" 2>/dev/null | head -1 | cut -d= -f2- | tr -d '"'"'"' \r')
+            if [ -z "$KEY" ]; then
+              echo "RESULT: ANTHROPIC_API_KEY is NOT set on the server ❌ (AI features will fail)"
+              exit 0
+            fi
+            echo "RESULT: key IS set ✅  (length ${#KEY}, ends ...${KEY: -4})"
+            echo "=== live test call to Anthropic (1 token) ==="
+            code=$(curl -s -o /tmp/ar.json -w "%{http_code}" https://api.anthropic.com/v1/messages \
+              -H "x-api-key: $KEY" -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
+              --max-time 30 \
+              -d '{"model":"claude-3-5-haiku-20241022","max_tokens":1,"messages":[{"role":"user","content":"hi"}]}')
+            echo "HTTP $code"
+            head -c 400 /tmp/ar.json; echo
+            case "$code" in
+              200) echo ">>> ✅ KEY VALID + HAS CREDIT — AI works";;
+              401) echo ">>> ❌ KEY INVALID/UNAUTHORIZED — wrong or revoked key";;
+              400) echo ">>> ⚠️ check message above — if it mentions 'credit balance', account is OUT of funds";;
+              404) echo ">>> ⚠️ model name issue but KEY auth PASSED (key valid)";;
+              429) echo ">>> ⚠️ rate limited / quota — but key valid";;
+              *)   echo ">>> ⚠️ unexpected — see body above";;
+            esac
+          ENDSSH
