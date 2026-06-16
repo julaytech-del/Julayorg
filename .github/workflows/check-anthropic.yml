@@ -27,7 +27,7 @@ jobs:
               echo "RESULT: ANTHROPIC_API_KEY is NOT set on the server ❌ (AI features will fail)"
               exit 0
             fi
-            echo "RESULT: key IS set ✅  (length ${#KEY}, ends ...${KEY: -4})"
+            echo "RESULT: key IS set ✅  (length ${#KEY}, ends ...${KEY: -4}, starts: ${KEY:0:20})"
             echo "=== live test call to Anthropic (1 token) ==="
             code=$(curl -s -o /tmp/ar.json -w "%{http_code}" https://api.anthropic.com/v1/messages \
               -H "x-api-key: $KEY" -H "anthropic-version: 2023-06-01" -H "content-type: application/json" \
