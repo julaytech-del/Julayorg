@@ -1,0 +1,50 @@
+name: Grow server disk (after EBS resize)
+
+# Manual — run AFTER increasing the EBS volume size in the AWS console.
+# Extends the root partition + filesystem to use the new space. Safe & idempotent.
+on:
+  workflow_dispatch:
+
+jobs:
+  grow:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Grow partition + filesystem
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null \
+            -o ConnectTimeout=20 \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash <<'ENDSSH'
+            set +e
+            echo "=== BEFORE ==="
+            df -h /
+            echo "-- block devices --"; lsblk
+            PART=$(findmnt -no SOURCE / | xargs readlink -f)
+            FSTYPE=$(findmnt -no FSTYPE /)
+            DISK=/dev/$(lsblk -no pkname "$PART" | head -1)
+            PARTNUM=$(echo "$PART" | grep -o '[0-9]*$')
+            echo "root partition: $PART  disk: $DISK  partnum: $PARTNUM  fstype: $FSTYPE"
+
+            echo "=== ensure growpart available ==="
+            command -v growpart >/dev/null || sudo apt-get update -qq && sudo apt-get install -y cloud-guest-utils 2>/dev/null
+
+            echo "=== grow partition to fill the (now larger) disk ==="
+            sudo growpart "$DISK" "$PARTNUM" || echo "(growpart: nothing to do or already at max)"
+
+            echo "=== grow filesystem ==="
+            if [ "$FSTYPE" = "xfs" ]; then
+              sudo xfs_growfs /
+            else
+              sudo resize2fs "$PART"
+            fi
+
+            echo "=== AFTER ==="
+            df -h /
+            echo "=== Done ==="
+          ENDSSH
