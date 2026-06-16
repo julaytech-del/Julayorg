@@ -65,8 +65,9 @@ function pwdScore(p) {
 function PasswordStrength({ password }) {
   const { t } = useTranslation();
   const STRENGTH_LABELS = t('auth.register.strength', { returnObjects: true });
+  // All hooks must run on every render (before any early return) — React rules of hooks.
+  const score = useMemo(() => pwdScore(password || ''), [password]);
   if (!password) return null;
-  const score = useMemo(() => pwdScore(password), [password]);
   const rules = PWD_RULES.map(r => ({ ...r, pass: r.test(password) }));
   return (
     <Box sx={{ mt: 0.5, mb: 1.5 }}>
