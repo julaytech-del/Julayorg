@@ -865,7 +865,9 @@
         ]
       },
       "copy": "© 2025 Julay. All rights reserved.",
-      "built": "Built by Julay.org"
+      "built": "Built by Julay.org",
+      "mobileSoon": "Mobile app",
+      "comingSoon": "Coming soon"
     },
     "featuresStrip": [
       {

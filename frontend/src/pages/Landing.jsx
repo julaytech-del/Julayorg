@@ -5,7 +5,7 @@ import {
 } from '@mui/material';
 import {
   ArrowForward, CheckCircle, CheckCircleOutline, Close, PlayArrow,
-  Menu as MenuIcon, Search, Notifications,
+  Menu as MenuIcon, Search, Notifications, Apple,
 } from '@mui/icons-material';
 import { useNavigate, Navigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
@@ -850,6 +850,26 @@ export default function Landing() {
                 </Box>
               </Box>
               <Typography sx={{ color: '#6B7280', fontSize: '0.85rem', lineHeight: 1.65 }}>{t('landing.footer.tagline')}</Typography>
+              {/* Mobile app — coming soon badges */}
+              <Box sx={{ mt: 2.5 }}>
+                <Typography sx={{ color: '#6B7280', fontSize: '0.7rem', fontWeight: 700, textTransform: 'uppercase', letterSpacing: '0.08em', mb: 1.25 }}>
+                  {t('landing.footer.mobileSoon')}
+                </Typography>
+                <Box sx={{ display: 'flex', gap: 1.25, flexWrap: 'wrap' }}>
+                  {[
+                    { icon: <Apple sx={{ fontSize: 22, color: '#fff' }} />, top: t('landing.footer.comingSoon'), bottom: 'App Store' },
+                    { icon: <PlayArrow sx={{ fontSize: 22, color: '#34D399' }} />, top: t('landing.footer.comingSoon'), bottom: 'Google Play' },
+                  ].map((b) => (
+                    <Box key={b.bottom} sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.5, py: 0.9, borderRadius: 2, border: '1px solid #374151', background: '#111827', opacity: 0.92 }}>
+                      {b.icon}
+                      <Box sx={{ lineHeight: 1 }}>
+                        <Typography sx={{ color: '#9CA3AF', fontSize: '0.6rem', display: 'block' }}>{b.top}</Typography>
+                        <Typography sx={{ color: '#E5E7EB', fontSize: '0.82rem', fontWeight: 700 }}>{b.bottom}</Typography>
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              </Box>
             </Box>
             <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3,1fr)', gap: 5 }}>
               {[
