@@ -1,0 +1,57 @@
+name: Server prep for launch
+
+# Manual — make the backend survive reboots (pm2 startup+save) and add a 2GB swap
+# file so the 2GB server doesn't crash under a traffic spike. Safe & idempotent.
+on:
+  workflow_dispatch:
+
+jobs:
+  prep:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+
+      - name: Harden for launch
+        run: |
+          ssh -i ~/.ssh/deploy_key \
+            -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ConnectTimeout=20 \
+            ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} bash <<'ENDSSH'
+            set +e
+            echo "================= BEFORE ================="
+            echo "-- memory/swap --"; free -m
+            echo "-- pm2 --"; pm2 list 2>/dev/null | head -15
+
+            echo ""
+            echo "================= 1) pm2 survive reboot ================="
+            pm2 save 2>/dev/null
+            PM2BIN=$(command -v pm2)
+            sudo env PATH=$PATH $PM2BIN startup systemd -u $(whoami) --hp $HOME 2>&1 | tail -3
+            pm2 save 2>/dev/null
+            echo "pm2 startup configured + process list saved ✅"
+
+            echo ""
+            echo "================= 2) add 2GB swap (if none) ================="
+            if swapon --show | grep -q .; then
+              echo "swap already present — skipping"
+            else
+              sudo fallocate -l 2G /swapfile || sudo dd if=/dev/zero of=/swapfile bs=1M count=2048
+              sudo chmod 600 /swapfile
+              sudo mkswap /swapfile
+              sudo swapon /swapfile
+              grep -q '/swapfile' /etc/fstab || echo '/swapfile none swap sw 0 0' | sudo tee -a /etc/fstab
+              echo 'vm.swappiness=10' | sudo tee /etc/sysctl.d/99-swappiness.conf >/dev/null
+              sudo sysctl vm.swappiness=10
+              echo "2GB swap added + persisted ✅"
+            fi
+
+            echo ""
+            echo "================= AFTER ================="
+            echo "-- memory/swap --"; free -m
+            echo "-- swap devices --"; swapon --show
+            echo "-- pm2 systemd service --"; systemctl is-enabled pm2-$(whoami) 2>/dev/null || echo "(check above)"
+            echo "=== Done — server hardened for launch ==="
+          ENDSSH
