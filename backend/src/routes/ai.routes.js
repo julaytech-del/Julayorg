@@ -4,13 +4,18 @@ import { protect, requireSubscription, requirePermission } from '../middleware/a
 
 const router = Router();
 router.use(protect);
-router.use(requireSubscription);
 router.use(requirePermission('ai', 'use'));
 
+// Generate-plan is the "first try free" entry point: the free plan gets a
+// metered quota (planLimits.free.aiRequests = 1) enforced inside the controller
+// via checkAndIncrementAI. Do NOT gate it behind requireSubscription, or new
+// users never get their free trial of the core AI feature.
 router.post('/generate-plan', generatePlan);
-router.post('/assign-team/:projectId', assignTeamToProject);
-router.get('/standup/:projectId', getStandup);
-router.get('/performance/:projectId', getPerformanceAnalysis);
-router.post('/replan/:projectId', replanProject);
+
+// Advanced AI features remain paid-only.
+router.post('/assign-team/:projectId', requireSubscription, assignTeamToProject);
+router.get('/standup/:projectId', requireSubscription, getStandup);
+router.get('/performance/:projectId', requireSubscription, getPerformanceAnalysis);
+router.post('/replan/:projectId', requireSubscription, replanProject);
 
 export default router;

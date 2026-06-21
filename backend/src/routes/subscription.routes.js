@@ -3,6 +3,7 @@ import Stripe from 'stripe';
 import { protect } from '../middleware/auth.middleware.js';
 import User from '../models/User.js';
 import Organization from '../models/Organization.js';
+import { getLimit } from '../config/planLimits.js';
 
 const router = Router();
 
@@ -147,14 +148,15 @@ router.get('/status', protect, async (req, res) => {
   const sub = org?.subscription || {};
   const paid = ['starter', 'professional', 'business', 'enterprise'];
   const active = paid.includes(sub.plan) && (!sub.expiresAt || new Date() < new Date(sub.expiresAt));
-  const aiLimits = { free: 0, starter: 30, professional: 500, business: 2000, enterprise: -1 };
+  // Single source of truth for AI quota = config/planLimits.js (same as enforcement
+  // in ai.controller.checkAndIncrementAI). free = 1 free generation ("first try free").
   res.json({
     success: true,
     plan: sub.plan || 'free',
     active,
     expiresAt: sub.expiresAt,
     aiUsedThisMonth: sub.aiUsedThisMonth || 0,
-    aiLimit: aiLimits[sub.plan || 'free'] ?? 5,
+    aiLimit: getLimit(sub.plan || 'free', 'aiRequests'),
   });
 });
 
