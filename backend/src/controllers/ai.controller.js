@@ -6,8 +6,7 @@ import User from '../models/User.js';
 import Department from '../models/Department.js';
 import ActivityLog from '../models/ActivityLog.js';
 import Organization from '../models/Organization.js';
-import { analyzePlan } from '../services/ai/planAnalysis.service.js';
-import { generateTasks } from '../services/ai/taskGeneration.service.js';
+import { generateFullPlan } from '../services/ai/planGeneration.service.js';
 import { assignTeam } from '../services/ai/assignment.service.js';
 import { generateTimeline } from '../services/ai/timeline.service.js';
 import { generateStandup, analyzePerformance, generateReplan } from '../services/ai/standup.service.js';
@@ -94,11 +93,9 @@ async function runPlanGeneration(ctx) {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    // Step 1: Analyze the plan (AI call — outside transaction, read-only)
-    const planAnalysis = await analyzePlan(prompt);
-
-    // Step 2: Generate task structure (AI call — outside transaction, read-only)
-    const taskStructure = await generateTasks(planAnalysis);
+    // Steps 1+2 combined into a SINGLE AI call (analysis + full task breakdown)
+    // to roughly halve generation time.
+    const { analysis: planAnalysis, goals: planGoals } = await generateFullPlan(prompt);
 
     // Step 3: Get team members (read-only, before transaction writes)
     let teamMembers = [];
@@ -110,11 +107,15 @@ async function runPlanGeneration(ctx) {
 
     // Step 4: AI assignments (AI call — outside transaction, read-only)
     const projectStart = startDate ? new Date(startDate) : new Date();
-    const timedGoals = generateTimeline(taskStructure.goals, projectStart, teamMembers);
+    const timedGoals = generateTimeline(planGoals, projectStart, teamMembers);
     const allTaskTitles = timedGoals.flatMap(g => g.tasks || []);
     let assignments = [];
-    if (teamMembers.length > 0) {
+    if (teamMembers.length > 1) {
+      // Multiple members → let AI match tasks to people by skill.
       assignments = await assignTeam(allTaskTitles, teamMembers);
+    } else if (teamMembers.length === 1) {
+      // Solo workspace → assign everything to the single member, no AI call needed.
+      assignments = allTaskTitles.map(t => ({ taskTitle: t.title, assigneeEmail: teamMembers[0].email }));
     }
     const assignmentMap = assignments.reduce((m, a) => { m[a.taskTitle] = a.assigneeEmail; return m; }, {});
 
