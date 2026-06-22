@@ -52,7 +52,7 @@ export async function generateFullPlan(prompt) {
   ]
 }
 
-Create exactly 5 goals. Each goal has 3-4 tasks (total 15-20 tasks). Keep all descriptions concise.
+Create exactly 4 goals. Each goal has exactly 3 tasks (12 tasks total). Use at most 2 subtasks per task. Keep every description very short (under 80 chars). Be concise to respond fast.
 
 Project description: "${prompt}"`
       }]
