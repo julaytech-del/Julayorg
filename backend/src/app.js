@@ -61,7 +61,11 @@ const isTest = process.env.NODE_ENV === 'test';
 const authLimiter = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 20, skip: req => req.path === '/me', message: { success: false, message: 'Too many attempts, please try again later.' } });
 // Relaxed limit for /auth/me — checked on every React page mount, high limit prevents false logouts
 const meLimiter   = rateLimit({ windowMs: 15 * 60 * 1000, max: isTest ? 10000 : 500, message: { success: false, message: 'Too many requests.' } });
-const aiLimiter   = rateLimit({ windowMs: 60 * 1000,      max: isTest ? 10000 : 20, message: { success: false, message: 'Too many AI requests, please slow down.' } });
+// Async generation status polling (GET .../generate-plan/status/:jobId) fires every
+// ~2s for the duration of one generation — it's a cheap in-memory lookup with no AI
+// cost, so it must NOT count against the AI compute limit, or a single generation
+// trips the limiter mid-run.
+const aiLimiter   = rateLimit({ windowMs: 60 * 1000,      max: isTest ? 10000 : 20, skip: req => req.method === 'GET' && req.originalUrl.includes('/ai/generate-plan/status/'), message: { success: false, message: 'Too many AI requests, please slow down.' } });
 
 app.get(['/health', '/api/health'], (req, res) => res.json({ status: 'ok', timestamp: new Date().toISOString() }));
 
