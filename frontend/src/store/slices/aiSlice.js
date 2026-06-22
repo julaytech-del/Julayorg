@@ -1,9 +1,27 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { aiAPI } from '../../services/api.js';
 
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Generation runs in the background on the server (to survive the ~60s proxy
+// gateway timeout). We get a jobId immediately, then poll until it's ready.
 export const generatePlan = createAsyncThunk('ai/generatePlan', async (data, { rejectWithValue }) => {
-  try { const res = await aiAPI.generatePlan(data); return res.data; }
-  catch (err) { return rejectWithValue({ message: err.message || 'Failed to generate plan', code: err.code }); }
+  try {
+    const start = await aiAPI.generatePlan(data); // 202 -> { success, jobId }
+    const jobId = start?.jobId;
+    // Backward-compat: server responded synchronously with the full result.
+    if (!jobId) return start?.data ?? start;
+
+    for (let i = 0; i < 100; i++) { // up to ~200s
+      await sleep(2000);
+      const s = await aiAPI.generatePlanStatus(jobId);
+      if (s?.status === 'done') return s.data;
+      if (s?.status === 'error') return rejectWithValue({ message: s.message || 'Failed to generate plan', code: s.code });
+    }
+    return rejectWithValue({ message: 'Generation is taking longer than expected. Please try again.' });
+  } catch (err) {
+    return rejectWithValue({ message: err.message || 'Failed to generate plan', code: err.code });
+  }
 });
 
 export const assignTeam = createAsyncThunk('ai/assignTeam', async (projectId, { rejectWithValue }) => {

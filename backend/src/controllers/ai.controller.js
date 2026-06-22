@@ -12,6 +12,17 @@ import { assignTeam } from '../services/ai/assignment.service.js';
 import { generateTimeline } from '../services/ai/timeline.service.js';
 import { generateStandup, analyzePerformance, generateReplan } from '../services/ai/standup.service.js';
 import { getLimit, isUnlimited } from '../config/planLimits.js';
+import { createJob, setJobDone, setJobError, getJob } from '../services/aiJobStore.js';
+
+// Refund one AI request (used when an async generation fails after reserving quota).
+async function refundAI(orgId) {
+  try {
+    await Organization.updateOne(
+      { _id: orgId, 'subscription.aiUsedThisMonth': { $gt: 0 } },
+      { $inc: { 'subscription.aiUsedThisMonth': -1 } }
+    );
+  } catch { /* best-effort refund */ }
+}
 
 async function checkAndIncrementAI(orgId, plan) {
   const org = await Organization.findById(orgId);
@@ -38,22 +49,51 @@ async function checkAndIncrementAI(orgId, plan) {
   await org.save();
 }
 
-export const generatePlan = async (req, res, next) => {
+export const generatePlan = async (req, res) => {
+  const { prompt, startDate, teamUserIds } = req.body;
+  if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
+
+  const orgId = req.user.organization._id || req.user.organization;
+  const plan = req.user.organization.subscription?.plan || 'free';
+
+  // Reserve quota up-front (blocks spam + concurrent over-grant); refunded if generation fails.
+  try { await checkAndIncrementAI(orgId, plan); }
+  catch (err) {
+    return res.status(err.statusCode || 403).json({ success: false, code: err.code, message: err.message });
+  }
+
+  // Kick off generation in the background and return immediately. This makes the
+  // request immune to the 60s Cloudflare / proxy gateway timeout — the client
+  // polls GET /ai/generate-plan/status/:jobId until the plan is ready.
+  const ctx = { orgId, userId: req.user._id, userName: req.user.name, prompt, startDate, teamUserIds };
+  const jobId = createJob();
+  res.status(202).json({ success: true, jobId });
+
+  runPlanGeneration(ctx)
+    .then(data => setJobDone(jobId, data))
+    .catch(async (err) => {
+      console.error('[ai] generation failed:', err?.message || err);
+      await refundAI(orgId);
+      setJobError(jobId, { code: err.code, message: err.message || 'Failed to generate plan' });
+    });
+};
+
+// Returns the status (and result, when ready) of an async plan generation job.
+export const getGeneratePlanStatus = async (req, res) => {
+  const job = getJob(req.params.jobId);
+  if (!job) return res.json({ success: true, status: 'error', message: 'Generation session expired. Please try again.' });
+  if (job.status === 'pending') return res.json({ success: true, status: 'pending' });
+  if (job.status === 'error') return res.json({ success: true, status: 'error', code: job.code, message: job.message });
+  return res.json({ success: true, status: 'done', data: job.data });
+};
+
+// Heavy lifting: runs the AI pipeline + persists the project. Returns the result
+// payload (same shape the endpoint used to send synchronously) or throws.
+async function runPlanGeneration(ctx) {
+  const { orgId, userId, userName, prompt, startDate, teamUserIds } = ctx;
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const { prompt, startDate, teamUserIds } = req.body;
-    if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
-
-    const orgId = req.user.organization._id || req.user.organization;
-    const plan = req.user.organization.subscription?.plan || 'free';
-
-    try { await checkAndIncrementAI(orgId, plan); }
-    catch (err) {
-      await session.abortTransaction();
-      return res.status(err.statusCode || 403).json({ success: false, code: err.code, message: err.message });
-    }
-
     // Step 1: Analyze the plan (AI call — outside transaction, read-only)
     const planAnalysis = await analyzePlan(prompt);
 
@@ -95,7 +135,7 @@ export const generatePlan = async (req, res, next) => {
       endDate: projectEnd,
       aiGenerated: true,
       aiMetadata: { originalPrompt: prompt, generatedAt: new Date(), confidence: 0.9, detectedIndustry: planAnalysis.industry },
-      createdBy: req.user._id,
+      createdBy: userId,
       color: '#6366F1'
     }], { session });
 
@@ -145,7 +185,7 @@ export const generatePlan = async (req, res, next) => {
           position: taskPosition++,
           aiGenerated: true,
           aiMetadata: { reason: 'AI generated', estimationBasis: 'Historical data', skillsRequired: taskData.skillsRequired || [] },
-          createdBy: req.user._id
+          createdBy: userId
         }], { session });
         createdTasks.push(task);
       }
@@ -157,29 +197,26 @@ export const generatePlan = async (req, res, next) => {
     const totalTasks = createdGoals.reduce((sum, g) => sum + g.tasks.length, 0);
     await Project.findByIdAndUpdate(project._id, { 'progress.totalTasks': totalTasks }, { session });
 
-    await ActivityLog.create([{ organization: orgId, user: req.user._id, userName: req.user.name, action: 'ai_generated', entityType: 'project', entityId: project._id, entityName: project.name, metadata: { prompt, industry: planAnalysis.industry } }], { session });
+    await ActivityLog.create([{ organization: orgId, user: userId, userName, action: 'ai_generated', entityType: 'project', entityId: project._id, entityName: project.name, metadata: { prompt, industry: planAnalysis.industry } }], { session });
 
     await session.commitTransaction();
 
     const fullProject = await Project.findById(project._id).populate('team.user', 'name avatar email');
 
-    res.status(201).json({
-      success: true,
-      data: {
-        project: fullProject,
-        goals: createdGoals,
-        planAnalysis,
-        teamAssignments: assignments,
-        stats: { goalsCreated: createdGoals.length, tasksCreated: totalTasks, teamAssigned: teamMembers.length }
-      }
-    });
+    return {
+      project: fullProject,
+      goals: createdGoals,
+      planAnalysis,
+      teamAssignments: assignments,
+      stats: { goalsCreated: createdGoals.length, tasksCreated: totalTasks, teamAssigned: teamMembers.length }
+    };
   } catch (err) {
     await session.abortTransaction();
-    next(err);
+    throw err;
   } finally {
     session.endSession();
   }
-};
+}
 
 export const assignTeamToProject = async (req, res, next) => {
   try {

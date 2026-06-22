@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { generatePlan, assignTeamToProject, getStandup, getPerformanceAnalysis, replanProject } from '../controllers/ai.controller.js';
+import { generatePlan, getGeneratePlanStatus, assignTeamToProject, getStandup, getPerformanceAnalysis, replanProject } from '../controllers/ai.controller.js';
 import { protect, requireSubscription, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -11,6 +11,7 @@ router.use(requirePermission('ai', 'use'));
 // via checkAndIncrementAI. Do NOT gate it behind requireSubscription, or new
 // users never get their free trial of the core AI feature.
 router.post('/generate-plan', generatePlan);
+router.get('/generate-plan/status/:jobId', getGeneratePlanStatus);
 
 // Advanced AI features remain paid-only.
 router.post('/assign-team/:projectId', requireSubscription, assignTeamToProject);

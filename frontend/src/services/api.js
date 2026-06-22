@@ -135,6 +135,7 @@ export const webhooksAPI = {
 // AI
 export const aiAPI = {
   generatePlan: data => api.post('/ai/generate-plan', data),
+  generatePlanStatus: jobId => api.get(`/ai/generate-plan/status/${jobId}`),
   assignTeam: projectId => api.post(`/ai/assign-team/${projectId}`),
   getStandup: projectId => api.get(`/ai/standup/${projectId}`),
   getPerformance: projectId => api.get(`/ai/performance/${projectId}`),
