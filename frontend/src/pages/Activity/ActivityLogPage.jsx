@@ -8,6 +8,7 @@ import {
   FilterList, Inbox,
 } from '@mui/icons-material';
 import { activityAPI, usersAPI } from '../../services/api.js';
+import AppDateField from '../../components/common/AppDateField.jsx';
 
 // ── helpers ────────────────────────────────────────────────────────────────
 function timeAgo(date) {
@@ -231,15 +232,15 @@ export default function ActivityLogPage() {
               {users.map(u => <MenuItem key={u._id} value={u._id}>{u.name}</MenuItem>)}
             </Select>
           </FormControl>
-          <TextField
-            label="From" type="date" size="small" value={dateFrom}
+          <AppDateField
+            label="From" size="small" value={dateFrom}
             onChange={e => setDateFrom(e.target.value)}
-            InputLabelProps={{ shrink: true }} sx={{ width: 150 }}
+            sx={{ width: 150 }}
           />
-          <TextField
-            label="To" type="date" size="small" value={dateTo}
+          <AppDateField
+            label="To" size="small" value={dateTo}
             onChange={e => setDateTo(e.target.value)}
-            InputLabelProps={{ shrink: true }} sx={{ width: 150 }}
+            sx={{ width: 150 }}
           />
           {(entityType !== 'all' || userId !== 'all' || dateFrom || dateTo) && (
             <Button size="small" onClick={() => { setEntityType('all'); setUserId('all'); setDateFrom(''); setDateTo(''); }} sx={{ color: '#EF4444' }}>

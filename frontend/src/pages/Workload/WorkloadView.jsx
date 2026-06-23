@@ -10,6 +10,7 @@ let _workloadCache = null;
 import {
   AutoAwesome, Refresh, Close, CheckCircle, ArrowForward
 } from '@mui/icons-material';
+import AppDateField from '../../components/common/AppDateField.jsx';
 import {
   format, startOfWeek, endOfWeek, addDays, parseISO, isValid
 } from 'date-fns';
@@ -185,17 +186,17 @@ export default function WorkloadView() {
           </Select>
         </FormControl>
 
-        <TextField
-          size="small" type="date" label="Start Date" value={startDate}
+        <AppDateField
+          size="small" label="Start Date" value={startDate}
           onChange={e => setStartDate(e.target.value)}
-          InputLabelProps={{ shrink: true, sx: { color: 'rgba(255,255,255,0.4)', '&.Mui-focused': { color: '#A78BFA' } } }}
-          sx={{ '& .MuiOutlinedInput-root': { color: 'rgba(255,255,255,0.8)', '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' } }, '& input::-webkit-calendar-picker-indicator': { filter: 'invert(0.5)' } }}
+          InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.4)', '&.Mui-focused': { color: '#A78BFA' } } }}
+          sx={{ '& .MuiOutlinedInput-root': { color: 'rgba(255,255,255,0.8)', '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' } }, '& .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.5)' } }}
         />
-        <TextField
-          size="small" type="date" label="End Date" value={endDate}
+        <AppDateField
+          size="small" label="End Date" value={endDate}
           onChange={e => setEndDate(e.target.value)}
-          InputLabelProps={{ shrink: true, sx: { color: 'rgba(255,255,255,0.4)', '&.Mui-focused': { color: '#A78BFA' } } }}
-          sx={{ '& .MuiOutlinedInput-root': { color: 'rgba(255,255,255,0.8)', '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' } }, '& input::-webkit-calendar-picker-indicator': { filter: 'invert(0.5)' } }}
+          InputLabelProps={{ sx: { color: 'rgba(255,255,255,0.4)', '&.Mui-focused': { color: '#A78BFA' } } }}
+          sx={{ '& .MuiOutlinedInput-root': { color: 'rgba(255,255,255,0.8)', '& fieldset': { borderColor: 'rgba(255,255,255,0.1)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.2)' } }, '& .MuiSvgIcon-root': { color: 'rgba(255,255,255,0.5)' } }}
         />
 
         <Button

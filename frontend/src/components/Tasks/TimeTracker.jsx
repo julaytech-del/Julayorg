@@ -6,6 +6,7 @@ import {
 import { PlayArrow, Stop, Add, Delete, AccessTime, AttachMoney } from '@mui/icons-material';
 import { useSelector } from 'react-redux';
 import api from '../../services/api.js';
+import AppDateField from '../common/AppDateField.jsx';
 
 export const timeEntriesAPI = {
   getForTask: (taskId) => api.get('/time-entries', { params: { taskId } }),
@@ -251,13 +252,11 @@ export default function TimeTracker({ taskId }) {
             placeholder="What did you work on?"
             fullWidth
           />
-          <TextField
+          <AppDateField
             label="Date"
-            type="date"
             value={manualDate}
             onChange={e => setManualDate(e.target.value)}
             fullWidth
-            InputLabelProps={{ shrink: true }}
           />
           <FormControlLabel
             control={<Switch checked={manualBillable} onChange={e => setManualBillable(e.target.checked)} size="small" />}

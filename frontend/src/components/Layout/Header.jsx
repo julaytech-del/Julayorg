@@ -13,6 +13,7 @@ import {
 import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AppDateField from '../common/AppDateField.jsx';
 import { logout } from '../../store/slices/authSlice.js';
 import { usePermissions } from '../../hooks/usePermissions.js';
 import { toggleDarkMode, showSnackbar, triggerDashboardRefresh, stopGlobalTimer } from '../../store/slices/uiSlice.js';
@@ -146,10 +147,9 @@ function QuickAddModal({ open, onClose }) {
         </Box>
 
         {/* Row 2: Due Date */}
-        <TextField
-          size="small" fullWidth type="date" label="Due Date (optional)"
+        <AppDateField
+          size="small" fullWidth label="Due Date (optional)"
           value={dueDate} onChange={e => setDueDate(e.target.value)}
-          InputLabelProps={{ shrink: true }}
           sx={{
             mb:1.5,
             ...fieldSx,
@@ -304,12 +304,12 @@ function QuickAddProjectModal({ open, onClose }) {
 
         {/* Dates */}
         <Box sx={{ display: 'flex', gap: 1.5 }}>
-          <TextField size="small" fullWidth type="date" label="Start Date"
+          <AppDateField size="small" fullWidth label="Start Date"
             value={startDate} onChange={e => setStartDate(e.target.value)}
-            InputLabelProps={{ shrink: true }} sx={fSx} />
-          <TextField size="small" fullWidth type="date" label="End Date"
+            sx={fSx} />
+          <AppDateField size="small" fullWidth label="End Date"
             value={endDate} onChange={e => setEndDate(e.target.value)}
-            InputLabelProps={{ shrink: true }} sx={fSx} />
+            sx={fSx} />
         </Box>
       </DialogContent>
 

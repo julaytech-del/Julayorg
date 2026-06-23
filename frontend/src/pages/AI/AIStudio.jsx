@@ -4,6 +4,7 @@ import { AutoAwesome, Psychology, ExpandMore, Rocket, CheckCircle, Person, Acces
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import AppDateField from '../../components/common/AppDateField.jsx';
 import { generatePlan, getStandup, analyzePerformance, replanProject } from '../../store/slices/aiSlice.js';
 import { fetchProjects } from '../../store/slices/projectSlice.js';
 import { usersAPI } from '../../services/api.js';
@@ -271,7 +272,7 @@ export default function AIStudio() {
 
               <TextField fullWidth multiline rows={4} placeholder={t('ai.generate.placeholder')} value={prompt} onChange={e => setPrompt(e.target.value)} sx={{ mb: 2 }} />
 
-              <TextField label={t('ai.generate.startDate')} type="date" value={startDate} onChange={e => setStartDate(e.target.value)} size="small" InputLabelProps={{ shrink: true }} sx={{ mb: 2 }} />
+              <AppDateField label={t('ai.generate.startDate')} value={startDate} onChange={e => setStartDate(e.target.value)} size="small" sx={{ mb: 2 }} />
 
               {error && <Alert severity="error" sx={{ mb: 2 }}>{error}</Alert>}
 

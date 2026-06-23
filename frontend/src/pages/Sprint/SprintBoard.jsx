@@ -13,6 +13,7 @@ import {
 } from '@mui/icons-material';
 import { LineChart, Line, XAxis, YAxis, Tooltip as ReTooltip, ResponsiveContainer, Legend } from 'recharts';
 import { format, isPast, parseISO } from 'date-fns';
+import AppDateField from '../../components/common/AppDateField.jsx';
 import { useDispatch } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -177,8 +178,8 @@ function CreateSprintDialog({ open, onClose, onSubmit, loading }) {
         <TextField label="Sprint Name *" value={form.name} onChange={set('name')} fullWidth size="small" />
         <TextField label="Sprint Goal" value={form.goal} onChange={set('goal')} fullWidth size="small" multiline rows={2} placeholder="What do we want to achieve this sprint?" />
         <Box sx={{ display: 'flex', gap: 2 }}>
-          <TextField label="Start Date" type="date" value={form.startDate} onChange={set('startDate')} fullWidth size="small" InputLabelProps={{ shrink: true }} />
-          <TextField label="End Date"   type="date" value={form.endDate}   onChange={set('endDate')}   fullWidth size="small" InputLabelProps={{ shrink: true }} />
+          <AppDateField label="Start Date" value={form.startDate} onChange={set('startDate')} fullWidth size="small" />
+          <AppDateField label="End Date"   value={form.endDate}   onChange={set('endDate')}   fullWidth size="small" />
         </Box>
         <TextField label="Capacity (story points)" type="number" value={form.capacity} onChange={set('capacity')} fullWidth size="small" />
       </DialogContent>

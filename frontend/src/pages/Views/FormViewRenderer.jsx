@@ -5,6 +5,7 @@ import {
 } from '@mui/material';
 import { useParams } from 'react-router-dom';
 import { formsAPI } from '../../services/api.js';
+import AppDateField from '../../components/common/AppDateField.jsx';
 
 export default function FormViewRenderer() {
   const { token } = useParams();
@@ -103,7 +104,7 @@ export default function FormViewRenderer() {
                   <TextField label={field.label + (field.required ? ' *' : '')} placeholder={field.placeholder || 'https://example.com'} type="url" value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth />
                 )}
                 {field.type === 'date' && (
-                  <TextField label={field.label + (field.required ? ' *' : '')} type="date" value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth InputLabelProps={{ shrink: true }} />
+                  <AppDateField label={field.label + (field.required ? ' *' : '')} value={values[field.id] || ''} onChange={e => setValue(field.id, e.target.value)} fullWidth />
                 )}
                 {field.type === 'select' && (
                   <FormControl fullWidth>

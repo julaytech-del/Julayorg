@@ -15,6 +15,7 @@ import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip as LTooltip,
 } from 'recharts';
 import { format, subDays, startOfDay } from 'date-fns';
+import AppDateField from '../../components/common/AppDateField.jsx';
 import { useDispatch, useSelector } from 'react-redux';
 import { usePermissions } from '../../hooks/usePermissions.js';
 import api from '../../services/api.js';
@@ -628,13 +629,11 @@ export default function ExecutionBoard() {
 
           {/* Due Date + Project */}
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <TextField
+            <AppDateField
               label="Due Date"
-              type="date"
               value={form.dueDate}
               onChange={e => setForm(f => ({ ...f, dueDate: e.target.value }))}
               size="small" fullWidth
-              InputLabelProps={{ shrink: true }}
               sx={{ '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
             />
             <FormControl size="small" fullWidth>

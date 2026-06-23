@@ -18,6 +18,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
+import AppDateField from '../../components/common/AppDateField.jsx';
 import { fetchProjects, createProject, deleteProject } from '../../store/slices/projectSlice.js';
 import { generatePlan } from '../../store/slices/aiSlice.js';
 import { showSnackbar } from '../../store/slices/uiSlice.js';
@@ -180,8 +181,8 @@ function CreateProjectDialog({ open, onClose, onCreated, initialPrompt = '' }) {
             <TextField label={t('projects.create.name')} name="name" value={form.name} onChange={e => setForm(p => ({ ...p, name: e.target.value }))} required fullWidth placeholder={t('projects.create.namePlaceholder')} />
             <TextField label={t('projects.create.description')} name="description" value={form.description} onChange={e => setForm(p => ({ ...p, description: e.target.value }))} multiline rows={2} fullWidth placeholder={t('projects.create.descPlaceholder')} />
             <Grid container spacing={2}>
-              <Grid item xs={6}><TextField label={t('projects.create.startDate')} name="startDate" type="date" value={form.startDate} onChange={e => setForm(p => ({ ...p, startDate: e.target.value }))} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
-              <Grid item xs={6}><TextField label={t('projects.create.endDate')} name="endDate" type="date" value={form.endDate} onChange={e => setForm(p => ({ ...p, endDate: e.target.value }))} fullWidth InputLabelProps={{ shrink: true }} /></Grid>
+              <Grid item xs={6}><AppDateField label={t('projects.create.startDate')} name="startDate" value={form.startDate} onChange={e => setForm(p => ({ ...p, startDate: e.target.value }))} fullWidth /></Grid>
+              <Grid item xs={6}><AppDateField label={t('projects.create.endDate')} name="endDate" value={form.endDate} onChange={e => setForm(p => ({ ...p, endDate: e.target.value }))} fullWidth /></Grid>
             </Grid>
             <Grid container spacing={2} alignItems="center">
               <Grid item xs={5}>
@@ -263,12 +264,10 @@ function CreateProjectDialog({ open, onClose, onCreated, initialPrompt = '' }) {
                 sx={{ '& .MuiOutlinedInput-root': { fontSize: '0.875rem' } }}
               />
 
-              <TextField
+              <AppDateField
                 label={t('projects.aiCreate.startDate')}
-                type="date"
                 value={startDate}
                 onChange={e => setStartDate(e.target.value)}
-                InputLabelProps={{ shrink: true }}
                 size="small"
                 sx={{ maxWidth: 200 }}
               />

@@ -11,6 +11,7 @@ import {
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import AppDateField from '../common/AppDateField.jsx';
 import { updateTask, deleteTask, addComment } from '../../store/slices/taskSlice.js';
 import { showSnackbar, startGlobalTimer, stopGlobalTimer } from '../../store/slices/uiSlice.js';
 import { tasksAPI, usersAPI } from '../../services/api.js';
@@ -475,14 +476,13 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
 
             {/* Start Date */}
             <PropRow label="Start Date">
-              <TextField
-                type="date"
+              <AppDateField
                 variant="standard"
                 value={localTask.startDate ? format(new Date(localTask.startDate), 'yyyy-MM-dd') : ''}
                 onChange={e => updateField('startDate', e.target.value)}
-                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
+                readOnly={!canEdit}
+                InputProps={{ disableUnderline: true }}
                 inputProps={{ style: { fontSize: '0.85rem', fontWeight: 500, padding: 0 } }}
-                InputLabelProps={{ shrink: true }}
               />
             </PropRow>
 
@@ -490,12 +490,12 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
 
             {/* Due Date */}
             <PropRow label="Due Date">
-              <TextField
-                type="date"
+              <AppDateField
                 variant="standard"
                 value={localTask.dueDate ? format(new Date(localTask.dueDate), 'yyyy-MM-dd') : ''}
                 onChange={e => updateField('dueDate', e.target.value)}
-                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
+                readOnly={!canEdit}
+                InputProps={{ disableUnderline: true }}
                 inputProps={{
                   style: {
                     fontSize: '0.85rem', fontWeight: 500,
@@ -503,7 +503,6 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                     padding: 0,
                   },
                 }}
-                InputLabelProps={{ shrink: true }}
               />
             </PropRow>
 

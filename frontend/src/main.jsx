@@ -6,6 +6,8 @@ initSentry();
 import { Provider } from 'react-redux';
 import { BrowserRouter } from 'react-router-dom';
 import { CssBaseline } from '@mui/material';
+import { LocalizationProvider } from '@mui/x-date-pickers/LocalizationProvider';
+import { AdapterDateFns } from '@mui/x-date-pickers/AdapterDateFns';
 import App from './App.jsx';
 import store from './store/index.js';
 import './i18n/index.js';
@@ -104,7 +106,9 @@ const app = (
       <BrowserRouter>
         <ThemeWrapper>
           <CssBaseline />
-          <App />
+          <LocalizationProvider dateAdapter={AdapterDateFns}>
+            <App />
+          </LocalizationProvider>
         </ThemeWrapper>
       </BrowserRouter>
     </Provider>
