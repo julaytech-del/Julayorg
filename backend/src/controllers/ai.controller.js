@@ -52,6 +52,14 @@ export const generatePlan = async (req, res) => {
   const { prompt, startDate, teamUserIds } = req.body;
   if (!prompt) return res.status(400).json({ success: false, message: 'Prompt is required' });
 
+  // Cheap pre-filter (no AI cost): reject obviously invalid input before reserving
+  // quota or calling the model. Subtler gibberish is caught by the model itself,
+  // which returns an "unclear" signal (then we refund the reserved quota).
+  const cleaned = String(prompt).trim();
+  if (cleaned.length < 10) {
+    return res.status(400).json({ success: false, code: 'INVALID_PROMPT', message: 'Please describe your project in a clear sentence (at least a few words).' });
+  }
+
   const orgId = req.user.organization._id || req.user.organization;
   const plan = req.user.organization.subscription?.plan || 'free';
 
