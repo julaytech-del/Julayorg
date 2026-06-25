@@ -2,6 +2,7 @@ import React from 'react';
 import { Box, Tabs, Tab } from '@mui/material';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useSelector } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { usePermissions } from '../../hooks/usePermissions.js';
 
 // Sub-navigation tabs shown at the top of grouped pages. Replaces the sidebar
@@ -9,33 +10,34 @@ import { usePermissions } from '../../hooks/usePermissions.js';
 export default function SectionTabs() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t }    = useTranslation();
   const accent   = useSelector(s => s.ui.accentColor) || '#4F46E5';
   const { canViewReports, canManageDepartment, isAdmin } = usePermissions();
 
   const groups = [
     [
-      { label: 'Overview',         path: '/dashboard' },
-      ...(canViewReports ? [{ label: 'Reports', path: '/dashboard/reports' }] : []),
-      { label: 'Workload',         path: '/dashboard/workload' },
-      { label: 'Custom Dashboard', path: '/dashboard/custom-dashboard' },
-      { label: 'Activity',         path: '/dashboard/activity' },
+      { label: t('nav.overview'),        path: '/dashboard' },
+      ...(canViewReports ? [{ label: t('nav.reports'), path: '/dashboard/reports' }] : []),
+      { label: t('nav.workload'),        path: '/dashboard/workload' },
+      { label: t('nav.customDashboard'), path: '/dashboard/custom-dashboard' },
+      { label: t('nav.activity'),        path: '/dashboard/activity' },
     ],
     [
-      { label: 'Projects',  path: '/dashboard/projects' },
-      { label: 'Sprints',   path: '/dashboard/sprints' },
-      { label: 'Portfolio', path: '/dashboard/portfolio' },
+      { label: t('nav.projects'),  path: '/dashboard/projects' },
+      { label: t('nav.sprints'),   path: '/dashboard/sprints' },
+      { label: t('nav.portfolio'), path: '/dashboard/portfolio' },
     ],
     [
-      { label: 'My Tasks',      path: '/dashboard/my-tasks' },
-      { label: 'Time Tracking', path: '/dashboard/time-tracking' },
+      { label: t('nav.myTasks'),      path: '/dashboard/my-tasks' },
+      { label: t('nav.timeTracking'), path: '/dashboard/time-tracking' },
     ],
     [
-      { label: 'Team', path: '/dashboard/team' },
-      ...(canManageDepartment ? [{ label: 'Departments', path: '/dashboard/departments' }] : []),
+      { label: t('nav.team'), path: '/dashboard/team' },
+      ...(canManageDepartment ? [{ label: t('nav.departments'), path: '/dashboard/departments' }] : []),
     ],
     ...(isAdmin ? [[
-      { label: 'Automations', path: '/dashboard/automations' },
-      { label: 'Form Views',  path: '/dashboard/views/forms' },
+      { label: t('nav.automations'), path: '/dashboard/automations' },
+      { label: t('nav.formViews'),   path: '/dashboard/views/forms' },
     ]] : []),
   ];
 

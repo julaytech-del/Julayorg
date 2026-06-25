@@ -34,15 +34,15 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   // ── Parent sections. Secondary features live as tabs inside these pages
   //    (see SectionTabs), so the sidebar stays a short list of parents. ──
   const NAV_ITEMS = [
-    { label: t('nav.dashboard'), icon: Dashboard,          path: '/dashboard' },
-    { label: t('nav.projects'),  icon: FolderOpen,         path: '/dashboard/projects' },
-    { label: 'My Tasks',         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
-    { label: 'Execution Board',  icon: ViewKanban,         path: '/dashboard/execution-board' },
+    { label: t('nav.dashboard'),       icon: Dashboard,          path: '/dashboard' },
+    { label: t('nav.projects'),        icon: FolderOpen,         path: '/dashboard/projects' },
+    { label: t('nav.myTasks'),         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
+    { label: t('nav.executionBoard'),  icon: ViewKanban,         path: '/dashboard/execution-board' },
     ...(canUseAI ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
-    { label: 'Calendar',         icon: CalendarMonth,      path: '/dashboard/calendar' },
-    { label: t('nav.team'),      icon: Group,              path: '/dashboard/team' },
-    ...(isAdmin ? [{ label: 'Automations', icon: Bolt,     path: '/dashboard/automations' }] : []),
-    { label: 'Settings',         icon: Settings,           path: '/dashboard/settings' },
+    { label: t('nav.calendar'),        icon: CalendarMonth,      path: '/dashboard/calendar' },
+    { label: t('nav.team'),            icon: Group,              path: '/dashboard/team' },
+    ...(isAdmin ? [{ label: t('nav.automations'), icon: Bolt,    path: '/dashboard/automations' }] : []),
+    { label: t('nav.settings'),        icon: Settings,           path: '/dashboard/settings' },
   ];
 
   // When on a sub-tab, light up its parent in the sidebar.

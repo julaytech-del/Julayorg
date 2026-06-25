@@ -10,7 +10,21 @@
       "intelligence": "الذكاء الاصطناعي"
     },
     "signOut": "تسجيل الخروج",
-    "orgIndustry": "مساحة العمل"
+    "orgIndustry": "مساحة العمل",
+    "myTasks": "مهامي",
+    "executionBoard": "لوحة التنفيذ",
+    "calendar": "التقويم",
+    "automations": "الأتمتة",
+    "settings": "الإعدادات",
+    "overview": "نظرة عامة",
+    "reports": "التقارير",
+    "workload": "عبء العمل",
+    "customDashboard": "لوحة مخصّصة",
+    "activity": "النشاط",
+    "sprints": "السبرنتات",
+    "portfolio": "المحفظة",
+    "timeTracking": "تتبّع الوقت",
+    "formViews": "النماذج"
   },
   "header": {
     "search": "ابحث عن مشاريع، مهام، أشخاص...",

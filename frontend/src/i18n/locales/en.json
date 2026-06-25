@@ -10,7 +10,21 @@
       "intelligence": "Intelligence"
     },
     "signOut": "Sign Out",
-    "orgIndustry": "workspace"
+    "orgIndustry": "workspace",
+    "myTasks": "My Tasks",
+    "executionBoard": "Execution Board",
+    "calendar": "Calendar",
+    "automations": "Automations",
+    "settings": "Settings",
+    "overview": "Overview",
+    "reports": "Reports",
+    "workload": "Workload",
+    "customDashboard": "Custom Dashboard",
+    "activity": "Activity",
+    "sprints": "Sprints",
+    "portfolio": "Portfolio",
+    "timeTracking": "Time Tracking",
+    "formViews": "Form Views"
   },
   "header": {
     "search": "Search projects, tasks, people...",
