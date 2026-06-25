@@ -31,42 +31,38 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     return () => clearInterval(t);
   }, []);
 
-  // ── Primary: the 6 most-used items, always visible (kept minimal on purpose) ──
-  const PRIMARY = [
+  // ── Parent sections. Secondary features live as tabs inside these pages
+  //    (see SectionTabs), so the sidebar stays a short list of parents. ──
+  const NAV_ITEMS = [
     { label: t('nav.dashboard'), icon: Dashboard,          path: '/dashboard' },
+    { label: t('nav.projects'),  icon: FolderOpen,         path: '/dashboard/projects' },
+    { label: 'My Tasks',         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
     { label: 'Execution Board',  icon: ViewKanban,         path: '/dashboard/execution-board' },
     ...(canUseAI ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
     { label: 'Calendar',         icon: CalendarMonth,      path: '/dashboard/calendar' },
-  ];
-
-  // ── Advanced: collapsed under "More" so the sidebar stays clean ──
-  const MORE = [
-    { label: t('nav.projects'),  icon: FolderOpen,         path: '/dashboard/projects' },
-    { label: 'My Tasks',         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
     { label: t('nav.team'),      icon: Group,              path: '/dashboard/team' },
-    { label: 'Sprints',          icon: FilterTiltShift, path: '/dashboard/sprints' },
-    { label: 'Workload',         icon: Speed,           path: '/dashboard/workload' },
-    { label: 'Portfolio',        icon: AccountTree,     path: '/dashboard/portfolio' },
-    { label: 'Custom Dashboard', icon: ViewQuilt,       path: '/dashboard/custom-dashboard' },
-    ...(canViewReports ? [{ label: 'Reports', icon: BarChart, path: '/dashboard/reports' }] : []),
-    { label: 'Time Tracking',    icon: Timer,           path: '/dashboard/time-tracking' },
-    ...(canManageDepartment ? [{ label: t('nav.departments'), icon: Business, path: '/dashboard/departments' }] : []),
-    ...(isAdmin ? [
-      { label: 'Automations',  icon: Bolt,        path: '/dashboard/automations' },
-      { label: 'Form Views',   icon: DynamicForm, path: '/dashboard/views/forms' },
-    ] : []),
-    { label: 'Activity',         icon: History,         path: '/dashboard/activity' },
+    ...(isAdmin ? [{ label: 'Automations', icon: Bolt,     path: '/dashboard/automations' }] : []),
+    { label: 'Settings',         icon: Settings,           path: '/dashboard/settings' },
   ];
 
-  const SETTINGS = { label: 'Settings', icon: Settings, path: '/dashboard/settings' };
+  // When on a sub-tab, light up its parent in the sidebar.
+  const TAB_PARENT = {
+    '/dashboard/reports':          '/dashboard',
+    '/dashboard/workload':         '/dashboard',
+    '/dashboard/custom-dashboard': '/dashboard',
+    '/dashboard/activity':         '/dashboard',
+    '/dashboard/sprints':          '/dashboard/projects',
+    '/dashboard/portfolio':        '/dashboard/projects',
+    '/dashboard/time-tracking':    '/dashboard/my-tasks',
+    '/dashboard/departments':      '/dashboard/team',
+    '/dashboard/views/forms':      '/dashboard/automations',
+  };
 
-  const isActive  = (path) => path === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(path);
-  const handleNav = (path) => { navigate(path); if (variant === 'temporary') onClose?.(); };
-
-  // Keep "More" expanded when the user is on one of its pages.
-  const moreActive = MORE.some(i => isActive(i.path));
-  const [moreOpen, setMoreOpen] = useState(moreActive);
-  useEffect(() => { if (moreActive) setMoreOpen(true); }, [moreActive]);
+  const handleNav  = (path) => { navigate(path); if (variant === 'temporary') onClose?.(); };
+  const activePath = TAB_PARENT[location.pathname] || location.pathname;
+  const isActive   = (path) => path === '/dashboard'
+    ? activePath === '/dashboard'
+    : activePath.startsWith(path);
 
   /* ── colours that flip with dark mode ── */
   const bg         = darkMode ? '#1E293B'                   : '#FFFFFF';
@@ -161,33 +157,8 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
 
       {/* ── Nav ── */}
       <Box sx={{ flex: 1, overflowY: 'auto', py: 1.5, '&::-webkit-scrollbar': { width: 3 }, '&::-webkit-scrollbar-thumb': { background: scrollThumb, borderRadius: 2 } }}>
-        {/* Primary items */}
         <List dense disablePadding sx={{ px: 1.5 }}>
-          {PRIMARY.map(renderItem)}
-        </List>
-
-        {/* More (collapsible) */}
-        <List dense disablePadding sx={{ px: 1.5, mt: 0.25 }}>
-          <ListItem disablePadding sx={{ mb: 0.2 }}>
-            <ListItemButton
-              onClick={() => setMoreOpen(o => !o)}
-              sx={{ borderRadius: 2, py: 0.8, px: 1.5, transition: 'all 0.12s', '&:hover': { backgroundColor: hoverBg } }}
-            >
-              <ListItemIcon sx={{ minWidth: 32, color: iconInact }}>
-                <MoreHoriz sx={{ fontSize: 17 }} />
-              </ListItemIcon>
-              <ListItemText primary="More" primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: 400, color: txtInact }} />
-              {moreOpen ? <ExpandLess sx={{ color: iconInact, fontSize: 18 }} /> : <ExpandMore sx={{ color: iconInact, fontSize: 18 }} />}
-            </ListItemButton>
-          </ListItem>
-          <Collapse in={moreOpen} timeout="auto" unmountOnExit>
-            {MORE.map(renderItem)}
-          </Collapse>
-        </List>
-
-        {/* Settings */}
-        <List dense disablePadding sx={{ px: 1.5, mt: 0.25 }}>
-          {renderItem(SETTINGS)}
+          {NAV_ITEMS.map(renderItem)}
         </List>
       </Box>
 

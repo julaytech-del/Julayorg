@@ -3,6 +3,7 @@ import { Box, Toolbar, useMediaQuery, useTheme } from '@mui/material';
 import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar.jsx';
 import Header from './Header.jsx';
+import SectionTabs from './SectionTabs.jsx';
 import SuggestionsPanel from '../AI/SuggestionsPanel.jsx';
 import CommandPalette from '../common/CommandPalette.jsx';
 import AnnouncementBanner from '../common/AnnouncementBanner.jsx';
@@ -50,6 +51,7 @@ export default function MainLayout() {
         <Toolbar />
         <Box sx={{ flex: 1, p: { xs: 2, md: 3 }, overflow: 'auto' }}>
           <AnnouncementBanner />
+          <SectionTabs />
           <Outlet />
         </Box>
       </Box>
