@@ -248,3 +248,10 @@ export const organizationAPI = {
   get: () => api.get('/organization'),
   update: (data) => api.put('/organization', data),
 };
+
+// Team chat
+export const chatAPI = {
+  getMessages: (after) => api.get('/chat/messages', { params: after ? { after } : {} }),
+  send: (text) => api.post('/chat/messages', { text }),
+  remove: (id) => api.delete(`/chat/messages/${id}`),
+};

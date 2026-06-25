@@ -24,7 +24,8 @@
     "sprints": "Sprints",
     "portfolio": "Portfolio",
     "timeTracking": "Time Tracking",
-    "formViews": "Form Views"
+    "formViews": "Form Views",
+    "chat": "Chat"
   },
   "header": {
     "search": "Search projects, tasks, people...",
@@ -1191,5 +1192,11 @@
       "tooMany": "Too many requests. Please wait a few minutes and try again.",
       "failed": "Failed to send message. Please try again."
     }
+  },
+  "chat": {
+    "title": "Team Chat",
+    "empty": "No messages yet. Say hello 👋",
+    "placeholder": "Write a message…",
+    "delete": "Delete"
   }
 }

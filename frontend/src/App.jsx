@@ -74,6 +74,7 @@ const ActivityLogPage     = React.lazy(() => import('./pages/Activity/ActivityLo
 const SettingsPage        = React.lazy(() => import('./pages/Settings/SettingsPage.jsx'));
 const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTrackingPage.jsx'));
 const ExecutionBoard      = React.lazy(() => import('./pages/ExecutionBoard/ExecutionBoard.jsx'));
+const TeamChat            = React.lazy(() => import('./pages/Chat/TeamChat.jsx'));
 const NotificationsPage   = React.lazy(() => import('./pages/Notifications/NotificationsPage.jsx'));
 const OwnerAdminPanel     = React.lazy(() => import('./pages/OwnerAdmin/OwnerAdminPanel.jsx'));
 
@@ -300,6 +301,9 @@ export default function App() {
           } />
           <Route path="execution-board" element={
             <Suspense fallback={<PageLoader />}><ExecutionBoard /></Suspense>
+          } />
+          <Route path="chat" element={
+            <Suspense fallback={<PageLoader />}><TeamChat /></Suspense>
           } />
           <Route path="notifications" element={
             <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense>
