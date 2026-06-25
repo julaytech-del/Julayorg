@@ -34,16 +34,16 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   // ── Primary: the 6 most-used items, always visible (kept minimal on purpose) ──
   const PRIMARY = [
     { label: t('nav.dashboard'), icon: Dashboard,          path: '/dashboard' },
-    { label: t('nav.projects'),  icon: FolderOpen,         path: '/dashboard/projects' },
-    { label: 'My Tasks',         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
     { label: 'Execution Board',  icon: ViewKanban,         path: '/dashboard/execution-board' },
     ...(canUseAI ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
-    { label: t('nav.team'),      icon: Group,              path: '/dashboard/team' },
     { label: 'Calendar',         icon: CalendarMonth,      path: '/dashboard/calendar' },
   ];
 
   // ── Advanced: collapsed under "More" so the sidebar stays clean ──
   const MORE = [
+    { label: t('nav.projects'),  icon: FolderOpen,         path: '/dashboard/projects' },
+    { label: 'My Tasks',         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
+    { label: t('nav.team'),      icon: Group,              path: '/dashboard/team' },
     { label: 'Sprints',          icon: FilterTiltShift, path: '/dashboard/sprints' },
     { label: 'Workload',         icon: Speed,           path: '/dashboard/workload' },
     { label: 'Portfolio',        icon: AccountTree,     path: '/dashboard/portfolio' },
