@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
-import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Avatar, Divider, Tooltip } from '@mui/material';
+import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Avatar, Divider, Tooltip, Collapse } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban, NotificationsNone } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban, NotificationsNone, ExpandMore, ExpandLess, MoreHoriz } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 import { usePermissions } from '../../hooks/usePermissions.js';
 import { notificationsAPI } from '../../services/api.js';
@@ -31,50 +31,42 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     return () => clearInterval(t);
   }, []);
 
-  const NAV = [
-    { title: t('nav.sections.workspace'), items: [
-      { label: t('nav.dashboard'), icon: Dashboard,         path: '/dashboard' },
-      { label: t('nav.projects'),  icon: FolderOpen,        path: '/dashboard/projects' },
-      { label: t('nav.team'),      icon: Group,             path: '/dashboard/team' },
-      ...(canManageDepartment ? [{ label: t('nav.departments'), icon: Business, path: '/dashboard/departments' }] : []),
-    ]},
-    { title: 'Views', items: [
-      { label: 'Execution Board',   icon: ViewKanban,       path: '/dashboard/execution-board' },
-      { label: 'Calendar',          icon: CalendarMonth,    path: '/dashboard/calendar' },
-      { label: 'Workload',          icon: Speed,            path: '/dashboard/workload' },
-      { label: 'Custom Dashboard',  icon: ViewQuilt,        path: '/dashboard/custom-dashboard' },
-      { label: 'Portfolio',         icon: AccountTree,      path: '/dashboard/portfolio' },
-    ]},
-    { title: 'Personal', items: [
-      { label: 'My Tasks',          icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
-      { label: 'Time Tracking',     icon: Timer,            path: '/dashboard/time-tracking' },
-      { label: 'Activity',          icon: History,          path: '/dashboard/activity' },
-      { label: 'Notifications',     icon: NotificationsNone, path: '/dashboard/notifications', badge: unreadCount > 0 ? String(unreadCount > 99 ? '99+' : unreadCount) : null },
-    ]},
-    { title: t('nav.sections.intelligence'), items: [
-      ...(canUseAI    ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
-      ...(canViewReports ? [{ label: 'Reports', icon: BarChart, path: '/dashboard/reports' }] : []),
-    ]},
-    { title: 'Automation', items: [
-      ...(isAdmin ? [
-        { label: 'Automations',   icon: Bolt,            path: '/dashboard/automations' },
-        { label: 'Form Views',    icon: DynamicForm,     path: '/dashboard/views/forms' },
-        // HIDDEN — رجّع الـ hidden features: { label: 'Webhooks', icon: Webhook, path: '/dashboard/settings/webhooks' },
-      ] : []),
-      { label: 'Sprints',         icon: FilterTiltShift, path: '/dashboard/sprints' },
-    ]},
-    // HIDDEN — رجّع الـ hidden features:
-    // { title: 'Apps', items: [
-    //   { label: 'Workspace Apps', icon: Apps,  path: '/dashboard/apps' },
-    //   { label: 'Smart Share',    icon: Share, path: '/dashboard/apps/share' },
-    // ]},
-    { title: 'Account', items: [
-      { label: 'Settings',          icon: Settings,         path: '/dashboard/settings' },
-    ]},
+  // ── Primary: the 6 most-used items, always visible (kept minimal on purpose) ──
+  const PRIMARY = [
+    { label: t('nav.dashboard'), icon: Dashboard,          path: '/dashboard' },
+    { label: t('nav.projects'),  icon: FolderOpen,         path: '/dashboard/projects' },
+    { label: 'My Tasks',         icon: AssignmentTurnedIn, path: '/dashboard/my-tasks' },
+    ...(canUseAI ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
+    { label: t('nav.team'),      icon: Group,              path: '/dashboard/team' },
+    { label: 'Calendar',         icon: CalendarMonth,      path: '/dashboard/calendar' },
   ];
+
+  // ── Advanced: collapsed under "More" so the sidebar stays clean ──
+  const MORE = [
+    { label: 'Execution Board',  icon: ViewKanban,      path: '/dashboard/execution-board' },
+    { label: 'Sprints',          icon: FilterTiltShift, path: '/dashboard/sprints' },
+    { label: 'Workload',         icon: Speed,           path: '/dashboard/workload' },
+    { label: 'Portfolio',        icon: AccountTree,     path: '/dashboard/portfolio' },
+    { label: 'Custom Dashboard', icon: ViewQuilt,       path: '/dashboard/custom-dashboard' },
+    ...(canViewReports ? [{ label: 'Reports', icon: BarChart, path: '/dashboard/reports' }] : []),
+    { label: 'Time Tracking',    icon: Timer,           path: '/dashboard/time-tracking' },
+    ...(canManageDepartment ? [{ label: t('nav.departments'), icon: Business, path: '/dashboard/departments' }] : []),
+    ...(isAdmin ? [
+      { label: 'Automations',  icon: Bolt,        path: '/dashboard/automations' },
+      { label: 'Form Views',   icon: DynamicForm, path: '/dashboard/views/forms' },
+    ] : []),
+    { label: 'Activity',         icon: History,         path: '/dashboard/activity' },
+  ];
+
+  const SETTINGS = { label: 'Settings', icon: Settings, path: '/dashboard/settings' };
 
   const isActive  = (path) => path === '/dashboard' ? location.pathname === '/dashboard' : location.pathname.startsWith(path);
   const handleNav = (path) => { navigate(path); if (variant === 'temporary') onClose?.(); };
+
+  // Keep "More" expanded when the user is on one of its pages.
+  const moreActive = MORE.some(i => isActive(i.path));
+  const [moreOpen, setMoreOpen] = useState(moreActive);
+  useEffect(() => { if (moreActive) setMoreOpen(true); }, [moreActive]);
 
   /* ── colours that flip with dark mode ── */
   const bg         = darkMode ? '#1E293B'                   : '#FFFFFF';
@@ -99,6 +91,41 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const badgeBg    = `${accent}22`;
   const badgeBorder= `${accent}44`;
   const badgeTxt   = accent;
+
+  const renderItem = (item) => {
+    const active = isActive(item.path);
+    const Icon   = item.icon;
+    return (
+      <ListItem key={item.path} disablePadding sx={{ mb: 0.2 }}>
+        <ListItemButton
+          onClick={() => handleNav(item.path)}
+          sx={{
+            borderRadius: 2, py: 0.8, px: 1.5,
+            transition: 'all 0.12s',
+            backgroundColor: active ? activeBg : 'transparent',
+            '&:hover': { backgroundColor: active ? activeBg : hoverBg },
+            position: 'relative',
+          }}
+        >
+          {active && (
+            <Box sx={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', width: 3, height: 18, borderRadius: '0 2px 2px 0', backgroundColor: activeBar }} />
+          )}
+          <ListItemIcon sx={{ minWidth: 32, color: active ? iconAct : iconInact }}>
+            <Icon sx={{ fontSize: 17 }} />
+          </ListItemIcon>
+          <ListItemText
+            primary={item.label}
+            primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: active ? 600 : 400, color: active ? txtAct : txtInact }}
+          />
+          {item.badge && (
+            <Box sx={{ px: 0.75, py: 0.2, borderRadius: 1, backgroundColor: badgeBg, border: `1px solid ${badgeBorder}` }}>
+              <Typography sx={{ color: badgeTxt, fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.04em' }}>{item.badge}</Typography>
+            </Box>
+          )}
+        </ListItemButton>
+      </ListItem>
+    );
+  };
 
   const content = (
     <Box sx={{ height: '100%', display: 'flex', flexDirection: 'column', background: bg, borderRight: `1px solid ${border}` }}>
@@ -134,49 +161,34 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
 
       {/* ── Nav ── */}
       <Box sx={{ flex: 1, overflowY: 'auto', py: 1.5, '&::-webkit-scrollbar': { width: 3 }, '&::-webkit-scrollbar-thumb': { background: scrollThumb, borderRadius: 2 } }}>
-        {NAV.map(section => (
-          <Box key={section.title} sx={{ mb: 0.5 }}>
-            <Typography sx={{ color: sectionLbl, px: 3, py: 0.6, display: 'block', fontWeight: 700, letterSpacing: '0.06em', textTransform: 'uppercase', fontSize: '0.6rem' }}>
-              {section.title}
-            </Typography>
-            <List dense disablePadding sx={{ px: 1.5 }}>
-              {section.items.map(item => {
-                const active = isActive(item.path);
-                const Icon   = item.icon;
-                return (
-                  <ListItem key={item.path} disablePadding sx={{ mb: 0.2 }}>
-                    <ListItemButton
-                      onClick={() => handleNav(item.path)}
-                      sx={{
-                        borderRadius: 2, py: 0.8, px: 1.5,
-                        transition: 'all 0.12s',
-                        backgroundColor: active ? activeBg : 'transparent',
-                        '&:hover': { backgroundColor: active ? activeBg : hoverBg },
-                        position: 'relative',
-                      }}
-                    >
-                      {active && (
-                        <Box sx={{ position: 'absolute', left: 0, top: '50%', transform: 'translateY(-50%)', width: 3, height: 18, borderRadius: '0 2px 2px 0', backgroundColor: activeBar }} />
-                      )}
-                      <ListItemIcon sx={{ minWidth: 32, color: active ? iconAct : iconInact }}>
-                        <Icon sx={{ fontSize: 17 }} />
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={item.label}
-                        primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: active ? 600 : 400, color: active ? txtAct : txtInact }}
-                      />
-                      {item.badge && (
-                        <Box sx={{ px: 0.75, py: 0.2, borderRadius: 1, backgroundColor: item.label === 'Notifications' ? '#EF444422' : badgeBg, border: `1px solid ${item.label === 'Notifications' ? '#EF444444' : badgeBorder}` }}>
-                          <Typography sx={{ color: item.label === 'Notifications' ? '#EF4444' : badgeTxt, fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.04em' }}>{item.badge}</Typography>
-                        </Box>
-                      )}
-                    </ListItemButton>
-                  </ListItem>
-                );
-              })}
-            </List>
-          </Box>
-        ))}
+        {/* Primary items */}
+        <List dense disablePadding sx={{ px: 1.5 }}>
+          {PRIMARY.map(renderItem)}
+        </List>
+
+        {/* More (collapsible) */}
+        <List dense disablePadding sx={{ px: 1.5, mt: 0.25 }}>
+          <ListItem disablePadding sx={{ mb: 0.2 }}>
+            <ListItemButton
+              onClick={() => setMoreOpen(o => !o)}
+              sx={{ borderRadius: 2, py: 0.8, px: 1.5, transition: 'all 0.12s', '&:hover': { backgroundColor: hoverBg } }}
+            >
+              <ListItemIcon sx={{ minWidth: 32, color: iconInact }}>
+                <MoreHoriz sx={{ fontSize: 17 }} />
+              </ListItemIcon>
+              <ListItemText primary="More" primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: 400, color: txtInact }} />
+              {moreOpen ? <ExpandLess sx={{ color: iconInact, fontSize: 18 }} /> : <ExpandMore sx={{ color: iconInact, fontSize: 18 }} />}
+            </ListItemButton>
+          </ListItem>
+          <Collapse in={moreOpen} timeout="auto" unmountOnExit>
+            {MORE.map(renderItem)}
+          </Collapse>
+        </List>
+
+        {/* Settings */}
+        <List dense disablePadding sx={{ px: 1.5, mt: 0.25 }}>
+          {renderItem(SETTINGS)}
+        </List>
       </Box>
 
       <Divider sx={{ borderColor: divCol, mx: 2 }} />
