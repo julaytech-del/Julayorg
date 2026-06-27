@@ -249,9 +249,20 @@ export const organizationAPI = {
   update: (data) => api.put('/organization', data),
 };
 
+// File upload
+export const uploadAPI = {
+  upload: (file, onUploadProgress) => {
+    const fd = new FormData();
+    fd.append('file', file);
+    return api.post('/upload', fd, { headers: { 'Content-Type': 'multipart/form-data' }, timeout: 120000, onUploadProgress });
+  },
+};
+
 // Team chat
 export const chatAPI = {
   getMessages: (after) => api.get('/chat/messages', { params: after ? { after } : {} }),
-  send: (text) => api.post('/chat/messages', { text }),
+  send: (text, attachments = []) => api.post('/chat/messages', { text, attachments }),
   remove: (id) => api.delete(`/chat/messages/${id}`),
+  getUnread: () => api.get('/chat/unread'),
+  markRead: () => api.post('/chat/read'),
 };

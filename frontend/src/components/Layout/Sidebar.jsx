@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Typography, Avatar, Divider, Tooltip, Collapse } from '@mui/material';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban, NotificationsNone, ExpandMore, ExpandLess, MoreHoriz, ChatBubbleOutline } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 import { usePermissions } from '../../hooks/usePermissions.js';
-import { notificationsAPI } from '../../services/api.js';
+import { chatAPI } from '../../services/api.js';
 
 const SIDEBAR_WIDTH = 260;
 
@@ -21,14 +21,29 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
   const org       = user?.organization;
   const { canUseAI, canViewReports, canManageDepartment, isAdmin } = usePermissions();
 
+  // Unread team-chat messages → badge on the Chat item + desktop notification.
   const [unreadCount, setUnreadCount] = useState(0);
+  const prevUnread = useRef(0);
   useEffect(() => {
-    const fetch = async () => {
-      try { const r = await notificationsAPI.getCount(); setUnreadCount(r?.data?.count ?? r?.count ?? 0); } catch {}
+    const onChat = () => window.location.pathname.startsWith('/dashboard/chat');
+    const poll = async () => {
+      try {
+        const r = await chatAPI.getUnread();
+        const c = r?.count ?? r?.data?.count ?? 0;
+        if (c > prevUnread.current && !onChat()) {
+          try {
+            if ('Notification' in window && Notification.permission === 'granted') {
+              new Notification('Julay', { body: 'New team message 💬', icon: '/logo-icon.png' });
+            }
+          } catch { /* ignore */ }
+        }
+        prevUnread.current = c;
+        setUnreadCount(onChat() ? 0 : c);
+      } catch { /* ignore */ }
     };
-    fetch();
-    const t = setInterval(fetch, 60000);
-    return () => clearInterval(t);
+    poll();
+    const id = setInterval(poll, 15000);
+    return () => clearInterval(id);
   }, []);
 
   // ── Parent sections. Secondary features live as tabs inside these pages
@@ -41,7 +56,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     ...(canUseAI ? [{ label: t('nav.aiStudio'), icon: AutoAwesome, path: '/dashboard/ai', badge: 'AI' }] : []),
     { label: t('nav.calendar'),        icon: CalendarMonth,      path: '/dashboard/calendar' },
     { label: t('nav.team'),            icon: Group,              path: '/dashboard/team' },
-    { label: t('nav.chat'),            icon: ChatBubbleOutline,  path: '/dashboard/chat' },
+    { label: t('nav.chat'),            icon: ChatBubbleOutline,  path: '/dashboard/chat', badge: unreadCount > 0 ? String(unreadCount > 99 ? '99+' : unreadCount) : null, danger: true },
     ...(isAdmin ? [{ label: t('nav.automations'), icon: Bolt,    path: '/dashboard/automations' }] : []),
     { label: t('nav.settings'),        icon: Settings,           path: '/dashboard/settings' },
   ];
@@ -115,8 +130,8 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
             primaryTypographyProps={{ fontSize: '0.83rem', fontWeight: active ? 600 : 400, color: active ? txtAct : txtInact }}
           />
           {item.badge && (
-            <Box sx={{ px: 0.75, py: 0.2, borderRadius: 1, backgroundColor: badgeBg, border: `1px solid ${badgeBorder}` }}>
-              <Typography sx={{ color: badgeTxt, fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.04em' }}>{item.badge}</Typography>
+            <Box sx={{ px: 0.75, py: 0.2, borderRadius: 1, backgroundColor: item.danger ? '#EF444422' : badgeBg, border: `1px solid ${item.danger ? '#EF444466' : badgeBorder}` }}>
+              <Typography sx={{ color: item.danger ? '#EF4444' : badgeTxt, fontSize: '0.58rem', fontWeight: 700, letterSpacing: '0.04em' }}>{item.badge}</Typography>
             </Box>
           )}
         </ListItemButton>

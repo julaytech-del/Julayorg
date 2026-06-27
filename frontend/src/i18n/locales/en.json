@@ -1197,6 +1197,11 @@
     "title": "Team Chat",
     "empty": "No messages yet. Say hello 👋",
     "placeholder": "Write a message…",
-    "delete": "Delete"
+    "delete": "Delete",
+    "attach": "Attach file",
+    "voice": "Voice message",
+    "recording": "Recording…",
+    "micDenied": "Microphone access denied",
+    "newMessage": "New team message"
   }
 }
