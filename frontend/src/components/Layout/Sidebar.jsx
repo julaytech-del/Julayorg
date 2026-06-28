@@ -3,7 +3,7 @@ import { Box, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban, NotificationsNone, ExpandMore, ExpandLess, MoreHoriz, ChatBubbleOutline } from '@mui/icons-material';
+import { Dashboard, FolderOpen, Group, Business, AutoAwesome, Logout, Apps, Share, PictureAsPdf, CalendarMonth, Speed, Bolt, BarChart, Webhook, DynamicForm, ViewQuilt, AccountTree, AssignmentTurnedIn, History, FilterTiltShift, Settings, Timer, InsertDriveFile, ViewKanban, NotificationsNone, ExpandMore, ExpandLess, MoreHoriz, ChatBubbleOutline, WhatsApp } from '@mui/icons-material';
 import { logout } from '../../store/slices/authSlice.js';
 import { usePermissions } from '../../hooks/usePermissions.js';
 import { chatAPI } from '../../services/api.js';
@@ -57,6 +57,7 @@ export default function Sidebar({ open, onClose, variant = 'permanent' }) {
     { label: t('nav.calendar'),        icon: CalendarMonth,      path: '/dashboard/calendar' },
     { label: t('nav.team'),            icon: Group,              path: '/dashboard/team' },
     { label: t('nav.chat'),            icon: ChatBubbleOutline,  path: '/dashboard/chat', badge: unreadCount > 0 ? String(unreadCount > 99 ? '99+' : unreadCount) : null, danger: true },
+    { label: t('nav.whatsapp'),        icon: WhatsApp,           path: '/dashboard/whatsapp' },
     ...(isAdmin ? [{ label: t('nav.automations'), icon: Bolt,    path: '/dashboard/automations' }] : []),
     { label: t('nav.settings'),        icon: Settings,           path: '/dashboard/settings' },
   ];

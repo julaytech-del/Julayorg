@@ -75,6 +75,7 @@ const SettingsPage        = React.lazy(() => import('./pages/Settings/SettingsPa
 const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTrackingPage.jsx'));
 const ExecutionBoard      = React.lazy(() => import('./pages/ExecutionBoard/ExecutionBoard.jsx'));
 const TeamChat            = React.lazy(() => import('./pages/Chat/TeamChat.jsx'));
+const WhatsAppBroadcast   = React.lazy(() => import('./pages/WhatsApp/WhatsAppBroadcast.jsx'));
 const NotificationsPage   = React.lazy(() => import('./pages/Notifications/NotificationsPage.jsx'));
 const OwnerAdminPanel     = React.lazy(() => import('./pages/OwnerAdmin/OwnerAdminPanel.jsx'));
 
@@ -304,6 +305,9 @@ export default function App() {
           } />
           <Route path="chat" element={
             <Suspense fallback={<PageLoader />}><TeamChat /></Suspense>
+          } />
+          <Route path="whatsapp" element={
+            <Suspense fallback={<PageLoader />}><WhatsAppBroadcast /></Suspense>
           } />
           <Route path="notifications" element={
             <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense>

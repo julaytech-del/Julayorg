@@ -25,7 +25,8 @@
     "portfolio": "Portfolio",
     "timeTracking": "Time Tracking",
     "formViews": "Form Views",
-    "chat": "Chat"
+    "chat": "Chat",
+    "whatsapp": "WhatsApp"
   },
   "header": {
     "search": "Search projects, tasks, people...",
@@ -1207,5 +1208,23 @@
     "teamChannel": "Team channel",
     "directMessages": "Direct messages",
     "noMembers": "No teammates yet"
+  },
+  "whatsapp": {
+    "title": "WhatsApp Broadcast",
+    "subtitle": "Send the same message to many numbers — one click each.",
+    "numbers": "Phone numbers",
+    "numbersHelp": "One number per line, with country code (e.g. +966501234567).",
+    "message": "Message",
+    "messagePlaceholder": "Write your message…",
+    "valid": "{{count}} valid numbers",
+    "recipients": "Recipients",
+    "open": "Open in WhatsApp",
+    "opened": "Opened",
+    "startSequence": "Send one by one",
+    "next": "Next",
+    "done": "Done ✅",
+    "empty": "Add numbers and a message to start.",
+    "copyMessage": "Copy message",
+    "note": "WhatsApp opens with your message ready — just press Send."
   }
 }
