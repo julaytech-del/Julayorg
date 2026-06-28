@@ -1202,6 +1202,10 @@
     "voice": "رسالة صوتية",
     "recording": "جارٍ التسجيل…",
     "micDenied": "تم رفض الوصول للميكروفون",
-    "newMessage": "رسالة جديدة بالفريق"
+    "newMessage": "رسالة جديدة بالفريق",
+    "conversations": "المحادثات",
+    "teamChannel": "قناة الفريق",
+    "directMessages": "رسائل خاصة",
+    "noMembers": "ما في أعضاء بعد"
   }
 }

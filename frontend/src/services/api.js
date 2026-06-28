@@ -260,9 +260,10 @@ export const uploadAPI = {
 
 // Team chat
 export const chatAPI = {
-  getMessages: (after) => api.get('/chat/messages', { params: after ? { after } : {} }),
-  send: (text, attachments = []) => api.post('/chat/messages', { text, attachments }),
+  getMessages: (opts = {}) => api.get('/chat/messages', { params: opts }), // { with, after, limit }
+  send: (text, attachments = [], to = null) => api.post('/chat/messages', { text, attachments, ...(to ? { to } : {}) }),
   remove: (id) => api.delete(`/chat/messages/${id}`),
   getUnread: () => api.get('/chat/unread'),
-  markRead: () => api.post('/chat/read'),
+  markRead: (conversation = 'team') => api.post('/chat/read', { conversation }),
+  getConversations: () => api.get('/chat/conversations'),
 };

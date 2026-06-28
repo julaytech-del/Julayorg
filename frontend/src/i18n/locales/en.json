@@ -1202,6 +1202,10 @@
     "voice": "Voice message",
     "recording": "Recording…",
     "micDenied": "Microphone access denied",
-    "newMessage": "New team message"
+    "newMessage": "New team message",
+    "conversations": "Conversations",
+    "teamChannel": "Team channel",
+    "directMessages": "Direct messages",
+    "noMembers": "No teammates yet"
   }
 }

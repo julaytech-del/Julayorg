@@ -22,6 +22,7 @@ const userSchema = new mongoose.Schema({
   status: { type: String, enum: ['active', 'inactive', 'busy', 'away'], default: 'active' },
   blocked: { type: Boolean, default: false },
   lastReadChat: { type: Date },
+  chatReads: { type: Map, of: Date, default: () => ({}) }, // conversationKey -> last read time
   performance: {
     score: { type: Number, default: 100 },
     tasksCompleted: { type: Number, default: 0 },
