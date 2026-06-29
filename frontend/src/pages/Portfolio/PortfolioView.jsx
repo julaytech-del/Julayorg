@@ -64,7 +64,7 @@ function TaskBreakdownBar({ todo = 0, inProgress = 0, done = 0 }) {
 // ── project card ───────────────────────────────────────────────────────────
 function ProjectCard({ project }) {
   const navigate = useNavigate();
-  const [showTasks, setShowTasks] = useState(false);
+  const [showTasks, setShowTasks] = useState(true);
   const health = HEALTH_CONFIG[project.health || 'on_track'] || HEALTH_CONFIG.on_track;
   const HealthIcon = health.icon;
   const taskList = Array.isArray(project.taskList) ? project.taskList : [];
@@ -149,7 +149,13 @@ function ProjectCard({ project }) {
               {showTasks ? <ExpandLess sx={{ fontSize: 16, color: 'text.disabled' }} /> : <ExpandMore sx={{ fontSize: 16, color: 'text.disabled' }} />}
             </Box>
             <Collapse in={showTasks}>
-              <Box sx={{ mt: 0.5, border: '1px solid #F1F5F9', borderRadius: 1.5, overflow: 'hidden' }}>
+              <Box sx={{
+                mt: 0.5, border: '1px solid #F1F5F9', borderRadius: 1.5,
+                maxHeight: 248, overflowY: 'auto',
+                '&::-webkit-scrollbar': { width: 6 },
+                '&::-webkit-scrollbar-thumb': { backgroundColor: '#CBD5E1', borderRadius: 3 },
+                '&::-webkit-scrollbar-track': { backgroundColor: 'transparent' },
+              }}>
                 {taskList.map((task, idx) => {
                   const sc = STATUS_TASK_CONFIG[task.status] || STATUS_TASK_CONFIG.planned;
                   const pc = PRIORITY_CONFIG[task.priority];
