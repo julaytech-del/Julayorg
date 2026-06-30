@@ -258,6 +258,16 @@ export const uploadAPI = {
   },
 };
 
+// WhatsApp Business Cloud API (official auto-send)
+export const whatsappAPI = {
+  getConfig: () => api.get('/whatsapp/config'),
+  saveConfig: (data) => api.post('/whatsapp/config', data),
+  disconnect: () => api.delete('/whatsapp/config'),
+  test: () => api.post('/whatsapp/test'),
+  getTemplates: () => api.get('/whatsapp/templates'),
+  send: (payload) => api.post('/whatsapp/send', payload, { timeout: 180000 }),
+};
+
 // Team chat
 export const chatAPI = {
   getMessages: (opts = {}) => api.get('/chat/messages', { params: opts }), // { with, after, limit }

@@ -1225,6 +1225,25 @@
     "done": "Done ✅",
     "empty": "Add numbers and a message to start.",
     "copyMessage": "Copy message",
-    "note": "WhatsApp opens with your message ready — just press Send."
+    "note": "WhatsApp opens with your message ready — just press Send.",
+    "autoSend": "Automatic sending (one click)",
+    "connected": "Connected",
+    "notConnected": "Not connected — set up the WhatsApp Business API to send to everyone at once.",
+    "connect": "Connect",
+    "disconnect": "Disconnect",
+    "sendAuto": "Send automatically to all",
+    "sendToAll": "Send to all ({{count}})",
+    "template": "Message template",
+    "noTemplate": "No template (text — 24h window only)",
+    "tplVars": "Template variables (comma-separated)",
+    "windowNote": "Free text only reaches people who messaged you in the last 24h. For cold numbers, use an approved template.",
+    "sentResult": "Sent {{sent}} · Failed {{failed}}",
+    "orManual": "or send manually (wa.me)",
+    "connectHint": "Connect the WhatsApp Business API (button above) to send to everyone with one click. Or use the manual wa.me list below.",
+    "connectTitle": "Connect WhatsApp Business API",
+    "connectSteps": "From Meta: get your Phone Number ID, a permanent Access Token, and your WhatsApp Business Account ID. We verify them with Meta when you save.",
+    "testOk": "Connected:",
+    "cancel": "Cancel",
+    "connectSave": "Save & verify"
   }
 }

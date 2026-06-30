@@ -1225,6 +1225,25 @@
     "done": "تم ✅",
     "empty": "أضف أرقام ورسالة للبدء.",
     "copyMessage": "نسخ الرسالة",
-    "note": "واتساب بيفتح والرسالة جاهزة — بس اضغط إرسال."
+    "note": "واتساب بيفتح والرسالة جاهزة — بس اضغط إرسال.",
+    "autoSend": "إرسال تلقائي (كبسة وحدة)",
+    "connected": "متصل",
+    "notConnected": "غير متصل — اربط WhatsApp Business API عشان تبعت للكل بكبسة وحدة.",
+    "connect": "ربط",
+    "disconnect": "فصل",
+    "sendAuto": "إرسال تلقائي للكل",
+    "sendToAll": "إرسال للكل ({{count}})",
+    "template": "قالب الرسالة",
+    "noTemplate": "بدون قالب (نص — خلال 24 ساعة فقط)",
+    "tplVars": "متغيّرات القالب (مفصولة بفاصلة)",
+    "windowNote": "النص الحر بيوصل بس للناس اللي راسلوك آخر 24 ساعة. للأرقام الجديدة استخدم قالب معتمد.",
+    "sentResult": "تم إرسال {{sent}} · فشل {{failed}}",
+    "orManual": "أو إرسال يدوي (wa.me)",
+    "connectHint": "اربط WhatsApp Business API (الزر فوق) عشان تبعت للكل بكبسة وحدة. أو استخدم القائمة اليدوية wa.me تحت.",
+    "connectTitle": "ربط WhatsApp Business API",
+    "connectSteps": "من Meta: احصل على Phone Number ID، و Access Token دائم، و WhatsApp Business Account ID. منتحقّق منهم مع Meta لما تحفظ.",
+    "testOk": "تم الربط:",
+    "cancel": "إلغاء",
+    "connectSave": "حفظ وتحقّق"
   }
 }

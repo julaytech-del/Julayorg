@@ -38,6 +38,7 @@ import uploadRoutes from './routes/upload.routes.js';
 import contactRoutes from './routes/contact.routes.js';
 import ownerAdminRoutes from './routes/ownerAdmin.routes.js';
 import chatRoutes from './routes/chat.routes.js';
+import whatsappApiRoutes from './routes/whatsappApi.routes.js';
 import lemonsqueezyRoutes from './routes/lemonsqueezy.routes.js';
 import { errorHandler, notFound, alertOn5xx } from './middleware/error.middleware.js';
 
@@ -102,6 +103,7 @@ app.use('/api/upload', uploadRoutes);
 app.use('/api/contact', contactRoutes);
 app.use('/api/owner', ownerAdminRoutes);
 app.use('/api/chat', chatRoutes);
+app.use('/api/whatsapp', whatsappApiRoutes);
 app.use('/api/lemonsqueezy', lemonsqueezyRoutes);
 const UPLOADS_SERVE_DIR = process.env.UPLOADS_DIR || path.join(__dirname, '../uploads');
 app.use('/uploads', express.static(UPLOADS_SERVE_DIR));

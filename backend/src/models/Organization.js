@@ -18,6 +18,13 @@ const organizationSchema = new mongoose.Schema({
       taskOverdue: { type: Boolean, default: true },
     },
     emailNotifications: { type: Boolean, default: true },
+    // WhatsApp Business Cloud API (official) — for one-click bulk sending.
+    whatsapp: {
+      phoneNumberId: { type: String },
+      accessToken:   { type: String }, // System User permanent token
+      wabaId:        { type: String }, // WhatsApp Business Account ID
+      connectedAt:   { type: Date },
+    },
   },
   settings: {
     timezone: { type: String, default: 'UTC' },
