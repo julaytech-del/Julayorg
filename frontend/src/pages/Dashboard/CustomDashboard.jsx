@@ -5,9 +5,10 @@ import {
   LinearProgress, List, ListItem, Skeleton, Tooltip, Typography
 } from '@mui/material';
 import {
-  Add, Assignment, AutoAwesome, BarChart, Cancel, CheckCircle,
-  Close, DragIndicator, FolderOpen, Group, PieChart, Refresh,
-  Remove, Schedule, TrendingUp, Warning
+  Add, AddCircleOutline, ArrowForward, Assignment, AutoAwesome, Autorenew,
+  BarChart, Cancel, ChatBubbleOutline, CheckCircle, Close, DeleteOutline,
+  DragIndicator, FolderOpen, Group, PieChart, Refresh,
+  Remove, Schedule, SwapHoriz, TrendingUp, Warning
 } from '@mui/icons-material';
 import {
   BarChart as ReBarChart, Bar, XAxis, YAxis, Tooltip as ReTooltip,
@@ -50,13 +51,31 @@ const DEFAULT_LAYOUT = [
 ];
 
 const ACTION_ICONS = {
-  created: '✦', completed: '✓', updated: '↻', assigned: '→',
-  status_changed: '◈', commented: '◉', ai_generated: '★', deleted: '×',
+  created: AddCircleOutline, completed: CheckCircle, updated: Autorenew, assigned: ArrowForward,
+  status_changed: SwapHoriz, commented: ChatBubbleOutline, ai_generated: AutoAwesome, deleted: DeleteOutline,
 };
 const ACTION_COLORS = {
   created: '#4F46E5', completed: '#10B981', updated: '#F59E0B', assigned: '#0EA5E9',
   status_changed: '#8B5CF6', commented: '#64748B', ai_generated: '#4F46E5', deleted: '#EF4444',
 };
+// Verb phrasing shown between user and entity, e.g. "created", "changed status of".
+const ACTION_VERB = {
+  created: 'created', completed: 'completed', updated: 'updated', assigned: 'assigned',
+  status_changed: 'changed status of', commented: 'commented on', ai_generated: 'generated', deleted: 'deleted',
+};
+// Stable soft gradient per user, derived from their name.
+const AVATAR_GRADIENTS = [
+  ['#6366F1', '#8B5CF6'], ['#0EA5E9', '#22D3EE'], ['#10B981', '#34D399'],
+  ['#F59E0B', '#FBBF24'], ['#EF4444', '#F87171'], ['#EC4899', '#F472B6'],
+  ['#8B5CF6', '#C084FC'], ['#14B8A6', '#2DD4BF'],
+];
+const gradientFor = (name = '') => {
+  let h = 0;
+  for (let i = 0; i < name.length; i++) h = (h * 31 + name.charCodeAt(i)) >>> 0;
+  return AVATAR_GRADIENTS[h % AVATAR_GRADIENTS.length];
+};
+const initialsOf = (name = '') =>
+  name.trim().split(/\s+/).slice(0, 2).map(w => w[0]?.toUpperCase() || '').join('') || '?';
 
 // ─── Widget Implementations ─────────────────────────────────────────────────
 
@@ -259,27 +278,71 @@ function ActivityFeedWidget({ stats, loading }) {
   const activity = stats?.recentActivity || [];
   return (
     <Box sx={{ p: 2.5, height: '100%', display: 'flex', flexDirection: 'column' }}>
-      <Typography variant="subtitle2" fontWeight={700} sx={{ mb: 1.5 }}>Recent Activity</Typography>
-      <Box sx={{ flex: 1, overflowY: 'auto', '&::-webkit-scrollbar': { width: 4 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'rgba(255,255,255,0.1)', borderRadius: 2 } }}>
-        {loading ? [1,2,3,4].map(i => <Skeleton key={i} height={48} sx={{ mb: 0.5, borderRadius: 1.5 }} />) : activity.length === 0 ? (
-          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', py: 4, gap: 1 }}>
-            <Typography variant="body2" color="text.secondary">No recent activity</Typography>
+      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1.5 }}>
+        <Typography variant="subtitle2" fontWeight={700}>Recent Activity</Typography>
+        {!loading && activity.length > 0 && (
+          <Chip
+            label={`${activity.length}`}
+            size="small"
+            sx={{ height: 20, minWidth: 28, fontSize: '0.68rem', fontWeight: 700, bgcolor: 'action.hover', color: 'text.secondary' }}
+          />
+        )}
+      </Box>
+      <Box sx={{ flex: 1, overflowY: 'auto', mx: -1, px: 1, '&::-webkit-scrollbar': { width: 4 }, '&::-webkit-scrollbar-thumb': { bgcolor: 'divider', borderRadius: 2 } }}>
+        {loading ? [1,2,3,4].map(i => (
+          <Box key={i} sx={{ display: 'flex', gap: 1.25, py: 1, alignItems: 'center' }}>
+            <Skeleton variant="circular" width={34} height={34} sx={{ flexShrink: 0 }} />
+            <Box sx={{ flex: 1 }}>
+              <Skeleton height={14} width="80%" />
+              <Skeleton height={10} width="35%" />
+            </Box>
+          </Box>
+        )) : activity.length === 0 ? (
+          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', height: '100%', py: 4, gap: 1 }}>
+            <Box sx={{ width: 44, height: 44, borderRadius: '50%', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <TrendingUp sx={{ fontSize: 22, color: 'text.disabled' }} />
+            </Box>
+            <Typography variant="body2" color="text.secondary">No recent activity yet</Typography>
           </Box>
         ) : activity.map((act, i) => {
           const color = ACTION_COLORS[act.action] || '#94A3B8';
-          const icon = ACTION_ICONS[act.action] || '•';
+          const ActionIcon = ACTION_ICONS[act.action] || TrendingUp;
+          const verb = ACTION_VERB[act.action] || act.action?.replace(/_/g, ' ');
+          const [g1, g2] = gradientFor(act.userName || '');
           return (
-            <Box key={i} sx={{ display: 'flex', gap: 1.25, py: 1, borderBottom: '1px solid rgba(255,255,255,0.04)', '&:last-child': { borderBottom: 'none' } }}>
-              <Box sx={{ width: 26, height: 26, borderRadius: 1.5, bgcolor: `${color}18`, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
-                <Typography sx={{ fontSize: '0.65rem', fontWeight: 700, color }}>{icon}</Typography>
+            <Box
+              key={i}
+              sx={{
+                display: 'flex', gap: 1.25, p: 1, borderRadius: 2, alignItems: 'center',
+                transition: 'background-color .15s ease',
+                '&:hover': { bgcolor: 'action.hover' },
+              }}
+            >
+              {/* Avatar with action badge */}
+              <Box sx={{ position: 'relative', flexShrink: 0 }}>
+                <Avatar
+                  sx={{ width: 34, height: 34, fontSize: '0.72rem', fontWeight: 700, color: '#fff', background: `linear-gradient(135deg, ${g1}, ${g2})` }}
+                >
+                  {initialsOf(act.userName)}
+                </Avatar>
+                <Box
+                  sx={{
+                    position: 'absolute', bottom: -3, right: -3, width: 17, height: 17, borderRadius: '50%',
+                    bgcolor: color, display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    border: '2px solid', borderColor: 'background.paper',
+                  }}
+                >
+                  <ActionIcon sx={{ fontSize: 9, color: '#fff' }} />
+                </Box>
               </Box>
+
               <Box sx={{ flex: 1, minWidth: 0 }}>
-                <Typography variant="caption" sx={{ fontSize: '0.76rem', lineHeight: 1.4 }}>
-                  <b style={{ color: 'inherit' }}>{act.userName}</b>
-                  <span style={{ color: '#64748B' }}> {act.action?.replace('_', ' ')} </span>
-                  <b style={{ color: 'inherit' }}>{act.entityName}</b>
+                <Typography variant="caption" sx={{ fontSize: '0.78rem', lineHeight: 1.45, color: 'text.primary', display: 'block' }}>
+                  <b>{act.userName}</b>
+                  <Box component="span" sx={{ color: 'text.secondary' }}> {verb} </Box>
+                  <b>{act.entityName}</b>
                 </Typography>
-                <Typography variant="caption" sx={{ color: '#64748B', fontSize: '0.68rem', display: 'block' }}>
+                <Typography variant="caption" sx={{ color: 'text.disabled', fontSize: '0.68rem', display: 'block', mt: 0.25 }}>
                   {act.timestamp ? formatDistanceToNow(new Date(act.timestamp), { addSuffix: true }) : ''}
                 </Typography>
               </Box>
