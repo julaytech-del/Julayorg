@@ -76,6 +76,7 @@ const TimeTrackingPage    = React.lazy(() => import('./pages/TimeTracking/TimeTr
 const ExecutionBoard      = React.lazy(() => import('./pages/ExecutionBoard/ExecutionBoard.jsx'));
 const TeamChat            = React.lazy(() => import('./pages/Chat/TeamChat.jsx'));
 const WhatsAppBroadcast   = React.lazy(() => import('./pages/WhatsApp/WhatsAppBroadcast.jsx'));
+const WhatsAppComingSoon  = React.lazy(() => import('./pages/WhatsApp/WhatsAppComingSoon.jsx'));
 const NotificationsPage   = React.lazy(() => import('./pages/Notifications/NotificationsPage.jsx'));
 const OwnerAdminPanel     = React.lazy(() => import('./pages/OwnerAdmin/OwnerAdminPanel.jsx'));
 
@@ -306,8 +307,10 @@ export default function App() {
           <Route path="chat" element={
             <Suspense fallback={<PageLoader />}><TeamChat /></Suspense>
           } />
+          {/* WhatsApp: temporary "Coming Soon" until Meta Tech Provider verification is approved.
+              To restore the real page, swap <WhatsAppComingSoon /> back to <WhatsAppBroadcast />. */}
           <Route path="whatsapp" element={
-            <Suspense fallback={<PageLoader />}><WhatsAppBroadcast /></Suspense>
+            <Suspense fallback={<PageLoader />}><WhatsAppComingSoon /></Suspense>
           } />
           <Route path="notifications" element={
             <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense>
