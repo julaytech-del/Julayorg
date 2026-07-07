@@ -1,0 +1,41 @@
+name: Seed Marketing Demo (manual)
+
+# Manually-triggered job that runs the marketing demo seed on the production
+# server, where backend/.env holds the real MONGODB_URI. It backs up the org's
+# data to backend/_backups/ before replacing it.
+
+on:
+  workflow_dispatch:
+    inputs:
+      admin_email:
+        description: "Admin email whose organization will be seeded"
+        required: true
+        default: "assimohammad489@gmail.com"
+
+concurrency:
+  group: seed-demo
+  cancel-in-progress: false
+
+jobs:
+  seed:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Setup SSH key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.DEPLOY_SSH_KEY }}" | base64 -d > ~/.ssh/deploy_key
+          chmod 600 ~/.ssh/deploy_key
+          ssh-keyscan -H ${{ secrets.DEPLOY_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Pull latest code & run seed on server
+        run: |
+          ssh -i ~/.ssh/deploy_key ${{ secrets.DEPLOY_USER }}@${{ secrets.DEPLOY_HOST }} \
+            ADMIN_EMAIL='${{ github.event.inputs.admin_email }}' bash << 'ENDSSH'
+            set -e
+            cd /home/ubuntu/Julayorg
+            git fetch origin main
+            git checkout origin/main -- backend/seed-marketing-demo.mjs
+            cd backend
+            echo "=== Running marketing demo seed for: $ADMIN_EMAIL ==="
+            ADMIN_EMAIL="$ADMIN_EMAIL" node seed-marketing-demo.mjs
+          ENDSSH
