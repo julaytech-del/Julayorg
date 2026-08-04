@@ -99,9 +99,9 @@ Upon termination, your right to access the Service ceases immediately. We will d
   },
   {
     title: '10. Governing Law',
-    body: `These Terms are governed by and construed in accordance with the laws of the State of Delaware, United States, without regard to its conflict of law provisions.
+    body: `These Terms are governed by and construed in accordance with the laws of the State of Israel, without regard to its conflict of law provisions.
 
-Any disputes arising from these Terms or your use of the Service shall be resolved through binding arbitration in accordance with the rules of the American Arbitration Association (AAA). You waive the right to participate in class action lawsuits or class-wide arbitration.
+Any disputes arising from these Terms or your use of the Service shall be subject to the exclusive jurisdiction of the competent courts of Israel.
 
 Notwithstanding the above, either party may seek injunctive or other equitable relief in any court of competent jurisdiction.`,
   },
@@ -113,8 +113,8 @@ Email: support@julay.org
 Legal inquiries: legal@julay.org
 Response time: within 3 business days.
 
-Julay Group LLC
-Registered in Delaware, United States.`,
+Julay Group
+A registered business in Israel.`,
   },
 ];
 
@@ -189,7 +189,7 @@ export default function TermsOfService() {
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem' }}>
-              © {new Date().getFullYear()} Julay Group LLC. All rights reserved.
+              © {new Date().getFullYear()} Julay Group. All rights reserved.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2.5 }}>
               <Link component={RouterLink} to="/privacy" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>Privacy</Link>

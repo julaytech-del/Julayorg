@@ -307,10 +307,11 @@ export default function App() {
           <Route path="chat" element={
             <Suspense fallback={<PageLoader />}><TeamChat /></Suspense>
           } />
-          {/* WhatsApp: temporary "Coming Soon" until Meta Tech Provider verification is approved.
-              To restore the real page, swap <WhatsAppComingSoon /> back to <WhatsAppBroadcast />. */}
+          {/* WhatsApp: live via the manual connect flow — each org supplies its own
+              WhatsApp Business credentials, so this needs no Meta Tech Provider status.
+              WhatsAppComingSoon is kept for the future one-click (Embedded Signup) rollout. */}
           <Route path="whatsapp" element={
-            <Suspense fallback={<PageLoader />}><WhatsAppComingSoon /></Suspense>
+            <Suspense fallback={<PageLoader />}><WhatsAppBroadcast /></Suspense>
           } />
           <Route path="notifications" element={
             <Suspense fallback={<PageLoader />}><NotificationsPage /></Suspense>

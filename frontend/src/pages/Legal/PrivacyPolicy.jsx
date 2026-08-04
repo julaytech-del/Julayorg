@@ -165,7 +165,7 @@ export default function PrivacyPolicy() {
           </Box>
           <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 2 }}>
             <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem' }}>
-              © {new Date().getFullYear()} Julay Group LLC. All rights reserved.
+              © {new Date().getFullYear()} Julay Group. All rights reserved.
             </Typography>
             <Box sx={{ display: 'flex', gap: 2.5 }}>
               <Link component={RouterLink} to="/terms" sx={{ color: TEXT_SECONDARY, fontSize: '0.82rem', textDecoration: 'none', '&:hover': { color: 'white' } }}>Terms</Link>
