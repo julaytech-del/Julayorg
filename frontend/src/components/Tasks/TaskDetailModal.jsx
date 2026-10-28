@@ -139,10 +139,14 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
         .then(res => setAllTasks((res.data || []).filter(t => t._id !== task._id)))
         .catch(() => {});
     }
-    // fetch fresh task data so actualHours is always up-to-date
+    // fetch fresh task data so actualHours and comment authors are always up-to-date
     api.get(`/tasks/${task._id}`).then(res => {
-      const fresh = res.data?.data;
-      if (fresh) setLocalTask(t => ({ ...t, actualHours: fresh.actualHours ?? t.actualHours }));
+      const fresh = res.data;
+      if (fresh) setLocalTask(t => ({
+        ...t,
+        actualHours: fresh.actualHours ?? t.actualHours,
+        comments:    fresh.comments ?? t.comments,
+      }));
     }).catch(() => {});
   }, [task?._id]);
 
