@@ -1,5 +1,5 @@
 import { Router } from 'express';
-import { getTasks, createTask, getTask, updateTask, deleteTask, updateTaskStatus, getComments, addComment, addSubtask, updateSubtask, reorderTasks } from '../controllers/task.controller.js';
+import { getTasks, createTask, getTask, updateTask, deleteTask, updateTaskStatus, getComments, addComment, updateComment, deleteComment, addSubtask, updateSubtask, reorderTasks } from '../controllers/task.controller.js';
 import { protect, requirePermission } from '../middleware/auth.middleware.js';
 
 const router = Router();
@@ -14,6 +14,8 @@ router.delete('/:id', requirePermission('tasks', 'delete'), deleteTask);
 router.patch('/:id/status', requirePermission('tasks', 'update'), updateTaskStatus);
 router.get('/:id/comments', getComments);
 router.post('/:id/comments', requirePermission('tasks', 'update'), addComment);
+router.put('/:id/comments/:commentId', requirePermission('tasks', 'update'), updateComment);
+router.delete('/:id/comments/:commentId', requirePermission('tasks', 'update'), deleteComment);
 router.post('/:id/subtasks', requirePermission('tasks', 'update'), addSubtask);
 router.put('/:taskId/subtasks/:subtaskId', requirePermission('tasks', 'update'), updateSubtask);
 

@@ -200,6 +200,45 @@ export const getComments = async (req, res, next) => {
   } catch (err) { next(err); }
 };
 
+// Only the comment's author can edit or delete it
+const findOwnComment = async (req, res) => {
+  const orgId = req.user.organization?._id || req.user.organization;
+  const task = await Task.findOne({ _id: req.params.id, organization: orgId });
+  if (!task) { res.status(404).json({ success: false, message: 'Task not found' }); return {}; }
+  const comment = task.comments.id(req.params.commentId);
+  if (!comment) { res.status(404).json({ success: false, message: 'Comment not found' }); return {}; }
+  if (String(comment.author) !== String(req.user._id)) {
+    res.status(403).json({ success: false, message: 'You can only change your own comments' }); return {};
+  }
+  return { task, comment };
+};
+
+export const updateComment = async (req, res, next) => {
+  try {
+    const content = req.body.content?.trim();
+    if (!content) return res.status(400).json({ success: false, message: 'Comment cannot be empty' });
+    const { task, comment } = await findOwnComment(req, res);
+    if (!task) return;
+    comment.content = content;
+    comment.edited = true;
+    comment.updatedAt = new Date();
+    await task.save();
+    await task.populate('comments.author', 'name avatar');
+    res.json({ success: true, data: task.comments });
+  } catch (err) { next(err); }
+};
+
+export const deleteComment = async (req, res, next) => {
+  try {
+    const { task, comment } = await findOwnComment(req, res);
+    if (!task) return;
+    comment.deleteOne();
+    await task.save();
+    await task.populate('comments.author', 'name avatar');
+    res.json({ success: true, data: task.comments });
+  } catch (err) { next(err); }
+};
+
 export const addComment = async (req, res, next) => {
   try {
     const { content } = req.body;

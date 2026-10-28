@@ -7,7 +7,7 @@ import {
 } from '@mui/material';
 import {
   Close, Delete, Add, AutoAwesome, OpenInNew, Send,
-  Repeat, AccountTree, AccessTime, PlayArrow, Stop,
+  Repeat, AccountTree, AccessTime, PlayArrow, Stop, EditOutlined,
 } from '@mui/icons-material';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
@@ -107,6 +107,8 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
 
   const [localTask, setLocalTask] = useState(task);
   const [comment,   setComment]   = useState('');
+  const [editingCommentId, setEditingCommentId] = useState(null);
+  const [editingText,      setEditingText]      = useState('');
   const [saving,    setSaving]    = useState(false);
   const [users,     setUsers]     = useState([]);
   const [projects,  setProjects]  = useState([]);
@@ -229,6 +231,28 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     }
     setComment('');
     onUpdate?.();
+  };
+
+  const handleCommentSave = async (commentId) => {
+    if (!editingText.trim()) return;
+    try {
+      const res = await tasksAPI.updateComment(task._id, commentId, editingText.trim());
+      setLocalTask(p => ({ ...p, comments: res.data }));
+      setEditingCommentId(null);
+      onUpdate?.();
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to update comment', severity: 'error' }));
+    }
+  };
+
+  const handleCommentDelete = async (commentId) => {
+    try {
+      const res = await tasksAPI.deleteComment(task._id, commentId);
+      setLocalTask(p => ({ ...p, comments: res.data }));
+      onUpdate?.();
+    } catch {
+      dispatch(showSnackbar({ message: 'Failed to delete comment', severity: 'error' }));
+    }
   };
 
   const handleSubtask = async (subtaskId, done) => {
@@ -925,17 +949,59 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
                       {c.createdAt
                         ? formatDistanceToNow(new Date(c.createdAt), { addSuffix: true })
                         : ''}
+                      {c.edited ? ' · edited' : ''}
                     </Typography>
+                    {c._id && String(c.author?._id || c.author) === String(user?._id) && editingCommentId !== c._id && (
+                      <Box sx={{ ml: 'auto', display: 'flex', gap: 0.25 }}>
+                        <Tooltip title="Edit">
+                          <IconButton size="small" onClick={() => { setEditingCommentId(c._id); setEditingText(c.content); }}>
+                            <EditOutlined sx={{ fontSize: 15, color: '#94A3B8' }} />
+                          </IconButton>
+                        </Tooltip>
+                        <Tooltip title="Delete">
+                          <IconButton size="small" onClick={() => handleCommentDelete(c._id)}>
+                            <Delete sx={{ fontSize: 15, color: '#94A3B8' }} />
+                          </IconButton>
+                        </Tooltip>
+                      </Box>
+                    )}
                   </Box>
-                  <Box sx={{
-                    p: 1.25, bgcolor: '#F8FAFC',
-                    border: '1px solid #F1F5F9',
-                    borderRadius: '4px 12px 12px 12px',
-                  }}>
-                    <Typography sx={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.5 }}>
-                      {c.content}
-                    </Typography>
-                  </Box>
+                  {editingCommentId === c._id ? (
+                    <Box>
+                      <TextField
+                        size="small"
+                        fullWidth
+                        multiline
+                        autoFocus
+                        value={editingText}
+                        onChange={e => setEditingText(e.target.value)}
+                        onKeyDown={e => {
+                          if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleCommentSave(c._id); }
+                          if (e.key === 'Escape') setEditingCommentId(null);
+                        }}
+                        sx={{ '& .MuiOutlinedInput-root': { fontSize: '0.85rem', borderRadius: '12px' } }}
+                      />
+                      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end', mt: 0.75 }}>
+                        <Button size="small" onClick={() => setEditingCommentId(null)} sx={{ textTransform: 'none' }}>
+                          Cancel
+                        </Button>
+                        <Button size="small" variant="contained" disabled={!editingText.trim()}
+                          onClick={() => handleCommentSave(c._id)} sx={{ textTransform: 'none' }}>
+                          Save
+                        </Button>
+                      </Box>
+                    </Box>
+                  ) : (
+                    <Box sx={{
+                      p: 1.25, bgcolor: '#F8FAFC',
+                      border: '1px solid #F1F5F9',
+                      borderRadius: '4px 12px 12px 12px',
+                    }}>
+                      <Typography sx={{ fontSize: '0.85rem', color: '#334155', lineHeight: 1.5, whiteSpace: 'pre-wrap' }}>
+                        {c.content}
+                      </Typography>
+                    </Box>
+                  )}
                 </Box>
               </Box>
             ))}
