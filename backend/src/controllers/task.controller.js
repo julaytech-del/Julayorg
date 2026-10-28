@@ -21,9 +21,8 @@ const triggerSlack = async (orgId, type, task, projectName, userName) => {
 
 const recalcProjectProgress = async (projectId) => {
   const tasks = await Task.find({ project: projectId });
-  if (!tasks.length) return;
   const done = tasks.filter(t => t.status === 'done').length;
-  const percentage = Math.round((done / tasks.length) * 100);
+  const percentage = tasks.length ? Math.round((done / tasks.length) * 100) : 0;
   await Project.findByIdAndUpdate(projectId, { 'progress.percentage': percentage, 'progress.completedTasks': done, 'progress.totalTasks': tasks.length });
 };
 
@@ -109,22 +108,31 @@ export const updateTask = async (req, res, next) => {
 
     const updates = { ...req.body };
     delete updates.organization; // prevent moving a task to another org
+    if ('project' in updates) {
+      if (!updates.project) updates.project = null;
+      else if (!(await Project.exists({ _id: updates.project, organization: orgId })))
+        return res.status(400).json({ success: false, message: 'Project not found' });
+    }
     if (updates.status === 'done' && oldTask.status !== 'done') updates.completedAt = new Date();
     if (updates.status !== 'done' && oldTask.status === 'done') updates.completedAt = null;
 
     const task = await Task.findOneAndUpdate({ _id: req.params.id, organization: orgId }, updates, { new: true, runValidators: true })
-      .populate('assignees', 'name avatar email');
+      .populate('assignees', 'name avatar email')
+      .populate('project', 'name color');
 
-    if (task.project) await recalcProjectProgress(task.project);
+    const oldProjectId = oldTask.project ? String(oldTask.project) : null;
+    const newProjectId = task.project ? String(task.project._id) : null;
+    if (oldProjectId && oldProjectId !== newProjectId) await recalcProjectProgress(oldProjectId);
+    if (newProjectId) await recalcProjectProgress(newProjectId);
     if (task.goal) await recalcGoalProgress(task.goal);
 
-    const webhookBase = { taskId: task._id, taskTitle: task.title, status: task.status, priority: task.priority, projectId: task.project };
+    const webhookBase = { taskId: task._id, taskTitle: task.title, status: task.status, priority: task.priority, projectId: newProjectId };
     triggerWebhooks(orgId, 'task.updated', webhookBase).catch(() => {});
 
     if (oldTask.status !== task.status) {
       await ActivityLog.create({ organization: orgId, user: req.user._id, userName: req.user.name, action: 'status_changed', entityType: 'task', entityId: task._id, entityName: task.title, changes: { before: { status: oldTask.status }, after: { status: task.status } } });
       if (task.status === 'done') {
-        const project = await Project.findById(task.project).select('name');
+        const project = task.project;
         triggerSlack(orgId, 'completed', task, project?.name || '', req.user.name);
       }
       evaluateRules(orgId, 'task.status_changed', { task, userId: req.user._id, newStatus: task.status });

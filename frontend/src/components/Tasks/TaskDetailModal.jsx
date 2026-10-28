@@ -14,7 +14,7 @@ import { useTranslation } from 'react-i18next';
 import AppDateField from '../common/AppDateField.jsx';
 import { updateTask, deleteTask, addComment } from '../../store/slices/taskSlice.js';
 import { showSnackbar, startGlobalTimer, stopGlobalTimer } from '../../store/slices/uiSlice.js';
-import { tasksAPI, usersAPI } from '../../services/api.js';
+import { tasksAPI, usersAPI, projectsAPI } from '../../services/api.js';
 import api from '../../services/api.js';
 import { format, formatDistanceToNow } from 'date-fns';
 
@@ -109,6 +109,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
   const [comment,   setComment]   = useState('');
   const [saving,    setSaving]    = useState(false);
   const [users,     setUsers]     = useState([]);
+  const [projects,  setProjects]  = useState([]);
   const [newSubtask, setNewSubtask] = useState('');
   const [allTasks,   setAllTasks]   = useState([]);
 
@@ -130,6 +131,7 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     if (!task?._id) return;
     setLocalTask(task);
     usersAPI.getAll().then(res => setUsers(res.data || [])).catch(() => {});
+    projectsAPI.getAll().then(res => setProjects(res.data || [])).catch(() => {});
     if (task?.project?._id || task?.project) {
       const projectId = task.project?._id || task.project;
       tasksAPI
@@ -193,6 +195,16 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
     setLocalTask(p => ({ ...p, [field]: value }));
     setSaving(true);
     await dispatch(updateTask({ id: task._id, data: { [field]: value } }));
+    setSaving(false);
+    onUpdate?.();
+  };
+
+  const updateProject = async (projectId) => {
+    if (!canEdit) return;
+    const project = projects.find(p => p._id === projectId) || null;
+    setLocalTask(p => ({ ...p, project }));
+    setSaving(true);
+    await dispatch(updateTask({ id: task._id, data: { project: projectId || null } }));
     setSaving(false);
     onUpdate?.();
   };
@@ -532,14 +544,28 @@ export default function TaskDetailModal({ task, onClose, onUpdate }) {
               </Typography>
             </PropRow>
 
-            {projectName && (
-              <>
-                <Divider sx={{ my: 0.25, borderColor: '#F8FAFC' }} />
-                <PropRow label="Project">
-                  <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#6366F1' }}>{projectName}</Typography>
-                </PropRow>
-              </>
-            )}
+            <Divider sx={{ my: 0.25, borderColor: '#F8FAFC' }} />
+            <PropRow label="Project">
+              <TextField
+                select
+                variant="standard"
+                value={localTask.project?._id || localTask.project || ''}
+                onChange={e => updateProject(e.target.value)}
+                InputProps={{ disableUnderline: true, readOnly: !canEdit }}
+                inputProps={{ disabled: !canEdit }}
+                SelectProps={{ displayEmpty: true }}
+                sx={{ minWidth: 160, '& .MuiSelect-select': { py: 0 } }}
+              >
+                <MenuItem value="">
+                  <Typography sx={{ fontSize: '0.85rem', color: '#94A3B8' }}>No project</Typography>
+                </MenuItem>
+                {projects.map(p => (
+                  <MenuItem key={p._id} value={p._id}>
+                    <Typography sx={{ fontSize: '0.85rem', fontWeight: 600, color: '#6366F1' }}>{p.name}</Typography>
+                  </MenuItem>
+                ))}
+              </TextField>
+            </PropRow>
           </Box>
         </Box>
 
