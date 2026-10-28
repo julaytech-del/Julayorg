@@ -23,6 +23,7 @@ import TaskDetailModal from '../../components/Tasks/TaskDetailModal.jsx';
 const COLUMNS = [
   {
     id: 'planned',
+    statuses: ['backlog', 'todo', 'planned'],
     color: '#5B6E8F',
     accent: '#94A3B8',
     topBar: 'linear-gradient(90deg,#94A3B8,#CBD5E1)',
@@ -33,6 +34,7 @@ const COLUMNS = [
   },
   {
     id: 'in_progress',
+    statuses: ['in_progress', 'testing'],
     color: '#1D4ED8',
     accent: '#3B82F6',
     topBar: 'linear-gradient(90deg,#3B82F6,#60A5FA)',
@@ -43,6 +45,7 @@ const COLUMNS = [
   },
   {
     id: 'blocked',
+    statuses: ['blocked', 'on_hold'],
     color: '#B91C1C',
     accent: '#EF4444',
     topBar: 'linear-gradient(90deg,#EF4444,#F87171)',
@@ -53,6 +56,7 @@ const COLUMNS = [
   },
   {
     id: 'review',
+    statuses: ['review'],
     color: '#92400E',
     accent: '#F59E0B',
     topBar: 'linear-gradient(90deg,#F59E0B,#FCD34D)',
@@ -63,6 +67,7 @@ const COLUMNS = [
   },
   {
     id: 'done',
+    statuses: ['done', 'deployed', 'cancelled'],
     color: '#065F46',
     accent: '#10B981',
     topBar: 'linear-gradient(90deg,#10B981,#34D399)',
@@ -311,17 +316,24 @@ export default function KanbanBoard() {
     if (!currentProject || currentProject._id !== id) dispatch(fetchProject(id));
   }, [id]);
 
-  const getColTasks = status =>
-    tasks.filter(t => t.status === status).sort((a, b) => a.position - b.position);
+  // each column groups related statuses so no task is left without a column
+  const getColTasks = colId => {
+    const statuses = COLUMNS.find(c => c.id === colId)?.statuses || [colId];
+    return tasks.filter(t => statuses.includes(t.status)).sort((a, b) => a.position - b.position);
+  };
 
   const onDragEnd = async ({ source, destination, draggableId }) => {
     if (!destination) return;
     if (source.droppableId === destination.droppableId && source.index === destination.index) return;
-    const newStatus = destination.droppableId;
-    dispatch(updateTaskStatus({ id: draggableId, status: newStatus }));
-    const colTasks = getColTasks(newStatus);
-    const updates  = colTasks.map((t, i) => ({ id: t._id, status: newStatus, position: i }));
+    const sameCol   = source.droppableId === destination.droppableId;
+    const dragged   = tasks.find(t => t._id === draggableId);
+    // reordering inside a column keeps the task's own status (e.g. todo stays todo)
+    const newStatus = sameCol ? dragged?.status : destination.droppableId;
+    if (!sameCol) dispatch(updateTaskStatus({ id: draggableId, status: newStatus }));
+    const colTasks = getColTasks(destination.droppableId).filter(t => t._id !== draggableId);
+    const updates  = colTasks.map((t, i) => ({ id: t._id, status: t.status, position: i }));
     updates.splice(destination.index, 0, { id: draggableId, status: newStatus, position: destination.index });
+    updates.forEach((u, i) => { u.position = i; });
     try { await tasksAPI.reorder(updates); }
     catch { dispatch(showSnackbar({ message: 'Failed to save order', severity: 'error' })); }
   };
