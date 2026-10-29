@@ -5,7 +5,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
 import { ExpandMore, Add, ViewKanban, Timeline, AutoAwesome, PsychologyAlt, Refresh, Edit, PersonAdd, Delete } from '@mui/icons-material';
 import { format } from 'date-fns';
-import { fetchProject, fetchGoals, createGoal, createProject } from '../../store/slices/projectSlice.js';
+import { fetchProject, fetchGoals, createGoal, updateGoal, deleteGoal, createProject } from '../../store/slices/projectSlice.js';
 import api, { projectsAPI, usersAPI, departmentsAPI } from '../../services/api.js';
 import { fetchTasks, createTask, updateTaskStatus } from '../../store/slices/taskSlice.js';
 import { getStandup, analyzePerformance, replanProject } from '../../store/slices/aiSlice.js';
@@ -30,6 +30,8 @@ export default function ProjectDetail() {
   const [addGoalOpen,        setAddGoalOpen]        = useState(false);
   const [newGoalTitle,       setNewGoalTitle]        = useState('');
   const [addTaskGoal,        setAddTaskGoal]         = useState(null);
+  const [editGoal,           setEditGoal]            = useState(null);
+  const [deleteGoalTarget,   setDeleteGoalTarget]    = useState(null);
   const [newTaskTitle,       setNewTaskTitle]        = useState('');
   const [addStandaloneTask,  setAddStandaloneTask]   = useState(false);
   const [standaloneTitle,    setStandaloneTitle]     = useState('');
@@ -110,6 +112,23 @@ export default function ProjectDetail() {
     await dispatch(createGoal({ projectId: id, data: { title: newGoalTitle, project: id } }));
     setNewGoalTitle('');
     setAddGoalOpen(false);
+  };
+
+  const openEditGoal = (e, goal) => {
+    e.stopPropagation();
+    setEditGoal({ _id: goal._id, title: goal.title, status: goal.status || 'not_started' });
+  };
+
+  const handleSaveGoal = async () => {
+    if (!editGoal?.title.trim()) return;
+    await dispatch(updateGoal({ projectId: id, goalId: editGoal._id, data: { title: editGoal.title.trim(), status: editGoal.status } }));
+    setEditGoal(null);
+  };
+
+  const handleDeleteGoal = async () => {
+    await dispatch(deleteGoal({ projectId: id, goalId: deleteGoalTarget._id }));
+    setDeleteGoalTarget(null);
+    dispatch(fetchTasks({ projectId: id })); // its tasks become standalone
   };
 
   const handleAddTask = async (goalId) => {
@@ -321,6 +340,14 @@ export default function ProjectDetail() {
                     <Typography fontWeight={600}>{goal.title}</Typography>
                     <Chip label={`${goalTasks.filter(t => t.status === 'done').length}/${goalTasks.length}`} size="small" sx={{ backgroundColor: 'grey.100', fontWeight: 600 }} />
                     <StatusChip status={goal.status} />
+                    <Box sx={{ ml: 'auto', display: 'flex', gap: 0.25 }}>
+                      <IconButton size="small" title={t('common.edit')} onClick={e => openEditGoal(e, goal)}>
+                        <Edit sx={{ fontSize: 17, color: 'text.secondary' }} />
+                      </IconButton>
+                      <IconButton size="small" title={t('common.delete')} onClick={e => { e.stopPropagation(); setDeleteGoalTarget(goal); }}>
+                        <Delete sx={{ fontSize: 17, color: 'text.secondary' }} />
+                      </IconButton>
+                    </Box>
                   </Box>
                 </AccordionSummary>
                 <AccordionDetails sx={{ pt: 0 }}>
@@ -550,6 +577,41 @@ export default function ProjectDetail() {
           </Dialog>
         </Box>
       )}
+
+      {/* Edit Goal */}
+      <Dialog open={!!editGoal} onClose={() => setEditGoal(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>{t('common.edit')}</DialogTitle>
+        <DialogContent sx={{ display: 'flex', flexDirection: 'column', gap: 2, pt: '8px !important' }}>
+          <TextField label="Title" value={editGoal?.title || ''} autoFocus fullWidth
+            onChange={e => setEditGoal(g => ({ ...g, title: e.target.value }))}
+            onKeyDown={e => e.key === 'Enter' && handleSaveGoal()} />
+          <TextField select label="Status" value={editGoal?.status || 'not_started'} fullWidth
+            onChange={e => setEditGoal(g => ({ ...g, status: e.target.value }))}>
+            <MenuItem value="not_started">Not Started</MenuItem>
+            <MenuItem value="in_progress">In Progress</MenuItem>
+            <MenuItem value="completed">Completed</MenuItem>
+            <MenuItem value="blocked">Blocked</MenuItem>
+          </TextField>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setEditGoal(null)}>{t('common.cancel')}</Button>
+          <Button variant="contained" disabled={!editGoal?.title.trim()} onClick={handleSaveGoal}>{t('common.save')}</Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Delete Goal */}
+      <Dialog open={!!deleteGoalTarget} onClose={() => setDeleteGoalTarget(null)} maxWidth="xs" fullWidth>
+        <DialogTitle>{t('common.delete')}</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2">
+            Delete <strong>"{deleteGoalTarget?.title}"</strong>? Its tasks will be kept and moved out of the goal.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setDeleteGoalTarget(null)}>{t('common.cancel')}</Button>
+          <Button variant="contained" color="error" onClick={handleDeleteGoal}>{t('common.delete')}</Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Task Detail Modal */}
       {selectedTask && <TaskDetailModal task={selectedTask} onClose={() => setSelectedTask(null)} onUpdate={() => dispatch(fetchTasks({ projectId: id }))} />}
